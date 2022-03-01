@@ -57,4 +57,8 @@ public class Project {
     public Instant getEndDate() {
         return endDate;
     }
+
+    public Set<Sprint> getSprints() {
+        return sprints;
+    }
 }

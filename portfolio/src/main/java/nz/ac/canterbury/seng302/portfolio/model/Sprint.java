@@ -22,10 +22,19 @@ public class Sprint {
 
     protected Sprint() {}
 
-    public Sprint(long orderNumber, Instant startDate, Instant endDate) {
+    public Sprint(long orderNumber, Instant startDate, Instant endDate, Project project) {
         this.orderNumber = orderNumber;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.project = project;
+    }
+
+    @Override
+    public String toString() {
+        return String.format(
+                "Sprint [id=%d, orderNumber=%d, projectId=%d]",
+                id, orderNumber, project.getId()
+        );
     }
 
     public Long getId() {
