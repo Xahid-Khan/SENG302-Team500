@@ -2,17 +2,17 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Getting Started: Serving Web Content</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 </head>
 <body>
 <div id="navbar">
 
     <ul style="list-style: none; display: flex; align-items: center; ">
         <li>
-            <p  style="font-size: 30px; color: #000; display: flex;">SENG 302</p>
+            <p style="font-size: 30px; color: #000; display: flex;">SENG 302</p>
         </li>
         <li>
-            <a href="#index"  id="home-page" style="text-decoration: none; padding-left: 50px">Home</a>
+            <a href="#index" id="home-page" style="text-decoration: none; padding-left: 50px">Home</a>
         </li>
         <li class="navbar__item">
             <a href="#sprints" id="sprints-page" style="text-decoration: none; padding-left: 30px">Sprints</a>
@@ -20,24 +20,30 @@
 
     </ul>
 </div>
-<div id="addProjectDiv" style="display:flex; justify-content: right; padding: 0px 100px">
+<div id="addProjectDiv" style="display:flex; justify-content: right; padding: 0 100px">
 
     <div>
-        <button style="padding: 5px 10px; margin: 10px 0px"> Add Project</button>
+        <button style="padding: 5px 10px; margin: 10px 0"> Add Project</button>
     </div>
 </div>
 
-<div id="projectView" style="display:flex; justify-content: center; padding: 0px 100px">
+<div id="projectView" style="display:flex; justify-content: center; padding: 0 100px">
 
-    <div style="outline-style: solid; outline-color: black; width: 100%; ">
-        <p style="padding-left: 20px; font-size: 25px"> Project 1</p>
-        <p style="padding:20px"> Details... </p>
-        <div style="display:flex; justify-content: right">
-            <button style="padding: 5px 10px; margin: 0px 10px"> Add Sprint</button>
+    <div class="box">
+        <p style=" font-size: 25px"> Project 1
+            <span>21/Feb/2022</span>
+            <span> - </span>
+            <span>21/Feb/2023</span>
+        </p>
+
+        <p>Project Name </p>
+        <p>Description</p>
+        <div style="display:flex; justify-content: left">
+            <button style="padding: 5px 10px;"> Add Sprint</button>
         </div>
 
-        <div style="outline-style: solid; outline-color: black; margin: 20px; padding: 20px ">
-            <p style="font-size: 20px">Sprint 1</p>
+        <div style="outline-style: solid; outline-color: black; padding: 20px; margin-top: 30px; ">
+            <p class="title">Sprint 1</p>
             <p style="padding:20px"> Details... </p>
         </div>
     </div>
@@ -45,4 +51,20 @@
 
 
 </body>
+
+<style>
+    .box {
+        outline-style: solid;
+        outline-color: black;
+        width: 100%;
+        padding: 40px;
+    }
+
+    .title {
+        font-size: 20px;
+    }
+    
+
+</style>
+
 </html>
