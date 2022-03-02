@@ -31,6 +31,7 @@
 
     <div class="box">
         <p style=" font-size: 25px"> Project 1
+            <span> | </span>
             <span>21/Feb/2022</span>
             <span> - </span>
             <span>21/Feb/2023</span>
@@ -43,14 +44,41 @@
         </div>
 
         <div style="outline-style: solid; outline-color: black; padding: 20px; margin-top: 30px; ">
-            <p class="title">Sprint 1</p>
-            <p style="padding:20px"> Details... </p>
+            <div>Sprint 1
+            <button class="collapsible">+</button><button>Edit</button><button>Delete</button></div>
+            <div id="content" class="content">
+                <p>Name</p>
+                <p>Description</p>
+            </div>
         </div>
     </div>
+
+
+
 </div>
 
 
 </body>
+
+<script>
+    /*
+    Adapted from https://www.w3schools.com/howto/howto_js_collapsible.asp
+     */
+    var coll = document.getElementsByClassName("collapsible");
+    var i;
+
+    for (i = 0; i < coll.length; i++) {
+        coll[i].addEventListener("click", function() {
+            this.classList.toggle("active");
+            var content = document.getElementById("content");
+            if (content.style.display === "block") {
+                content.style.display = "none";
+            } else {
+                content.style.display = "block";
+            }
+        });
+    }
+</script>
 
 <style>
     .box {
@@ -59,11 +87,13 @@
         width: 100%;
         padding: 40px;
     }
-
-    .title {
-        font-size: 20px;
-    }
     
+
+    .content {
+        padding: 0 18px;
+        display: none;
+        overflow: hidden;
+    }
 
 </style>
 
