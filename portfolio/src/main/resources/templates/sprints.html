@@ -5,29 +5,43 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 <body>
-<div>
+<div id="navbar">
 
     <ul style="list-style: none; display: flex; align-items: center; ">
         <li>
             <p  style="font-size: 30px; color: #000; display: flex;">SENG 302</p>
         </li>
         <li>
-            <a href="#index.html"  id="home-page" style="text-decoration: none; padding-left: 50px">Home</a>
+            <a href="#index"  id="home-page" style="text-decoration: none; padding-left: 50px">Home</a>
         </li>
-        <li>
-            <a href="#sprints.html" id="sprints-page" style="text-decoration: none; padding-left: 30px">Sprints</a>
+        <li class="navbar__item">
+            <a href="#sprints" id="sprints-page" style="text-decoration: none; padding-left: 30px">Sprints</a>
         </li>
 
     </ul>
 </div>
+<div id="addProjectDiv" style="display:flex; justify-content: right; padding: 0px 100px">
 
-<div style="display:flex; justify-content: center; padding: 100px">
-    <div style="outline-style: solid; outline-color: black; width: 100%; ">
-
-        <p style="padding: 20px"> Hello </p>
+    <div>
+        <button style="padding: 5px 10px; margin: 10px 0px"> Add Project</button>
     </div>
 </div>
 
+<div id="projectView" style="display:flex; justify-content: center; padding: 0px 100px">
+
+    <div style="outline-style: solid; outline-color: black; width: 100%; ">
+        <p style="padding-left: 20px; font-size: 25px"> Project 1</p>
+        <p style="padding:20px"> Details... </p>
+        <div style="display:flex; justify-content: right">
+            <button style="padding: 5px 10px; margin: 0px 10px"> Add Sprint</button>
+        </div>
+
+        <div style="outline-style: solid; outline-color: black; margin: 20px; padding: 20px ">
+            <p style="font-size: 20px">Sprint 1</p>
+            <p style="padding:20px"> Details... </p>
+        </div>
+    </div>
+</div>
 
 
 </body>
