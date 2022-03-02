@@ -2,7 +2,8 @@ package nz.ac.canterbury.seng302.portfolio.model;
 
 import javax.persistence.*;
 import java.time.Instant;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "project")
@@ -18,7 +19,7 @@ public class Project {
     private Instant endDate;
 
     @OneToMany(mappedBy = "project")
-    private Set<Sprint> sprints;
+    private List<Sprint> sprints = new ArrayList<>();
 
     protected Project() {}
 
@@ -74,11 +75,12 @@ public class Project {
         this.endDate = endDate;
     }
 
-    public Set<Sprint> getSprints() {
+    public List<Sprint> getSprints() {
         return sprints;
     }
 
-    public void setSprints(Set<Sprint> sprints) {
-        this.sprints = sprints;
+    public void addSprint(Sprint sprint) {
+        sprints.add(sprint);
+        sprint.setProject(this);
     }
 }

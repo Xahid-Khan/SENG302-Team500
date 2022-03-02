@@ -1,5 +1,8 @@
 package nz.ac.canterbury.seng302.portfolio.model;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import javax.persistence.*;
 import java.time.Instant;
 
@@ -10,8 +13,8 @@ public class Sprint {
     @GeneratedValue
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "project_id", nullable = false)
+    @ManyToOne()
+    @OnDelete(action=OnDeleteAction.CASCADE)
     private Project project;
 
     private long orderNumber;
@@ -22,20 +25,19 @@ public class Sprint {
 
     protected Sprint() {}
 
-    public Sprint(long orderNumber, String name, String description, Instant startDate, Instant endDate, Project project) {
+    public Sprint(long orderNumber, String name, String description, Instant startDate, Instant endDate) {
         this.orderNumber = orderNumber;
         this.name = name;
         this.description = description;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.project = project;
     }
 
     @Override
     public String toString() {
         return String.format(
                 "Sprint [id=%d, orderNumber=%d, projectId=%d]",
-                id, orderNumber, project.getId()
+                id, orderNumber, (this.project != null) ? project.getId() : -1
         );
     }
 
