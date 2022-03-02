@@ -12,10 +12,16 @@ public class ProjectEntity {
     @GeneratedValue
     private Long id;
 
+    @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
     private String description;
 
+    @Column(nullable = false)
     private Instant startDate;
+
+    @Column(nullable = false)
     private Instant endDate;
 
     @OneToMany(mappedBy = "project")
