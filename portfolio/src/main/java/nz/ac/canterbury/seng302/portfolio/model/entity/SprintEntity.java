@@ -1,4 +1,4 @@
-package nz.ac.canterbury.seng302.portfolio.model;
+package nz.ac.canterbury.seng302.portfolio.model.entity;
 
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -8,14 +8,14 @@ import java.time.Instant;
 
 @Entity
 @Table(name = "sprint")
-public class Sprint {
+public class SprintEntity {
     @Id
     @GeneratedValue
     private Long id;
 
     @ManyToOne()
     @OnDelete(action=OnDeleteAction.CASCADE)
-    private Project project;
+    private ProjectEntity project;
 
     private long orderNumber;
     private String name;
@@ -23,9 +23,9 @@ public class Sprint {
     private Instant startDate;
     private Instant endDate;
 
-    protected Sprint() {}
+    protected SprintEntity() {}
 
-    public Sprint(long orderNumber, String name, String description, Instant startDate, Instant endDate) {
+    public SprintEntity(long orderNumber, String name, String description, Instant startDate, Instant endDate) {
         this.orderNumber = orderNumber;
         this.name = name;
         this.description = description;
@@ -36,7 +36,7 @@ public class Sprint {
     @Override
     public String toString() {
         return String.format(
-                "Sprint [id=%d, orderNumber=%d, projectId=%d]",
+                "SprintEntity [id=%d, orderNumber=%d, projectId=%d]",
                 id, orderNumber, (this.project != null) ? project.getId() : -1
         );
     }
@@ -45,11 +45,11 @@ public class Sprint {
         return id;
     }
 
-    public Project getProject() {
+    public ProjectEntity getProject() {
         return project;
     }
 
-    public void setProject(Project project) {
+    public void setProject(ProjectEntity project) {
         this.project = project;
     }
 
