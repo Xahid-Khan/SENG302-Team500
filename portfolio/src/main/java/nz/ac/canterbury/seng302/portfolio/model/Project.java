@@ -46,19 +46,39 @@ public class Project {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getDescription() {
         return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Instant getStartDate() {
         return startDate;
     }
 
+    public void setStartDate(Instant startDate) {
+        this.startDate = startDate;
+    }
+
     public Instant getEndDate() {
         return endDate;
     }
 
+    public void setEndDate(Instant endDate) {
+        this.endDate = endDate;
+    }
+
     public Set<Sprint> getSprints() {
         return sprints;
+    }
+
+    public void setSprints(Set<Sprint> sprints) {
+        this.sprints = sprints;
     }
 }
