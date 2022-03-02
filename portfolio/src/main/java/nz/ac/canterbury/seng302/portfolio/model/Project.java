@@ -12,10 +12,16 @@ public class Project {
     @GeneratedValue
     private Long id;
 
+    @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
     private String description;
 
+    @Column(nullable = false)
     private Instant startDate;
+
+    @Column(nullable = false)
     private Instant endDate;
 
     @OneToMany(mappedBy = "project")
@@ -82,5 +88,10 @@ public class Project {
     public void addSprint(Sprint sprint) {
         sprints.add(sprint);
         sprint.setProject(this);
+    }
+
+    public void removeSprint(Sprint sprint) {
+        sprints.remove(sprint);
+        sprint.setProject(null);
     }
 }
