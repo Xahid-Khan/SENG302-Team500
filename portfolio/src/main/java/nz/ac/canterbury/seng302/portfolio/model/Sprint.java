@@ -15,15 +15,17 @@ public class Sprint {
     private Project project;
 
     private long orderNumber;
-
+    private String name;
+    private String description;
     private Instant startDate;
-
     private Instant endDate;
 
     protected Sprint() {}
 
-    public Sprint(long orderNumber, Instant startDate, Instant endDate, Project project) {
+    public Sprint(long orderNumber, String name, String description, Instant startDate, Instant endDate, Project project) {
         this.orderNumber = orderNumber;
+        this.name = name;
+        this.description = description;
         this.startDate = startDate;
         this.endDate = endDate;
         this.project = project;
@@ -37,23 +39,4 @@ public class Sprint {
         );
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public Project getProject() {
-        return project;
-    }
-
-    public long getOrderNumber() {
-        return orderNumber;
-    }
-
-    public Instant getStartDate() {
-        return startDate;
-    }
-
-    public Instant getEndDate() {
-        return endDate;
-    }
 }
