@@ -83,4 +83,9 @@ public class ProjectEntity {
         sprints.add(sprint);
         sprint.setProject(this);
     }
+
+    public void removeSprint(SprintEntity sprint) {
+        sprints.remove(sprint);
+        sprint.setProject(null);
+    }
 }

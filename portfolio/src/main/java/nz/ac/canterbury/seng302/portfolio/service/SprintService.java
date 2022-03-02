@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
+import nz.ac.canterbury.seng302.portfolio.mapping.SprintMapper;
 import nz.ac.canterbury.seng302.portfolio.model.contract.SprintContract;
 import nz.ac.canterbury.seng302.portfolio.repository.ProjectRepository;
 import nz.ac.canterbury.seng302.portfolio.repository.SprintRepository;
@@ -17,10 +18,18 @@ public class SprintService {
     @Autowired
     private ProjectRepository projectRepository;
 
+    private SprintMapper sprintMapper;
+
     /**
      * Creates a SprintContract, returning it with its ID and order number.
      */
     public SprintContract create(SprintContract sprint) {
-        
+        var project = projectRepository.findById(sprint.projectId()).orElseThrow();
+
+        var entity = sprintMapper.toEntity(sprint, project.getSprints().size() + 1);
+        project.addSprint(entity);
+        sprintRepository.save(entity);
+
+        return sprintMapper.toContract(entity);
     }
 }
