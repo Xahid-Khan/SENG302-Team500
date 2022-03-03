@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
+    <link rel="stylesheet" href="../assets/styles.css">
     <title>Getting Started: Serving Web Content</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 </head>
-<body style="min-height: 100vh; background-image: linear-gradient(#13007A, #000949)">
+<body class="fullscreen linear-background">
 <nav>
     <div id="navbar">
 
-        <ul class="navbar_items" style="list-style: none; display: flex; align-items: center; ">
+        <ul class="navbar_items list-flex-center">
             <li>
-                <p style="font-size: 30px; color: #fff; display: flex; padding-right: 30px">SENG 302</p>
+                <p class="title-style">SENG 302</p>
             </li>
             <li>
                 <a href="#index" id="home-page">Home</a>
@@ -21,26 +22,26 @@
     </div>
 </nav>
 
-<div id="addProjectDiv" style="display:flex; justify-content: right; padding: 0 100px">
+<div id="addProjectDiv" class="flex-right padding-right-100">
 
     <div>
-        <button class="button" style="margin: 15px 5px"> Add Project</button>
+        <button class="button button-margin" > Add Project</button>
     </div>
 </div>
 
-<div id="projectView" style="display:flex; justify-content: center; padding: 0 100px; padding-bottom: 100px">
+<div id="projectView" class="flex-center" style=" padding: 0 100px; padding-bottom: 100px">
 
     <div class="box">
         <div style="color: #fff; font-size: 25px; font-weight: bold; margin-bottom: 40px">Project 1 | 21/02/2022 - 21/02/2023
             <span style="float:right;">
-                    <button class="button" style="margin-right: 5px; font-size: 14px">Edit</button>
-                    <button class="button" style="font-size: 14px">Delete</button>
+                    <button class="button margin-right-5">Edit</button>
+                    <button class="button">Delete</button>
             </span>
         </div>
         <div style="color: #fff; padding-left: 20px">
             <p>Project Name </p>
             <p>Description</p>
-            <div style="display:flex; justify-content: right; margin-right: 5px">
+            <div class="flex-right margin-right-5">
                 <button class="button"> Add Sprint</button>
             </div>
         </div>
@@ -48,9 +49,9 @@
         <div class="sprintView" style="outline-style: solid; outline-color: #43C0FE; padding: 20px; margin-top: 15px; ">
             <div style="color: #fff; font-size: 20px; font-weight: bold; margin-bottom: 8px">Sprint 1 | 28/02/22 - 10/03/22
                 <span style="float:right;">
-                    <button class="button" style="margin-right: 5px; font-size: 14px;">Edit</button>
-                    <button class="button" style="margin-right: 5px; font-size: 14px;">Delete</button>
-                    <button class="collapsible" style="font-size: 14px;">+</button>
+                    <button class="button margin-right-5">Edit</button>
+                    <button class="button margin-right-5">Delete</button>
+                    <button class="collapsible">+</button>
                 </span>
             </div>
             <div id="content" class="content">
@@ -85,64 +86,5 @@
         });
     }
 </script>
-
-<style>
-    .box {
-        outline-style: solid;
-        outline-color: #43C0FE;
-        width: 100%;
-        padding: 30px 40px;
-    }
-
-
-    .content {
-        padding: 0 18px;
-        display: none;
-        overflow: hidden;
-    }
-
-    .sprintView p {
-        color: #fff;
-    }
-
-    .button {
-        color: #fff;
-        cursor: pointer;
-        background-color: #43C0FE;
-        border: none;
-        padding: 8px 12px;
-        transition-duration: 0.4s;
-    }
-
-    .button:hover {
-        background-color: #0332D1;
-    }
-
-    .collapsible {
-        color: #fff;
-        cursor: pointer;
-        background-color: #43C0FE;
-        border: none;
-        padding: 8px 12px;
-        transition-duration: 0.4s;
-    }
-
-    .collapsible:hover {
-        background-color: #0332D1;
-    }
-
-    .navbar_items a {
-        color: #fff;
-        font-size: 18px;
-        text-decoration: none;
-        padding: 20px 10px;
-        transition-duration: 0.4s;
-    }
-
-    .navbar_items a:hover {
-        color: #43C0FE;
-    }
-
-</style>
 
 </html>

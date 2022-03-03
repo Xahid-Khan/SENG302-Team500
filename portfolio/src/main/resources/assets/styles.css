@@ -1,0 +1,102 @@
+.box {
+    outline-style: solid;
+    outline-color: #43C0FE;
+    width: 100%;
+    padding: 30px 40px;
+}
+
+
+.content {
+    padding: 0 18px;
+    display: none;
+    overflow: hidden;
+}
+
+.sprintView p {
+    color: #fff;
+}
+
+.button {
+    color: #fff;
+    cursor: pointer;
+    background-color: #43C0FE;
+    border: none;
+    padding: 8px 12px;
+    transition-duration: 0.4s;
+    font-size: 14px
+}
+
+.button:hover {
+    background-color: #0332D1;
+}
+
+.collapsible {
+    color: #fff;
+    cursor: pointer;
+    background-color: #43C0FE;
+    border: none;
+    padding: 8px 12px;
+    transition-duration: 0.4s;
+}
+
+.collapsible:hover {
+    background-color: #0332D1;
+}
+
+.navbar_items a {
+    color: #fff;
+    font-size: 18px;
+    text-decoration: none;
+    padding: 20px 10px;
+    transition-duration: 0.4s;
+}
+
+.navbar_items a:hover {
+    color: #43C0FE;
+}
+
+.fullscreen {
+    min-height: 100vh;
+}
+
+.linear-background {
+    background-image: linear-gradient(#13007A, #000949);
+}
+
+.list-flex-center {
+    list-style: none;
+    display: flex;
+    align-items: center;
+}
+
+.title-style {
+    font-size: 30px;
+    color: #fff;
+    display: flex;
+    padding-right: 30px
+}
+
+.flex-right {
+    display: flex;
+    justify-content: right
+}
+
+.padding-right-100 {
+    padding-right: 100px;
+}
+
+.button-margin {
+    margin: 15px 5px
+}
+
+.flex-center {
+    display: flex;
+    justify-content: center
+}
+
+.margin-right-5 {
+    margin-right: 5px
+}
+
+
+
