@@ -5,6 +5,14 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The database representation of a Project.
+ *
+ * <p>
+ *     Pair this with {@link nz.ac.canterbury.seng302.portfolio.repository.ProjectRepository} to
+ *     read and write instances of this to the database.
+ * </p>
+ */
 @Entity
 @Table(name = "project")
 public class Project {

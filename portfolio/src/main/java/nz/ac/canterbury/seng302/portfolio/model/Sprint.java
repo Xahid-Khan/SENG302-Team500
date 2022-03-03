@@ -6,6 +6,14 @@ import org.hibernate.annotations.OnDeleteAction;
 import javax.persistence.*;
 import java.time.Instant;
 
+/**
+ * The database representation of a Sprint.
+ *
+ * <p>
+ *     Pair this with {@link nz.ac.canterbury.seng302.portfolio.repository.SprintRepository} to
+ *     read and write instances of this to the database.
+ * </p>
+ */
 @Entity
 @Table(name = "sprint")
 public class Sprint {
