@@ -13,14 +13,23 @@ public class SprintEntity {
     @GeneratedValue
     private Long id;
 
-    @ManyToOne()
+    @ManyToOne(optional = false)
     @OnDelete(action=OnDeleteAction.CASCADE)
     private ProjectEntity project;
 
+    @Column(nullable = false)
     private long orderNumber;
+
+    @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
     private String description;
+
+    @Column(nullable = false)
     private Instant startDate;
+
+    @Column(nullable = false)
     private Instant endDate;
 
     protected SprintEntity() {}
