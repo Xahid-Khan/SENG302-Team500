@@ -22,7 +22,7 @@ public class ProjectService {
 
     /**
      * Create a Project Contract, return it with project ID number.
-     * @param contract
+     * @param contract a contract received from application.
      */
     public ProjectContract create(ProjectContract contract){
         var project = projectMapper.toEntity(contract);
@@ -33,7 +33,7 @@ public class ProjectService {
 
     /**
      * Delete a Project Entity, return void.
-     * @param projectId
+     * @param projectId project ID of the project that needs to be deleted.
      */
 
     public void delete(long projectId) {
