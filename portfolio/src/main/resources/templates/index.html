@@ -2,47 +2,147 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Getting Started: Serving Web Content</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 </head>
-<body>
-<div id="navbar">
+<body style="min-height: 100vh; background-image: linear-gradient(#13007A, #000949)">
+<nav>
+    <div id="navbar">
 
-    <ul style="list-style: none; display: flex; align-items: center; ">
-        <li>
-            <p  style="font-size: 30px; color: #000; display: flex;">SENG 302</p>
-        </li>
-        <li>
-            <a href="#index"  id="home-page" style="text-decoration: none; padding-left: 50px">Home</a>
-        </li>
-        <li class="navbar__item">
-            <a href="#sprints" id="sprints-page" style="text-decoration: none; padding-left: 30px">Sprints</a>
-        </li>
+        <ul class="navbar_items" style="list-style: none; display: flex; align-items: center; ">
+            <li>
+                <p style="font-size: 30px; color: #fff; display: flex; padding-right: 30px">SENG 302</p>
+            </li>
+            <li>
+                <a href="#index" id="home-page">Home</a>
+            </li>
 
-    </ul>
-</div>
-<div id="addProjectDiv" style="display:flex; justify-content: right; padding: 0px 100px">
+
+        </ul>
+    </div>
+</nav>
+
+<div id="addProjectDiv" style="display:flex; justify-content: right; padding: 0 100px">
 
     <div>
-        <button style="padding: 5px 10px; margin: 10px 0px"> Add Project</button>
+        <button class="button" style="margin: 15px 5px"> Add Project</button>
     </div>
 </div>
 
-<div id="projectView" style="display:flex; justify-content: center; padding: 0px 100px">
+<div id="projectView" style="display:flex; justify-content: center; padding: 0 100px; padding-bottom: 100px">
 
-    <div style="outline-style: solid; outline-color: black; width: 100%; ">
-        <p style="padding-left: 20px; font-size: 25px"> Project 1</p>
-        <p style="padding:20px"> Details... </p>
-        <div style="display:flex; justify-content: right">
-            <button style="padding: 5px 10px; margin: 0px 10px"> Add Sprint</button>
+    <div class="box">
+        <div style="color: #fff; font-size: 25px; font-weight: bold; margin-bottom: 40px">Project 1 | 21/02/2022 - 21/02/2023
+            <span style="float:right;">
+                    <button class="button" style="margin-right: 5px; font-size: 14px">Edit</button>
+                    <button class="button" style="font-size: 14px">Delete</button>
+            </span>
+        </div>
+        <div style="color: #fff; padding-left: 20px">
+            <p>Project Name </p>
+            <p>Description</p>
+            <div style="display:flex; justify-content: right; margin-right: 5px">
+                <button class="button"> Add Sprint</button>
+            </div>
         </div>
 
-        <div style="outline-style: solid; outline-color: black; margin: 20px; padding: 20px ">
-            <p style="font-size: 20px">Sprint 1</p>
-            <p style="padding:20px"> Details... </p>
+        <div class="sprintView" style="outline-style: solid; outline-color: #43C0FE; padding: 20px; margin-top: 15px; ">
+            <div style="color: #fff; font-size: 20px; font-weight: bold; margin-bottom: 8px">Sprint 1 | 28/02/22 - 10/03/22
+                <span style="float:right;">
+                    <button class="button" style="margin-right: 5px; font-size: 14px;">Edit</button>
+                    <button class="button" style="margin-right: 5px; font-size: 14px;">Delete</button>
+                    <button class="collapsible" style="font-size: 14px;">+</button>
+                </span>
+            </div>
+            <div id="content" class="content">
+                <p>Name</p>
+                <p>Description</p>
+            </div>
         </div>
     </div>
+
+
 </div>
 
 
 </body>
+
+<script>
+    /*
+    Adapted from https://www.w3schools.com/howto/howto_js_collapsible.asp
+     */
+    var coll = document.getElementsByClassName("collapsible");
+    var i;
+
+    for (i = 0; i < coll.length; i++) {
+        coll[i].addEventListener("click", function () {
+            this.classList.toggle("active");
+            var content = document.getElementById("content");
+            if (content.style.display === "block") {
+                content.style.display = "none";
+            } else {
+                content.style.display = "block";
+            }
+        });
+    }
+</script>
+
+<style>
+    .box {
+        outline-style: solid;
+        outline-color: #43C0FE;
+        width: 100%;
+        padding: 30px 40px;
+    }
+
+
+    .content {
+        padding: 0 18px;
+        display: none;
+        overflow: hidden;
+    }
+
+    .sprintView p {
+        color: #fff;
+    }
+
+    .button {
+        color: #fff;
+        cursor: pointer;
+        background-color: #43C0FE;
+        border: none;
+        padding: 8px 12px;
+        transition-duration: 0.4s;
+    }
+
+    .button:hover {
+        background-color: #0332D1;
+    }
+
+    .collapsible {
+        color: #fff;
+        cursor: pointer;
+        background-color: #43C0FE;
+        border: none;
+        padding: 8px 12px;
+        transition-duration: 0.4s;
+    }
+
+    .collapsible:hover {
+        background-color: #0332D1;
+    }
+
+    .navbar_items a {
+        color: #fff;
+        font-size: 18px;
+        text-decoration: none;
+        padding: 20px 10px;
+        transition-duration: 0.4s;
+    }
+
+    .navbar_items a:hover {
+        color: #43C0FE;
+    }
+
+</style>
+
 </html>
