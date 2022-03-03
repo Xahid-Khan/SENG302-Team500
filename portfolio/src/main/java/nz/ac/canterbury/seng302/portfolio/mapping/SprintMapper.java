@@ -2,9 +2,16 @@ package nz.ac.canterbury.seng302.portfolio.mapping;
 
 import nz.ac.canterbury.seng302.portfolio.model.contract.SprintContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.SprintEntity;
+import org.springframework.data.mapping.MappingException;
+import org.springframework.stereotype.Component;
 
+@Component
 public class SprintMapper {
     public SprintEntity toEntity(SprintContract contract, long orderNumber) {
+        if (contract.sprintId() != null) {
+            throw new MappingException("SprintId is lost during mapping from contract to entity. Please set it to null before mapping.");
+        }
+
         return new SprintEntity(
             orderNumber,
             contract.name(),
@@ -17,6 +24,7 @@ public class SprintMapper {
     public SprintContract toContract(SprintEntity entity) {
         return new SprintContract(
             entity.getProject().getId(),
+            entity.getId(),
             entity.getName(),
             entity.getDescription(),
             entity.getStartDate(),
