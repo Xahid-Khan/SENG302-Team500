@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.portfolio.service;
 import java.util.NoSuchElementException;
 import javax.transaction.Transactional;
 import nz.ac.canterbury.seng302.portfolio.mapping.SprintMapper;
+import nz.ac.canterbury.seng302.portfolio.model.contract.BaseSprintContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.SprintContract;
 import nz.ac.canterbury.seng302.portfolio.repository.ProjectRepository;
 import nz.ac.canterbury.seng302.portfolio.repository.SprintRepository;
@@ -38,12 +39,13 @@ public class SprintService {
     /**
      * Creates a SprintContract, returning it with its ID and order number.
      *
-     * @param sprint to create. orderNumber and sprintId are ignored.
+     * @param projectId to create the sprint in.
+     * @param sprint to create
      * @throws NoSuchElementException if the project id is invalid
      * @return Sprint that was created, including the orderNumber generated.
      */
-    public SprintContract create(SprintContract sprint) {
-        var project = projectRepository.findById(sprint.projectId()).orElseThrow();
+    public SprintContract create(long projectId, BaseSprintContract sprint) {
+        var project = projectRepository.findById(projectId).orElseThrow();
 
         var entity = sprintMapper.toEntity(sprint, project.getSprints().size() + 1);
         project.addSprint(entity);
@@ -71,11 +73,12 @@ public class SprintService {
     /**
      * Updates a sprint using the SprintContract data provided.
      *
-     * @param sprint to update, with the update fields filled. projectId and orderNumber is ignored.
+     * @param sprintId to update
+     * @param sprint to update, with the update fields filled.
      * @throws NoSuchElementException if the id is invalid
      */
-    public void update(SprintContract sprint) {
-        var sprintEntity = sprintRepository.findById(sprint.sprintId()).orElseThrow();
+    public void update(long sprintId, BaseSprintContract sprint) {
+        var sprintEntity = sprintRepository.findById(sprintId).orElseThrow();
 
         sprintEntity.setName(sprint.name());
         sprintEntity.setDescription(sprint.description());
