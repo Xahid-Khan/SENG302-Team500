@@ -4,6 +4,7 @@
     <link rel="stylesheet" th:href="@{/styles/styles.css}">
     <title>SENG302 Homepage</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body class="fullscreen">
     <nav>
@@ -25,7 +26,7 @@
     <div class="add-project">
 
         <div>
-            <button class="button" > Add Project</button>
+            <button class="button add-project-button" > Add Project</button>
         </div>
     </div>
 
@@ -52,7 +53,7 @@
                         <span class="spud">
                             <button class="button sprint-controls">Edit</button>
                             <button class="button sprint-controls">Delete</button>
-                            <button class="toggle-sprint-details" id="toggle-sprint-details" th:onclick="viewSprintDetails()">+</button>
+                            <button class="button toggle-sprint-details" id="toggle-sprint-details" th:onclick="viewSprintDetails()">+</button>
                         </span>
                     </div>
                     <div id="sprint-details" class="sprint-details">
