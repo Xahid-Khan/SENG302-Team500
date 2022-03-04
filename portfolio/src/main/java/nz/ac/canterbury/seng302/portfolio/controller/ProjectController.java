@@ -7,16 +7,14 @@ import org.h2.util.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 
 @RestController
-@RequestMapping("/api/v1/project")
+@RequestMapping("/api/v1/projects")
 public class ProjectController {
     @Autowired
     private ProjectService projectService;
@@ -37,6 +35,42 @@ public class ProjectController {
         try {
             var project = projectService.getById(id);
             return ResponseEntity.ok(project);
+        }
+        catch (NoSuchElementException error) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    @PostMapping(value = "/", produces = "application/jason")
+    public ResponseEntity<?> addNewProject(@RequestBody ProjectContract newProject) {
+        try {
+            projectService.create(newProject);
+            return ResponseEntity.ok(newProject);
+        }
+        catch (Exception error) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    @DeleteMapping(value = "/{id}", produces = "application/jason")
+    public ResponseEntity<?> removeProject(@PathVariable long id) {
+        try{
+            projectService.delete(id);
+            return ResponseEntity.ok("");
+        }
+        catch(NoSuchElementException error) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        catch (Exception error) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PutMapping(value = "/", produces = "application/jason")
+    public ResponseEntity<?> updateProject(@RequestBody ProjectContract updatedProject) {
+        try {
+            projectService.update(updatedProject);
+            return ResponseEntity.ok("");
         }
         catch (NoSuchElementException error) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

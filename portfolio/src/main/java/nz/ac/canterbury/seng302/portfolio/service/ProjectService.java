@@ -28,6 +28,7 @@ public class ProjectService {
     /**
      * Create a Project Contract, return it with project ID number.
      * @param contract a contract received from application.
+     * @return contart of the newly created project
      */
     public ProjectContract create(ProjectContract contract){
         var project = projectMapper.toEntity(contract);
@@ -72,5 +73,19 @@ public class ProjectService {
     }
 
 
+    /**
+     * This method will update the current project details.
+     * @param project contract of the new project
+     * @throws NoSuchElementException if the project does not exist
+     */
+    public void update(ProjectContract project) {
+        var projectEntity = projectRepository.findById(project.id()).orElseThrow();
+        projectEntity.setDescription(project.description());
+        projectEntity.setName(project.name());
+        projectEntity.setStartDate(project.startDate());
+        projectEntity.setEndDate(project.endDate());
+
+        projectRepository.save(projectEntity);
+    }
 
 }
