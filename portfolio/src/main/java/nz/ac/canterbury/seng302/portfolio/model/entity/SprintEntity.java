@@ -25,7 +25,7 @@ public class SprintEntity {
 
     @ManyToOne(optional = false)
     @OnDelete(action=OnDeleteAction.CASCADE)
-    private ProjectEntity project;
+    private ProjectContract project;
 
     @Column(nullable = false)
     private long orderNumber;
@@ -64,11 +64,11 @@ public class SprintEntity {
         return id;
     }
 
-    public ProjectEntity getProject() {
+    public ProjectContract getProject() {
         return project;
     }
 
-    public void setProject(ProjectEntity project) {
+    public void setProject(ProjectContract project) {
         this.project = project;
     }
 
