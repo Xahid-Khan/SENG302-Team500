@@ -68,4 +68,12 @@ public class LoginController {
         return "login";
     }
 
+    @GetMapping("/index")
+            public String Index(
+                    HttpServletRequest request,
+                    HttpServletResponse response,
+                    Model model
+            ) {
+            return "index";
+        }
 }

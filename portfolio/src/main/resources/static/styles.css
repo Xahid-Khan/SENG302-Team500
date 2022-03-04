@@ -5,7 +5,6 @@
     padding: 30px 40px;
 }
 
-
 .content {
     padding: 0 18px;
     display: none;
@@ -98,5 +97,37 @@
     margin-right: 5px
 }
 
+.sprint-outline {
+    outline-style: solid;
+    outline-color: #43C0FE;
+    padding: 20px;
+    margin-top: 15px
+}
 
+.sprint-title {
+    color: #fff;
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 8px
+}
+
+.project-title {
+    color: #fff;
+    font-size: 25px;
+    font-weight: bold;
+    margin-bottom: 40px
+}
+
+.padding-left-100 {
+    padding-left: 100px;
+}
+
+.padding-bottom-100 {
+    padding-bottom: 100px;
+}
+
+.content-text {
+    color: #fff;
+    padding-left: 20px
+}
 

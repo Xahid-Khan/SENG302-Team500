@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <link rel="stylesheet" href="../assets/styles.css">
-    <title>Getting Started: Serving Web Content</title>
+    <link rel="stylesheet" th:href="@{/styles.css}">
+    <title>SENG302 Homepage</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 </head>
 <body class="fullscreen linear-background">
@@ -29,16 +29,16 @@
     </div>
 </div>
 
-<div id="projectView" class="flex-center" style=" padding: 0 100px; padding-bottom: 100px">
+<div id="projectView" class="flex-center padding-left-100 padding-right-100 padding-bottom-100">
 
     <div class="box">
-        <div style="color: #fff; font-size: 25px; font-weight: bold; margin-bottom: 40px">Project 1 | 21/02/2022 - 21/02/2023
+        <div class="project-title">Project 1 | 21/02/2022 - 21/02/2023
             <span style="float:right;">
                     <button class="button margin-right-5">Edit</button>
                     <button class="button">Delete</button>
             </span>
         </div>
-        <div style="color: #fff; padding-left: 20px">
+        <div class="content-text">
             <p>Project Name </p>
             <p>Description</p>
             <div class="flex-right margin-right-5">
@@ -46,8 +46,8 @@
             </div>
         </div>
 
-        <div class="sprintView" style="outline-style: solid; outline-color: #43C0FE; padding: 20px; margin-top: 15px; ">
-            <div style="color: #fff; font-size: 20px; font-weight: bold; margin-bottom: 8px">Sprint 1 | 28/02/22 - 10/03/22
+        <div class="sprintView sprint-outline">
+            <div class="sprint-title">Sprint 1 | 28/02/22 - 10/03/22
                 <span style="float:right;">
                     <button class="button margin-right-5">Edit</button>
                     <button class="button margin-right-5">Delete</button>
