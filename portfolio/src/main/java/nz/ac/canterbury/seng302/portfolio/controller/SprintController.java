@@ -23,7 +23,7 @@ public class SprintController {
     private SprintService sprintService;
 
     @GetMapping(value = "/sprints/{sprintId}", produces = "application/json")
-    public ResponseEntity<SprintContract> getSprint(@PathVariable long sprintId) {
+    public ResponseEntity<SprintContract> getSprint(@PathVariable String sprintId) {
         try {
             var sprint = sprintService.get(sprintId);
 
@@ -35,7 +35,7 @@ public class SprintController {
     }
 
     @PostMapping(value = "/projects/{projectId}/sprints", produces = "application/json")
-    public ResponseEntity<SprintContract> createSprint(@PathVariable long projectId, @RequestBody BaseSprintContract sprint) {
+    public ResponseEntity<SprintContract> createSprint(@PathVariable String projectId, @RequestBody BaseSprintContract sprint) {
         try {
             var result = sprintService.create(projectId, sprint);
 
@@ -47,7 +47,7 @@ public class SprintController {
     }
 
     @PutMapping(value = "/sprints/{id}", produces = "application/json")
-    public ResponseEntity<SprintContract> updateSprint(@PathVariable long id, @RequestBody BaseSprintContract sprint) {
+    public ResponseEntity<SprintContract> updateSprint(@PathVariable String id, @RequestBody BaseSprintContract sprint) {
         try {
             sprintService.update(id, sprint);
 
@@ -59,7 +59,7 @@ public class SprintController {
     }
 
     @DeleteMapping(value = "/sprints/{id}", produces = "application/json")
-    public ResponseEntity<SprintContract> updateSprint(@PathVariable long id) {
+    public ResponseEntity<SprintContract> updateSprint(@PathVariable String id) {
         try {
             sprintService.delete(id);
 

@@ -55,7 +55,7 @@ public class SprintEntity {
     @Override
     public String toString() {
         return String.format(
-                "Sprint [id=%s, orderNumber=%d, projectId=%d]",
+                "Sprint [id=%s, orderNumber=%d, projectId=%s]",
                 id, orderNumber, (this.project != null) ? project.getId() : "-1"
         );
     }

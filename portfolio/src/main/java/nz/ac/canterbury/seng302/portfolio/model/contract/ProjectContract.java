@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public record ProjectContract(
-        Long id,
+        String id,
         String name,
         String description,
         Instant startDate,

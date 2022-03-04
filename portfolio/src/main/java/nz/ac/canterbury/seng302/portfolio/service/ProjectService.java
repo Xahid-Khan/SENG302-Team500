@@ -41,7 +41,7 @@ public class ProjectService {
      * Delete a Project Entity, return void.
      * @param projectId project ID of the project that needs to be deleted.
      */
-    public void delete(long projectId) {
+    public void delete(String projectId) {
         projectRepository.deleteById(projectId);
     }
 
@@ -68,7 +68,7 @@ public class ProjectService {
      * @throws NoSuchElementException is raised if project ID is not in database
      * @return project entity
      */
-    public ProjectContract getById(long id) {
+    public ProjectContract getById(String id) {
         return projectMapper.toContract(projectRepository.findById(id).orElseThrow());
     }
 

@@ -32,7 +32,7 @@ public class SprintService {
      * @throws NoSuchElementException if the id is invalid
      * @return Sprint with the given ID
      */
-    public SprintContract get(long id) {
+    public SprintContract get(String id) {
         return sprintMapper.toContract(sprintRepository.findById(id).orElseThrow());
     }
 
@@ -44,7 +44,7 @@ public class SprintService {
      * @throws NoSuchElementException if the project id is invalid
      * @return Sprint that was created, including the orderNumber generated.
      */
-    public SprintContract create(long projectId, BaseSprintContract sprint) {
+    public SprintContract create(String projectId, BaseSprintContract sprint) {
         var project = projectRepository.findById(projectId).orElseThrow();
 
         var entity = sprintMapper.toEntity(sprint, project.getSprints().size() + 1);
@@ -61,7 +61,7 @@ public class SprintService {
      * @param sprintId to delete
      * @throws NoSuchElementException if the id is invalid
      */
-    public void delete(long sprintId) {
+    public void delete(String sprintId) {
         var sprint = sprintRepository.findById(sprintId).orElseThrow();
         var project = sprint.getProject();
 
@@ -77,7 +77,7 @@ public class SprintService {
      * @param sprint to update, with the update fields filled.
      * @throws NoSuchElementException if the id is invalid
      */
-    public void update(long sprintId, BaseSprintContract sprint) {
+    public void update(String sprintId, BaseSprintContract sprint) {
         var sprintEntity = sprintRepository.findById(sprintId).orElseThrow();
 
         sprintEntity.setName(sprint.name());

@@ -31,7 +31,7 @@ public class ProjectController {
     }
 
     @GetMapping(value = "/{id}", produces = "application/jason")
-    public ResponseEntity<ProjectContract> getById(@PathVariable long id) {
+    public ResponseEntity<ProjectContract> getById(@PathVariable String id) {
         try {
             var project = projectService.getById(id);
             return ResponseEntity.ok(project);
@@ -53,7 +53,7 @@ public class ProjectController {
     }
 
     @DeleteMapping(value = "/{id}", produces = "application/jason")
-    public ResponseEntity<?> removeProject(@PathVariable long id) {
+    public ResponseEntity<?> removeProject(@PathVariable String id) {
         try{
             projectService.delete(id);
             return ResponseEntity.ok("");
