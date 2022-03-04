@@ -1,17 +1,25 @@
 /*
     Adapted from https://www.w3schools.com/howto/howto_js_collapsible.asp
      */
-var coll = document.getElementsByClassName("collapsible");
-var i;
+function viewSprintDetails() {
 
-for (i = 0; i < coll.length; i++) {
-    coll[i].addEventListener("click", function () {
-        this.classList.toggle("active");
-        var content = document.getElementById("content");
-        if (content.style.display === "block") {
-            content.style.display = "none";
-        } else {
-            content.style.display = "block";
-        }
-    });
+    if (document.getElementById("content").style.display === "inline") {
+        document.getElementById("content").style.display = "none";
+        document.querySelector('#toggle-sprint-details').innerHTML = "+";
+    } else {
+        document.getElementById("content").style.display = "inline";
+        document.querySelector('#toggle-sprint-details').innerHTML = "-";
+    }
+}
+
+function viewSprints() {
+    if (document.getElementById("sprints").style.display === "inline") {
+        document.getElementById("sprints").style.display = "none";
+        document.getElementById("add-sprint").style.display = "none";
+        document.querySelector('#toggle-view-sprints').innerHTML = "Show Sprints";
+    } else {
+        document.getElementById("sprints").style.display = "inline";
+        document.getElementById("add-sprint").style.display = "inline";
+        document.querySelector('#toggle-view-sprints').innerHTML = "Hide Sprints";
+    }
 }

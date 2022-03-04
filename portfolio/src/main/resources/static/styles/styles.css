@@ -11,7 +11,7 @@
     overflow: hidden;
 }
 
-.sprintView p {
+.sprint-view p {
     color: #fff;
 }
 
@@ -128,6 +128,17 @@
 
 .content-text {
     color: #fff;
-    padding-left: 20px
+    padding-left: 20px;
 }
 
+.toggle-sprints {
+    margin-left: 10px;
+}
+
+.sprints {
+    display: none;
+}
+
+.add-sprint {
+    display: none;
+}
