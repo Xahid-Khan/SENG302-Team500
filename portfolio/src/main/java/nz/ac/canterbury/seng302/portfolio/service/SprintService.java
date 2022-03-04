@@ -33,7 +33,8 @@ public class SprintService {
      * @return Sprint with the given ID
      */
     public SprintContract get(String id) {
-        return sprintMapper.toContract(sprintRepository.findById(id).orElseThrow());
+        var sprint = sprintRepository.findById(id).orElseThrow();
+        return sprintMapper.toContract(sprint, sprint.getOrderNumber());
     }
 
     /**
@@ -47,12 +48,12 @@ public class SprintService {
     public SprintContract create(String projectId, BaseSprintContract sprint) {
         var project = projectRepository.findById(projectId).orElseThrow();
 
-        var entity = sprintMapper.toEntity(sprint, project.getSprints().size() + 1);
+        var entity = sprintMapper.toEntity(sprint);
         project.addSprint(entity);
         sprintRepository.save(entity);
         projectRepository.save(project);
 
-        return sprintMapper.toContract(entity);
+        return sprintMapper.toContract(entity, entity.getOrderNumber());
     }
 
     /**

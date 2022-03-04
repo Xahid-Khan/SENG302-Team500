@@ -28,9 +28,6 @@ public class SprintEntity {
     private ProjectEntity project;
 
     @Column(nullable = false)
-    private long orderNumber;
-
-    @Column(nullable = false)
     private String name;
 
     @Column(nullable = true)
@@ -44,8 +41,7 @@ public class SprintEntity {
 
     protected SprintEntity() {}
 
-    public SprintEntity(long orderNumber, String name, String description, Instant startDate, Instant endDate) {
-        this.orderNumber = orderNumber;
+    public SprintEntity(String name, String description, Instant startDate, Instant endDate) {
         this.name = name;
         this.description = description;
         this.startDate = startDate;
@@ -55,8 +51,8 @@ public class SprintEntity {
     @Override
     public String toString() {
         return String.format(
-                "Sprint [id=%s, orderNumber=%d, projectId=%s]",
-                id, orderNumber, (this.project != null) ? project.getId() : "-1"
+                "Sprint [id=%s, projectId=%s]",
+                id, (this.project != null) ? project.getId() : "-1"
         );
     }
 
@@ -70,14 +66,6 @@ public class SprintEntity {
 
     public void setProject(ProjectEntity project) {
         this.project = project;
-    }
-
-    public long getOrderNumber() {
-        return orderNumber;
-    }
-
-    public void setOrderNumber(long orderNumber) {
-        this.orderNumber = orderNumber;
     }
 
     public String getName() {
@@ -110,5 +98,21 @@ public class SprintEntity {
 
     public void setEndDate(Instant endDate) {
         this.endDate = endDate;
+    }
+
+    /**
+     * Calculates the orderNumber of this sprint entity by searching through its project.
+     *
+     * @return the orderNumber of this sprint in the project
+     */
+    public int getOrderNumber() {
+        var sprints = project.getSprints();
+        for (int i=0; i < sprints.size(); i++) {
+            if (sprints.get(i).getId().equals(this.id)) {
+                return i + 1;
+            }
+        }
+
+        throw new IllegalStateException("this.project does not contain this sprint, so getOrderNumber is impossible.");
     }
 }

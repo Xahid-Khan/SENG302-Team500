@@ -1,5 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.model.entity;
 
+import java.util.Collections;
+import java.util.Comparator;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -36,6 +38,7 @@ public class ProjectEntity {
     private Instant endDate;
 
     @OneToMany(mappedBy = "project")
+    @OrderBy("startDate")
     private List<SprintEntity> sprints = new ArrayList<>();
 
     protected ProjectEntity() {}
@@ -96,8 +99,20 @@ public class ProjectEntity {
         return sprints;
     }
 
+    /**
+     * Inserts the given sprint to the sprints list, retaining sorted order.
+     *
+     * <p>Adapted from: https://stackoverflow.com/a/51893026</p>
+     *
+     * @param sprint to insert
+     */
     public void addSprint(SprintEntity sprint) {
-        sprints.add(sprint);
+        var index = Collections.binarySearch(sprints, sprint, Comparator.comparing(SprintEntity::getStartDate));
+        if (index < 0) {
+            index = -index - 1;
+        }
+
+        sprints.add(index, sprint);
         sprint.setProject(this);
     }
 

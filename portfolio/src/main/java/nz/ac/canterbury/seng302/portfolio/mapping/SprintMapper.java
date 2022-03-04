@@ -7,9 +7,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class SprintMapper {
-    public SprintEntity toEntity(BaseSprintContract contract, long orderNumber) {
+    public SprintEntity toEntity(BaseSprintContract contract) {
         return new SprintEntity(
-            orderNumber,
             contract.name(),
             contract.description(),
             contract.startDate(),
@@ -17,7 +16,7 @@ public class SprintMapper {
         );
     }
 
-    public SprintContract toContract(SprintEntity entity) {
+    public SprintContract toContract(SprintEntity entity, long orderNumber) {
         return new SprintContract(
             entity.getProject().getId(),
             entity.getId(),
@@ -25,7 +24,7 @@ public class SprintMapper {
             entity.getDescription(),
             entity.getStartDate(),
             entity.getEndDate(),
-            entity.getOrderNumber()
+            orderNumber
         );
     }
 }
