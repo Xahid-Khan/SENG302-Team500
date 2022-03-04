@@ -43,11 +43,11 @@ public class ProjectController {
         }
     }
 
-    @PostMapping(value = "/", produces = "application/json")
-    public ResponseEntity<?> addNewProject(@RequestBody BaseProjectContract newProject) {
+    @PostMapping(value = "/new", produces = "application/json")
+    public ResponseEntity<ProjectContract> addNewProject(@RequestBody BaseProjectContract newProject) {
         try {
-            projectService.create(newProject);
-            return ResponseEntity.ok(newProject);
+            var project = projectService.create(newProject);
+            return ResponseEntity.ok(project);
         }
         catch (Exception error) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -58,20 +58,20 @@ public class ProjectController {
     public ResponseEntity<?> removeProject(@PathVariable String id) {
         try{
             projectService.delete(id);
-            return ResponseEntity.ok("");
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
         catch(NoSuchElementException error) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         catch (Exception error) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
 
-    @PutMapping(value = "/", produces = "application/json")
-    public ResponseEntity<?> updateProject(@RequestBody ProjectContract updatedProject) {
+    @PutMapping(value = "/{id}", produces = "application/json")
+    public ResponseEntity<?> updateProject(@RequestBody ProjectContract updatedProject, @PathVariable String id) {
         try {
-            projectService.update(updatedProject);
+            projectService.update(updatedProject, id);
             return ResponseEntity.ok("");
         }
         catch (NoSuchElementException error) {

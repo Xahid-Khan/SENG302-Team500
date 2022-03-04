@@ -32,10 +32,11 @@ public class ProjectService {
      * @param contract a contract received from application.
      * @return contart of the newly created project
      */
-    public BaseProjectContract create(BaseProjectContract contract){
+    public ProjectContract create(BaseProjectContract contract){
         var project = projectMapper.toEntity(contract);
         projectRepository.save(project);
-        return contract;
+
+        return projectMapper.toContract(project);
     }
 
 
@@ -78,10 +79,11 @@ public class ProjectService {
     /**
      * This method will update the current project details.
      * @param project contract of the new project
+     * @param  id Type String of the project
      * @throws NoSuchElementException if the project does not exist
      */
-    public void update(ProjectContract project) {
-        var projectEntity = projectRepository.findById(project.id()).orElseThrow();
+    public void update(ProjectContract project, String id) {
+        var projectEntity = projectRepository.findById(id).orElseThrow();
         projectEntity.setDescription(project.description());
         projectEntity.setName(project.name());
         projectEntity.setStartDate(project.startDate());

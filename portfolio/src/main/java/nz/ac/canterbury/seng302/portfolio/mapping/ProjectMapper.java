@@ -17,6 +17,11 @@ public class ProjectMapper {
     @Autowired
     private SprintMapper sprintMapper;
 
+    /**
+     * This function converts the received JSON body to the Project Entity.
+     * @param contract a JSON data received via HTTP body.
+     * @return      a project entity
+     */
     public ProjectEntity toEntity(BaseProjectContract contract) {
         return new ProjectEntity(
                 contract.name(),
@@ -26,6 +31,12 @@ public class ProjectMapper {
         );
     }
 
+    /**
+     * This method receives a project Entity and converts that entity into transferable JSON data type,
+     * while doing so it also retrives all the sprints related to that project.
+     * @param entity a project entity that is retried from database
+     * @return      returns a project and related sprints in JSON data type.
+     */
     public ProjectContract toContract(ProjectEntity entity) {
         var sprintEntities = entity.getSprints();
         var sprintContracts = new ArrayList<SprintContract>();
