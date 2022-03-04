@@ -19,8 +19,8 @@ import java.time.Instant;
 @Table(name = "sprint")
 public class Sprint {
     @Id
-    @GeneratedValue(generator = "uuid")
-    @GenericGenerator(name = "uuid", strategy = "org.hibernate.id.UUIDGenerator")
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "uuid2")
     private String id;
 
     @ManyToOne(optional = false)
@@ -55,7 +55,7 @@ public class Sprint {
     @Override
     public String toString() {
         return String.format(
-                "Sprint [id=%s, orderNumber=%d, projectId=%d]",
+                "Sprint [id=%s, orderNumber=%d, projectId=%s]",
                 id, orderNumber, (this.project != null) ? project.getId() : "-1"
         );
     }

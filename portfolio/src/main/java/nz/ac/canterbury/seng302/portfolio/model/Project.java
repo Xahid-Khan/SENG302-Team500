@@ -20,7 +20,7 @@ import java.util.List;
 public class Project {
     @Id
     @GeneratedValue(generator = "uuid")
-    @GenericGenerator(name = "uuid", strategy = "org.hibernate.id.UUIDGenerator")
+    @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String id;
 
     @Column(nullable = false)
@@ -50,7 +50,7 @@ public class Project {
     @Override
     public String toString() {
         return String.format(
-                "Project[id=%d, name=%s]",
+                "Project[id=%s, name=%s]",
                 id,
                 name
         );
