@@ -1,11 +1,13 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import nz.ac.canterbury.seng302.portfolio.model.contract.BaseProjectContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.ProjectContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.ProjectEntity;
 import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
 import org.h2.util.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,7 +32,7 @@ public class ProjectController {
         }
     }
 
-    @GetMapping(value = "/{id}", produces = "application/jason")
+    @GetMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<ProjectContract> getById(@PathVariable String id) {
         try {
             var project = projectService.getById(id);
@@ -41,8 +43,8 @@ public class ProjectController {
         }
     }
 
-    @PostMapping(value = "/", produces = "application/jason")
-    public ResponseEntity<?> addNewProject(@RequestBody ProjectContract newProject) {
+    @PostMapping(value = "/", produces = "application/json")
+    public ResponseEntity<?> addNewProject(@RequestBody BaseProjectContract newProject) {
         try {
             projectService.create(newProject);
             return ResponseEntity.ok(newProject);
@@ -52,7 +54,7 @@ public class ProjectController {
         }
     }
 
-    @DeleteMapping(value = "/{id}", produces = "application/jason")
+    @DeleteMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<?> removeProject(@PathVariable String id) {
         try{
             projectService.delete(id);
@@ -66,7 +68,7 @@ public class ProjectController {
         }
     }
 
-    @PutMapping(value = "/", produces = "application/jason")
+    @PutMapping(value = "/", produces = "application/json")
     public ResponseEntity<?> updateProject(@RequestBody ProjectContract updatedProject) {
         try {
             projectService.update(updatedProject);

@@ -1,6 +1,8 @@
 package nz.ac.canterbury.seng302.portfolio.mapping;
 
 import java.util.ArrayList;
+
+import nz.ac.canterbury.seng302.portfolio.model.contract.BaseProjectContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.ProjectContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.SprintContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.ProjectEntity;
@@ -15,7 +17,7 @@ public class ProjectMapper {
     @Autowired
     private SprintMapper sprintMapper;
 
-    public ProjectEntity toEntity(ProjectContract contract) {
+    public ProjectEntity toEntity(BaseProjectContract contract) {
         return new ProjectEntity(
                 contract.name(),
                 contract.description(),

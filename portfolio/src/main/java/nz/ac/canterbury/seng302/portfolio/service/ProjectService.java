@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
 import nz.ac.canterbury.seng302.portfolio.mapping.ProjectMapper;
+import nz.ac.canterbury.seng302.portfolio.model.contract.BaseProjectContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.ProjectContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.ProjectEntity;
 import nz.ac.canterbury.seng302.portfolio.repository.ProjectRepository;
@@ -19,6 +20,7 @@ import java.util.NoSuchElementException;
 @Service
 public class ProjectService {
 
+
     @Autowired
     private ProjectRepository projectRepository;
 
@@ -30,7 +32,7 @@ public class ProjectService {
      * @param contract a contract received from application.
      * @return contart of the newly created project
      */
-    public ProjectContract create(ProjectContract contract){
+    public BaseProjectContract create(BaseProjectContract contract){
         var project = projectMapper.toEntity(contract);
         projectRepository.save(project);
         return contract;

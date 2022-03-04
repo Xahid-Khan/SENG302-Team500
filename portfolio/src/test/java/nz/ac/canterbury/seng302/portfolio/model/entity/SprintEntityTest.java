@@ -79,8 +79,8 @@ public class SprintEntityTest {
         sprintRepository.save(earlierSprint);
 
         var projectContract = projectMapper.toContract(project);
-        var sprintContract1 = projectContract.allSprints().get(0);
-        var sprintContract2 = projectContract.allSprints().get(1);
+        var sprintContract1 = projectContract.sprints().get(0);
+        var sprintContract2 = projectContract.sprints().get(1);
 
         assertEquals("test sprint earlier", sprintContract1.name());
         assertEquals(1, sprintContract1.orderNumber());

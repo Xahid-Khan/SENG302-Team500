@@ -43,7 +43,7 @@ public class SprintController {
     @GetMapping(value = "/projects/{projectId}/sprints", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<SprintContract>> getProjectSprints(@PathVariable String projectId) {
         try {
-            var result = projectService.getById(projectId).allSprints();
+            var result = projectService.getById(projectId).sprints();
 
             return ResponseEntity.ok(result);
         }
