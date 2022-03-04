@@ -1,12 +1,12 @@
-.box {
+.project-view {
     outline-style: solid;
     outline-color: #43C0FE;
     width: 100%;
     padding: 30px 40px;
 }
 
-.content {
-    padding: 0 18px;
+.sprint-details {
+    padding: 15px 10px;
     display: none;
     overflow: hidden;
 }
@@ -22,27 +22,34 @@
     border: none;
     padding: 8px 12px;
     transition-duration: 0.4s;
-    font-size: 14px
+    font-size: 14px;
+    margin: 15px 5px;
 }
 
 .button:hover {
     background-color: #0332D1;
 }
 
-.collapsible {
+.toggle-sprint-details {
     color: #fff;
     cursor: pointer;
     background-color: #43C0FE;
     border: none;
-    padding: 8px 12px;
+    padding: 9px 12px 8px 12px;
     transition-duration: 0.4s;
 }
 
-.collapsible:hover {
+.toggle-sprint-details:hover {
     background-color: #0332D1;
 }
 
-.navbar_items a {
+.navbar-items {
+    list-style: none;
+    display: flex;
+    align-items: center;
+}
+
+.navbar-items a {
     color: #fff;
     font-size: 18px;
     text-decoration: none;
@@ -50,54 +57,49 @@
     transition-duration: 0.4s;
 }
 
-.navbar_items a:hover {
+.navbar-items a:hover {
     color: #43C0FE;
 }
 
 .fullscreen {
     min-height: 100vh;
-}
-
-.linear-background {
     background-image: linear-gradient(#13007A, #000949);
 }
 
-.list-flex-center {
-    list-style: none;
-    display: flex;
-    align-items: center;
-}
-
-.title-style {
+.title {
     font-size: 30px;
     color: #fff;
     display: flex;
     padding-right: 30px
 }
 
-.flex-right {
+.add-project {
     display: flex;
-    justify-content: right
-}
-
-.padding-right-100 {
+    justify-content: right;
     padding-right: 100px;
 }
 
-.button-margin {
-    margin: 15px 5px
-}
-
-.flex-center {
+.projects {
     display: flex;
-    justify-content: center
+    justify-content: center;
+    padding: 0 100px 100px 100px;
 }
 
-.margin-right-5 {
-    margin-right: 5px
+#edit-project {
+    margin-right: 5px;
 }
 
-.sprint-outline {
+.sprint-view-controls {
+    display: flex;
+    justify-content: right;
+    margin-right: 5px;
+}
+
+.sprint-controls {
+    margin-right: 5px;
+}
+
+.sprint-view {
     outline-style: solid;
     outline-color: #43C0FE;
     padding: 20px;
@@ -108,7 +110,7 @@
     color: #fff;
     font-size: 20px;
     font-weight: bold;
-    margin-bottom: 8px
+    margin-bottom: 20px;
 }
 
 .project-title {
@@ -118,15 +120,7 @@
     margin-bottom: 40px
 }
 
-.padding-left-100 {
-    padding-left: 100px;
-}
-
-.padding-bottom-100 {
-    padding-bottom: 100px;
-}
-
-.content-text {
+.project-details {
     color: #fff;
     padding-left: 20px;
 }
@@ -141,4 +135,8 @@
 
 .add-sprint {
     display: none;
+}
+
+.spud {
+    float: right;
 }

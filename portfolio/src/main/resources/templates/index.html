@@ -5,13 +5,13 @@
     <title>SENG302 Homepage</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 </head>
-<body class="fullscreen linear-background">
+<body class="fullscreen">
     <nav>
         <div id="navbar">
 
-            <ul class="navbar_items list-flex-center">
+            <ul class="navbar-items">
                 <li>
-                    <p class="title-style">SENG 302</p>
+                    <p class="title">SENG 302</p>
                 </li>
                 <li>
                     <a href="#index" id="home-page">Home</a>
@@ -22,40 +22,40 @@
         </div>
     </nav>
 
-    <div id="addProjectDiv" class="flex-right padding-right-100">
+    <div class="add-project">
 
         <div>
-            <button class="button button-margin" > Add Project</button>
+            <button class="button" > Add Project</button>
         </div>
     </div>
 
-    <div id="projectView" class="flex-center padding-left-100 padding-right-100 padding-bottom-100">
+    <div class="projects">
 
-        <div class="box">
+        <div class="project-view">
             <div class="project-title">Project 1 | 21/02/2022 - 21/02/2023
-                <span style="float:right;">
-                        <button class="button margin-right-5">Edit</button>
+                <span class="spud">
+                        <button id="edit-project" class="button">Edit</button>
                         <button class="button">Delete</button>
                 </span>
             </div>
-            <div class="content-text">
+            <div class="project-details">
                 <p>Project Name </p>
                 <p>Description</p>
-                <div class="flex-right margin-right-5">
+                <div class="sprint-view-controls">
                     <button class="button add-sprint" id="add-sprint"> Add Sprint</button>
-                    <button class="button toggle-sprints" id="toggle-view-sprints"th:onclick="viewSprints()"> Show Sprints</button>
+                    <button class="button toggle-sprints" id="toggle-view-sprints" th:onclick="viewSprints()"> Show Sprints</button>
                 </div>
             </div>
             <div class="sprints" id="sprints">
-                <div class="sprint-view sprint-outline" id="sprint-view">
+                <div class="sprint-view" id="sprint-view">
                     <div class="sprint-title">Sprint 1 | 28/02/22 - 10/03/22
-                        <span style="float:right;">
-                            <button class="button margin-right-5">Edit</button>
-                            <button class="button margin-right-5">Delete</button>
-                            <button class="collapsible" id="toggle-sprint-details" th:onclick="viewSprintDetails()">+</button>
+                        <span class="spud">
+                            <button class="button sprint-controls">Edit</button>
+                            <button class="button sprint-controls">Delete</button>
+                            <button class="toggle-sprint-details" id="toggle-sprint-details" th:onclick="viewSprintDetails()">+</button>
                         </span>
                     </div>
-                    <div id="content" class="content">
+                    <div id="sprint-details" class="sprint-details">
                         <p>Name</p>
                         <p>Description</p>
                     </div>
