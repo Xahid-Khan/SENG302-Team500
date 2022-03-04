@@ -1,5 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.model;
 
+import org.hibernate.annotations.GenericGenerator;
+
 import javax.persistence.*;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -17,13 +19,14 @@ import java.util.List;
 @Table(name = "project")
 public class Project {
     @Id
-    @GeneratedValue
-    private Long id;
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "org.hibernate.id.UUIDGenerator")
+    private String id;
 
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String description;
 
     @Column(nullable = false)
@@ -53,7 +56,7 @@ public class Project {
         );
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
