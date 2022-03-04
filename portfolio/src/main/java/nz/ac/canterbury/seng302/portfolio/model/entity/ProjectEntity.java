@@ -1,4 +1,4 @@
-package nz.ac.canterbury.seng302.portfolio.model;
+package nz.ac.canterbury.seng302.portfolio.model.entity;
 
 import org.hibernate.annotations.GenericGenerator;
 
@@ -17,7 +17,7 @@ import java.util.List;
  */
 @Entity
 @Table(name = "project")
-public class Project {
+public class ProjectEntity {
     @Id
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid2")
@@ -36,11 +36,11 @@ public class Project {
     private Instant endDate;
 
     @OneToMany(mappedBy = "project")
-    private List<Sprint> sprints = new ArrayList<>();
+    private List<SprintEntity> sprints = new ArrayList<>();
 
-    protected Project() {}
+    protected ProjectEntity() {}
 
-    public Project(String name, String description, Instant startDate, Instant endDate) {
+    public ProjectEntity(String name, String description, Instant startDate, Instant endDate) {
         this.name = name;
         this.description = description;
         this.startDate = startDate;
@@ -92,16 +92,16 @@ public class Project {
         this.endDate = endDate;
     }
 
-    public List<Sprint> getSprints() {
+    public List<SprintEntity> getSprints() {
         return sprints;
     }
 
-    public void addSprint(Sprint sprint) {
+    public void addSprint(SprintEntity sprint) {
         sprints.add(sprint);
         sprint.setProject(this);
     }
 
-    public void removeSprint(Sprint sprint) {
+    public void removeSprint(SprintEntity sprint) {
         sprints.remove(sprint);
         sprint.setProject(null);
     }

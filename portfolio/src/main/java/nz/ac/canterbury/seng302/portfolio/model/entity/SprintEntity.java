@@ -1,4 +1,4 @@
-package nz.ac.canterbury.seng302.portfolio.model;
+package nz.ac.canterbury.seng302.portfolio.model.entity;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.OnDelete;
@@ -17,7 +17,7 @@ import java.time.Instant;
  */
 @Entity
 @Table(name = "sprint")
-public class Sprint {
+public class SprintEntity {
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "uuid2")
@@ -25,7 +25,7 @@ public class Sprint {
 
     @ManyToOne(optional = false)
     @OnDelete(action=OnDeleteAction.CASCADE)
-    private Project project;
+    private ProjectEntity project;
 
     @Column(nullable = false)
     private long orderNumber;
@@ -42,9 +42,9 @@ public class Sprint {
     @Column(nullable = false)
     private Instant endDate;
 
-    protected Sprint() {}
+    protected SprintEntity() {}
 
-    public Sprint(long orderNumber, String name, String description, Instant startDate, Instant endDate) {
+    public SprintEntity(long orderNumber, String name, String description, Instant startDate, Instant endDate) {
         this.orderNumber = orderNumber;
         this.name = name;
         this.description = description;
@@ -64,11 +64,11 @@ public class Sprint {
         return id;
     }
 
-    public Project getProject() {
+    public ProjectEntity getProject() {
         return project;
     }
 
-    public void setProject(Project project) {
+    public void setProject(ProjectEntity project) {
         this.project = project;
     }
 
