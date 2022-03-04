@@ -67,7 +67,7 @@ public class SprintService {
         var project = sprint.getProject();
 
         project.removeSprint(sprint);
-        sprintRepository.save(sprint);
+        sprintRepository.delete(sprint);
         projectRepository.save(project);
     }
 
