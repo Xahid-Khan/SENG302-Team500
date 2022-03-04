@@ -17,7 +17,7 @@ import java.util.List;
  */
 @Entity
 @Table(name = "project")
-public class ProjectContract {
+public class ProjectEntity {
     @Id
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "org.hibernate.id.UUIDGenerator")
@@ -38,9 +38,9 @@ public class ProjectContract {
     @OneToMany(mappedBy = "project")
     private List<SprintEntity> sprints = new ArrayList<>();
 
-    protected ProjectContract() {}
+    protected ProjectEntity() {}
 
-    public ProjectContract(String name, String description, Instant startDate, Instant endDate) {
+    public ProjectEntity(String name, String description, Instant startDate, Instant endDate) {
         this.name = name;
         this.description = description;
         this.startDate = startDate;

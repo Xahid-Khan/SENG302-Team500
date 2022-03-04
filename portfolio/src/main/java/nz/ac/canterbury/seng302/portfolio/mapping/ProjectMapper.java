@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.mapping;
 
-import nz.ac.canterbury.seng302.portfolio.model.entity.ProjectContract;
+import nz.ac.canterbury.seng302.portfolio.model.contract.ProjectContract;
+import nz.ac.canterbury.seng302.portfolio.model.entity.ProjectEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -12,8 +13,8 @@ public class ProjectMapper {
     @Autowired
     private SprintMapper sprintMapper;
 
-    public ProjectContract toEntity(nz.ac.canterbury.seng302.portfolio.model.contract.ProjectContract contract) {
-        return new ProjectContract(
+    public ProjectEntity toEntity(ProjectContract contract) {
+        return new ProjectEntity(
                 contract.name(),
                 contract.description(),
                 contract.startDate(),
@@ -21,8 +22,8 @@ public class ProjectMapper {
         );
     }
 
-    public nz.ac.canterbury.seng302.portfolio.model.contract.ProjectContract toContract(ProjectContract entity) {
-        return new nz.ac.canterbury.seng302.portfolio.model.contract.ProjectContract(
+    public ProjectContract toContract(ProjectEntity entity) {
+        return new ProjectContract(
                 entity.getId(),
                 entity.getName(),
                 entity.getDescription(),
