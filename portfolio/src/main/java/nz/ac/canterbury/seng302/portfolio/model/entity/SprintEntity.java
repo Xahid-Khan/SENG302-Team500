@@ -1,17 +1,27 @@
 package nz.ac.canterbury.seng302.portfolio.model.entity;
 
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.time.Instant;
 
+/**
+ * The database representation of a Sprint.
+ *
+ * <p>
+ *     Pair this with {@link nz.ac.canterbury.seng302.portfolio.repository.SprintRepository} to
+ *     read and write instances of this to the database.
+ * </p>
+ */
 @Entity
 @Table(name = "sprint")
 public class SprintEntity {
     @Id
-    @GeneratedValue
-    private Long id;
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "org.hibernate.id.UUIDGenerator")
+    private String id;
 
     @ManyToOne(optional = false)
     @OnDelete(action=OnDeleteAction.CASCADE)
@@ -23,7 +33,7 @@ public class SprintEntity {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String description;
 
     @Column(nullable = false)
@@ -45,12 +55,12 @@ public class SprintEntity {
     @Override
     public String toString() {
         return String.format(
-                "SprintEntity [id=%d, orderNumber=%d, projectId=%d]",
-                id, orderNumber, (this.project != null) ? project.getId() : -1
+                "Sprint [id=%s, orderNumber=%d, projectId=%d]",
+                id, orderNumber, (this.project != null) ? project.getId() : "-1"
         );
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 

@@ -1,21 +1,32 @@
 package nz.ac.canterbury.seng302.portfolio.model.entity;
 
+import org.hibernate.annotations.GenericGenerator;
+
 import javax.persistence.*;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The database representation of a Project.
+ *
+ * <p>
+ *     Pair this with {@link nz.ac.canterbury.seng302.portfolio.repository.ProjectRepository} to
+ *     read and write instances of this to the database.
+ * </p>
+ */
 @Entity
 @Table(name = "project")
 public class ProjectEntity {
     @Id
-    @GeneratedValue
-    private Long id;
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "org.hibernate.id.UUIDGenerator")
+    private String id;
 
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String description;
 
     @Column(nullable = false)
@@ -39,13 +50,13 @@ public class ProjectEntity {
     @Override
     public String toString() {
         return String.format(
-                "ProjectEntity[id=%d, name=%s]",
+                "Project[id=%d, name=%s]",
                 id,
                 name
         );
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
