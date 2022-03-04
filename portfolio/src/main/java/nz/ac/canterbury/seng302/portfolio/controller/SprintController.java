@@ -64,8 +64,8 @@ public class SprintController {
         }
     }
 
-    @PutMapping(value = "/sprints/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<SprintContract> updateSprint(@PathVariable String id, @RequestBody BaseSprintContract sprint) {
+    @PutMapping(value = "/sprints/{id}")
+    public ResponseEntity<Void> updateSprint(@PathVariable String id, @RequestBody BaseSprintContract sprint) {
         try {
             sprintService.update(id, sprint);
 
@@ -76,8 +76,8 @@ public class SprintController {
         }
     }
 
-    @DeleteMapping(value = "/sprints/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<SprintContract> updateSprint(@PathVariable String id) {
+    @DeleteMapping(value = "/sprints/{id}")
+    public ResponseEntity<Void> deleteSprint(@PathVariable String id) {
         try {
             sprintService.delete(id);
 
