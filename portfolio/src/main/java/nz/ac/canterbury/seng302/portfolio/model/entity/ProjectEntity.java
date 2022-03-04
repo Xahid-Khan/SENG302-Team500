@@ -1,34 +1,27 @@
-package nz.ac.canterbury.seng302.portfolio.model;
+package nz.ac.canterbury.seng302.portfolio.model.entity;
 
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * The database representation of a Sprint.
+ * The database representation of a Project.
  *
  * <p>
- *     Pair this with {@link nz.ac.canterbury.seng302.portfolio.repository.SprintRepository} to
+ *     Pair this with {@link nz.ac.canterbury.seng302.portfolio.repository.ProjectRepository} to
  *     read and write instances of this to the database.
  * </p>
  */
 @Entity
-@Table(name = "sprint")
-public class Sprint {
+@Table(name = "project")
+public class ProjectEntity {
     @Id
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "org.hibernate.id.UUIDGenerator")
     private String id;
-
-    @ManyToOne(optional = false)
-    @OnDelete(action=OnDeleteAction.CASCADE)
-    private Project project;
-
-    @Column(nullable = false)
-    private long orderNumber;
 
     @Column(nullable = false)
     private String name;
@@ -42,10 +35,12 @@ public class Sprint {
     @Column(nullable = false)
     private Instant endDate;
 
-    protected Sprint() {}
+    @OneToMany(mappedBy = "project")
+    private List<SprintEntity> sprints = new ArrayList<>();
 
-    public Sprint(long orderNumber, String name, String description, Instant startDate, Instant endDate) {
-        this.orderNumber = orderNumber;
+    protected ProjectEntity() {}
+
+    public ProjectEntity(String name, String description, Instant startDate, Instant endDate) {
         this.name = name;
         this.description = description;
         this.startDate = startDate;
@@ -55,29 +50,14 @@ public class Sprint {
     @Override
     public String toString() {
         return String.format(
-                "Sprint [id=%s, orderNumber=%d, projectId=%d]",
-                id, orderNumber, (this.project != null) ? project.getId() : "-1"
+                "Project[id=%d, name=%s]",
+                id,
+                name
         );
     }
 
     public String getId() {
         return id;
-    }
-
-    public Project getProject() {
-        return project;
-    }
-
-    public void setProject(Project project) {
-        this.project = project;
-    }
-
-    public long getOrderNumber() {
-        return orderNumber;
-    }
-
-    public void setOrderNumber(long orderNumber) {
-        this.orderNumber = orderNumber;
     }
 
     public String getName() {
@@ -110,5 +90,19 @@ public class Sprint {
 
     public void setEndDate(Instant endDate) {
         this.endDate = endDate;
+    }
+
+    public List<SprintEntity> getSprints() {
+        return sprints;
+    }
+
+    public void addSprint(SprintEntity sprint) {
+        sprints.add(sprint);
+        sprint.setProject(this);
+    }
+
+    public void removeSprint(SprintEntity sprint) {
+        sprints.remove(sprint);
+        sprint.setProject(null);
     }
 }
