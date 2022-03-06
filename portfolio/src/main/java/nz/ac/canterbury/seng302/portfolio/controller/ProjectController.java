@@ -16,12 +16,12 @@ import java.util.ArrayList;
 import java.util.NoSuchElementException;
 
 @RestController
-@RequestMapping("/api/v1/projects")
+@RequestMapping("/api/v1")
 public class ProjectController {
     @Autowired
     private ProjectService projectService;
 
-    @GetMapping(value = "/", produces = "application/json")
+    @GetMapping(value = "/projects", produces = "application/json")
     public ResponseEntity<?> getAll() {
         try{
             ArrayList<ProjectContract> projects = projectService.allProjects();
@@ -32,7 +32,7 @@ public class ProjectController {
         }
     }
 
-    @GetMapping(value = "/{id}", produces = "application/json")
+    @GetMapping(value = "/projects/{id}", produces = "application/json")
     public ResponseEntity<ProjectContract> getById(@PathVariable String id) {
         try {
             var project = projectService.getById(id);
@@ -43,7 +43,7 @@ public class ProjectController {
         }
     }
 
-    @PostMapping(value = "/new", produces = "application/json")
+    @PostMapping(value = "/projects", produces = "application/json")
     public ResponseEntity<ProjectContract> addNewProject(@RequestBody BaseProjectContract newProject) {
         try {
             var project = projectService.create(newProject);
@@ -54,7 +54,7 @@ public class ProjectController {
         }
     }
 
-    @DeleteMapping(value = "/{id}", produces = "application/json")
+    @DeleteMapping(value = "/projects/{id}", produces = "application/json")
     public ResponseEntity<?> removeProject(@PathVariable String id) {
         try{
             projectService.delete(id);
@@ -68,7 +68,7 @@ public class ProjectController {
         }
     }
 
-    @PutMapping(value = "/{id}", produces = "application/json")
+    @PutMapping(value = "/projects/{id}", produces = "application/json")
     public ResponseEntity<?> updateProject(@RequestBody ProjectContract updatedProject, @PathVariable String id) {
         try {
             projectService.update(updatedProject, id);

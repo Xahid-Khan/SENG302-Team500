@@ -77,7 +77,7 @@ public class ProjectControllerTest {
     @Test
     public void getProjects() throws Exception {
 
-        this.mockMvc.perform(get("/api/v1/projects/"))
+        this.mockMvc.perform(get("/api/v1/projects"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
 
@@ -103,7 +103,7 @@ public class ProjectControllerTest {
      */
     @Test
     public void createProject() throws Exception {
-        var apiPath = "/api/v1/projects/new";
+        var apiPath = "/api/v1/projects";
         var body = """
                 {
                     "name" : "Project 2",
