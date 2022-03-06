@@ -2,7 +2,8 @@
     outline-style: solid;
     outline-color: #43C0FE;
     width: 100%;
-    padding: 30px 40px;
+    margin-bottom: 40px;
+    padding: 20px;
 }
 
 .sprint-details {
@@ -78,12 +79,11 @@
 }
 
 .projects {
-    display: flex;
     justify-content: center;
-    padding: 0 100px 100px 100px;
+    padding: 0 142px 100px 100px;
 }
 
-#edit-project {
+.edit-project {
     margin-right: 5px;
 }
 
@@ -118,9 +118,10 @@
     margin-bottom: 40px
 }
 
-.project-details {
+.project-description {
     color: #fff;
     padding-left: 20px;
+    padding-right: 180px
 }
 
 .toggle-sprints {
@@ -135,18 +136,19 @@
     display: none;
 }
 
-.spud {
+.crud {
     float: right;
 }
 
 @media only screen and (max-width: 960px) {
 
     .projects {
-        padding: 0 30px 50px 30px;
+        padding: 0 75px 50px 30px;
     }
 
     .project-view {
         padding: 15px 20px;
+        margin-bottom: 30px;
     }
 
     .add-project {
@@ -158,15 +160,20 @@
         font-size: 14px;
     }
 
+    .project-title {
+        font-size: 22px;
+    }
+
     .sprint-view {
         margin-bottom: 10px;
     }
 
     .button {
         margin: 3px;
+        font-size: 12px;
     }
 
-    #edit-project {
+    .edit-project {
         margin-right: 0px;
     }
 
@@ -177,20 +184,26 @@
     .add-sprint {
         margin-right: 5px;
     }
+
+    .project-description {
+        padding-right: 150px;
+    }
 }
 
 @media only screen and (max-width: 640px) {
 
     .projects {
-        padding: 0 20px 30px 20px;
+        padding: 0 40px 30px 20px;
     }
 
     .project-title {
         margin-bottom: 25px;
+        font-size: 18px;
     }
 
     .project-view {
         padding: 10px 10px;
+        margin-bottom: 20px;
     }
 
     .add-project {
@@ -203,17 +216,14 @@
         padding: 10px;
     }
 
-    .project-title {
-        font-size: 15px;
-    }
-
     .button {
         padding: 4px 6px;
         font-size: 10px;
     }
 
-    .project-details {
+    .project-description {
         font-size: 10px;
+        padding-right: 120px;
     }
 
     .sprint-details {
@@ -241,11 +251,12 @@
 @media only screen and (max-width: 480px) {
 
     .projects {
-        padding: 0 15px 20px 15px;
+        padding: 0 30px 20px 15px;
     }
 
     .project-view {
         padding: 8px;
+        margin-bottom: 15px;
     }
 
     .button {
@@ -263,9 +274,10 @@
         margin-bottom: 15px;
     }
 
-    .project-details {
+    .project-description {
         font-size: 8px;
         padding-left: 10px;
+        padding-right: 100px;
     }
 
     .sprint-details {
@@ -298,4 +310,28 @@
     }
 }
 
+@media only screen and (max-width: 350px) {
 
+    .project-title {
+        font-size: 9px;
+    }
+
+    .project-description {
+        font-size: 7px;
+    }
+
+    .button {
+        font-size: 7px;
+    }
+
+    .title {
+        font-size: 20px;
+        padding-right: 25px;
+    }
+
+    .navbar-items a {
+        font-size: 10px;
+        padding-left: 0px;
+    }
+    
+}

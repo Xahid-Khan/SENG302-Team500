@@ -6,7 +6,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
-<body class="fullscreen">
+<body class="fullscreen" onload="getAllProjects()">
     <nav>
         <div id="navbar">
 
@@ -30,33 +30,37 @@
         </div>
     </div>
 
-    <div class="projects">
+    <div class="projects" id="project-list">
 
-        <div class="project-view">
-            <div class="project-title">Project 1 | 21/02/2022 - 21/02/2023
-                <span class="spud">
-                        <button id="edit-project" class="button">Edit</button>
+        <div class="project-view" id="default-project-view">
+            <div class="project-title">
+                <span class="project-title-text" id="project-title-text"> 
+                    Project 2022 | <span th:text="${currentDate}"></span> - <span th:text="${dateIn8Months}" ></span>
+                </span>   
+                <span class="crud">
+                        <button class="button edit-project">Edit</button>
                         <button class="button">Delete</button>
                 </span>
             </div>
-            <div class="project-details">
-                <p>Project Name </p>
-                <p>Description</p>
+            <div>
+                <div class="project-description" id="project-description">
+                    This is the default project
+                </div>
                 <div class="sprint-view-controls">
-                    <button class="button add-sprint" id="add-sprint"> Add Sprint</button>
-                    <button class="button toggle-sprints" id="toggle-view-sprints" th:onclick="viewSprints()"> Show Sprints</button>
+                    <button class="button add-sprint"> Add Sprint</button>
+                    <button class="button toggle-sprints" th:onclick="viewSprints()"> Show Sprints</button>
                 </div>
             </div>
-            <div class="sprints" id="sprints">
-                <div class="sprint-view" id="sprint-view">
+            <div class="sprints">
+                <div class="sprint-view">
                     <div class="sprint-title">Sprint 1 | 28/02/22 - 10/03/22
-                        <span class="spud">
+                        <span class="crud">
                             <button class="button sprint-controls">Edit</button>
                             <button class="button sprint-controls">Delete</button>
-                            <button class="button toggle-sprint-details" id="toggle-sprint-details" th:onclick="viewSprintDetails()">+</button>
+                            <button class="button toggle-sprint-details" th:onclick="viewSprintDetails()">+</button>
                         </span>
                     </div>
-                    <div id="sprint-details" class="sprint-details">
+                    <div class="sprint-details">
                         <p>Name</p>
                         <p>Description</p>
                     </div>
