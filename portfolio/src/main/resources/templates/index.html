@@ -26,7 +26,7 @@
     <div class="add-project">
 
         <div>
-            <button class="button add-project-button" > Add Project</button>
+            <button class="button add-project-button" id="add-project"> Add Project</button>
         </div>
     </div>
 
@@ -34,7 +34,7 @@
 
         <div class="project-view" id="project-view-0">
             <div class="project-title">
-                <span class="project-title-text" id="project-title-text"> 
+                <span class="project-title-text" id="project-title-text-0">
                     Project 2022 | <span th:text="${currentDate}"></span> - <span th:text="${dateIn8Months}" ></span>
                 </span>   
                 <span class="crud">
@@ -42,8 +42,30 @@
                         <button class="button">Delete</button>
                 </span>
             </div>
+            <div class="edit-project-section" id="edit-project-section-0">
+                <p class="edit-section-title">Edit Project Details:</p>
+                <form class="user-inputs" id="user-inputs-0">
+
+                    <label>Project Name*:</label>
+                    <input type="text" name="project-name" id="project-name-0"><br><br>
+                    <div class="description">
+                        <label>Description:</label>
+                        <textarea name="description" id="description-0" cols="50" rows="10"></textarea><br><br>
+                    </div>
+                    <label>Start Date*:</label>
+                    <input type="date" name="start-date" id="start-date-0"><br><br>
+                    <label>End Date*:</label>
+                    <input type="date" name="end-date" id="end-date-0"><br><br>
+                    <p>*: Required field, if nothing is entered these fields will be set to default values.</p>
+
+                </form>
+                <div class="save-buttons">
+                    <button class="button save" id="save-0">Save</button>
+                    <button class="button cancel" id="cancel-0">Cancel</button>
+                </div>
+            </div>
             <div>
-                <div class="project-description" id="project-description">
+                <div class="project-description" id="project-description-0">
                     This is the default project
                 </div>
                 <div class="sprint-view-controls">

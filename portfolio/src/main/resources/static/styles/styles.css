@@ -135,6 +135,57 @@
     float: right;
 }
 
+.edit-project-section {
+    outline-style: solid;
+    outline-color: #43C0FE;
+    padding: 20px;
+    color: #fff;
+    margin: 20px;
+    display: none;
+}
+
+.edit-section-title {
+    font-size: 25px;
+    font-weight: bold;
+    margin: 0 0 30px 0;
+}
+
+.edit-project-section label {
+    padding-right: 5px;
+}
+
+.user-inputs {
+    padding-left: 20px;
+}
+
+.user-inputs input {
+    padding: 5px;
+    outline-color: #fff;
+    border-color: #fff;
+    width: 130px;
+    background-color: transparent;
+    color: #fff;
+}
+
+::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+}
+
+.save-buttons {
+    display: flex;
+    justify-content: right;
+    padding-right: 15px;
+}
+
+.description textarea {
+    background-color: transparent;
+    color: #fff;
+}
+
+.description label {
+    vertical-align: top;
+}
+
 @media only screen and (max-width: 960px) {
 
     .projects {
