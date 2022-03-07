@@ -6,17 +6,12 @@
     padding: 20px;
 }
 
-.sprint-details {
+.sprint-description {
     display: none;
     overflow: hidden;
-}
-
-.sprint-details p {
     padding-left: 20px;
-}
-
-.sprint-view p {
     color: #fff;
+    padding-bottom: 10px;
 }
 
 .button {
@@ -106,7 +101,7 @@
 
 .sprint-title {
     color: #fff;
-    font-size: 15px;
+    font-size: 18px;
     font-weight: bold;
     padding-bottom: 20px;
 }
@@ -156,7 +151,7 @@
         padding-right: 35px;
     }
 
-    .sprint-details {
+    .sprint-description {
         font-size: 14px;
     }
 
@@ -166,6 +161,7 @@
 
     .sprint-view {
         margin-bottom: 10px;
+        padding: 15px;
     }
 
     .button {
@@ -174,11 +170,15 @@
     }
 
     .edit-project {
-        margin-right: 0px;
+        margin-right: 0;
+    }
+
+    .sprint-title {
+        padding-bottom: 10px;
     }
 
     .sprint-controls {
-        margin-right: 0px;
+        margin-right: 0;
     }
 
     .add-sprint {
@@ -226,17 +226,15 @@
         padding-right: 120px;
     }
 
-    .sprint-details {
+    .sprint-description {
         font-size: 10px;
-    }
-
-    .sprint-details p {
         padding-left: 15px;
     }
 
+
     .sprint-title {
         font-size: 13px;
-        padding-bottom: 15px;
+        padding-bottom: 5px;
     }
 
     .title {
@@ -280,17 +278,13 @@
         padding-right: 100px;
     }
 
-    .sprint-details {
+    .sprint-description {
         font-size: 8px;
-    }
-
-    .sprint-details p {
         padding-left: 7px;
     }
 
     .sprint-title {
         font-size: 10px;
-        padding-bottom: 10px;
     }
 
     .sprint-view {
@@ -331,7 +325,11 @@
 
     .navbar-items a {
         font-size: 10px;
-        padding-left: 0px;
+        padding-left: 0;
+    }
+
+    .sprint-title {
+        font-size: 7px;
     }
     
 }
