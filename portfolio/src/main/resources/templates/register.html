@@ -1,10 +1,17 @@
 <!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="">
 <head>
     <title>Register User</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 <body>
 <p th:text="${registerMessage}" />
+<h1>Register</h1>
+<form>
+    <label for="firstName">First Name:</label><br>
+    <input type="text" id="firstName"><br><br>
+    <label for="lastName">Last Name:</label><br>
+    <input type="text" id="lastName"><br>
+</form>
 </body>
 </html>
