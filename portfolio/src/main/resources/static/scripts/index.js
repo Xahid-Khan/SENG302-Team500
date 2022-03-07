@@ -40,7 +40,7 @@ class ProjectView {
     <div class="sprints" id="sprints-container-${this.project.id}"></div>
     `;
 
-    document.getElementById(`project-title-text-${this.project.id}`).innerText = this.project.title;
+    document.getElementById(`project-title-text-${this.project.id}`).innerText = this.project.name;
     document.getElementById(`project-description-${this.project.id}`).innerText = this.project.description;
     document.getElementById(`project-startDate-${this.project.id}`).innerText = this.project.startDate;
     document.getElementById(`project-endDate-${this.project.id}`).innerHTML = this.project.endDate;
@@ -65,9 +65,12 @@ class ProjectEditor {
  * Handles switching between the editor and view screens.
  */
 class Project {
-  constructor(containerElement, data) {
+  constructor(containerElement, data, deleteCallback) {
     this.containerElement = containerElement;
-    this.currentView = new ProjectView(containerElement, data, () => console.log("editing"), ()=>console.log("deleting"));
+    this.currentView = new ProjectView(containerElement, data, () => console.log("editing"), ()=>this.deleteProject());
+    this.projectId = data.id;
+    this.deleteLoadingStatus = LoadingStatus.NotYetAttempted;
+    this.deleteCallback = deleteCallback;
   }
 
   /**
@@ -76,6 +79,27 @@ class Project {
   dispose() {
     
   }
+
+  async deleteProject() {
+    if (this.deleteLoadingStatus === LoadingStatus.Pending) {
+      return;
+    }
+
+    this.deleteLoadingStatus = LoadingStatus.Pending;
+
+    const result = await fetch(`/api/v1/projects/${this.projectId}`, {
+      method: 'DELETE'
+    })
+
+    if (!result.ok) {
+      this.deleteLoadingStatus = LoadingStatus.Error;
+      return;
+    }
+
+    this.deleteCallback(this.projectId);
+
+  }
+
 }
 
 
@@ -98,6 +122,9 @@ class Application {
     }
   }
 
+
+
+
   /**
    * Append a project element to the containerElement and instaniate and store a Project with the given data.
    */
@@ -111,7 +138,7 @@ class Application {
       
     console.log("Binding project");
 
-    this.projects.push(new Project(projectElement, projectData));
+    this.projects.set(projectData.id, new Project(projectElement, projectData, this.deleteProject.bind(this)));
   
     console.log("Project bound");
   }
@@ -124,7 +151,7 @@ class Application {
     this.projectsLoadingState = LoadingStatus.Pending;
     this.clearProjects();
 
-    //try {
+    try {
       const result = await fetch('/api/v1/projects');
 
       if (!result.ok) {
@@ -134,15 +161,22 @@ class Application {
 
       const data = await result.json();
       console.log(`Acquired ${data.length} projects...`);
-      this.projects = [];
+      this.projects = new Map();
       data.map(project => this.appendProject(project));
-    /*}
+    }
     catch (ex) {
       this.projectsLoadingState = LoadingStatus.Error;
       throw ex;
-    }*/
-    
+    }
   }
+
+  deleteProject(projectId) {
+    const projectElement = document.getElementById(`project-view-${projectId}`)
+    this.containerElement.removeChild(projectElement);
+    this.projects.get(projectId).dispose();
+    this.projects.delete(projectId);
+  }
+
 }
 
 (() => {
