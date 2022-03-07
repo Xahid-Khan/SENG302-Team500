@@ -19,8 +19,8 @@ import java.time.Instant;
 @Table(name = "sprint")
 public class SprintEntity {
     @Id
-    @GeneratedValue(generator = "uuid")
-    @GenericGenerator(name = "uuid", strategy = "org.hibernate.id.UUIDGenerator")
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "uuid2")
     private String id;
 
     @ManyToOne(optional = false)
