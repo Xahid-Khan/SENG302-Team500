@@ -19,6 +19,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * This sprint controller file allows users to make API calls, such as GET, POST, PUT, DELETE requests.
+ *
+ */
+
 @RestController
 @RequestMapping("/api/v1")
 public class SprintController {
@@ -28,6 +33,11 @@ public class SprintController {
     @Autowired
     private ProjectService projectService;
 
+    /**
+     * This method will be invoked when API receives a GET request with a sprint ID embedded in URL.
+     * @param sprintId sprint-ID the user wants to retrieve
+     * @return a sprint contract (JSON) type of the sprint.
+     */
     @GetMapping(value = "/sprints/{sprintId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<SprintContract> getSprint(@PathVariable String sprintId) {
         try {
@@ -40,6 +50,12 @@ public class SprintController {
         }
     }
 
+    /**
+     * This method will be invoked when API receives a GET request with a Project ID embedded in URL and
+     * will produce all the sprints of that specific project.
+     * @param projectId Project-ID of the project User is interested in
+     * @return A list of sprints of a given project in Sprint Contract (JSON) type.
+     */
     @GetMapping(value = "/projects/{projectId}/sprints", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<SprintContract>> getProjectSprints(@PathVariable String projectId) {
         try {
@@ -52,6 +68,12 @@ public class SprintController {
         }
     }
 
+    /**
+     * This method will be invoked when API receives a POST request with a Project ID embedded in URL and
+     * data for the sprint in the body.
+     * @param projectId Project-ID of the project User wants the sprint to be added to.
+     * @return A list of sprints of a given project in Sprint Contract (JSON) type.
+     */
     @PostMapping(value = "/projects/{projectId}/sprints", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<SprintContract> createSprint(@PathVariable String projectId, @RequestBody BaseSprintContract sprint) {
         try {
@@ -64,6 +86,12 @@ public class SprintController {
         }
     }
 
+    /**
+     * This method will be invoked when API receives a PUT request with a Project ID embedded in URL and
+     * updated sprint data in the body.
+     * @param id Project-ID of the project User wants to make the changes to.
+     * @return A list of sprints of a given project in Sprint Contract (JSON) type.
+     */
     @PutMapping(value = "/sprints/{id}")
     public ResponseEntity<Void> updateSprint(@PathVariable String id, @RequestBody BaseSprintContract sprint) {
         try {
@@ -76,6 +104,11 @@ public class SprintController {
         }
     }
 
+    /**
+     * This method will be invoked when API receives a DELETE request with a Sprint ID embedded in URL
+     * @param id Sprint ID the user wants to delete
+     * @return status_Code 204.
+     */
     @DeleteMapping(value = "/sprints/{id}")
     public ResponseEntity<Void> deleteSprint(@PathVariable String id) {
         try {

@@ -7,6 +7,5 @@ public record BaseProjectContract(
       String name,
       String description,
       Instant startDate,
-      Instant endDate,
-      List<SprintContract> sprints
+      Instant endDate
 ) { }
