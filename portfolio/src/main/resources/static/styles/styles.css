@@ -1,9 +1,16 @@
+.fullscreen {
+    min-height: 100vh;
+    background-color: #ededec;
+    font-family: Helvetica, sans-serif;
+}
+
 .project-view {
-    outline-style: solid;
-    outline-color: #43C0FE;
     width: 100%;
     margin-bottom: 40px;
     padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    background: white;
 }
 
 .sprint-description {
@@ -14,7 +21,7 @@
     padding-bottom: 10px;
 }
 
-.button {
+button {
     color: #fff;
     cursor: pointer;
     background-color: #43C0FE;
@@ -22,10 +29,9 @@
     padding: 8px 12px;
     transition-duration: 0.4s;
     font-size: 14px;
-    margin: 15px 5px;
 }
 
-.button:hover {
+button:hover {
     background-color: #0332D1;
 }
 
@@ -44,7 +50,7 @@
 }
 
 .navbar-items a {
-    color: #fff;
+    color: black;
     font-size: 18px;
     text-decoration: none;
     padding: 20px 10px;
@@ -55,14 +61,8 @@
     color: #43C0FE;
 }
 
-.fullscreen {
-    min-height: 100vh;
-    background-image: linear-gradient(#13007A, #000949);
-}
-
 .title {
     font-size: 30px;
-    color: #fff;
     display: flex;
     padding-right: 30px
 }
@@ -71,6 +71,10 @@
     display: flex;
     justify-content: right;
     padding-right: 100px;
+}
+
+.add-project-button {
+    margin: 15px 5px;
 }
 
 .projects {
@@ -113,16 +117,16 @@
 }
 
 .project-title {
-    color: #fff;
     font-size: 25px;
     font-weight: bold;
-    margin-bottom: 40px
+    margin-bottom: 20px
 }
 
 .project-description {
-    color: #fff;
+    color: #666666;
     padding-left: 20px;
-    padding-right: 180px
+    padding-right: 180px;
+    margin-bottom: 10px;
 }
 
 .toggle-sprints {
@@ -141,13 +145,7 @@
     float: right;
 }
 
-.edit-project-section {
-    outline-style: solid;
-    outline-color: #43C0FE;
-    padding: 20px;
-    color: #fff;
-    margin: 20px;
-}
+.edit-project-section {}
 
 .edit-section-title {
     font-size: 25px;
@@ -165,11 +163,9 @@
 
 .user-inputs input {
     padding: 5px;
-    outline-color: #fff;
-    border-color: #fff;
     width: 130px;
     background-color: transparent;
-    color: #fff;
+    color: black;
 }
 
 ::-webkit-calendar-picker-indicator {
@@ -181,10 +177,12 @@
     justify-content: right;
     padding-right: 15px;
 }
+.save-buttons > button:not(:last-child) {
+    margin-right: 10px;
+}
 
 .description textarea {
     background-color: transparent;
-    color: #fff;
 }
 
 .description label {
@@ -220,7 +218,7 @@
         padding: 15px;
     }
 
-    .button {
+    button {
         margin: 3px;
         font-size: 12px;
     }
@@ -272,7 +270,7 @@
         padding: 10px;
     }
 
-    .button {
+    button {
         padding: 4px 6px;
         font-size: 10px;
     }
@@ -313,7 +311,7 @@
         margin-bottom: 15px;
     }
 
-    .button {
+    button {
         font-size: 9px;
         margin: 1px;
     }
@@ -370,7 +368,7 @@
         font-size: 7px;
     }
 
-    .button {
+    button {
         font-size: 7px;
     }
 

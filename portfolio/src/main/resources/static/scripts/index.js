@@ -36,6 +36,10 @@ class DatetimeUtils {
     return new Date(year, month - 1, day);
   }
 
+  static localToUserDMY(localDate) {
+    return `${localDate.getDate()} ${localDate.toLocaleString('default', {month: 'long'})} ${localDate.getFullYear()}`
+  }
+
   static areEqual(date1, date2) {
     return date1 <= date2 && date2 <= date1;
   }
@@ -91,14 +95,14 @@ class ProjectView {
               <button class="button add-sprint" id="add-sprint-button-${this.project.id}"> Add Sprint</button>
               <button class="button toggle-sprints" id="toggle-sprint-button-${this.project.id}"> Show Sprints</button>
           </div>
-   
       </div>
-      <div class="sprints" id="sprints-container-${this.project.id}"></div>;`
+      <div class="sprints" id="sprints-container-${this.project.id}"></div>
+    `;
 
-        document.getElementById(`project-title-text-${this.project.id}`).innerText = this.project.name;
-        document.getElementById(`project-description-${this.project.id}`).innerText = this.project.description;
-        document.getElementById(`project-startDate-${this.project.id}`).innerText = this.project.startDate.toISOString();
-        document.getElementById(`project-endDate-${this.project.id}`).innerText = this.project.endDate.toISOString();
+    document.getElementById(`project-title-text-${this.project.id}`).innerText = this.project.name;
+    document.getElementById(`project-description-${this.project.id}`).innerText = this.project.description;
+    document.getElementById(`project-startDate-${this.project.id}`).innerText = DatetimeUtils.localToUserDMY(this.project.startDate);
+    document.getElementById(`project-endDate-${this.project.id}`).innerText = DatetimeUtils.localToUserDMY(this.project.endDate);
 
     this.addSprintButton = document.getElementById(`add-sprint-button-${this.project.id}`);
     this.toggleSprintsButton = document.getElementById(`toggle-sprint-button-${this.project.id}`);
@@ -111,7 +115,7 @@ class ProjectView {
         }
     }
 
-    toggleSprints() {
+  toggleSprints() {
     if (this.showingSprints) {
       // Hide the sprints
       this.addSprintButton.style.display = "none";
@@ -127,14 +131,15 @@ class ProjectView {
 
     this.showingSprints = !this.showingSprints;
   }
+
   wireView() {
-        document.getElementById(`project-edit-button-${this.project.id}`).addEventListener("click", () => this.editCallback());
-        document.getElementById(`project-delete-button-${this.project.id}`).addEventListener("click", () => this.deleteCallback());this.toggleSprintsButton.addEventListener('click', this.toggleSprints.bind(this));
-        // TODO: fill in the sprints here...
-    }
+    document.getElementById(`project-edit-button-${this.project.id}`).addEventListener("click", () => this.editCallback());
+    document.getElementById(`project-delete-button-${this.project.id}`).addEventListener("click", () => this.deleteCallback());
+    this.toggleSprintsButton.addEventListener('click', this.toggleSprints.bind(this));
+    // TODO: fill in the sprints here...
+  }
 
-
-dispose() {
+  dispose() {
 
   }
 }
@@ -363,21 +368,23 @@ class SprintView {
  * Handles switching between the editor and view screens.
  */
 class Project {
-    constructor(containerElement, data, deleteCallback) {
-        this.containerElement = containerElement;
-        this.project = data;
+  constructor(containerElement, data, deleteCallback) {
+    this.containerElement = containerElement;
+    this.project = data;
 
-    this.currentView = new ProjectView(containerElement, this.project, this.showEditor.bind(this),  this.deleteProject.bind(this));
-        this.updateLoadingStatus = LoadingStatus.NotYetAttempted;
-        this.deleteLoadingStatus = LoadingStatus.NotYetAttempted;
-        this.deleteCallback = deleteCallback;
-    }
+    this.currentView = new ProjectView(containerElement, this.project, this.showEditor.bind(this), this.deleteProject.bind(this));
 
-    /**
-     * Gets the project to explicitly destroy itself prior
-     */
-    dispose() {
-this.currentView.dispose();
+    this.updateLoadingStatus = LoadingStatus.NotYetAttempted;
+
+    this.deleteLoadingStatus = LoadingStatus.NotYetAttempted;
+    this.deleteCallback = deleteCallback;
+  }
+
+  /**
+   * Gets the project to explicitly destroy itself prior
+   */
+  dispose() {
+    this.currentView.dispose();
   }
 
   showEditor() {
@@ -439,7 +446,7 @@ this.currentView.dispose();
       this.updateLoadingStatus = LoadingStatus.Error;
       throw ex;
     }
-    }
+  }
 
   async deleteProject() {
     if (this.deleteLoadingStatus === LoadingStatus.Pending) {
@@ -448,15 +455,15 @@ this.currentView.dispose();
 
     this.deleteLoadingStatus = LoadingStatus.Pending;
 
-        try {
+    try {
       const result = await fetch(`/api/v1/projects/${this.project.id}`, {
-            method: 'DELETE'
-        })
+        method: 'DELETE'
+      })
 
-        if (!result.ok) {
-            this.deleteLoadingStatus = LoadingStatus.Error;
-            throw new Error(`Got unexpected status code: ${result.status} ${result.statusText}`);
-        }
+      if (!result.ok) {
+        this.deleteLoadingStatus = LoadingStatus.Error;
+        throw new Error(`Got unexpected status code: ${result.status} ${result.statusText}`);
+      }
 
       this.deleteLoadingStatus = LoadingStatus.Done;
       this.deleteCallback(this.project.id);
@@ -610,7 +617,7 @@ class Application {
 
     console.log("Binding project");
     this.projects.set(projectData.id, new Project(projectElement, projectData, this.deleteProject.bind(this)));
-
+  
     console.log("Project bound");
 
     if (scrollIntoView) {
