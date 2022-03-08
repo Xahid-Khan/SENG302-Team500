@@ -10,7 +10,7 @@ const LoadingStatus = {
 function leftPadNumber(number, places) {
   const numberString = `${number}`
 
-  if (numberString >= places) {
+  if (numberString.length >= places) {
     return numberString;
   }
 
@@ -111,7 +111,7 @@ class ProjectEditor {
     this.containerElement.innerHTML = `
       <div class="edit-project-section" id="edit-project-section-${this.projectId}">
           <p class="edit-section-title">Edit Project Details:</p>
-          <form class="user-inputs" id="user-inputs-0">
+          <form class="user-inputs" id="edit-project-section-form-${this.projectId}">
   
               <label>Project Name*:</label>
               <input type="text" name="project-name" id="edit-project-name-${this.projectId}"><br>
@@ -259,6 +259,10 @@ class ProjectEditor {
 
   wireView() {
     this.saveButton.addEventListener('click', () => this.validateAndSubmit());
+    document.getElementById(`edit-project-section-form-${this.projectId}`).addEventListener('submit', (evt) => {
+      evt.preventDefault();
+      this.validateAndSubmit();
+    });
     document.getElementById(`edit-cancel-button-${this.projectId}`).addEventListener('click', () => this.cancelCallback());
 
     this.nameInput.addEventListener('change', this.validateName.bind(this));  // Is only called after the text field loses focus.
