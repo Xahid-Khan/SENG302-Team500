@@ -42,6 +42,8 @@ class DatetimeUtils {
 }
 
 class ProjectView {
+  showingSprints = false;
+
   constructor(containerElement, project, editCallback, deleteCallback) {
     this.containerElement = containerElement;
     this.project = project;
@@ -79,12 +81,34 @@ class ProjectView {
     document.getElementById(`project-startDate-${this.project.id}`).innerText = this.project.startDate.toISOString();
     document.getElementById(`project-endDate-${this.project.id}`).innerText = this.project.endDate.toISOString();
 
+    this.addSprintButton = document.getElementById(`add-sprint-button-${this.project.id}`);
+    this.toggleSprintsButton = document.getElementById(`toggle-sprint-button-${this.project.id}`);
+    this.sprintsContainer = document.getElementById(`sprints-container-${this.project.id}`);
+
     // TODO: fill in the sprints here...
+  }
+
+  toggleSprints() {
+    if (this.showingSprints) {
+      // Hide the sprints
+      this.addSprintButton.style.display = "none";
+      this.toggleSprintsButton.innerText = "Show Sprints";
+      this.sprintsContainer.style.display = "none";
+    }
+    else {
+      // Show the sprints
+      this.addSprintButton.style.display = "inline";
+      this.toggleSprintsButton.innerText = "Hide Sprints";
+      this.sprintsContainer.style.display = "block";
+    }
+
+    this.showingSprints = !this.showingSprints;
   }
 
   wireView() {
     document.getElementById(`project-edit-button-${this.project.id}`).addEventListener("click", () => this.editCallback());
     document.getElementById(`project-delete-button-${this.project.id}`).addEventListener("click", () => this.deleteCallback());
+    this.toggleSprintsButton.addEventListener('click', this.toggleSprints.bind(this));
     // TODO: fill in the sprints here...
   }
 
@@ -466,6 +490,7 @@ class Application {
     this.containerElement.insertBefore(formContainerElement, this.containerElement.firstChild);
 
     const defaultProject = {
+      id: '__NEW_PROJECT_FORM',
       name: `Project ${new Date().getFullYear()}`,
       description: null,
       startDate: null,
@@ -564,8 +589,8 @@ class Application {
   application.fetchProjects();
 })()
 
-window.addProject = () => {
-  fetch('/api/v1/projects', {
+window.addProject = async () => {
+  const res = await fetch('/api/v1/projects', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -576,5 +601,22 @@ window.addProject = () => {
       startDate: "2020-01-01T00:00:00.00Z",
       endDate: "2021-01-01T00:00:00.00Z"
     })
-  })
+  });
+
+  const project = await res.json();
+
+  for (let i=1; i <= 5; i++) {
+    await fetch(`/api/v1/projects/${project.id}/sprints`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        name: `Test sprint ${i}`,
+        description: `Test sprint description ${i}\n\nNB: This sprint covers the entire date range of its parent project.`,
+        startDate: `2020-01-0${i}T00:00:00.00Z`,
+        endDate: `2020-01-0${i}T01:00:00.00Z`
+      })
+    });
+  }
 }
