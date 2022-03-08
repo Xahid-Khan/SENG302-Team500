@@ -1,0 +1,25 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://thymeleaf.org" lang="en">
+<head>
+    <title>Register User</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+<h1>Register</h1>
+<form action="#" th:action="@{/register}" th:object="${user}" method="post">
+    <!--    Submits a populated UserDTO to endpoint register -->
+    Username: <input type="text" th:field="*{username}" /><br/>
+    Password: <input type="text" th:field="*{password}" /><br/>
+    First Name: <input type="text" th:field="*{firstName}" /><br/>
+    Middle Name: <input type="text" th:field="*{middleName}" /><br/>
+    Last Name: <input type="text" th:field="*{lastName}" /><br/>
+    Nickname: <input type="text" th:field="*{nickname}" /><br/>
+    Bio: <input type="text" th:field="*{bio}" /><br/>
+    Pronouns: <input type="text" th:field="*{pronouns}" /><br/>
+    Email: <input type="text" th:field="*{email}" /><br/>
+
+    <button name=”register” type=”Submit” value=”reset”>Register</button>
+
+</form>
+</body>
+</html>
