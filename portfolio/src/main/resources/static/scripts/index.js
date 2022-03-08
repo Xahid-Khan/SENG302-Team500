@@ -169,10 +169,10 @@ class ProjectEditor {
   }
 
   fillDefaults() {
-    this.nameInput.value = this.initialProjectData.name;
+    this.nameInput.value = this.initialProjectData.name ?? "";
     this.descriptionInput.value = this.initialProjectData.description ?? "";
-    this.startDateInput.value = DatetimeUtils.toLocalYMD(this.initialProjectData.startDate);
-    this.endDateInput.value = DatetimeUtils.toLocalYMD(this.initialProjectData.endDate);
+    this.startDateInput.value = (this.initialProjectData.startDate) ? DatetimeUtils.toLocalYMD(this.initialProjectData.startDate) : "";
+    this.endDateInput.value = (this.initialProjectData.endDate) ? DatetimeUtils.toLocalYMD(this.initialProjectData.endDate) : "";
   }
 
   /**
@@ -342,7 +342,12 @@ class Project {
       }
 
       // Saved! Show the updated view screen.
-      this.project = newProject;
+      this.updateLoadingStatus = LoadingStatus.Done;
+      this.project = {
+        ...newProject,
+        id: this.project.id,
+        sprints: this.project.sprints
+      };
       this.showViewer();
     }
     catch (ex) {
@@ -368,6 +373,7 @@ class Project {
         throw new Error(`Got unexpected status code: ${result.status} ${result.statusText}`);
       }
 
+      this.deleteLoadingStatus = LoadingStatus.Done;
       this.deleteCallback(this.project.id);
     }
     catch (ex) {
@@ -386,10 +392,86 @@ class Project {
 class Application {
   addProjectButton = document.getElementById("add-project");
 
+  addProjectForm = null;
+  addProjectLoadingStatus = LoadingStatus.NotYetAttempted;
+
   constructor(containerElement) {
     this.projects = null;
     this.projectsLoadingState = LoadingStatus.NotYetAttempted;
     this.containerElement = containerElement;
+
+    this.wireView();
+  }
+
+  wireView() {
+    this.addProjectButton.addEventListener("click", this.openAddProjectForm.bind(this));
+  }
+
+  async submitAddProjectForm(project) {
+    if (this.addProjectLoadingStatus === LoadingStatus.Pending) {
+      return;
+    }
+
+    this.addProjectLoadingStatus = LoadingStatus.Pending;
+
+    try {
+      const res = await fetch("/api/v1/projects", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(project)
+      });
+
+      if (!res.ok) {
+        throw new Error(`Received unsuccessful response code when creating project: ${res.status} ${res.statusText}`);
+      }
+
+      const newProject = await res.json();
+      this.appendProject(newProject, {
+        prepend: true,
+        scrollIntoView: true
+      });
+      this.addProjectLoadingStatus = LoadingStatus.Done;
+      this.closeAddProjectForm();
+    }
+    catch (ex) {
+      this.addProjectLoadingStatus = LoadingStatus.Error;
+      throw ex;
+    }
+  }
+
+  closeAddProjectForm() {
+    if (this.addProjectForm === null) {
+      return;
+    }
+
+    this.addProjectForm.controller.dispose();
+    this.containerElement.removeChild(this.addProjectForm.container);
+    this.addProjectForm = null;
+  }
+
+  openAddProjectForm() {
+    if (this.addProjectForm !== null) {
+      return;
+    }
+
+    const formContainerElement = document.createElement("div");
+    formContainerElement.classList.add("project-view");
+    formContainerElement.id = 'create-project-form-container';
+    this.containerElement.insertBefore(formContainerElement, this.containerElement.firstChild);
+
+    const defaultProject = {
+      name: `Project ${new Date().getFullYear()}`,
+      description: null,
+      startDate: null,
+      endDate: null
+    };
+
+    this.addProjectForm = {
+      container: formContainerElement,
+      controller: new ProjectEditor(formContainerElement, defaultProject, this.closeAddProjectForm.bind(this), this.submitAddProjectForm.bind(this))
+    };
   }
 
   clearProjects() {
@@ -402,8 +484,9 @@ class Application {
   /**
    * Append a project element to the containerElement and instaniate and store a Project with the given data.
    */
-  appendProject(projectData) {
-    console.log(`Appending project with id: ${projectData.id}...`);
+  appendProject(projectData, options) {
+    const {prepend, scrollIntoView} = options ?? {};
+    console.log(`${prepend ? 'Prepending' : 'Appending'} project with id: ${projectData.id}...`);
 
     // Post-process the projectData
     projectData.startDate = DatetimeUtils.networkStringToLocalDate(projectData.startDate);
@@ -414,12 +497,24 @@ class Application {
     projectElement.classList.add("project-view");
     projectElement.id = `project-view-${projectData.id}`;
 
-    this.containerElement.appendChild(projectElement);
+    if (prepend) {
+      this.containerElement.insertBefore(projectElement, this.containerElement.firstChild);
+    }
+    else {
+      this.containerElement.appendChild(projectElement);
+    }
 
     console.log("Binding project");
     this.projects.set(projectData.id, new Project(projectElement, projectData, this.deleteProject.bind(this)));
   
     console.log("Project bound");
+
+    if (scrollIntoView) {
+      projectElement.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center'
+      });
+    }
   }
 
   async fetchProjects() {
@@ -442,6 +537,7 @@ class Application {
       console.log(`Acquired ${data.length} projects...`);
       this.projects = new Map();
       data.map(project => this.appendProject(project));
+      this.projectsLoadingState = LoadingStatus.Done;
     }
     catch (ex) {
       this.projectsLoadingState = LoadingStatus.Error;
