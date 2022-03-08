@@ -5,9 +5,11 @@ import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterRequest;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Service
 public class RegisterClientService {
+
 
     @GrpcClient(value = "identity-provider-grpc-server")
     private UserAccountServiceGrpc.UserAccountServiceBlockingStub registrationStub;

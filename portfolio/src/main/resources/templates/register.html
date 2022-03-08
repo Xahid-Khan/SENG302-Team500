@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org" lang="">
+<html xmlns:th="http://thymeleaf.org" lang="en">
 <head>
     <title>Register User</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -7,11 +7,15 @@
 <body>
 <p th:text="${registerMessage}" />
 <h1>Register</h1>
-<form>
-    <label for="firstName">First Name:</label><br>
-    <input type="text" id="firstName"><br><br>
-    <label for="lastName">Last Name:</label><br>
-    <input type="text" id="lastName"><br>
+<form action="#" th:action="@{/registration}" th:object="${User}" method="GET">
+<!--    Submits a populated UserDTO to endpoint registration -->
+    First Name: <input type=”text” name=”FirstName” th:field="*{username}"/></label><br/>
+    Last Name: <input type=”text” name=”FirstName” th:field="*{username}"/></label><br/>
+    Personal Pronouns: <input type=”text” name=”FirstName” th:field="*{username}"/></label><br/>
+    Nickname: <input type=”text” name=”FirstName” th:field="*{username}"/></label><br/>
+    Bio: <input type=”text” name=”FirstName” th:field="*{username}"/></label><br/>
+    <button name=”register” type=”submit” value=”0”>Register</button>
+
 </form>
 </body>
 </html>
