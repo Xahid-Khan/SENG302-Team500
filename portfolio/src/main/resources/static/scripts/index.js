@@ -36,6 +36,10 @@ class DatetimeUtils {
     return new Date(year, month - 1, day);
   }
 
+  static localToUserDMY(localDate) {
+    return `${localDate.getDate()} ${localDate.toLocaleString('default', {month: 'long'})} ${localDate.getFullYear()}`
+  }
+
   static areEqual(date1, date2) {
     return date1 <= date2 && date2 <= date1;
   }
@@ -78,8 +82,8 @@ class ProjectView {
 
     document.getElementById(`project-title-text-${this.project.id}`).innerText = this.project.name;
     document.getElementById(`project-description-${this.project.id}`).innerText = this.project.description;
-    document.getElementById(`project-startDate-${this.project.id}`).innerText = this.project.startDate.toISOString();
-    document.getElementById(`project-endDate-${this.project.id}`).innerText = this.project.endDate.toISOString();
+    document.getElementById(`project-startDate-${this.project.id}`).innerText = DatetimeUtils.localToUserDMY(this.project.startDate);
+    document.getElementById(`project-endDate-${this.project.id}`).innerText = DatetimeUtils.localToUserDMY(this.project.endDate);
 
     this.addSprintButton = document.getElementById(`add-sprint-button-${this.project.id}`);
     this.toggleSprintsButton = document.getElementById(`toggle-sprint-button-${this.project.id}`);
