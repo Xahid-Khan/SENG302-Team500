@@ -4,13 +4,16 @@
     font-family: Helvetica, sans-serif;
 }
 
+.raised-card {
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    background: white;
+}
+
 .project-view {
     width: 100%;
     margin-bottom: 40px;
     padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-    background: white;
 }
 
 .sprint-description {
@@ -103,14 +106,11 @@ button:hover {
 }
 
 .sprint-view {
-    outline-style: solid;
-    outline-color: #43C0FE;
     padding: 20px;
     margin-top: 15px
 }
 
 .sprint-title {
-    color: #fff;
     font-size: 18px;
     font-weight: bold;
     padding-bottom: 20px;

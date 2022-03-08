@@ -63,7 +63,7 @@ class ProjectView {
 
   appendSprint(sprintData) {
         const sprintElement = document.createElement("div");
-        sprintElement.classList.add("sprint-view");
+        sprintElement.classList.add("sprint-view", "raised-card");
         sprintElement.id = `sprint-view-${sprintElement.id}`;
 
         this.sprintContainer.appendChild(sprintElement);
@@ -567,7 +567,7 @@ class Application {
     }
 
     const formContainerElement = document.createElement("div");
-    formContainerElement.classList.add("project-view");
+    formContainerElement.classList.add("project-view", "raised-card");
     formContainerElement.id = 'create-project-form-container';
     this.containerElement.insertBefore(formContainerElement, this.containerElement.firstChild);
 
@@ -605,7 +605,7 @@ class Application {
 
     // Construct base HTML
     const projectElement = document.createElement("div");
-    projectElement.classList.add("project-view");
+    projectElement.classList.add("project-view", "raised-card");
     projectElement.id = `project-view-${projectData.id}`;
 
     if (prepend) {
