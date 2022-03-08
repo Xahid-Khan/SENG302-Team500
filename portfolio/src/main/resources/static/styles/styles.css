@@ -82,6 +82,12 @@
     margin-right: 5px;
 }
 
+.form-error {
+    font-size: 14px;
+    color: red;
+    font-weight: bold;
+}
+
 .sprint-view-controls {
     display: flex;
     justify-content: right;
@@ -141,7 +147,6 @@
     padding: 20px;
     color: #fff;
     margin: 20px;
-    display: none;
 }
 
 .edit-section-title {
