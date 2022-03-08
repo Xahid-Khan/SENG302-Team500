@@ -3,12 +3,14 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import nz.ac.canterbury.seng302.portfolio.model.contract.BaseProjectContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.ProjectContract;
 import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
+import nz.ac.canterbury.seng302.portfolio.service.ValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 
 /**
@@ -20,6 +22,9 @@ import java.util.NoSuchElementException;
 public class ProjectController {
     @Autowired
     private ProjectService projectService;
+
+    @Autowired
+    private ValidationService validationService;
 
     /**
      * This method will be invoked when API receives a GET request, and will produce a list of all the projects.
@@ -58,8 +63,13 @@ public class ProjectController {
      * @return a project contract (JSON) type of the newly created project.
      */
     @PostMapping(value = "/projects", produces = "application/json")
-    public ResponseEntity<ProjectContract> addNewProject(@RequestBody BaseProjectContract newProject) {
+    public ResponseEntity<?> addNewProject(@RequestBody BaseProjectContract newProject) {
         try {
+            var errorMessage = validationService.checkAddProject(newProject);
+
+            if (!Objects.equals(errorMessage, "Okay")) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
+            }
             var project = projectService.create(newProject);
             return ResponseEntity.ok(project);
         }
@@ -95,6 +105,11 @@ public class ProjectController {
     @PutMapping(value = "/projects/{id}", produces = "application/json")
     public ResponseEntity<?> updateProject(@RequestBody ProjectContract updatedProject, @PathVariable String id) {
         try {
+            var errorMessage = validationService.checkUpdateProject(id, updatedProject);
+
+            if (!Objects.equals(errorMessage, "Okay")) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
+            }
             projectService.update(updatedProject, id);
             return ResponseEntity.ok("");
         }
