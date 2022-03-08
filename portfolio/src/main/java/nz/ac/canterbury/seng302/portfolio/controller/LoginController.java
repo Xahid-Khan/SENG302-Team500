@@ -7,8 +7,8 @@ import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticateResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -39,33 +39,55 @@ public class LoginController {
      */
     @GetMapping("/login")
     public String login(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            @RequestParam(name="username", required=false, defaultValue="abc123") String username,
-            @RequestParam(name="password", required=false, defaultValue="Password123!") String password,
+            @RequestParam(name="error", required=false) String error,
             Model model
     ) {
+        model.addAttribute("error", error);
+        return "/login";
+    }
+
+
+    private record LoginCredentials(String username, String password) { }
+
+    @PostMapping("/login")
+    public String loginPost(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            LoginCredentials loginCreds,
+            RedirectAttributes redirectAttributes
+    ) {
+        System.out.println("Received POST request with credentials:" + loginCreds.toString());
+        if (loginCreds.username == null || loginCreds.password == null) {
+            redirectAttributes.addAttribute("error", "Invalid form data provided");
+            return "redirect:/login?error";
+        }
         AuthenticateResponse loginReply;
         try {
-            loginReply = authenticateClientService.authenticate(username, password);
+            loginReply = authenticateClientService.authenticate(
+                    loginCreds.username,
+                    loginCreds.password
+            );
         } catch (StatusRuntimeException e){
-            model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
-            return "login";
+            redirectAttributes.addAttribute("error", "Error connecting to Identity Provider...");
+            //model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
+            return "redirect:/login";
         }
         if (loginReply.getSuccess()) {
             var domain = request.getHeader("host");
             CookieUtil.create(
-                response,
-                "lens-session-token",
+                    response,
+                    "lens-session-token",
                     loginReply.getToken(),
-                true,
-                5 * 60 * 60, // Expires in 5 hours
-                domain.startsWith("localhost") ? null : domain
+                    true,
+                    5 * 60 * 60, // Expires in 5 hours
+                    domain.startsWith("localhost") ? null : domain
             );
+            // Redirect user if login succeeds
+            redirectAttributes.addFlashAttribute("message", "Successfully logged in.");
+            return "redirect:/greeting";
         }
 
-        model.addAttribute("loginMessage", loginReply.getMessage());
-        return "login";
+        redirectAttributes.addAttribute("error", loginReply.getMessage());
+        return "redirect:/login";
     }
-
 }
