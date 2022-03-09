@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio;
 
+import com.google.type.DateTime;
 import nz.ac.canterbury.seng302.portfolio.model.entity.ProjectEntity;
 import nz.ac.canterbury.seng302.portfolio.repository.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,9 @@ public class PortfolioApplication {
             break;
         }
         if (counter == 0) {
-            ProjectEntity defaultProject = new ProjectEntity("Project 2022",
+            String projectName = "Project " + LocalDate.now().getYear();
+            System.out.println(projectName);
+            ProjectEntity defaultProject = new ProjectEntity(projectName,
                     "",
                     Instant.now(),
                     Instant.parse(LocalDate.now().plusMonths(8).atStartOfDay().toString() + ":00.00Z"));
