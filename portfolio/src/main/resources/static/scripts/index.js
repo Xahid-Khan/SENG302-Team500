@@ -489,6 +489,8 @@ class ProjectOrSprintEditor {
 
 
 class SprintView {
+  expandedView = false;
+
   constructor(containerElement, sprint, deleteCallback, editCallback) {
     this.containerElement = containerElement;
     this.sprint = sprint;
@@ -508,26 +510,41 @@ class SprintView {
         <span class="crud">
             <button class="button sprint-controls" id="sprint-button-edit-${this.sprint.sprintId}" data-privilege="teacher">Edit</button>
             <button class="button sprint-controls" id="sprint-button-delete-${this.sprint.sprintId}" data-privilege="teacher">Delete</button>
-            <button class="button toggle-sprint-details" id="toggle-sprint-details-0-0">+</button>
+            <button class="button toggle-sprint-details" id="toggle-sprint-details-${this.sprint.sprintId}">+</button>
         </span>
     </div>
-    <div class="sprint-description" id="sprint-description-${this.sprint.sprintId}">
-
-    </div>
+    <div class="sprint-description" id="sprint-description-${this.sprint.sprintId}"></div>
     `;
+
+    this.toggleButton = document.getElementById(`toggle-sprint-details-${this.sprint.sprintId}`);
+    this.description = document.getElementById(`sprint-description-${this.sprint.sprintId}`);
 
     document.getElementById(`sprint-order-text-${this.sprint.sprintId}`).innerText = `Sprint ${this.sprint.orderNumber}`;
     document.getElementById(`sprint-title-text-${this.sprint.sprintId}`).innerText = this.sprint.name;
-    document.getElementById(`sprint-description-${this.sprint.sprintId}`).innerText = this.sprint.description;
+    this.description.innerText = this.sprint.description;
     document.getElementById(`start-date-${this.sprint.sprintId}`).innerText = DatetimeUtils.localToUserDMY(this.sprint.startDate);
     document.getElementById(`end-date-${this.sprint.sprintId}`).innerText = DatetimeUtils.localToUserDMY(this.sprint.endDate);
   }
 
-        wireView() {
-        document.getElementById(`sprint-button-edit-${this.sprint.sprintId}`).addEventListener('click', () => this.editCallback());
-        document.getElementById(`sprint-button-delete-${this.sprint.sprintId}`).addEventListener("click", () => this.deleteCallback());
+  toggleExpandedView() {
+    if (this.expandedView) {
+      this.description.style.display = "none";
+      this.toggleButton.innerText = "+";
+    }
+    else {
+      this.description.style.display = "block";
+      this.toggleButton.innerText = "-";
+    }
 
-        }
+    this.expandedView = !this.expandedView;
+  }
+
+  wireView() {
+    document.getElementById(`sprint-button-edit-${this.sprint.sprintId}`).addEventListener('click', () => this.editCallback());
+    document.getElementById(`sprint-button-delete-${this.sprint.sprintId}`).addEventListener("click", () => this.deleteCallback());
+
+    this.toggleButton.addEventListener('click', this.toggleExpandedView.bind(this));
+  }
 
 
   dispose() {
