@@ -17,17 +17,25 @@ public class PortfolioApplication {
     @Autowired
     private ProjectRepository projectRepository;
 
+
     public static void main(String[] args) {
         SpringApplication.run(PortfolioApplication.class, args);
     }
 
     @EventListener(ApplicationReadyEvent.class)
     public void addDefaultProject() {
-        ProjectEntity defaultProject = new ProjectEntity("Project 2022",
-                "",
-                Instant.now(),
-                Instant.parse(LocalDate.now().plusMonths(8).atStartOfDay().toString() + ":00.00Z"));
-        projectRepository.save(defaultProject);
+        int counter = 0;
+        for (ProjectEntity project: projectRepository.findAll()) {
+            counter++;
+            break;
+        }
+        if (counter == 0) {
+            ProjectEntity defaultProject = new ProjectEntity("Project 2022",
+                    "",
+                    Instant.now(),
+                    Instant.parse(LocalDate.now().plusMonths(8).atStartOfDay().toString() + ":00.00Z"));
+            projectRepository.save(defaultProject);
+        }
     }
 
 }
