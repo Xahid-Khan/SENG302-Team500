@@ -186,6 +186,7 @@ public class ValidationServiceTest {
         sprintRepository.save(sprint);
         response = validationService.checkUpdateSprint(sprint.getId(), sprintMapper.toContract(sprint, 1));
         assertEquals("Okay", response);
+        sprintRepository.delete(sprint);
 
         sprint = new SprintEntity("Test Sprint",
                 "test desc",
@@ -195,6 +196,7 @@ public class ValidationServiceTest {
         sprintRepository.save(sprint);
         response = validationService.checkUpdateSprint(sprint.getId(), sprintMapper.toContract(sprint, 1));
         assertEquals("Sprint cannot start before project start date", response);
+        sprintRepository.delete(sprint);
 
         sprint = new SprintEntity("",
                 "test desc",
@@ -214,6 +216,7 @@ public class ValidationServiceTest {
                 1L);
         project.addSprint(sprint);
         sprintRepository.save(sprint);
+
         response = validationService.checkUpdateSprint(sprint.getId(), fakeSprint);
         assertEquals("Given path ID and sprint contract ID are not the same", response);
 

@@ -122,9 +122,10 @@ public class ValidationService {
         if (end.isAfter(project.endDate())) {
             return "Sprint cannot end after project end date";
         }
-        int numSprints = project.sprints().size();
-        if (numSprints >= 1 && !start.isAfter(project.sprints().get(numSprints - 1).endDate()) && !project.sprints().get(numSprints - 1).sprintId().equals(sprintId)) {
-            return "Sprint cannot begin while another sprint is still in progress";
+        for (SprintContract sprint: project.sprints()) {
+            if (start.isBefore(sprint.endDate()) && end.isAfter(sprint.startDate()) && !sprintId.equals(sprint.sprintId())) {
+                return "Sprint cannot begin while another sprint is still in progress";
+            }
         }
         return "Okay";
 

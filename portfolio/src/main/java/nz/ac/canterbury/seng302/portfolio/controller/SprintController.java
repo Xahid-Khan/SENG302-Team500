@@ -109,6 +109,7 @@ public class SprintController {
     @PutMapping(value = "/sprints/{id}")
     public ResponseEntity<?> updateSprint(@PathVariable String id, @RequestBody SprintContract sprint) {
         String errorMessage = validationService.checkUpdateSprint(id, sprint);
+        System.err.println(errorMessage);
         if (!errorMessage.equals("Okay")) {
             if (errorMessage.equals("Project ID does not exist") || errorMessage.equals("Sprint ID does not exist")) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
