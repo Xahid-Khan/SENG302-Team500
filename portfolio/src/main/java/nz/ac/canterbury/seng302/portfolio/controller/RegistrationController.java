@@ -38,6 +38,6 @@ public class RegistrationController {
 
         }
         model.addAttribute("registerMessage",registerReply.getMessage());//add data to the model
-        return "complete";//return the template in templates folder
+        return "registered";//return the template in templates folder
     }
 }
