@@ -27,6 +27,9 @@
         display: inline-block;
         font-size: 16px;
     }
+    href{
+        text-align: center;
+    }
     </style>
 </head>
 <body>
@@ -43,8 +46,9 @@
     Pronouns: <br/><input type="text" th:field="*{pronouns}" /><br/>
     Email: <br/><input type="text" th:field="*{email}" /><br/>
 
-    <button name=”register” type=”Submit” value=”0”>Register</button>
-
+    <button name=”register” type=”Submit” value=”0”>Register</button><br/>
+    <a href="http://localhost:9000/login">Have an account? Login</a>
 </form>
+
 </body>
 </html>

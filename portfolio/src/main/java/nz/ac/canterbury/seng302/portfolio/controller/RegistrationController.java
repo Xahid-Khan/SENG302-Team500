@@ -1,10 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import io.grpc.StatusRuntimeException;
 //import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
-import nz.ac.canterbury.seng302.portfolio.DTO.UserTest;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
