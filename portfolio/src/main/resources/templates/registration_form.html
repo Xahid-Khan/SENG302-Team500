@@ -1,24 +1,49 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://thymeleaf.org" lang="en">
 <head>
-    <title>Register</title>
+    <title>Sign Up</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <style>
+    h1 {
+        text-align: center;
+        font-weight:normal;
+
+    }
+    form{
+        text-align: center;
+    }
+    input{
+        width: 50%;
+        height: 25%;
+        padding: 12px 20px;
+        margin: 8px 0;
+        box-sizing: border-box;
+    }
+    button{
+        border: solid;
+        border-width: thin;
+        padding: 15px 60px;
+        text-align: center;
+        display: inline-block;
+        font-size: 16px;
+    }
+    </style>
 </head>
 <body>
-<h1>Register</h1>
+<h1>Sign Up<br/></h1>
 <form action="#" th:action="@{/register}" th:object="${user}" method="post">
     <!--    Submits a populated UserDTO to endpoint register -->
-    Username: <input type="text" th:field="*{username}" /><br/>
-    Password: <input type="text" th:field="*{password}" /><br/>
-    First Name: <input type="text" th:field="*{firstName}" /><br/>
-    Middle Name: <input type="text" th:field="*{middleName}" /><br/>
-    Last Name: <input type="text" th:field="*{lastName}" /><br/>
-    Nickname: <input type="text" th:field="*{nickname}" /><br/>
-    Bio: <input type="text" th:field="*{bio}" /><br/>
-    Pronouns: <input type="text" th:field="*{pronouns}" /><br/>
-    Email: <input type="text" th:field="*{email}" /><br/>
+    Username: <br/><input type="text" th:field="*{username}" /><br/>
+    Password: <br/><input type="text" th:field="*{password}" /><br/>
+    First Name: <br/><input type="text" th:field="*{firstName}" /><br/>
+    Middle Name: <br/><input type="text" th:field="*{middleName}" /><br/>
+    Last Name: <br/><input type="text" th:field="*{lastName}" /><br/>
+    Nickname: <br/><input type="text" th:field="*{nickname}" /><br/>
+    Bio: <br/><input type="text" th:field="*{bio}" /><br/>
+    Pronouns: <br/><input type="text" th:field="*{pronouns}" /><br/>
+    Email: <br/><input type="text" th:field="*{email}" /><br/>
 
-    <button name=”register” type=”Submit” value=”reset”>Register</button>
+    <button name=”register” type=”Submit” value=”0”>Register</button>
 
 </form>
 </body>
