@@ -1,3 +1,7 @@
+.studentMode [data-privilege="teacher"] {
+    display: none !important;
+}
+
 .fullscreen {
     min-height: 100vh;
     background-color: #ededec;

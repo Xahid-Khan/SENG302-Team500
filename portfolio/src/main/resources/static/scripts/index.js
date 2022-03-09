@@ -57,6 +57,9 @@ class DatetimeUtils {
 class ProjectView {
   showingSprints = false;
 
+  addSprintForm = null;
+  addSprintLoadingStatus = LoadingStatus.NotYetAttempted;
+
   constructor(containerElement, project, editCallback, deleteCallback, sprintUpdateCallback) {
     console.log("project", project)
     this.containerElement = containerElement;
@@ -95,14 +98,14 @@ class ProjectView {
             <span id="project-title-text-${this.project.id}"></span> | <span id="project-startDate-${this.project.id}"></span> - <span id="project-endDate-${this.project.id}"></span>
           </span>   
           <span class="crud">
-                  <button class="button edit-project" id="project-edit-button-${this.project.id}">Edit</button>
-                  <button class="button" id="project-delete-button-${this.project.id}">Delete</button>
+                  <button class="button edit-project" id="project-edit-button-${this.project.id}" data-privilege="teacher">Edit</button>
+                  <button class="button" id="project-delete-button-${this.project.id}" data-privilege="teacher">Delete</button>
           </span>
       </div>
       <div>
           <div class="project-description" id="project-description-${this.project.id}"></div>
           <div class="sprint-view-controls">
-              <button class="button add-sprint" id="add-sprint-button-${this.project.id}"> Add Sprint</button>
+              <button class="button add-sprint" id="add-sprint-button-${this.project.id}" data-privilege="teacher"> Add Sprint</button>
               <button class="button toggle-sprints" id="toggle-sprint-button-${this.project.id}"> Show Sprints</button>
           </div>
       </div>
@@ -142,11 +145,85 @@ class ProjectView {
     this.showingSprints = !this.showingSprints;
   }
 
+  openAddSprintForm() {
+    if (this.addSprintForm !== null) {
+      return;
+    }
+
+    const formContainerElement = document.createElement("div");
+    formContainerElement.classList.add("sprint-view", "raised-card");
+    formContainerElement.id = `create-sprint-form-container-${this.project.id}`;
+    this.sprintsContainer.insertBefore(formContainerElement, this.sprintsContainer.firstChild);
+
+    const defaultSprint = {
+      id: `__NEW_SPRINT_FORM_${this.project.id}`,
+      name: "",
+      description: null,
+      startDate: null,
+      endDate: null
+    };
+
+    this.addSprintForm = {
+      container: formContainerElement,
+      controller: new ProjectOrSprintEditor(
+        formContainerElement,
+        "New sprint details:",
+        defaultSprint,
+        this.closeAddSprintForm.bind(this),
+        this.submitAddSprintForm.bind(this),
+        ProjectOrSprintEditor.makeProjectSprintDatesValidator(this.project, null)
+      )
+    };
+  }
+
+  closeAddSprintForm() {
+    if (this.addSprintForm === null) {
+      return;
+    }
+
+    this.addSprintForm.controller.dispose();
+    this.sprintsContainer.removeChild(this.addSprintForm.container);
+    this.addSprintForm = null;
+  }
+
+  async submitAddSprintForm(sprint) {
+    if (this.addSprintLoadingStatus === LoadingStatus.Pending) {
+      return;
+    }
+
+    this.addSprintLoadingStatus = LoadingStatus.Pending;
+
+    try {
+      const res = await fetch(`/api/v1/projects/${this.project.id}/sprints`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(sprint)
+      });
+
+      if (!res.ok) {
+        throw new Error(`Received unsuccessful response code when creating project ${res.status} ${res.statusText}`);
+      }
+
+      const newSprint = await res.json();
+      this.sprintUpdateCallback({
+        ...newSprint,
+        startDate: DatetimeUtils.networkStringToLocalDate(newSprint.startDate),
+        endDate: DatetimeUtils.networkStringToLocalDate(newSprint.endDate)
+      });
+    }
+    catch (ex) {
+      this.addSprintLoadingStatus = LoadingStatus.Error;
+      throw ex;
+    }
+  }
+
   wireView() {
     document.getElementById(`project-edit-button-${this.project.id}`).addEventListener("click", () => this.editCallback());
     document.getElementById(`project-delete-button-${this.project.id}`).addEventListener("click", () => this.deleteCallback());
     this.toggleSprintsButton.addEventListener('click', this.toggleSprints.bind(this));
-    // TODO: fill in the sprints here...
+    this.addSprintButton.addEventListener('click', this.openAddSprintForm.bind(this));
   }
 
   dispose() {
@@ -158,8 +235,9 @@ class ProjectOrSprintEditor {
   startDateEdited = false
   endDateEdited = false
 
-  constructor(containerElement, entityData, cancelCallback, submitCallback, customDatesValidator) {
+  constructor(containerElement, title, entityData, cancelCallback, submitCallback, customDatesValidator) {
     this.containerElement = containerElement;
+    this.title = title;
     this.initialData = entityData;
     this.entityId = entityData.id ?? entityData.sprintId;
 
@@ -175,7 +253,7 @@ class ProjectOrSprintEditor {
   constructView() {
     this.containerElement.innerHTML = `
       <div class="edit-project-section" id="edit-project-section-${this.entityId}">
-          <p class="edit-section-title">Edit Project Details:</p>
+          <p class="edit-section-title" id="edit-section-form-title-${this.entityId}">Edit Details:</p>
           <form class="user-inputs" id="edit-project-section-form-${this.entityId}">
   
               <label>Name*:</label>
@@ -200,6 +278,7 @@ class ProjectOrSprintEditor {
           </div>
       </div>
     `
+    document.getElementById(`edit-section-form-title-${this.entityId}`).innerText = this.title;
 
     this.nameInput = document.getElementById(`edit-project-name-${this.entityId}`);
     this.descriptionInput = document.getElementById(`edit-description-${this.entityId}`);
@@ -385,6 +464,36 @@ class ProjectOrSprintEditor {
   dispose() {
 
   }
+
+  /**
+   * Provides a validator function for checking that the proposed dates for a sprint are allowed for the given project.
+   *
+   * This is a convenience method that ProjectOrSprintEditor consumers can use to pass directly in to the ProjectOrSprintEditor constructor.
+   *
+   * @param project to check sprint dates against.
+   */
+  static makeProjectSprintDatesValidator(project, sprintIdUnderEdit) {
+    return (startDate, endDate) => {
+      if (startDate < project.startDate || project.endDate < endDate) {
+        return "Sprint must fit within the project dates.";
+      }
+      else {
+        // Find overlaps...
+        for (const sprint of project.sprints.values()) {
+          if (sprint.sprintId === sprintIdUnderEdit) {
+            continue;
+          }
+
+          // Taken from: https://stackoverflow.com/a/325964
+          if (startDate <= sprint.endDate && endDate >= sprint.startDate) {
+            return `This date range overlaps with Sprint ${sprint.orderNumber}. Please choose a non-overlapping date range.`;
+          }
+        }
+      }
+
+      return null;
+    }
+  }
 }
 
 
@@ -405,8 +514,8 @@ class SprintView {
         <span id="sprint-order-text-${this.sprint.sprintId}"></span>: <span id="sprint-title-text-${this.sprint.sprintId}" style="font-style: italic;"></span> | <span id="start-date-${this.sprint.sprintId}"></span> - <span id="end-date-${this.sprint.sprintId}"></span>
 
         <span class="crud">
-            <button class="button sprint-controls" id="sprint-button-edit-${this.sprint.sprintId}">Edit</button>
-            <button class="button sprint-controls">Delete</button>
+            <button class="button sprint-controls" id="sprint-button-edit-${this.sprint.sprintId}" data-privilege="teacher">Edit</button>
+            <button class="button sprint-controls" data-privilege="teacher">Delete</button>
             <button class="button toggle-sprint-details" id="toggle-sprint-details-0-0">+</button>
         </span>
     </div>
@@ -450,10 +559,19 @@ class Project {
     this.deleteCallback = deleteCallback;
   }
 
+  /**
+   * Called when a sprint is updated or a new sprint is created within this project.
+   *
+   * Since sprints are ordered by orderNumber (derived from startDate), the dates and thus orderNumbers may have changed.
+   * This method updates the orderNumbers and moves the new sprints into the correct new order.
+   *
+   * @param sprint to update or insert
+   */
   onSprintUpdate(sprint) {
     console.log(`Project notified of update to sprint: `, sprint);
 
     // Delete the outdated sprint from the sprints array.
+    // NB: Since this method is sometimes called with new sprints, a deletion is not guaranteed to occur here.
     for (let i=0; i < this.project.sprints.length; i++) {
       if (this.project.sprints[i].sprintId === sprint.sprintId) {
         this.project.sprints.splice(i, 1);
@@ -483,7 +601,7 @@ class Project {
 
   showEditor() {
     this.currentView?.dispose();
-    this.currentView = new ProjectOrSprintEditor(this.containerElement, this.project, this.showViewer.bind(this), this.updateProject.bind(this));
+    this.currentView = new ProjectOrSprintEditor(this.containerElement, "Edit project details:", this.project, this.showViewer.bind(this), this.updateProject.bind(this));
   }
 
   showViewer() {
@@ -628,35 +746,16 @@ class Sprint {
     }
   }
 
-  validateDates(startDate, endDate) {
-    if (startDate < this.project.startDate || this.project.endDate < endDate) {
-      return "Sprint must fit within the project dates.";
-    }
-    else {
-      // Find overlaps...
-      for (const sprint of this.project.sprints.values()) {
-        if (sprint.sprintId === this.sprint.sprintId) {
-          continue;
-        }
-
-        // Taken from: https://stackoverflow.com/a/325964
-        if (startDate <= sprint.endDate && endDate >= sprint.startDate) {
-          return `This date range overlaps with Sprint ${sprint.orderNumber}. Please choose a non-overlapping date range.`;
-        }
-      }
-    }
-
-    return null;
-  }
 
   showEditor() {
     this.currentView?.dispose();
     this.currentView = new ProjectOrSprintEditor(
       this.containerElement,
+      "Edit sprint details:",
       this.sprint,
       this.showViewer.bind(this),
       this.updateSprint.bind(this),
-      this.validateDates.bind(this)
+      ProjectOrSprintEditor.makeProjectSprintDatesValidator(this.project, this.sprint.sprintId)
     );
   }
 
@@ -759,7 +858,7 @@ class Application {
 
     this.addProjectForm = {
       container: formContainerElement,
-      controller: new ProjectOrSprintEditor(formContainerElement, defaultProject, this.closeAddProjectForm.bind(this), this.submitAddProjectForm.bind(this))
+      controller: new ProjectOrSprintEditor(formContainerElement, "New project details:", defaultProject, this.closeAddProjectForm.bind(this), this.submitAddProjectForm.bind(this))
     };
   }
 
