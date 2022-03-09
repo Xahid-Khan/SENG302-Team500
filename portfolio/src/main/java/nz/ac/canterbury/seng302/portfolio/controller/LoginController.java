@@ -23,30 +23,24 @@ public class LoginController {
 
     @Autowired
     private AuthenticateClientService authenticateClientService;
-    @GetMapping(value = "/login")//Mapped to GET
-    public String registerForm(Model model) { //model turns the view into a thymeleaf object
-        model.addAttribute("login", new Login());//creates the DTO object which captures the inpuitd
-        return "login_form"; //returns the view which renders the HTML content
-    }
+
     /**
      * GET /login provides the user with a GUI form. This form sends a POST request to /login containing the information
      * from the form, running the login process.
      *
      * @param error If there is an error as a parameter within the URL, it will be rendered in the HTML
      * @param model Parameters sent to thymeleaf template to be rendered into HTML
-     * @return
+     * @return      The login_form.html page // TODO: Change to login.html?
      */
-    @GetMapping("/login")
-    public String login(
+    @GetMapping(value = "/login")//Mapped to GET
+    public String registerForm(
             @RequestParam(name="error", required=false) String error,
             Model model
     ) {
+        model.addAttribute("login", new Login());//creates the DTO object which captures the inpuitd
         model.addAttribute("error", error);
-        return "/login";
+        return "login_form"; //returns the view which renders the HTML content
     }
-
-    // Create a record containing login credentials to serve the login post request
-    private record LoginCredentials(String username, String password) { }
 
     /**
      * Attempts to authenticate with the Identity Provider via gRPC.
@@ -62,7 +56,7 @@ public class LoginController {
      *
      * @param request HTTP request sent to this endpoint
      * @param response HTTP response that will be returned by this endpoint
-     * @param loginCreds The credentials sent by the form
+     * @param login The credentials sent by the form // TODO: Update this now we're using login instead of loginCreds
      * @param redirectAttributes Used for sending parameters with the redirections
      * @return Redirection depending on flow of login
      */
