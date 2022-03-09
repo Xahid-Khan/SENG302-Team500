@@ -167,7 +167,7 @@ public class ValidationServiceTest {
     @Test
     public void TestCheckUpdateSprint() {
 
-        SprintEntity sprint = new SprintEntity("Test Sprint",
+        BaseSprintContract sprint = new BaseSprintContract("Test Sprint",
                 "test desc",
                 Instant.parse("2021-12-03T10:15:30.00Z"),
                 Instant.parse("2021-12-05T10:15:30.00Z"));
@@ -176,49 +176,38 @@ public class ValidationServiceTest {
                 "testing",
                 Instant.parse("2021-12-03T10:15:30.00Z"),
                 Instant.parse("2021-12-05T10:15:30.00Z"));
-
-        project.addSprint(sprint);
+        SprintEntity sprintEntity = sprintMapper.toEntity(sprint);
+        project.addSprint(sprintEntity);
         projectRepository.save(project);
 
-        String response = validationService.checkUpdateSprint("FakeId", sprintMapper.toContract(sprint, 1));
+        String response = validationService.checkUpdateSprint("FakeId", sprint);
         assertEquals("Sprint ID does not exist", response);
 
-        sprintRepository.save(sprint);
-        response = validationService.checkUpdateSprint(sprint.getId(), sprintMapper.toContract(sprint, 1));
+        sprintRepository.save(sprintEntity);
+        response = validationService.checkUpdateSprint(sprintEntity.getId(), sprint);
         assertEquals("Okay", response);
-        sprintRepository.delete(sprint);
+        sprintRepository.delete(sprintEntity);
 
-        sprint = new SprintEntity("Test Sprint",
+        sprint = new BaseSprintContract("Test Sprint",
                 "test desc",
                 Instant.parse("2021-12-01T10:15:30.00Z"),
                 Instant.parse("2021-12-05T10:15:30.00Z"));
-        project.addSprint(sprint);
-        sprintRepository.save(sprint);
-        response = validationService.checkUpdateSprint(sprint.getId(), sprintMapper.toContract(sprint, 1));
+        sprintEntity = sprintMapper.toEntity(sprint);
+        project.addSprint(sprintEntity);
+        sprintRepository.save(sprintEntity);
+        response = validationService.checkUpdateSprint(sprintEntity.getId(), sprint);
         assertEquals("Sprint cannot start before project start date", response);
-        sprintRepository.delete(sprint);
+        sprintRepository.delete(sprintEntity);
 
-        sprint = new SprintEntity("",
+        sprint = new BaseSprintContract("",
                 "test desc",
                 Instant.parse("2021-12-03T10:15:30.00Z"),
-                Instant.parse("2021-12-05T10:15:30.00Z"));
-        project.addSprint(sprint);
-        sprintRepository.save(sprint);
-        response = validationService.checkUpdateSprint(sprint.getId(), sprintMapper.toContract(sprint, 1));
+                Instant.parse("2021-12-04T00:00:30.00Z"));
+        sprintEntity = sprintMapper.toEntity(sprint);
+        project.addSprint(sprintEntity);
+        sprintRepository.save(sprintEntity);
+        response = validationService.checkUpdateSprint(sprintEntity.getId(), sprint);
         assertEquals("Sprint must have a name", response);
-
-        SprintContract fakeSprint = new SprintContract(project.getId(),
-                "fakeId",
-                "test sprint",
-                "test desc",
-                Instant.parse("2021-12-03T10:15:30.00Z"),
-                Instant.parse("2021-12-05T10:15:30.00Z"),
-                1L);
-        project.addSprint(sprint);
-        sprintRepository.save(sprint);
-
-        response = validationService.checkUpdateSprint(sprint.getId(), fakeSprint);
-        assertEquals("Given path ID and sprint contract ID are not the same", response);
 
     }
 

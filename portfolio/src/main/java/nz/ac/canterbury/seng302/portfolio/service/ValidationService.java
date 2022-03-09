@@ -81,20 +81,17 @@ public class ValidationService {
                 sprintContract.endDate());
     }
 
-    public String checkUpdateSprint(String sprintId, SprintContract sprintContract) {
+    public String checkUpdateSprint(String sprintId, BaseSprintContract sprintContract) {
 
         try {
             SprintContract sprint = sprintService.get(sprintId);
             try {
-                ProjectContract project = projectService.getById(sprintContract.projectId());
+                ProjectContract project = projectService.getById(sprint.projectId());
                 String response = checkSprintDetails(project, sprint.sprintId(), sprint.startDate(), sprint.endDate());
                 if (!response.equals("Okay")) {
                     return response;
                 }
 
-                if (!sprintId.equals(sprintContract.sprintId())) {
-                    return "Given path ID and sprint contract ID are not the same";
-                }
             } catch (NoSuchElementException error) {
                 return "Project ID does not exist";
             }

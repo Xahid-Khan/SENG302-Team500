@@ -78,7 +78,7 @@ public class SprintService {
      * @param sprint to update, with the update fields filled.
      * @throws NoSuchElementException if the id is invalid
      */
-    public void update(String sprintId, SprintContract sprint) {
+    public void update(String sprintId, BaseSprintContract sprint) {
         var sprintEntity = sprintRepository.findById(sprintId).orElseThrow();
 
         sprintEntity.setName(sprint.name());

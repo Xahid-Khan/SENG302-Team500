@@ -107,7 +107,7 @@ public class SprintController {
      * @return A list of sprints of a given project in Sprint Contract (JSON) type.
      */
     @PutMapping(value = "/sprints/{id}")
-    public ResponseEntity<?> updateSprint(@PathVariable String id, @RequestBody SprintContract sprint) {
+    public ResponseEntity<?> updateSprint(@PathVariable String id, @RequestBody BaseSprintContract sprint) {
         String errorMessage = validationService.checkUpdateSprint(id, sprint);
         System.err.println(errorMessage);
         if (!errorMessage.equals("Okay")) {
