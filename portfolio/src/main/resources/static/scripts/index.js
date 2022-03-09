@@ -622,7 +622,7 @@ class Project {
     this.project.sprints.splice(sprint.orderNumber - 1, 0, sprint);
 
     // Update the orderNumbers of sprints after this one in the list.
-    for (let i=sprint.orderNumber - 1; i < this.project.sprints.length; i++) {
+    for (let i=sprint.orderNumber; i < this.project.sprints.length; i++) {
       this.project.sprints[i].orderNumber ++;
     }
 
