@@ -25,12 +25,11 @@ public class ValidationService {
 
         return checkBaseFields("Project",
                 projectContract.name(),
-                projectContract.description(),
                 projectContract.startDate(),
                 projectContract.endDate());
     }
 
-    public String checkBaseFields(String type, String name, String desc, Instant start, Instant end) {
+    public String checkBaseFields(String type, String name, Instant start, Instant end) {
         if (name.equals("")) {
             return type + " must have a name";
         }
@@ -59,7 +58,6 @@ public class ValidationService {
 
         return checkBaseFields("Project",
                 projectContract.name(),
-                projectContract.description(),
                 projectContract.startDate(),
                 projectContract.endDate());
     }
@@ -76,7 +74,6 @@ public class ValidationService {
         }
         return checkBaseFields("Sprint",
                 sprintContract.name(),
-                sprintContract.description(),
                 sprintContract.startDate(),
                 sprintContract.endDate());
     }
@@ -105,7 +102,6 @@ public class ValidationService {
 
         return checkBaseFields("Sprint",
                 sprintContract.name(),
-                sprintContract.description(),
                 sprintContract.startDate(),
                 sprintContract.endDate());
     }

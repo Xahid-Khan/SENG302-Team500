@@ -64,35 +64,30 @@ public class ValidationServiceTest {
 
         String response = validationService.checkBaseFields("Project",
         "test project",
-                "testing",
                 Instant.parse("2021-12-03T10:15:30.00Z"),
                 Instant.parse("2021-12-05T10:15:30.00Z"));
         assertEquals("Okay", response);
 
         response = validationService.checkBaseFields("Project",
                 "",
-                "test desc",
                 Instant.parse("2021-12-03T10:15:30.00Z"),
                 Instant.parse("2021-12-05T10:15:30.00Z"));
         assertEquals("Project must have a name", response);
 
         response = validationService.checkBaseFields("Sprint",
                 "Sprint$Two",
-                "test desc",
                 Instant.parse("2021-12-03T10:15:30.00Z"),
                 Instant.parse("2021-12-05T10:15:30.00Z"));
         assertEquals("Sprint name cannot contain any special characters", response);
 
         response = validationService.checkBaseFields("Sprint",
                 "Sprint Two",
-                "test desc",
                 Instant.parse("2021-12-03T10:15:30.00Z"),
                 Instant.parse("2021-12-01T10:15:30.00Z"));
         assertEquals("Sprint start date must be earlier than the end date", response);
 
         response = validationService.checkBaseFields("Sprint",
                 "Sprint Two",
-                "test desc",
                 Instant.parse("2020-12-03T10:15:30.00Z"),
                 Instant.parse("2021-12-01T10:15:30.00Z"));
 
