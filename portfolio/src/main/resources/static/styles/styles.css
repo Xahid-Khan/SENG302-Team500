@@ -187,6 +187,7 @@ button:hover {
 
 .description textarea {
     background-color: transparent;
+    max-width: calc(100% - 20px);
 }
 
 .description label {
