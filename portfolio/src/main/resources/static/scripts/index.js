@@ -1176,37 +1176,3 @@ class Application {
   const application = new Application(document.getElementById("project-list"));
   application.fetchProjects();
 })()
-
-
-// Developer tools to create test data.
-window.addProject = async () => {
-  const res = await fetch('/api/v1/projects', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      name: "Test project",
-      description: "Test description",
-      startDate: "2020-01-01T00:00:00.00Z",
-      endDate: "2021-01-01T00:00:00.00Z"
-    })
-  });
-
-  const project = await res.json();
-
-  for (let i = 1; i <= 3; i+=2) {
-    await fetch(`/api/v1/projects/${project.id}/sprints`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        name: `Test sprint ${i}`,
-        description: `Test sprint description ${i}\n\nNB: This sprint covers the entire date range of its parent project.`,
-        startDate: `2020-01-0${i}T00:00:00.00Z`,
-        endDate: `2020-01-0${i+1}T00:00:00.00Z`
-      })
-    });
-  }
-}
