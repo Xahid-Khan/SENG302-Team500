@@ -1,0 +1,47 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://thymeleaf.org" lang="en">
+<head>
+  <title>Sign Up</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <style>
+    h1 {
+      text-align: center;
+      font-weight:normal;
+
+    }
+    form{
+      text-align: center;
+    }
+    input{
+      width: 50%;
+      height: 25%;
+      padding: 12px 20px;
+      margin: 8px 0;
+      box-sizing: border-box;
+    }
+    button{
+      border: solid;
+      border-width: thin;
+      padding: 15px 60px;
+      text-align: center;
+      display: inline-block;
+      font-size: 16px;
+    }
+    href{
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+<h1>Log In<br/></h1>
+<form action="#" th:action="@{/login}" th:object="${login}" method="post">
+  <!--    Submits a populated UserDTO to endpoint register -->
+  Username: <br/><input type="text" th:field="*{username}" /><br/>
+  Password: <br/><input type="password" th:field="*{password}" /><br/>
+
+  <button name=”login” type=”Submit” value=”0”>Log In</button><br/>
+  <a href="http://localhost:9000/register">Don't have an account yet? Sign Up</a>
+</form>
+
+</body>
+</html>
