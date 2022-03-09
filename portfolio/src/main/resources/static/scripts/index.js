@@ -1,54 +1,63 @@
 'use strict';
 
 const LoadingStatus = {
-    NotYetAttempted: "NotYetAttempted",
-    Pending: "Pending",
-    Done: "Done",
-    Error: "Error"
+  NotYetAttempted: "NotYetAttempted",
+  Pending: "Pending",
+  Done: "Done",
+  Error: "Error"
 };
 
 function leftPadNumber(number, places) {
-    const numberString = `${number}`
+  const numberString = `${number}`
 
-    if (numberString.length >= places) {
-        return numberString;
-    }
+  if (numberString.length >= places) {
+    return numberString;
+  }
 
-    return ('0'.repeat(places - numberString.length)) + number;
+  return ('0'.repeat(places - numberString.length)) + number;
 }
 
 class DatetimeUtils {
-    static networkStringToLocalDate(utcString) {
-        return new Date(Date.parse(utcString));
-    }
+  static networkStringToLocalDate(utcString) {
+    return new Date(Date.parse(utcString));
+  }
 
-    static localToNetworkString(localDate) {
-        return localDate.toISOString();
-    }
+  static localToNetworkString(localDate) {
+    return localDate.toISOString();
+  }
 
-    static toLocalYMD(localDate) {
-        return `${leftPadNumber(localDate.getFullYear(), 4)}-${leftPadNumber(localDate.getMonth() + 1, 2)}-${leftPadNumber(localDate.getDate(), 2)}`
-    }
+  static toLocalYMD(localDate) {
+    return `${leftPadNumber(localDate.getFullYear(), 4)}-${leftPadNumber(localDate.getMonth() + 1, 2)}-${leftPadNumber(localDate.getDate(), 2)}`
+  }
 
-    static fromLocalYMD(localString) {
-        // From: https://stackoverflow.com/a/64199706
-        const [year, month, day] = localString.split('-');
-        return new Date(year, month - 1, day);
-    }
+  static fromLocalYMD(localString) {
+    // From: https://stackoverflow.com/a/64199706
+    const [year, month, day] = localString.split('-');
+    return new Date(year, month - 1, day);
+  }
 
-    static localToUserDMY(localDate) {
-        return `${localDate.getDate()} ${localDate.toLocaleString('default', {month: 'long'})} ${localDate.getFullYear()}`
+  static getTimeStringIfNonZeroLocally(date) {
+    if (date.getHours() !== 0 || date.getMinutes() !== 0 || date.getSeconds() !== 0) {
+      // There is an hours/minutes/seconds component to this date in the local timezone.
+      return `${date.getHours()}:${leftPadNumber(date.getMinutes(), 2)}${(date.getSeconds() !== 0) ? ':' + leftPadNumber(date.getSeconds(), 2) : ''}`;
     }
+    return null;
+  }
 
-    static areEqual(date1, date2) {
-        return date1 <= date2 && date2 <= date1;
-    }
+  static localToUserDMY(localDate) {
+    const hoursComponent = this.getTimeStringIfNonZeroLocally(localDate);
+    return `${localDate.getDate()} ${localDate.toLocaleString('default', {month: 'long'})} ${localDate.getFullYear()}${(hoursComponent !== null) ? ' ' + hoursComponent : ''}`;
+  }
+
+  static areEqual(date1, date2) {
+    return date1 <= date2 && date2 <= date1;
+  }
 }
 
 class ProjectView {
-    showingSprints = false;
+  showingSprints = false;
 
-    constructor(containerElement, project, editCallback, deleteCallback, sprintDeleteCallback) {
+    constructor(containerElement, project, editCallback, deleteCallback, sprintDeleteCallback, sprintUpdateCallback) {
         console.log("project", project)
         this.containerElement = containerElement;
         this.project = project;
@@ -57,30 +66,31 @@ class ProjectView {
         this.editCallback = editCallback;
         this.deleteCallback = deleteCallback;
         this.sprintDeleteCallback = sprintDeleteCallback;
+        this.sprintUpdateCallback = sprintUpdateCallback;
 
-        this.constructAndPopulateView();
-        this.wireView();
-    }
+    this.constructAndPopulateView();
+    this.wireView();
+  }
 
-    appendSprint(sprintData) {
-        const sprintElement = document.createElement("div");
-        sprintElement.classList.add("sprint-view", "raised-card");
-        sprintElement.id = `sprint-view-${sprintElement.id}`;
+  appendSprint(sprintData) {
+    const sprintElement = document.createElement("div");
+    sprintElement.classList.add("sprint-view", "raised-card");
+    sprintElement.id = `sprint-view-${sprintElement.id}`;
 
-        this.sprintContainer.appendChild(sprintElement);
+    this.sprintContainer.appendChild(sprintElement);
 
-        console.log("Binding sprint");
-///
-        console.log(sprintData.startDate);
-        this.sprints.set(sprintData.sprintId, new Sprint(sprintElement, sprintData, this.sprintDeleteCallback));
+    console.log("Binding sprint");
 
-        console.log("Sprint bound");
+    console.log(sprintData.startDate);
+    this.sprints.set(sprintData.sprintId, new Sprint(sprintElement, sprintData, this.project, this.sprintUpdateCallback));
+
+    console.log("Sprint bound");
 
 
-    }
+  }
 
-    constructAndPopulateView() {
-        this.containerElement.innerHTML = `
+  constructAndPopulateView() {
+    this.containerElement.innerHTML = `
       <div class="project-title">
           <span class="project-title-text">
             <span id="project-title-text-${this.project.id}"></span> | <span id="project-startDate-${this.project.id}"></span> - <span id="project-endDate-${this.project.id}"></span>
@@ -100,58 +110,63 @@ class ProjectView {
       <div class="sprints" id="sprints-container-${this.project.id}"></div>
     `;
 
-        document.getElementById(`project-title-text-${this.project.id}`).innerText = this.project.name;
-        document.getElementById(`project-description-${this.project.id}`).innerText = this.project.description;
-        document.getElementById(`project-startDate-${this.project.id}`).innerText = DatetimeUtils.localToUserDMY(this.project.startDate);
-        document.getElementById(`project-endDate-${this.project.id}`).innerText = DatetimeUtils.localToUserDMY(this.project.endDate);
+    document.getElementById(`project-title-text-${this.project.id}`).innerText = this.project.name;
+    document.getElementById(`project-description-${this.project.id}`).innerText = this.project.description;
+    document.getElementById(`project-startDate-${this.project.id}`).innerText = DatetimeUtils.localToUserDMY(this.project.startDate);
+    document.getElementById(`project-endDate-${this.project.id}`).innerText = DatetimeUtils.localToUserDMY(this.project.endDate);
 
         this.addSprintButton = document.getElementById(`add-sprint-button-${this.project.id}`);
         this.toggleSprintsButton = document.getElementById(`toggle-sprint-button-${this.project.id}`);
         this.sprintsContainer = document.getElementById(`sprints-container-${this.project.id}`);
-        this.sprintContainer = document.getElementById(`sprints-container-${this.project.id}`);
+    this.sprintContainer = document.getElementById(`sprints-container-${this.project.id}`);
 
-        for (let i = 0; i < this.project.sprints.length; i++) {
-            this.appendSprint(this.project.sprints[i]);
-
-        }
-    }
-
-    toggleSprints() {
-        if (this.showingSprints) {
-            // Hide the sprints
-            this.addSprintButton.style.display = "none";
-            this.toggleSprintsButton.innerText = "Show Sprints";
-            this.sprintsContainer.style.display = "none";
-        } else {
-            // Show the sprints
-            this.addSprintButton.style.display = "inline";
-            this.toggleSprintsButton.innerText = "Hide Sprints";
-            this.sprintsContainer.style.display = "block";
-        }
-
-        this.showingSprints = !this.showingSprints;
-    }
-
-    wireView() {
-        document.getElementById(`project-edit-button-${this.project.id}`).addEventListener("click", () => this.editCallback());
-        document.getElementById(`project-delete-button-${this.project.id}`).addEventListener("click", () => this.deleteCallback());
-        this.toggleSprintsButton.addEventListener('click', this.toggleSprints.bind(this));
-    }
-
-
-    dispose() {
+    for (let i = 0; i < this.project.sprints.length; i++) {
+      this.appendSprint(this.project.sprints[i]);
 
     }
+  }
+
+  toggleSprints() {
+    if (this.showingSprints) {
+      // Hide the sprints
+      this.addSprintButton.style.display = "none";
+      this.toggleSprintsButton.innerText = "Show Sprints";
+      this.sprintsContainer.style.display = "none";
+    }
+    else {
+      // Show the sprints
+      this.addSprintButton.style.display = "inline";
+      this.toggleSprintsButton.innerText = "Hide Sprints";
+      this.sprintsContainer.style.display = "block";
+    }
+
+    this.showingSprints = !this.showingSprints;
+  }
+
+  wireView() {
+    document.getElementById(`project-edit-button-${this.project.id}`).addEventListener("click", () => this.editCallback());
+    document.getElementById(`project-delete-button-${this.project.id}`).addEventListener("click", () => this.deleteCallback());
+    this.toggleSprintsButton.addEventListener('click', this.toggleSprints.bind(this));
+    // TODO: fill in the sprints here...
+  }
+
+  dispose() {
+
+  }
 }
 
-class ProjectEditor {
-    constructor(containerElement, projectData, cancelCallback, submitCallback) {
+class ProjectOrSprintEditor {
+  startDateEdited = false
+  endDateEdited = false
+
+    constructor(containerElement, entityData, cancelCallback, submitCallback, customDatesValidator) {
         this.containerElement = containerElement;
-        this.initialProjectData = projectData;
-        this.projectId = projectData.id;
+        this.initialData = entityData;
+        this.entityId = entityData.id ?? entityData.sprintId;
 
         this.cancelCallback = cancelCallback;
         this.submitCallback = submitCallback;
+    this.customDatesValidator = customDatesValidator ?? function() {return null;};
 
         this.constructView();
         this.fillDefaults();
@@ -160,43 +175,45 @@ class ProjectEditor {
 
     constructView() {
         this.containerElement.innerHTML = `
-      <div class="edit-project-section" id="edit-project-section-${this.projectId}">
+      <div class="edit-project-section" id="edit-project-section-${this.entityId}">
           <p class="edit-section-title">Edit Project Details:</p>
-          <form class="user-inputs" id="edit-project-section-form-${this.projectId}">
+          <form class="user-inputs" id="edit-project-section-form-${this.entityId}">
   
-              <label>Project Name*:</label>
-              <input type="text" name="project-name" id="edit-project-name-${this.projectId}"><br>
-              <div id="edit-project-name-error-${this.projectId}" class="form-error" style="display: none;"></div><br>
+              <label>Name*:</label>
+              <input type="text" name="project-name" id="edit-project-name-${this.entityId}"><br>
+              <div id="edit-project-name-error-${this.entityId}" class="form-error" style="display: none;"></div><br>
               
               <div class="description">
                   <label>Description:</label>
-                  <textarea name="description" id="edit-description-${this.projectId}" cols="50" rows="10"></textarea><br><br>
+                  <textarea name="description" id="edit-description-${this.entityId}" cols="50" rows="10"></textarea><br><br>
               </div>
               <label>Start Date*:</label>
-              <input type="date" name="start-date" id="edit-start-date-${this.projectId}"><br><br>
+              <input type="date" name="start-date" id="edit-start-date-${this.entityId}"> <span id="edit-start-date-hours-${this.entityId}"></span><br><br>
               <label>End Date*:</label>
-              <input type="date" name="end-date" id="edit-end-date-${this.projectId}"><br>
-              <div id="edit-project-date-error-${this.projectId}" class="form-error" style="display: none;"></div><br>
+              <input type="date" name="end-date" id="edit-end-date-${this.entityId}"> <span id="edit-end-date-hours-${this.entityId}"></span><br>
+              <div id="edit-project-date-error-${this.entityId}" class="form-error" style="display: none;"></div><br>
               
               <p>* = Required field.</p>
-  
           </form>
           <div class="save-buttons">
-              <button class="button save" id="edit-save-button-${this.projectId}">Save</button>
-              <button class="button cancel" id="edit-cancel-button-${this.projectId}">Cancel</button>
+              <button class="button save" id="edit-save-button-${this.entityId}">Save</button>
+              <button class="button cancel" id="edit-cancel-button-${this.entityId}">Cancel</button>
           </div>
       </div>
     `
 
-        this.nameInput = document.getElementById(`edit-project-name-${this.projectId}`);
-        this.descriptionInput = document.getElementById(`edit-description-${this.projectId}`);
-        this.startDateInput = document.getElementById(`edit-start-date-${this.projectId}`);
-        this.endDateInput = document.getElementById(`edit-end-date-${this.projectId}`);
-        this.saveButton = document.getElementById(`edit-save-button-${this.projectId}`);
+        this.nameInput = document.getElementById(`edit-project-name-${this.entityId}`);
+        this.descriptionInput = document.getElementById(`edit-description-${this.entityId}`);
+        this.startDateInput = document.getElementById(`edit-start-date-${this.entityId}`);
+        this.endDateInput = document.getElementById(`edit-end-date-${this.entityId}`);
+        this.saveButton = document.getElementById(`edit-save-button-${this.entityId}`);
+
+    this.startDateHoursField = document.getElementById(`edit-start-date-hours-${this.entityId}`);
+    this.endDateHoursField = document.getElementById(`edit-end-date-hours-${this.entityId}`);
 
         // Error fields
-        this.nameErrorEl = document.getElementById(`edit-project-name-error-${this.projectId}`);
-        this.dateErrorEl = document.getElementById(`edit-project-date-error-${this.projectId}`);
+        this.nameErrorEl = document.getElementById(`edit-project-name-error-${this.entityId}`);
+        this.dateErrorEl = document.getElementById(`edit-project-date-error-${this.entityId}`);
     }
 
     setNameError(message) {
@@ -218,11 +235,33 @@ class ProjectEditor {
     }
 
     fillDefaults() {
-        this.nameInput.value = this.initialProjectData.name ?? "";
-        this.descriptionInput.value = this.initialProjectData.description ?? "";
-        this.startDateInput.value = (this.initialProjectData.startDate) ? DatetimeUtils.toLocalYMD(this.initialProjectData.startDate) : "";
-        this.endDateInput.value = (this.initialProjectData.endDate) ? DatetimeUtils.toLocalYMD(this.initialProjectData.endDate) : "";
+        this.nameInput.value = this.initialData.name ?? "";
+        this.descriptionInput.value = this.initialData.description ?? "";
+        this.startDateInput.value = (this.initialData.startDate) ? DatetimeUtils.toLocalYMD(this.initialData.startDate) : "";
+        this.endDateInput.value = (this.initialData.endDate) ? DatetimeUtils.toLocalYMD(this.initialData.endDate) : "";
+
+    if (this.initialData.startDate) {
+      const startDateHours = DatetimeUtils.getTimeStringIfNonZeroLocally(this.initialData.startDate);
+      if (startDateHours !== null) {
+        this.startDateHoursField.style.display = "inline";
+        this.startDateHoursField.innerText = startDateHours;
+      }
+      else {
+        this.startDateHoursField.style.display = "none";
+      }
     }
+
+    if (this.initialData.endDate) {
+      const endDateHours = DatetimeUtils.getTimeStringIfNonZeroLocally(this.initialData.endDate);
+    if (endDateHours !== null) {
+        this.endDateHoursField.style.display = "inline";
+        this.endDateHoursField.innerText = endDateHours;
+      }
+      else {
+        this.endDateHoursField.style.display = "none";
+      }
+    }
+  }
 
     /**
      * Checks that the name field is valid and populates the error field if not.
@@ -240,7 +279,9 @@ class ProjectEditor {
     }
 
     getStartDateInputValue() {
-        const rawValue = this.startDateInput.value;
+        if (!this.startDateEdited) {
+      return this.initialData.startDate ?? null;
+    }const rawValue = this.startDateInput.value;
         if (rawValue) {
             return DatetimeUtils.fromLocalYMD(rawValue);
         }
@@ -248,7 +289,9 @@ class ProjectEditor {
     }
 
     getEndDateInputValue() {
-        const rawValue = this.endDateInput.value;
+        if (!this.endDateEdited) {
+      return this.initialData.endDate ?? null;
+    }const rawValue = this.endDateInput.value;
         if (rawValue) {
             return DatetimeUtils.fromLocalYMD(rawValue);
         }
@@ -274,7 +317,11 @@ class ProjectEditor {
             }
         }
 
-        this.setDateError(null);
+        const customError = this.customDatesValidator(startDate, endDate);
+    if (customError !== null) {
+      this.setDateError(customError);
+      return false;
+    }this.setDateError(null);
         return true;
     }
 
@@ -306,16 +353,24 @@ class ProjectEditor {
 
     wireView() {
         this.saveButton.addEventListener('click', () => this.validateAndSubmit());
-        document.getElementById(`edit-project-section-form-${this.projectId}`).addEventListener('submit', (evt) => {
+        document.getElementById(`edit-project-section-form-${this.entityId}`).addEventListener('submit', (evt) => {
             evt.preventDefault();
             this.validateAndSubmit();
         });
-        document.getElementById(`edit-cancel-button-${this.projectId}`).addEventListener('click', () => this.cancelCallback());
+        document.getElementById(`edit-cancel-button-${this.entityId}`).addEventListener('click', () => this.cancelCallback());
 
         this.nameInput.addEventListener('change', this.validateName.bind(this));  // Is only called after the text field loses focus.
         this.nameInput.addEventListener('input', this.validateName.bind(this));  // Ensure that the validator is called as the user types to provide real-time feedback.
-        this.startDateInput.addEventListener('change', this.validateDates.bind(this));
-        this.endDateInput.addEventListener('change', this.validateDates.bind(this));
+        this.startDateInput.addEventListener('change', () => {
+      this.startDateEdited = true;
+      this.startDateHoursField.style.display = "none";  // Date is in local time now, so no hours component is necessary.
+      this.validateDates();
+    });
+        this.endDateInput.addEventListener('change', () => {
+      this.endDateEdited = true;
+      this.endDateHoursField.style.display = "none";  // Date is in local time now, so no hours component is necessary.
+      this.validateDates();
+    });
     }
 
     dispose() {
@@ -325,45 +380,46 @@ class ProjectEditor {
 
 
 class SprintView {
-    constructor(containerElement, sprint, deleteCallback) {
-        this.containerElement = containerElement;
-        this.sprint = sprint;
-        this.sprintConstruct(sprint);
-        this.deleteCallback = deleteCallback;
-        this.wireView();
-    }
+  constructor(containerElement, sprint, editCallback) {
+    this.containerElement = containerElement;
+    this.sprint = sprint;
+    this.editCallback = editCallback;
 
-    sprintConstruct(sprint) {
-        this.containerElement.innerHTML = `
-    <div class="sprints" id="sprints-container-${sprint.sprintId}"></div>
+    this.constructView();
+    this.wireView();
+  }
+
+  constructView() {
+    this.containerElement.innerHTML = `
+    <div class="sprints" id="sprints-container-${this.sprint.sprintId}"></div>
     <div class="sprint-title">
+        <span id="sprint-order-text-${this.sprint.sprintId}"></span>: <span id="sprint-title-text-${this.sprint.sprintId}" style="font-style: italic;"></span> | <span id="start-date-${this.sprint.sprintId}"></span> - <span id="end-date-${this.sprint.sprintId}"></span>
 
-                        <span id="sprint-title-text-${sprint.sprintId}"></span> | <span id="start-date-${sprint.sprintId}"></span> - <span id="end-date-${sprint.sprintId}"></span>
+        <span class="crud">
+            <button class="button sprint-controls" id="sprint-button-edit-${this.sprint.sprintId}">Edit</button>
+            <button class="button sprint-controls">Delete</button>
+            <button class="button toggle-sprint-details" id="toggle-sprint-details-0-0">+</button>
+        </span>
+    </div>
+    <div class="sprint-description" id="sprint-description-${this.sprint.sprintId}">
 
-                        <span class="crud">
-                            <button class="button sprint-controls" id="sprint-edit-${sprint.sprintId}">Edit</button>
-                            <button class="button sprint-controls" id="sprint-delete-${sprint.sprintId}">Delete</button>
-                            <button class="button toggle-sprint-details" id="toggle-sprint-details-0-0">+</button>
-                        </span>
-                    </div>
-                    <div class="sprint-description" id="sprint-description-${sprint.sprintId}">
+    </div>
+    `;
 
-                    </div>
-                    
-                        `;
+    document.getElementById(`sprint-order-text-${this.sprint.sprintId}`).innerText = `Sprint ${this.sprint.orderNumber}`;
+    document.getElementById(`sprint-title-text-${this.sprint.sprintId}`).innerText = this.sprint.name;
+    document.getElementById(`sprint-description-${this.sprint.sprintId}`).innerText = this.sprint.description;
+    document.getElementById(`start-date-${this.sprint.sprintId}`).innerText = DatetimeUtils.localToUserDMY(this.sprint.startDate);
+    document.getElementById(`end-date-${this.sprint.sprintId}`).innerText = DatetimeUtils.localToUserDMY(this.sprint.endDate);
+  }
 
-        document.getElementById(`sprint-title-text-${sprint.sprintId}`).innerHTML = sprint.name;
-        document.getElementById(`sprint-description-${sprint.sprintId}`).innerHTML = sprint.description;
-        document.getElementById(`start-date-${sprint.sprintId}`).innerHTML = sprint.startDate;
-        document.getElementById(`end-date-${sprint.sprintId}`).innerHTML = sprint.endDate;
-
-
-    }
-
-    wireView() {
+        wireView() {
+        document.getElementById(`sprint-button-edit-${this.sprint.sprintId}`).addEventListener('click', () => this.editCallback());
         document.getElementById(`sprint-delete-${this.sprint.sprintId}`).addEventListener("click", () => this.deleteCallback());
 
-    }
+        }
+
+
 
 }
 
@@ -376,7 +432,8 @@ class Project {
         this.containerElement = containerElement;
         this.project = data;
 
-        this.currentView = new ProjectView(containerElement, this.project, this.showEditor.bind(this), this.deleteProject.bind(this), this.deleteSprint.bind(this));
+    this.currentView = null;
+    this.showViewer();
 
         this.updateLoadingStatus = LoadingStatus.NotYetAttempted;
 
@@ -384,22 +441,44 @@ class Project {
         this.deleteCallback = deleteCallback;
     }
 
-    /**
-     * Gets the project to explicitly destroy itself prior
+    onSprintUpdate(sprint) {
+    console.log(`Project notified of update to sprint: `, sprint);
+
+    // Delete the outdated sprint from the sprints array.
+    for (let i=0; i < this.project.sprints.length; i++) {
+      if (this.project.sprints[i].sprintId === sprint.sprintId) {
+        this.project.sprints.splice(i, 1);
+        break;
+      }
+    }
+
+    // Insert the updated sprint.
+    this.project.sprints.splice(sprint.orderNumber - 1, 0, sprint);
+
+    // Update the orderNumbers of sprints after this one in the list.
+    for (let i=sprint.orderNumber - 1; i < this.project.sprints.length; i++) {
+      this.project.sprints[i].orderNumber ++;
+    }
+
+    // Refresh the view
+    this.showViewer();
+    this.currentView.toggleSprints();
+  }/**
+     * Gets the project to explicitly destroy itself .
      */
     dispose() {
         this.currentView.dispose();
     }
 
     showEditor() {
-        this.currentView.dispose();
-        this.currentView = new ProjectEditor(this.containerElement, this.project, this.showViewer.bind(this), this.updateProject.bind(this));
+        this.currentView?.dispose();
+        this.currentView = new ProjectOrSprintEditor(this.containerElement, this.project, this.showViewer.bind(this), this.updateProject.bind(this));
     }
 
-    showViewer() {
-        this.currentView.dispose();
-        this.currentView = new ProjectView(this.containerElement, this.project, this.showEditor.bind(this), this.deleteProject.bind(this), this.deleteSprint.bind(this));
-    }
+  showViewer() {
+    this.currentView.dispose();
+    this.currentView = new ProjectView(this.containerElement, this.project, this.showEditor.bind(this), this.deleteProject.bind(this), this.deleteSprint.bind(this), this.onSprintUpdate.bind(this));
+  }
 
     async updateProject(newProject) {
         if (this.updateLoadingStatus === LoadingStatus.Pending) {
@@ -498,47 +577,129 @@ class Project {
 }
 
 class Sprint {
-    constructor(containerElement, data, deleteCallback) {
-        this.containerElement = containerElement;
-        this.currentView = new SprintView(containerElement, data, this.deleteSprint.bind(this));
-        this.sprintId = data.sprintId;
-        this.deleteCallback = deleteCallback;
+  constructor(containerElement, data, project, deleteCallback, sprintUpdateSavedCallback) {
+    this.containerElement = containerElement;
+    this.project = project;
+    this.sprint = data;
+    this.sprintUpdateSavedCallback = sprintUpdateSavedCallback;
+    this.deleteCallback = deleteCallback;
+    this.updateSprintLoadingStatus = LoadingStatus.NotYetAttempted;
+
+    this.currentView = null;
+    this.showViewer();
+  }
+
+  async updateSprint(newValue) {
+    if (this.updateSprintLoadingStatus === LoadingStatus.Pending) {
+      return;
+    }
+    else if (
+      newValue.name === this.sprint.name
+      && newValue.description === this.sprint.description
+      && DatetimeUtils.areEqual(newValue.startDate, this.sprint.startDate)
+      && DatetimeUtils.areEqual(newValue.endDate, this.sprint.endDate)
+    ) {
+      // Nothing has changed
+      this.showViewer();
+      return;
     }
 
-    /**
-     * Gets the sprint to explicitly destroy itself prior
-     */
-    dispose() {
-        this.currentView.dispose();
-    }
+    this.updateSprintLoadingStatus = LoadingStatus.Pending;
 
-    async deleteSprint() {
-        if (this.deleteLoadingStatus === LoadingStatus.Pending) {
-            return;
+    try {
+      const result = await fetch(`/api/v1/sprints/${this.sprint.sprintId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(newValue)
+      })
+
+      if (!result.ok) {
+        throw new Error(`Received unsuccessful status code while updating sprint: ${result.status} ${result.statusText}`);
+      }
+
+      const newSprint = await result.json();
+      this.sprintUpdateSavedCallback({
+        ...newSprint,
+        startDate: DatetimeUtils.networkStringToLocalDate(newSprint.startDate),
+        endDate: DatetimeUtils.networkStringToLocalDate(newSprint.endDate)
+      });
+    }
+    catch (ex) {
+      this.updateSprintLoadingStatus = LoadingStatus.Error;
+      throw ex;
+    }
+  }
+
+  validateDates(startDate, endDate) {
+    if (startDate < this.project.startDate || this.project.endDate < endDate) {
+      return "Sprint must fit within the project dates.";
+    }
+    else {
+      // Find overlaps...
+      for (const sprint of this.project.sprints.values()) {
+        if (sprint.sprintId === this.sprint.sprintId) {
+          continue;
         }
 
-        this.deleteLoadingStatus = LoadingStatus.Pending;
-
-        try {
-            const result = await fetch(`/api/v1/sprints/${this.sprintId}`, {
-                method: 'DELETE'
-            })
-            console.log(this.sprintId);
-            if (!result.ok) {
-                this.deleteLoadingStatus = LoadingStatus.Error;
-                throw new Error(`Got unexpected status code: ${result.status} ${result.statusText}`);
-            }
-
-            this.deleteLoadingStatus = LoadingStatus.Done;
-            this.deleteCallback(this.sprintId);
-        } catch (ex) {
-            this.deleteLoadingStatus = LoadingStatus.Error;
-            throw ex;
+        // Taken from: https://stackoverflow.com/a/325964
+        if (startDate <= sprint.endDate && endDate >= sprint.startDate) {
+          return `This date range overlaps with Sprint ${sprint.orderNumber}. Please choose a non-overlapping date range.`;
         }
+      }
     }
 
+    return null;
+  }
 
+  showEditor() {
+    this.currentView?.dispose();
+    this.currentView = new ProjectOrSprintEditor(
+      this.containerElement,
+      this.sprint,
+      this.showViewer.bind(this),
+      this.updateSprint.bind(this),
+      this.validateDates.bind(this)
+    );
+  }
 
+  showViewer() {
+    this.currentView?.dispose();
+    this.currentView = new SprintView(this.containerElement, this.sprint, this.showEditor.bind(this));
+  }
+
+  /**
+   * Gets the sprint to explicitly destroy itself prior
+   */
+  dispose() {
+    this.currentView.dispose();
+  }
+
+  async deleteSprint() {
+    if (this.deleteLoadingStatus === LoadingStatus.Pending) {
+      return;
+    }
+
+    this.deleteLoadingStatus = LoadingStatus.Pending;
+
+    try {
+      const result = await fetch(`/api/v1/sprints/${this.sprintId}`, {
+        method: 'DELETE'
+      })
+      console.log(this.sprintId);
+      if (!result.ok) {
+        this.deleteLoadingStatus = LoadingStatus.Error;
+        throw new Error(`Got unexpected status code: ${result.status} ${result.statusText}`);
+      }
+
+      this.deleteLoadingStatus = LoadingStatus.Done;
+      this.deleteCallback(this.sprintId);
+    } catch (ex) {
+      this.deleteLoadingStatus = LoadingStatus.Error;
+      throw ex;
+    }
+  }
 
 
 }
@@ -628,7 +789,7 @@ class Application {
 
         this.addProjectForm = {
             container: formContainerElement,
-            controller: new ProjectEditor(formContainerElement, defaultProject, this.closeAddProjectForm.bind(this), this.submitAddProjectForm.bind(this))
+            controller: new ProjectOrSprintEditor(formContainerElement, defaultProject, this.closeAddProjectForm.bind(this), this.submitAddProjectForm.bind(this))
         };
     }
 
@@ -649,6 +810,11 @@ class Application {
         // Post-process the projectData
         projectData.startDate = DatetimeUtils.networkStringToLocalDate(projectData.startDate);
         projectData.endDate = DatetimeUtils.networkStringToLocalDate(projectData.endDate);
+    projectData.sprints = projectData.sprints.map(sprint => ({
+      ...sprint,
+      startDate: DatetimeUtils.networkStringToLocalDate(sprint.startDate),
+      endDate: DatetimeUtils.networkStringToLocalDate(sprint.endDate)
+    }));
 
         // Construct base HTML
         const projectElement = document.createElement("div");
@@ -694,7 +860,14 @@ class Application {
             console.log(`Acquired ${data.length} projects...`);
             this.projects = new Map();
             data.map(project => this.appendProject(project));
-            this.projectsLoadingState = LoadingStatus.Done;
+      if (this.projects.size === 1) {
+        // Automatically expand the list of sprints if only one project is loaded.
+        this.projects.forEach((project) => {
+          if (project.currentView.toggleSprints) {
+            project.currentView.toggleSprints();
+          }
+        })
+      }      this.projectsLoadingState = LoadingStatus.Done;
         } catch (ex) {
             this.projectsLoadingState = LoadingStatus.Error;
             throw ex;
@@ -732,7 +905,7 @@ window.addProject = async () => {
 
     const project = await res.json();
 
-    for (let i = 1; i <= 5; i++) {
+    for (let i = 1; i <= 3; i+=2) {
         await fetch(`/api/v1/projects/${project.id}/sprints`, {
             method: 'POST',
             headers: {
@@ -742,7 +915,7 @@ window.addProject = async () => {
                 name: `Test sprint ${i}`,
                 description: `Test sprint description ${i}\n\nNB: This sprint covers the entire date range of its parent project.`,
                 startDate: `2020-01-0${i}T00:00:00.00Z`,
-                endDate: `2020-01-0${i}T01:00:00.00Z`
+                endDate: `2020-01-0${i+1}T00:00:00.00Z`
             })
         });
     }

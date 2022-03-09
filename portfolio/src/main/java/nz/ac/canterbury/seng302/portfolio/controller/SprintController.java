@@ -90,14 +90,14 @@ public class SprintController {
      * This method will be invoked when API receives a PUT request with a Project ID embedded in URL and
      * updated sprint data in the body.
      * @param id Project-ID of the project User wants to make the changes to.
-     * @return A list of sprints of a given project in Sprint Contract (JSON) type.
+     * @return The updated sprint value
      */
     @PutMapping(value = "/sprints/{id}")
-    public ResponseEntity<Void> updateSprint(@PathVariable String id, @RequestBody BaseSprintContract sprint) {
+    public ResponseEntity<SprintContract> updateSprint(@PathVariable String id, @RequestBody BaseSprintContract sprint) {
         try {
             sprintService.update(id, sprint);
 
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+            return ResponseEntity.ok(sprintService.get(id));
         }
         catch (NoSuchElementException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
