@@ -69,7 +69,7 @@ public class ProjectController {
 
             if (!errorMessage.equals("Okay")) {
                 if (errorMessage.equals("Project ID does not exist")) {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
                 }
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
             }
@@ -112,7 +112,7 @@ public class ProjectController {
 
             if (!errorMessage.equals("Okay")) {
                 if (errorMessage.equals("Project ID does not exist")) {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
                 }
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
             }

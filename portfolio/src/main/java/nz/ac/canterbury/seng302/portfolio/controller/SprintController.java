@@ -83,10 +83,9 @@ public class SprintController {
     @PostMapping(value = "/projects/{projectId}/sprints", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> createSprint(@PathVariable String projectId, @RequestBody BaseSprintContract sprint) {
         String errorMessage = validationService.checkAddSprint(projectId, sprint);
-
         if (!errorMessage.equals("Okay")) {
             if (errorMessage.equals("Project ID does not exist") || errorMessage.equals("Sprint ID does not exist")) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
             }
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
         }
@@ -112,7 +111,7 @@ public class SprintController {
         String errorMessage = validationService.checkUpdateSprint(id, sprint);
         if (!errorMessage.equals("Okay")) {
             if (errorMessage.equals("Project ID does not exist") || errorMessage.equals("Sprint ID does not exist")) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
             }
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
         }

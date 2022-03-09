@@ -67,7 +67,7 @@ public class ValidationService {
     public String checkAddSprint(String projectId, BaseSprintContract sprintContract) {
         try {
             ProjectContract project = projectService.getById(projectId);
-            String response = checkSprintDetails(project, sprintContract.startDate(), sprintContract.endDate());
+            String response = checkSprintDetails(project, "placeholderId", sprintContract.startDate(), sprintContract.endDate());
             if (!response.equals("Okay")) {
                 return response;
             }
@@ -87,7 +87,7 @@ public class ValidationService {
             SprintContract sprint = sprintService.get(sprintId);
             try {
                 ProjectContract project = projectService.getById(sprintContract.projectId());
-                String response = checkSprintDetails(project, sprint.startDate(), sprint.endDate());
+                String response = checkSprintDetails(project, sprint.sprintId(), sprint.startDate(), sprint.endDate());
                 if (!response.equals("Okay")) {
                     return response;
                 }
@@ -113,7 +113,8 @@ public class ValidationService {
                 sprintContract.endDate());
     }
 
-    public String checkSprintDetails(ProjectContract project, Instant start, Instant end) {
+    public String checkSprintDetails(ProjectContract project, String sprintId, Instant start, Instant end) {
+
 
         if (start.isBefore(project.startDate())) {
             return "Sprint cannot start before project start date";
@@ -122,7 +123,7 @@ public class ValidationService {
             return "Sprint cannot end after project end date";
         }
         int numSprints = project.sprints().size();
-        if (numSprints >= 1 && !start.isAfter(project.sprints().get(numSprints - 1).endDate())) {
+        if (numSprints >= 1 && !start.isAfter(project.sprints().get(numSprints - 1).endDate()) && !project.sprints().get(numSprints - 1).sprintId().equals(sprintId)) {
             return "Sprint cannot begin while another sprint is still in progress";
         }
         return "Okay";
