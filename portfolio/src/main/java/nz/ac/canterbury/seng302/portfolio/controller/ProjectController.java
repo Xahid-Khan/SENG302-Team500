@@ -67,7 +67,10 @@ public class ProjectController {
         try {
             var errorMessage = validationService.checkAddProject(newProject);
 
-            if (!Objects.equals(errorMessage, "Okay")) {
+            if (!errorMessage.equals("Okay")) {
+                if (errorMessage.equals("Project ID does not exist")) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+                }
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
             }
             var project = projectService.create(newProject);
@@ -107,7 +110,10 @@ public class ProjectController {
         try {
             var errorMessage = validationService.checkUpdateProject(id, updatedProject);
 
-            if (!Objects.equals(errorMessage, "Okay")) {
+            if (!errorMessage.equals("Okay")) {
+                if (errorMessage.equals("Project ID does not exist")) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+                }
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
             }
             projectService.update(updatedProject, id);

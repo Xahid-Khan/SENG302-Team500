@@ -232,21 +232,23 @@ public class SprintControllerTest {
 
     @Test
     public void updateValidSprint() throws Exception {
-        var project = new ProjectEntity("test project", null, Instant.EPOCH, Instant.parse("2007-12-03T10:15:30.00Z"));
-        var sprint = new SprintEntity("pre-edit test sprint", "pre-test description", Instant.EPOCH, Instant.parse("2007-12-03T10:15:30.00Z"));
+        var project = new ProjectEntity("test project", null, Instant.EPOCH, Instant.parse("2021-12-03T10:15:30.00Z"));
+        var sprint = new SprintEntity("pre-edit test sprint", "pre-test description", Instant.EPOCH, Instant.parse("2021-12-03T10:15:30.00Z"));
         project.addSprint(sprint);
         projectRepository.save(project);
         sprintRepository.save(sprint);
-
+        String projectId = project.getId();
+        String sprintId = sprint.getId();
         var apiPath = String.format("/api/v1/sprints/%s", sprint.getId());
-        var body = """
+        var body = String.format("""
             {
+                "projectId": "%s",
+                "sprintId": "%s",
                 "name": "post-edit test sprint",
                 "startDate": "2023-01-01T10:00:00.00Z",
                 "endDate": "2023-01-15T10:00:00.00Z"
             }
-            """;
-
+            """, projectId, sprintId);
         this.mockMvc.perform(
                 put(apiPath)
                     .contentType(MediaType.APPLICATION_JSON)
