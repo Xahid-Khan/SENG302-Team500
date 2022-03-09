@@ -60,6 +60,9 @@ class PortfolioNetworkError extends Error {
   }
 }
 
+/**
+ * Handles network errors.
+ */
 class ErrorHandlerUtils {
   static async handleNetworkError(response, context) {
     const body = await response.text();
@@ -80,6 +83,9 @@ class ErrorHandlerUtils {
   }
 }
 
+/**
+ * Handles view of the Projects and populating the HTML.
+ */
 class ProjectView {
   showingSprints = false;
 
@@ -101,6 +107,9 @@ class ProjectView {
     this.wireView();
   }
 
+  /**
+   * Append a sprint element to the sprintElement and instantiate and store a sprint with the given data.
+   */
   appendSprint(sprintData) {
     const sprintElement = document.createElement("div");
     sprintElement.classList.add("sprint-view", "raised-card");
@@ -118,6 +127,9 @@ class ProjectView {
 
   }
 
+  /**
+   * Adds HTML in to the project container, with the main attributes of projects and sprints.
+   */
   constructAndPopulateView() {
     this.containerElement.innerHTML = `
       <div class="project-title">
@@ -154,6 +166,9 @@ class ProjectView {
     }
   }
 
+  /**
+   * Toggles hiding and showing of the sprints.
+   */
   toggleSprints() {
     if (this.showingSprints) {
       // Hide the sprints
@@ -171,6 +186,9 @@ class ProjectView {
     this.showingSprints = !this.showingSprints;
   }
 
+  /**
+   * Opens the add sprint form.
+   */
   openAddSprintForm() {
     if (this.addSprintForm !== null) {
       return;
@@ -202,6 +220,9 @@ class ProjectView {
     };
   }
 
+  /**
+   * Closes the add sprint form.
+   */
   closeAddSprintForm() {
     if (this.addSprintForm === null) {
       return;
@@ -212,6 +233,11 @@ class ProjectView {
     this.addSprintForm = null;
   }
 
+  /**
+   * Submits the add sprint form, checking if this task is not being done currently (loading status).
+   * @param sprint
+   * @returns {Promise<void>}
+   */
   async submitAddSprintForm(sprint) {
     if (this.addSprintLoadingStatus === LoadingStatus.Pending) {
       return;
@@ -260,6 +286,9 @@ class ProjectView {
   }
 }
 
+/**
+ * Handles editing view for both Projects and Sprints.
+ */
 class ProjectOrSprintEditor {
   startDateEdited = false
   endDateEdited = false
@@ -279,6 +308,9 @@ class ProjectOrSprintEditor {
     this.wireView();
   }
 
+  /**
+   * Constructs view for the Projects, populating the HTML.
+   */
   constructView() {
     this.containerElement.innerHTML = `
       <div class="edit-project-section" id="edit-project-section-${this.entityId}">
@@ -323,6 +355,10 @@ class ProjectOrSprintEditor {
     this.dateErrorEl = document.getElementById(`edit-project-date-error-${this.entityId}`);
   }
 
+  /**
+   * Sets error message for invalid names.
+   * @param message
+   */
   setNameError(message) {
     if (message) {
       this.nameErrorEl.style.display = "block";
@@ -332,6 +368,10 @@ class ProjectOrSprintEditor {
     }
   }
 
+  /**
+   * Sets error message for invalid dates.
+   * @param message
+   */
   setDateError(message) {
     if (message) {
       this.dateErrorEl.style.display = "block";
@@ -341,6 +381,9 @@ class ProjectOrSprintEditor {
     }
   }
 
+  /**
+   * Sets the initial defaults for the inputs.
+   */
   fillDefaults() {
     this.nameInput.value = this.initialData.name ?? "";
     this.descriptionInput.value = this.initialData.description ?? "";
@@ -385,6 +428,9 @@ class ProjectOrSprintEditor {
     return true;
   }
 
+  /**
+   * Gets the start date from user input, otherwise defaults to initial default value.
+   */
   getStartDateInputValue() {
     if (!this.startDateEdited) {
       return this.initialData.startDate ?? null;
@@ -395,6 +441,9 @@ class ProjectOrSprintEditor {
     return null;
   }
 
+  /**
+   * Gets the end date from user input, otherwise dafaults to initial default value.
+   */
   getEndDateInputValue() {
     if (!this.endDateEdited) {
       return this.initialData.endDate ?? null;
@@ -432,6 +481,9 @@ class ProjectOrSprintEditor {
     return true;
   }
 
+  /**
+   * Validates names and dates, if valid submits the form.
+   */
   async validateAndSubmit() {
     const hasErrors = [
       this.validateName(),
@@ -458,6 +510,9 @@ class ProjectOrSprintEditor {
     }
   }
 
+  /**
+   * Attach listeners to input fields.
+   */
   wireView() {
     this.saveButton.addEventListener('click', () => this.validateAndSubmit());
     document.getElementById(`edit-project-section-form-${this.entityId}`).addEventListener('submit', (evt) => {
@@ -515,7 +570,9 @@ class ProjectOrSprintEditor {
   }
 }
 
-
+/**
+ * Handles the Sprint view, adding HTML in the Sprint Container.
+ */
 class SprintView {
   expandedView = false;
 
@@ -529,6 +586,9 @@ class SprintView {
     this.wireView();
   }
 
+  /**
+   * Adds populated HTML to SprintView.
+   */
   constructView() {
     this.containerElement.innerHTML = `
     <div class="sprints" id="sprints-container-${this.sprint.sprintId}"></div>
@@ -554,6 +614,9 @@ class SprintView {
     document.getElementById(`end-date-${this.sprint.sprintId}`).innerText = DatetimeUtils.localToUserDMY(this.sprint.endDate);
   }
 
+  /**
+   * Toggles expanded view and button for sprints.
+   */
   toggleExpandedView() {
     if (this.expandedView) {
       this.description.style.display = "none";
@@ -636,16 +699,26 @@ class Project {
     this.currentView.dispose();
   }
 
+  /**
+   * Handles showing of project or sprint editor.
+   */
   showEditor() {
     this.currentView?.dispose();
     this.currentView = new ProjectOrSprintEditor(this.containerElement, "Edit project details:", this.project, this.showViewer.bind(this), this.updateProject.bind(this));
   }
 
+  /**
+   * Refreshes view by disposing of current view and creating a new one.
+   */
   showViewer() {
     this.currentView?.dispose();
     this.currentView = new ProjectView(this.containerElement, this.project, this.showEditor.bind(this), this.deleteProject.bind(this), this.deleteSprint.bind(this), this.onSprintUpdate.bind(this));
   }
 
+  /**
+   * Updates project details according to newProject attributes.
+   * @param newProject
+   */
   async updateProject(newProject) {
     if (this.updateLoadingStatus === LoadingStatus.Pending) {
       return;
@@ -699,6 +772,9 @@ class Project {
     }
   }
 
+  /**
+   * Handles project deletion by making DELETE request.
+   */
   async deleteProject() {
     if (this.deleteLoadingStatus === LoadingStatus.Pending) {
       return;
@@ -729,8 +805,11 @@ class Project {
 
   }
 
+  /**
+   * Handles sprint deletion of sprint with sprintId and renumbers sprints once one has been deleted.
+   * @param sprintId - sprint to be deleted
+   */
   deleteSprint(sprintId) {
-    //this.project.sprints.get(sprintId).dispose();
     console.log(this.project.sprints);
     for (let i=0; i < this.project.sprints.length; i++) {
       if (this.project.sprints[i].sprintId === sprintId) {
@@ -750,6 +829,9 @@ class Project {
 
 }
 
+/**
+ * Handles switching between edit and view screens.
+ */
 class Sprint {
   constructor(containerElement, data, project, deleteCallback, sprintUpdateSavedCallback) {
     this.containerElement = containerElement;
@@ -763,6 +845,10 @@ class Sprint {
     this.showViewer();
   }
 
+  /**
+   * Updates sprint according to newValue attributes.
+   * @param newValue
+   */
   async updateSprint(newValue) {
     if (this.updateSprintLoadingStatus === LoadingStatus.Pending) {
       return;
@@ -811,7 +897,9 @@ class Sprint {
     }
   }
 
-
+  /**
+   * Shows sprint editing view.
+   */
   showEditor() {
     this.currentView?.dispose();
     this.currentView = new ProjectOrSprintEditor(
@@ -824,6 +912,9 @@ class Sprint {
     );
   }
 
+  /**
+   * Refreshes view, disposing of the previous view and reloading it.
+   */
   showViewer() {
     this.currentView?.dispose();
     this.currentView = new SprintView(this.containerElement, this.sprint, this.deleteSprint.bind(this), this.showEditor.bind(this));
@@ -836,6 +927,9 @@ class Sprint {
     this.currentView.dispose();
   }
 
+  /**
+   * Handles deletion of sprint when making DELETE request.
+   */
   async deleteSprint() {
     if (this.deleteLoadingStatus === LoadingStatus.Pending) {
       return;
@@ -890,6 +984,10 @@ class Application {
     this.addProjectButton.addEventListener("click", this.openAddProjectForm.bind(this));
   }
 
+  /**
+   * Submits a new project form if the response from POST request is valid.
+   * @param project
+   */
   async submitAddProjectForm(project) {
     if (this.addProjectLoadingStatus === LoadingStatus.Pending) {
       return;
@@ -928,6 +1026,9 @@ class Application {
     }
   }
 
+  /**
+   * Closes the add project form and refreshes the view.
+   */
   closeAddProjectForm() {
     if (this.addProjectForm === null) {
       return;
@@ -938,6 +1039,9 @@ class Application {
     this.addProjectForm = null;
   }
 
+  /**
+   * Opens the add project form, creating a new formContainer and a default project.
+   */
   openAddProjectForm() {
     if (this.addProjectForm !== null) {
       return;
@@ -962,6 +1066,9 @@ class Application {
     };
   }
 
+  /**
+   * Clears all projects.
+   */
   clearProjects() {
     if (this.projects) {
       this.projects.map(project => project.dispose());
@@ -1009,6 +1116,10 @@ class Application {
     }
   }
 
+  /**
+   * Fetches projects by making a GET request.
+   * @returns {Promise<void>}
+   */
   async fetchProjects() {
     if (this.projectsLoadingState === LoadingStatus.Pending) {
       return;
@@ -1047,6 +1158,10 @@ class Application {
     }
   }
 
+  /**
+   * Handles project deletion according to the given project ID.
+   * @param projectId - project do be deleted
+   */
   deleteProject(projectId) {
     const projectElement = document.getElementById(`project-view-${projectId}`)
     this.containerElement.removeChild(projectElement);
