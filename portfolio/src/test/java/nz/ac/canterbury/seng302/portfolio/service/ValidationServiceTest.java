@@ -136,21 +136,12 @@ public class ValidationServiceTest {
                 "testing",
                 Instant.parse("2021-12-03T10:15:30.00Z"),
                 Instant.parse("2021-12-05T10:15:30.00Z"));
-        String projectId = project.getId();
-
-        SprintEntity testSprint = new SprintEntity("test sprint",
-                "test desc",
-                Instant.parse("2021-12-03T10:15:30.00Z"),
-                Instant.parse("2021-12-05T10:15:30.00Z"));
-        project.addSprint(testSprint);
         projectRepository.save(project);
-        sprintRepository.save(testSprint);
+
         BaseSprintContract sprint = new BaseSprintContract("test sprint",
                 "testing",
                 Instant.parse("2021-12-03T10:15:30.00Z"),
                 Instant.parse("2021-12-05T10:15:30.00Z"));
-
-
 
         String response = validationService.checkAddSprint(project.getId(), sprint);
         assertEquals("Okay", response);

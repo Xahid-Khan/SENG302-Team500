@@ -37,7 +37,7 @@ public class ProjectEntity {
     @Column(nullable = false)
     private Instant endDate;
 
-    @OneToMany(mappedBy = "project")
+    @OneToMany(mappedBy = "project", fetch = FetchType.EAGER)
     @OrderBy("startDate")
     private List<SprintEntity> sprints = new ArrayList<>();
 
