@@ -1,6 +1,5 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
-import com.google.type.DateTime;
 import nz.ac.canterbury.seng302.portfolio.model.contract.BaseProjectContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.BaseSprintContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.ProjectContract;
@@ -10,13 +9,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.Period;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalAmount;
-import java.time.temporal.TemporalUnit;
-import java.util.Calendar;
 import java.util.NoSuchElementException;
 
 
@@ -75,7 +67,10 @@ public class ValidationService {
     public String checkAddSprint(String projectId, BaseSprintContract sprintContract) {
         try {
             ProjectContract project = projectService.getById(projectId);
-            checkSprintDetails(project, sprintContract.startDate(), sprintContract.endDate());
+            String response = checkSprintDetails(project, sprintContract.startDate(), sprintContract.endDate());
+            if (!response.equals("Okay")) {
+                return response;
+            }
         } catch (NoSuchElementException error) {
                 return "Project ID does not exist";
         }
@@ -92,7 +87,10 @@ public class ValidationService {
             SprintContract sprint = sprintService.get(sprintId);
             try {
                 ProjectContract project = projectService.getById(sprintContract.projectId());
-                checkSprintDetails(project, sprint.startDate(), sprint.endDate());
+                String response = checkSprintDetails(project, sprint.startDate(), sprint.endDate());
+                if (!response.equals("Okay")) {
+                    return response;
+                }
 
                 if (!sprintId.equals(sprintContract.sprintId())) {
                     return "Given path ID and sprint contract ID are not the same";
