@@ -34,7 +34,8 @@ public class RegistrationController {
                     user.getNickname(), user.getBio(), user.getPronouns(), user.getEmail());
         } catch (StatusRuntimeException e){
             model.addAttribute("registerMessage", "Error connecting to Identity Provider...");
-            return "register";
+            return "registration_form";
+
         }
         model.addAttribute("registerMessage",registerReply.getMessage());//add data to the model
         return "complete";//return the template in templates folder
