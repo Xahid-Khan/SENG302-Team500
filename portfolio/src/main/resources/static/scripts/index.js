@@ -57,18 +57,19 @@ class DatetimeUtils {
 class ProjectView {
   showingSprints = false;
 
-  addSprintForm = null;
+    addSprintForm = null;
   addSprintLoadingStatus = LoadingStatus.NotYetAttempted;
 
-  constructor(containerElement, project, editCallback, deleteCallback, sprintUpdateCallback) {
-    console.log("project", project)
-    this.containerElement = containerElement;
-    this.project = project;
-    this.sprintContainer = null;
-    this.sprints = new Map();
-    this.editCallback = editCallback;
-    this.deleteCallback = deleteCallback;
-    this.sprintUpdateCallback = sprintUpdateCallback;
+  constructor(containerElement, project, editCallback, deleteCallback, sprintDeleteCallback, sprintUpdateCallback) {
+        console.log("project", project)
+        this.containerElement = containerElement;
+        this.project = project;
+        this.sprintContainer = null;
+        this.sprints = new Map();
+        this.editCallback = editCallback;
+        this.deleteCallback = deleteCallback;
+        this.sprintDeleteCallback = sprintDeleteCallback;
+        this.sprintUpdateCallback = sprintUpdateCallback;
 
     this.constructAndPopulateView();
     this.wireView();
@@ -117,12 +118,12 @@ class ProjectView {
     document.getElementById(`project-startDate-${this.project.id}`).innerText = DatetimeUtils.localToUserDMY(this.project.startDate);
     document.getElementById(`project-endDate-${this.project.id}`).innerText = DatetimeUtils.localToUserDMY(this.project.endDate);
 
-    this.addSprintButton = document.getElementById(`add-sprint-button-${this.project.id}`);
-    this.toggleSprintsButton = document.getElementById(`toggle-sprint-button-${this.project.id}`);
-    this.sprintsContainer = document.getElementById(`sprints-container-${this.project.id}`);
+        this.addSprintButton = document.getElementById(`add-sprint-button-${this.project.id}`);
+        this.toggleSprintsButton = document.getElementById(`toggle-sprint-button-${this.project.id}`);
+        this.sprintsContainer = document.getElementById(`sprints-container-${this.project.id}`);
     this.sprintContainer = document.getElementById(`sprints-container-${this.project.id}`);
 
-    for (let i=0; i<this.project.sprints.length; i++) {
+    for (let i = 0; i < this.project.sprints.length; i++) {
       this.appendSprint(this.project.sprints[i]);
 
     }
@@ -235,23 +236,23 @@ class ProjectOrSprintEditor {
   startDateEdited = false
   endDateEdited = false
 
-  constructor(containerElement, title, entityData, cancelCallback, submitCallback, customDatesValidator) {
-    this.containerElement = containerElement;
+    constructor(containerElement, title, entityData, cancelCallback, submitCallback, customDatesValidator) {
+        this.containerElement = containerElement;
     this.title = title;
-    this.initialData = entityData;
-    this.entityId = entityData.id ?? entityData.sprintId;
+        this.initialData = entityData;
+        this.entityId = entityData.id ?? entityData.sprintId;
 
-    this.cancelCallback = cancelCallback;
-    this.submitCallback = submitCallback;
+        this.cancelCallback = cancelCallback;
+        this.submitCallback = submitCallback;
     this.customDatesValidator = customDatesValidator ?? function() {return null;};
 
-    this.constructView();
-    this.fillDefaults();
-    this.wireView();
-  }
+        this.constructView();
+        this.fillDefaults();
+        this.wireView();
+    }
 
-  constructView() {
-    this.containerElement.innerHTML = `
+    constructView() {
+        this.containerElement.innerHTML = `
       <div class="edit-project-section" id="edit-project-section-${this.entityId}">
           <p class="edit-section-title" id="edit-section-form-title-${this.entityId}">Edit Details:</p>
           <form class="user-inputs" id="edit-project-section-form-${this.entityId}">
@@ -280,45 +281,43 @@ class ProjectOrSprintEditor {
     `
     document.getElementById(`edit-section-form-title-${this.entityId}`).innerText = this.title;
 
-    this.nameInput = document.getElementById(`edit-project-name-${this.entityId}`);
-    this.descriptionInput = document.getElementById(`edit-description-${this.entityId}`);
-    this.startDateInput = document.getElementById(`edit-start-date-${this.entityId}`);
-    this.endDateInput = document.getElementById(`edit-end-date-${this.entityId}`);
-    this.saveButton = document.getElementById(`edit-save-button-${this.entityId}`);
+        this.nameInput = document.getElementById(`edit-project-name-${this.entityId}`);
+        this.descriptionInput = document.getElementById(`edit-description-${this.entityId}`);
+        this.startDateInput = document.getElementById(`edit-start-date-${this.entityId}`);
+        this.endDateInput = document.getElementById(`edit-end-date-${this.entityId}`);
+        this.saveButton = document.getElementById(`edit-save-button-${this.entityId}`);
 
     this.startDateHoursField = document.getElementById(`edit-start-date-hours-${this.entityId}`);
     this.endDateHoursField = document.getElementById(`edit-end-date-hours-${this.entityId}`);
 
-    // Error fields
-    this.nameErrorEl = document.getElementById(`edit-project-name-error-${this.entityId}`);
-    this.dateErrorEl = document.getElementById(`edit-project-date-error-${this.entityId}`);
-  }
+        // Error fields
+        this.nameErrorEl = document.getElementById(`edit-project-name-error-${this.entityId}`);
+        this.dateErrorEl = document.getElementById(`edit-project-date-error-${this.entityId}`);
+    }
 
-  setNameError(message) {
-    if (message) {
-      this.nameErrorEl.style.display = "block";
-      this.nameErrorEl.innerText = message;
+    setNameError(message) {
+        if (message) {
+            this.nameErrorEl.style.display = "block";
+            this.nameErrorEl.innerText = message;
+        } else {
+            this.nameErrorEl.style.display = "none";
+        }
     }
-    else {
-      this.nameErrorEl.style.display = "none";
-    }
-  }
 
-  setDateError(message) {
-    if (message) {
-      this.dateErrorEl.style.display = "block";
-      this.dateErrorEl.innerText = message;
+    setDateError(message) {
+        if (message) {
+            this.dateErrorEl.style.display = "block";
+            this.dateErrorEl.innerText = message;
+        } else {
+            this.dateErrorEl.style.display = "none";
+        }
     }
-    else {
-      this.dateErrorEl.style.display = "none";
-    }
-  }
 
-  fillDefaults() {
-    this.nameInput.value = this.initialData.name ?? "";
-    this.descriptionInput.value = this.initialData.description ?? "";
-    this.startDateInput.value = (this.initialData.startDate) ? DatetimeUtils.toLocalYMD(this.initialData.startDate) : "";
-    this.endDateInput.value = (this.initialData.endDate) ? DatetimeUtils.toLocalYMD(this.initialData.endDate) : "";
+    fillDefaults() {
+        this.nameInput.value = this.initialData.name ?? "";
+        this.descriptionInput.value = this.initialData.description ?? "";
+        this.startDateInput.value = (this.initialData.startDate) ? DatetimeUtils.toLocalYMD(this.initialData.startDate) : "";
+        this.endDateInput.value = (this.initialData.endDate) ? DatetimeUtils.toLocalYMD(this.initialData.endDate) : "";
 
     if (this.initialData.startDate) {
       const startDateHours = DatetimeUtils.getTimeStringIfNonZeroLocally(this.initialData.startDate);
@@ -333,7 +332,7 @@ class ProjectOrSprintEditor {
 
     if (this.initialData.endDate) {
       const endDateHours = DatetimeUtils.getTimeStringIfNonZeroLocally(this.initialData.endDate);
-      if (endDateHours !== null) {
+    if (endDateHours !== null) {
         this.endDateHoursField.style.display = "inline";
         this.endDateHoursField.innerText = endDateHours;
       }
@@ -343,127 +342,119 @@ class ProjectOrSprintEditor {
     }
   }
 
-  /**
-   * Checks that the name field is valid and populates the error field if not.
-   *
-   * @return true if the fields are valid. false otherwise.
-   */
-  validateName() {
-    if (!this.nameInput.value) {
-      this.setNameError("A name is required.");
-      return false;
+    /**
+     * Checks that the name field is valid and populates the error field if not.
+     *
+     * @return true if the fields are valid. false otherwise.
+     */
+    validateName() {
+        if (!this.nameInput.value) {
+            this.setNameError("A name is required.");
+            return false;
+        }
+
+        this.setNameError(null);
+        return true;
     }
 
-    this.setNameError(null);
-    return true;
-  }
-
-  getStartDateInputValue() {
-    if (!this.startDateEdited) {
+    getStartDateInputValue() {
+        if (!this.startDateEdited) {
       return this.initialData.startDate ?? null;
+    }const rawValue = this.startDateInput.value;
+        if (rawValue) {
+            return DatetimeUtils.fromLocalYMD(rawValue);
+        }
+        return null;
     }
 
-    const rawValue = this.startDateInput.value;
-    if (rawValue) {
-      return DatetimeUtils.fromLocalYMD(rawValue);
-    }
-    return null;
-  }
-
-  getEndDateInputValue() {
-    if (!this.endDateEdited) {
+    getEndDateInputValue() {
+        if (!this.endDateEdited) {
       return this.initialData.endDate ?? null;
+    }const rawValue = this.endDateInput.value;
+        if (rawValue) {
+            return DatetimeUtils.fromLocalYMD(rawValue);
+        }
+        return null;
     }
 
-    const rawValue = this.endDateInput.value;
-    if (rawValue) {
-      return DatetimeUtils.fromLocalYMD(rawValue);
-    }
-    return null;
-  }
+    /**
+     * Checks that the date fields are valid and populates error fields if not.
+     *
+     * @return true if the fields are valid. false otherwise.
+     */
+    validateDates() {
+        const startDate = this.getStartDateInputValue();
+        const endDate = this.getEndDateInputValue();
 
-  /**
-   * Checks that the date fields are valid and populates error fields if not.
-   *
-   * @return true if the fields are valid. false otherwise.
-   */
-  validateDates() {
-    const startDate = this.getStartDateInputValue();
-    const endDate = this.getEndDateInputValue();
+        if (startDate === null || endDate === null) {
+            this.setDateError("The date fields are required.");
+            return false;
+        } else {
+            if (endDate <= startDate) {
+                this.setDateError("The end date must be after the start date.");
+                return false;
+            }
+        }
 
-    if (startDate === null || endDate === null) {
-      this.setDateError("The date fields are required.");
-      return false;
-    }
-    else {
-      if (endDate <= startDate) {
-        this.setDateError("The end date must be after the start date.");
-        return false;
-      }
-    }
-
-    const customError = this.customDatesValidator(startDate, endDate);
+        const customError = this.customDatesValidator(startDate, endDate);
     if (customError !== null) {
       this.setDateError(customError);
       return false;
+    }this.setDateError(null);
+        return true;
     }
 
-    this.setDateError(null);
-    return true;
-  }
+    async validateAndSubmit() {
+        const hasErrors = [
+            this.validateName(),
+            this.validateDates()
+        ].indexOf(false) !== -1;
 
-  async validateAndSubmit() {
-    const hasErrors = [
-      this.validateName(),
-      this.validateDates()
-    ].indexOf(false) !== -1;
+        console.log(`hasErrors: ${hasErrors}`);
+        if (!hasErrors) {
+            try {
+                this.saveButton.innerText = "loading...";
+                this.saveButton.setAttribute("disabled", "true");
 
-    console.log(`hasErrors: ${hasErrors}`);
-    if (!hasErrors) {
-      try {
-        this.saveButton.innerText = "loading...";
-        this.saveButton.setAttribute("disabled", "true");
+                await this.submitCallback({
+                    name: this.nameInput.value,
+                    description: this.descriptionInput.value,
+                    startDate: this.getStartDateInputValue(),
+                    endDate: this.getEndDateInputValue()
+                })
+            } finally {
+                this.saveButton.innerText = "Save";
+                this.saveButton.setAttribute("disabled", "false");
+            }
 
-        await this.submitCallback({
-          name: this.nameInput.value,
-          description: this.descriptionInput.value,
-          startDate: this.getStartDateInputValue(),
-          endDate: this.getEndDateInputValue()
-        })
-      }
-      finally {
-        this.saveButton.innerText = "Save";
-        this.saveButton.setAttribute("disabled", "false");
-      }
-
+        }
     }
-  }
 
-  wireView() {
-    this.saveButton.addEventListener('click', () => this.validateAndSubmit());
-    document.getElementById(`edit-project-section-form-${this.entityId}`).addEventListener('submit', (evt) => {
-      evt.preventDefault();
-      this.validateAndSubmit();
-    });
-    document.getElementById(`edit-cancel-button-${this.entityId}`).addEventListener('click', () => this.cancelCallback());
+    wireView() {
+        this.saveButton.addEventListener('click', () => this.validateAndSubmit());
+        document.getElementById(`edit-project-section-form-${this.entityId}`).addEventListener('submit', (evt) => {
+            evt.preventDefault();
+            this.validateAndSubmit();
+        });
+        document.getElementById(`edit-cancel-button-${this.entityId}`).addEventListener('click', () => this.cancelCallback());
 
-    this.nameInput.addEventListener('change', this.validateName.bind(this));  // Is only called after the text field loses focus.
-    this.nameInput.addEventListener('input', this.validateName.bind(this));  // Ensure that the validator is called as the user types to provide real-time feedback.
-    this.startDateInput.addEventListener('change', () => {
+        this.nameInput.addEventListener('change', this.validateName.bind(this));  // Is only called after the text field loses focus.
+        this.nameInput.addEventListener('input', this.validateName.bind(this));  // Ensure that the validator is called as the user types to provide real-time feedback.
+        this.startDateInput.addEventListener('change', () => {
       this.startDateEdited = true;
       this.startDateHoursField.style.display = "none";  // Date is in local time now, so no hours component is necessary.
       this.validateDates();
     });
-    this.endDateInput.addEventListener('change', () => {
+        this.endDateInput.addEventListener('change', () => {
       this.endDateEdited = true;
       this.endDateHoursField.style.display = "none";  // Date is in local time now, so no hours component is necessary.
       this.validateDates();
     });
-  }
+    }
 
-  dispose() {
+    dispose() {
 
-  }
+    }
 
   /**
    * Provides a validator function for checking that the proposed dates for a sprint are allowed for the given project.
@@ -531,35 +522,35 @@ class SprintView {
     document.getElementById(`end-date-${this.sprint.sprintId}`).innerText = DatetimeUtils.localToUserDMY(this.sprint.endDate);
   }
 
-  wireView() {
-    document.getElementById(`sprint-button-edit-${this.sprint.sprintId}`).addEventListener('click', () => this.editCallback());
-  }
+        wireView() {
+        document.getElementById(`sprint-button-edit-${this.sprint.sprintId}`).addEventListener('click', () => this.editCallback());
+        document.getElementById(`sprint-delete-${this.sprint.sprintId}`).addEventListener("click", () => this.deleteCallback());
 
-  dispose() {
+        }
 
-  }
+
+
 }
-
 
 
 /**
  * Handles switching between the editor and view screens.
  */
 class Project {
-  constructor(containerElement, data, deleteCallback) {
-    this.containerElement = containerElement;
-    this.project = data;
+    constructor(containerElement, data, deleteCallback) {
+        this.containerElement = containerElement;
+        this.project = data;
 
     this.currentView = null;
     this.showViewer();
 
-    this.updateLoadingStatus = LoadingStatus.NotYetAttempted;
+        this.updateLoadingStatus = LoadingStatus.NotYetAttempted;
 
-    this.deleteLoadingStatus = LoadingStatus.NotYetAttempted;
-    this.deleteCallback = deleteCallback;
-  }
+        this.deleteLoadingStatus = LoadingStatus.NotYetAttempted;
+        this.deleteCallback = deleteCallback;
+    }
 
-  /**
+    /**
    * Called when a sprint is updated or a new sprint is created within this project.
    *
    * Since sprints are ordered by orderNumber (derived from startDate), the dates and thus orderNumbers may have changed.
@@ -590,113 +581,126 @@ class Project {
     // Refresh the view
     this.showViewer();
     this.currentView.toggleSprints();
-  }
+  }/**
+     * Gets the project to explicitly destroy itself .
+     */
+    dispose() {
+        this.currentView.dispose();
+    }
 
-  /**
-   * Gets the project to explicitly destroy itself.
-   */
-  dispose() {
-    this.currentView.dispose();
-  }
-
-  showEditor() {
-    this.currentView?.dispose();
-    this.currentView = new ProjectOrSprintEditor(this.containerElement, "Edit project details:", this.project, this.showViewer.bind(this), this.updateProject.bind(this));
-  }
+    showEditor() {
+        this.currentView?.dispose();
+        this.currentView = new ProjectOrSprintEditor(this.containerElement, "Edit project details:", this.project, this.showViewer.bind(this), this.updateProject.bind(this));
+    }
 
   showViewer() {
-    this.currentView?.dispose();
-    this.currentView = new ProjectView(this.containerElement, this.project, this.showEditor.bind(this), this.deleteProject.bind(this), this.onSprintUpdate.bind(this));
+    this.currentView.dispose();
+    this.currentView = new ProjectView(this.containerElement, this.project, this.showEditor.bind(this), this.deleteProject.bind(this), this.deleteSprint.bind(this), this.onSprintUpdate.bind(this));
   }
 
-  async updateProject(newProject) {
-    if (this.updateLoadingStatus === LoadingStatus.Pending) {
-      return;
-    }
-    else if (
-      newProject.name === this.project.name
-      && newProject.description === this.project.description
-      && DatetimeUtils.areEqual(newProject.startDate, this.project.startDate)
-      && DatetimeUtils.areEqual(newProject.endDate, this.project.endDate)
-    ) {
-      // There is nothing to update.
-      this.showViewer();
-      return;
-    }
+    async updateProject(newProject) {
+        if (this.updateLoadingStatus === LoadingStatus.Pending) {
+            return;
+        } else if (
+            newProject.name === this.project.name
+            && newProject.description === this.project.description
+            && DatetimeUtils.areEqual(newProject.startDate, this.project.startDate)
+            && DatetimeUtils.areEqual(newProject.endDate, this.project.endDate)
+        ) {
+            // There is nothing to update.
+            this.showViewer();
+            return;
+        }
 
-    this.updateLoadingStatus = LoadingStatus.Pending;
+        this.updateLoadingStatus = LoadingStatus.Pending;
 
-    try {
-      const result = await fetch(`/api/v1/projects/${this.project.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          name: newProject.name,
-          description: newProject.description,
-          startDate: DatetimeUtils.localToNetworkString(newProject.startDate),
-          endDate: DatetimeUtils.localToNetworkString(newProject.endDate)
-        })
-      })
+        try {
+            const result = await fetch(`/api/v1/projects/${this.project.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: newProject.name,
+                    description: newProject.description,
+                    startDate: DatetimeUtils.localToNetworkString(newProject.startDate),
+                    endDate: DatetimeUtils.localToNetworkString(newProject.endDate)
+                })
+            })
 
-      if (!result.ok) {
-        this.updateLoadingStatus = LoadingStatus.Error;
-        throw new Error(`Received unsuccessful response code: ${result.status} ${result.statusText}`);
-      }
+            if (!result.ok) {
+                this.updateLoadingStatus = LoadingStatus.Error;
+                throw new Error(`Received unsuccessful response code: ${result.status} ${result.statusText}`);
+            }
 
-      // Saved! Show the updated view screen.
-      this.updateLoadingStatus = LoadingStatus.Done;
-      this.project = {
-        ...newProject,
-        id: this.project.id,
-        sprints: this.project.sprints
-      };
-      this.showViewer();
-    }
-    catch (ex) {
-      this.updateLoadingStatus = LoadingStatus.Error;
-      throw ex;
-    }
-  }
-
-  async deleteProject() {
-    if (this.deleteLoadingStatus === LoadingStatus.Pending) {
-      return;
+            // Saved! Show the updated view screen.
+            this.updateLoadingStatus = LoadingStatus.Done;
+            this.project = {
+                ...newProject,
+                id: this.project.id,
+                sprints: this.project.sprints
+            };
+            this.showViewer();
+        } catch (ex) {
+            this.updateLoadingStatus = LoadingStatus.Error;
+            throw ex;
+        }
     }
 
-    this.deleteLoadingStatus = LoadingStatus.Pending;
+    async deleteProject() {
+        if (this.deleteLoadingStatus === LoadingStatus.Pending) {
+            return;
+        }
 
-    try {
-      const result = await fetch(`/api/v1/projects/${this.project.id}`, {
-        method: 'DELETE'
-      })
+        this.deleteLoadingStatus = LoadingStatus.Pending;
 
-      if (!result.ok) {
-        this.deleteLoadingStatus = LoadingStatus.Error;
-        throw new Error(`Got unexpected status code: ${result.status} ${result.statusText}`);
-      }
+        try {
+            const result = await fetch(`/api/v1/projects/${this.project.id}`, {
+                method: 'DELETE'
+            })
 
-      this.deleteLoadingStatus = LoadingStatus.Done;
-      this.deleteCallback(this.project.id);
+            if (!result.ok) {
+                this.deleteLoadingStatus = LoadingStatus.Error;
+                throw new Error(`Got unexpected status code: ${result.status} ${result.statusText}`);
+            }
+
+            this.deleteLoadingStatus = LoadingStatus.Done;
+            this.deleteCallback(this.project.id);
+        } catch (ex) {
+            this.deleteLoadingStatus = LoadingStatus.Error;
+            throw ex;
+        }
+
     }
-    catch (ex) {
-      this.deleteLoadingStatus = LoadingStatus.Error;
-      throw ex;
-    }
 
-  }
+    deleteSprint(sprintId) {
+        //this.project.sprints.get(sprintId).dispose();
+        console.log(this.project.sprints);
+        for (let i=0; i < this.project.sprints.length; i++) {
+            if (this.project.sprints[i].sprintId === sprintId) {
+                this.project.sprints.splice(i, 1);
+            }
+
+        }
+
+        for (let i=0; i < this.project.sprints.length; i++) {
+            this.project.sprints[i].orderNumber = i + 1;
+        }
+
+        this.showViewer();
+        this.currentView.toggleSprints();
+    }
 
 
 }
 
 class Sprint {
-  constructor(containerElement, data, project, sprintUpdateSavedCallback) {
+  constructor(containerElement, data, project, deleteCallback, sprintUpdateSavedCallback) {
     this.containerElement = containerElement;
     this.project = project;
     this.sprint = data;
     this.sprintUpdateSavedCallback = sprintUpdateSavedCallback;
-
+    this.deleteCallback = deleteCallback;
     this.updateSprintLoadingStatus = LoadingStatus.NotYetAttempted;
 
     this.currentView = null;
@@ -765,11 +769,38 @@ class Sprint {
   }
 
   /**
-   * Gets the sprint to explicitly destroy itself.
+   * Gets the sprint to explicitly destroy itself prior
    */
   dispose() {
     this.currentView.dispose();
   }
+
+  async deleteSprint() {
+    if (this.deleteLoadingStatus === LoadingStatus.Pending) {
+      return;
+    }
+
+    this.deleteLoadingStatus = LoadingStatus.Pending;
+
+    try {
+      const result = await fetch(`/api/v1/sprints/${this.sprintId}`, {
+        method: 'DELETE'
+      })
+      console.log(this.sprintId);
+      if (!result.ok) {
+        this.deleteLoadingStatus = LoadingStatus.Error;
+        throw new Error(`Got unexpected status code: ${result.status} ${result.statusText}`);
+      }
+
+      this.deleteLoadingStatus = LoadingStatus.Done;
+      this.deleteCallback(this.sprintId);
+    } catch (ex) {
+      this.deleteLoadingStatus = LoadingStatus.Error;
+      throw ex;
+    }
+  }
+
+
 }
 
 
@@ -777,160 +808,157 @@ class Sprint {
  * Manage the projects (creation and deletion and loading)
  */
 class Application {
-  addProjectButton = document.getElementById("add-project");
+    addProjectButton = document.getElementById("add-project");
 
-  addProjectForm = null;
-  addProjectLoadingStatus = LoadingStatus.NotYetAttempted;
+    addProjectForm = null;
+    addProjectLoadingStatus = LoadingStatus.NotYetAttempted;
 
-  constructor(containerElement) {
-    this.projects = null;
-    this.projectsLoadingState = LoadingStatus.NotYetAttempted;
-    this.containerElement = containerElement;
+    constructor(containerElement) {
+        this.projects = null;
+        this.projectsLoadingState = LoadingStatus.NotYetAttempted;
+        this.containerElement = containerElement;
 
-    this.wireView();
-  }
-
-  wireView() {
-    this.addProjectButton.addEventListener("click", this.openAddProjectForm.bind(this));
-  }
-
-  async submitAddProjectForm(project) {
-    if (this.addProjectLoadingStatus === LoadingStatus.Pending) {
-      return;
+        this.wireView();
     }
 
-    this.addProjectLoadingStatus = LoadingStatus.Pending;
-
-    try {
-      const res = await fetch("/api/v1/projects", {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(project)
-      });
-
-      if (!res.ok) {
-        throw new Error(`Received unsuccessful response code when creating project: ${res.status} ${res.statusText}`);
-      }
-
-      const newProject = await res.json();
-      this.appendProject(newProject, {
-        prepend: true,
-        scrollIntoView: true
-      });
-      this.addProjectLoadingStatus = LoadingStatus.Done;
-      this.closeAddProjectForm();
-    }
-    catch (ex) {
-      this.addProjectLoadingStatus = LoadingStatus.Error;
-      throw ex;
-    }
-  }
-
-  closeAddProjectForm() {
-    if (this.addProjectForm === null) {
-      return;
+    wireView() {
+        this.addProjectButton.addEventListener("click", this.openAddProjectForm.bind(this));
     }
 
-    this.addProjectForm.controller.dispose();
-    this.containerElement.removeChild(this.addProjectForm.container);
-    this.addProjectForm = null;
-  }
+    async submitAddProjectForm(project) {
+        if (this.addProjectLoadingStatus === LoadingStatus.Pending) {
+            return;
+        }
 
-  openAddProjectForm() {
-    if (this.addProjectForm !== null) {
-      return;
+        this.addProjectLoadingStatus = LoadingStatus.Pending;
+
+        try {
+            const res = await fetch("/api/v1/projects", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(project)
+            });
+
+            if (!res.ok) {
+                throw new Error(`Received unsuccessful response code when creating project: ${res.status} ${res.statusText}`);
+            }
+
+            const newProject = await res.json();
+            this.appendProject(newProject, {
+                prepend: true,
+                scrollIntoView: true
+            });
+            this.addProjectLoadingStatus = LoadingStatus.Done;
+            this.closeAddProjectForm();
+        } catch (ex) {
+            this.addProjectLoadingStatus = LoadingStatus.Error;
+            throw ex;
+        }
     }
 
-    const formContainerElement = document.createElement("div");
-    formContainerElement.classList.add("project-view", "raised-card");
-    formContainerElement.id = 'create-project-form-container';
-    this.containerElement.insertBefore(formContainerElement, this.containerElement.firstChild);
+    closeAddProjectForm() {
+        if (this.addProjectForm === null) {
+            return;
+        }
 
-    const defaultProject = {
-      id: '__NEW_PROJECT_FORM',
-      name: `Project ${new Date().getFullYear()}`,
-      description: null,
-      startDate: null,
-      endDate: null
-    };
-
-    this.addProjectForm = {
-      container: formContainerElement,
-      controller: new ProjectOrSprintEditor(formContainerElement, "New project details:", defaultProject, this.closeAddProjectForm.bind(this), this.submitAddProjectForm.bind(this))
-    };
-  }
-
-  clearProjects() {
-    if (this.projects) {
-      this.projects.map(project => project.dispose());
-      this.projects = null;
+        this.addProjectForm.controller.dispose();
+        this.containerElement.removeChild(this.addProjectForm.container);
+        this.addProjectForm = null;
     }
-  }
 
-  /**
-   * Append a project element to the containerElement and instaniate and store a Project with the given data.
-   */
-  appendProject(projectData, options) {
-    const {prepend, scrollIntoView} = options ?? {};
-    console.log(`${prepend ? 'Prepending' : 'Appending'} project with id: ${projectData.id}...`);
+    openAddProjectForm() {
+        if (this.addProjectForm !== null) {
+            return;
+        }
 
-    // Post-process the projectData
-    projectData.startDate = DatetimeUtils.networkStringToLocalDate(projectData.startDate);
-    projectData.endDate = DatetimeUtils.networkStringToLocalDate(projectData.endDate);
+        const formContainerElement = document.createElement("div");
+        formContainerElement.classList.add("project-view", "raised-card");
+        formContainerElement.id = 'create-project-form-container';
+        this.containerElement.insertBefore(formContainerElement, this.containerElement.firstChild);
+
+        const defaultProject = {
+            id: '__NEW_PROJECT_FORM',
+            name: `Project ${new Date().getFullYear()}`,
+            description: null,
+            startDate: null,
+            endDate: null
+        };
+
+        this.addProjectForm = {
+            container: formContainerElement,
+            controller: new ProjectOrSprintEditor(formContainerElement, "New project details:", defaultProject, this.closeAddProjectForm.bind(this), this.submitAddProjectForm.bind(this))
+        };
+    }
+
+    clearProjects() {
+        if (this.projects) {
+            this.projects.map(project => project.dispose());
+            this.projects = null;
+        }
+    }
+
+    /**
+     * Append a project element to the containerElement and instantiate and store a Project with the given data.
+     */
+    appendProject(projectData, options) {
+        const {prepend, scrollIntoView} = options ?? {};
+        console.log(`${prepend ? 'Prepending' : 'Appending'} project with id: ${projectData.id}...`);
+
+        // Post-process the projectData
+        projectData.startDate = DatetimeUtils.networkStringToLocalDate(projectData.startDate);
+        projectData.endDate = DatetimeUtils.networkStringToLocalDate(projectData.endDate);
     projectData.sprints = projectData.sprints.map(sprint => ({
       ...sprint,
       startDate: DatetimeUtils.networkStringToLocalDate(sprint.startDate),
       endDate: DatetimeUtils.networkStringToLocalDate(sprint.endDate)
     }));
 
-    // Construct base HTML
-    const projectElement = document.createElement("div");
-    projectElement.classList.add("project-view", "raised-card");
-    projectElement.id = `project-view-${projectData.id}`;
+        // Construct base HTML
+        const projectElement = document.createElement("div");
+        projectElement.classList.add("project-view", "raised-card");
+        projectElement.id = `project-view-${projectData.id}`;
 
-    if (prepend) {
-      this.containerElement.insertBefore(projectElement, this.containerElement.firstChild);
-    }
-    else {
-      this.containerElement.appendChild(projectElement);
-    }
+        if (prepend) {
+            this.containerElement.insertBefore(projectElement, this.containerElement.firstChild);
+        } else {
+            this.containerElement.appendChild(projectElement);
+        }
 
-    console.log("Binding project");
-    this.projects.set(projectData.id, new Project(projectElement, projectData, this.deleteProject.bind(this)));
+        console.log("Binding project");
+        this.projects.set(projectData.id, new Project(projectElement, projectData, this.deleteProject.bind(this)));
 
-    console.log("Project bound");
+        console.log("Project bound");
 
-    if (scrollIntoView) {
-      projectElement.scrollIntoView({
-        behavior: 'smooth',
-        block: 'center'
-      });
-    }
-  }
-
-  async fetchProjects() {
-    if (this.projectsLoadingState === LoadingStatus.Pending) {
-      return;
+        if (scrollIntoView) {
+            projectElement.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
+        }
     }
 
-    this.projectsLoadingState = LoadingStatus.Pending;
-    this.clearProjects();
+    async fetchProjects() {
+        if (this.projectsLoadingState === LoadingStatus.Pending) {
+            return;
+        }
 
-    try {
-      const result = await fetch('/api/v1/projects');
+        this.projectsLoadingState = LoadingStatus.Pending;
+        this.clearProjects();
 
-      if (!result.ok) {
-        this.projectsLoadingState = LoadingStatus.Error;
-        return;
-      }
+        try {
+            const result = await fetch('/api/v1/projects');
 
-      const data = await result.json();
-      console.log(`Acquired ${data.length} projects...`);
-      this.projects = new Map();
-      data.map(project => this.appendProject(project));
+            if (!result.ok) {
+                this.projectsLoadingState = LoadingStatus.Error;
+                return;
+            }
 
+            const data = await result.json();
+            console.log(`Acquired ${data.length} projects...`);
+            this.projects = new Map();
+            data.map(project => this.appendProject(project));
       if (this.projects.size === 1) {
         // Automatically expand the list of sprints if only one project is loaded.
         this.projects.forEach((project) => {
@@ -938,59 +966,56 @@ class Application {
             project.currentView.toggleSprints();
           }
         })
-      }
-
-      this.projectsLoadingState = LoadingStatus.Done;
+      }      this.projectsLoadingState = LoadingStatus.Done;
+        } catch (ex) {
+            this.projectsLoadingState = LoadingStatus.Error;
+            throw ex;
+        }
     }
-    catch (ex) {
-      this.projectsLoadingState = LoadingStatus.Error;
-      throw ex;
-    }
-  }
 
-  deleteProject(projectId) {
-    const projectElement = document.getElementById(`project-view-${projectId}`)
-    this.containerElement.removeChild(projectElement);
-    this.projects.get(projectId).dispose();
-    this.projects.delete(projectId);
-  }
+    deleteProject(projectId) {
+        const projectElement = document.getElementById(`project-view-${projectId}`)
+        this.containerElement.removeChild(projectElement);
+        this.projects.get(projectId).dispose();
+        this.projects.delete(projectId);
+    }
 
 }
 
 (() => {
-  // Start
-  const application = new Application(document.getElementById("project-list"));
-  application.fetchProjects();
+    // Start
+    const application = new Application(document.getElementById("project-list"));
+    application.fetchProjects();
 })()
 
 window.addProject = async () => {
-  const res = await fetch('/api/v1/projects', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      name: "Test project",
-      description: "Test description",
-      startDate: "2020-01-01T00:00:00.00Z",
-      endDate: "2021-01-01T00:00:00.00Z"
-    })
-  });
-
-  const project = await res.json();
-
-  for (let i=1; i <= 3; i+=2) {
-    await fetch(`/api/v1/projects/${project.id}/sprints`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        name: `Test sprint ${i}`,
-        description: `Test sprint description ${i}\n\nNB: This sprint covers the entire date range of its parent project.`,
-        startDate: `2020-01-0${i}T00:00:00.00Z`,
-        endDate: `2020-01-0${i+1}T00:00:00.00Z`
-      })
+    const res = await fetch('/api/v1/projects', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            name: "Test project",
+            description: "Test description",
+            startDate: "2020-01-01T00:00:00.00Z",
+            endDate: "2021-01-01T00:00:00.00Z"
+        })
     });
-  }
+
+    const project = await res.json();
+
+    for (let i = 1; i <= 3; i+=2) {
+        await fetch(`/api/v1/projects/${project.id}/sprints`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                name: `Test sprint ${i}`,
+                description: `Test sprint description ${i}\n\nNB: This sprint covers the entire date range of its parent project.`,
+                startDate: `2020-01-0${i}T00:00:00.00Z`,
+                endDate: `2020-01-0${i+1}T00:00:00.00Z`
+            })
+        });
+    }
 }
