@@ -48,7 +48,7 @@ public class LoginController {
     public String login(
             HttpServletRequest request,
             HttpServletResponse response,
-            RedirectAttributes redirectAttributes
+            RedirectAttributes redirectAttributes,
             Login login,
             Model model
     ) {
