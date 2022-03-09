@@ -85,7 +85,7 @@ class ProjectView {
     console.log("Binding sprint");
 
     console.log(sprintData.startDate);
-    this.sprints.set(sprintData.sprintId, new Sprint(sprintElement, sprintData, this.project, this.sprintUpdateCallback));
+    this.sprints.set(sprintData.sprintId, new Sprint(sprintElement, sprintData, this.project, this.sprintDeleteCallback, this.sprintUpdateCallback));
 
     console.log("Sprint bound");
 
@@ -489,10 +489,11 @@ class ProjectOrSprintEditor {
 
 
 class SprintView {
-  constructor(containerElement, sprint, editCallback) {
+  constructor(containerElement, sprint, deleteCallback, editCallback) {
     this.containerElement = containerElement;
     this.sprint = sprint;
     this.editCallback = editCallback;
+    this.deleteCallback = deleteCallback;
 
     this.constructView();
     this.wireView();
@@ -506,7 +507,7 @@ class SprintView {
 
         <span class="crud">
             <button class="button sprint-controls" id="sprint-button-edit-${this.sprint.sprintId}" data-privilege="teacher">Edit</button>
-            <button class="button sprint-controls" data-privilege="teacher">Delete</button>
+            <button class="button sprint-controls" id="sprint-button-delete-${this.sprint.sprintId}" data-privilege="teacher">Delete</button>
             <button class="button toggle-sprint-details" id="toggle-sprint-details-0-0">+</button>
         </span>
     </div>
@@ -524,12 +525,14 @@ class SprintView {
 
         wireView() {
         document.getElementById(`sprint-button-edit-${this.sprint.sprintId}`).addEventListener('click', () => this.editCallback());
-        document.getElementById(`sprint-delete-${this.sprint.sprintId}`).addEventListener("click", () => this.deleteCallback());
+        document.getElementById(`sprint-button-delete-${this.sprint.sprintId}`).addEventListener("click", () => this.deleteCallback());
 
         }
 
 
+  dispose() {
 
+  }
 }
 
 
@@ -594,7 +597,7 @@ class Project {
     }
 
   showViewer() {
-    this.currentView.dispose();
+    this.currentView?.dispose();
     this.currentView = new ProjectView(this.containerElement, this.project, this.showEditor.bind(this), this.deleteProject.bind(this), this.deleteSprint.bind(this), this.onSprintUpdate.bind(this));
   }
 
@@ -765,7 +768,7 @@ class Sprint {
 
   showViewer() {
     this.currentView?.dispose();
-    this.currentView = new SprintView(this.containerElement, this.sprint, this.showEditor.bind(this));
+    this.currentView = new SprintView(this.containerElement, this.sprint, this.deleteSprint.bind(this), this.showEditor.bind(this));
   }
 
   /**
@@ -783,17 +786,17 @@ class Sprint {
     this.deleteLoadingStatus = LoadingStatus.Pending;
 
     try {
-      const result = await fetch(`/api/v1/sprints/${this.sprintId}`, {
+      const result = await fetch(`/api/v1/sprints/${this.sprint.sprintId}`, {
         method: 'DELETE'
       })
-      console.log(this.sprintId);
+      console.log(this.sprint.sprintId);
       if (!result.ok) {
         this.deleteLoadingStatus = LoadingStatus.Error;
         throw new Error(`Got unexpected status code: ${result.status} ${result.statusText}`);
       }
 
       this.deleteLoadingStatus = LoadingStatus.Done;
-      this.deleteCallback(this.sprintId);
+      this.deleteCallback(this.sprint.sprintId);
     } catch (ex) {
       this.deleteLoadingStatus = LoadingStatus.Error;
       throw ex;
