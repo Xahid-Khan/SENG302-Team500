@@ -12,6 +12,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -46,30 +48,39 @@ public class LoginController {
     public String login(
             HttpServletRequest request,
             HttpServletResponse response,
+            RedirectAttributes redirectAttributes
             Login login,
             Model model
     ) {
+        System.out.println("Received POST request with credentials:" + login.toString());
+        if (login.getUsername() == null || login.getPassword() == null) {
+            redirectAttributes.addAttribute("error", "Invalid form data provided");
+            return "redirect:/login?error";
+        }
         AuthenticateResponse loginReply;
         try {
             loginReply = authenticateClientService.authenticate(login.getUsername(), login.getPassword());
         } catch (StatusRuntimeException e){
-            model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
-            return "login";
+            redirectAttributes.addAttribute("error", "Error connecting to Identity Provider...");
+            //model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
+            return "redirect:/login";
         }
         if (loginReply.getSuccess()) {
             var domain = request.getHeader("host");
             CookieUtil.create(
-                response,
-                "lens-session-token",
+                    response,
+                    "lens-session-token",
                     loginReply.getToken(),
-                true,
-                5 * 60 * 60, // Expires in 5 hours
-                domain.startsWith("localhost") ? null : domain
+                    true,
+                    5 * 60 * 60, // Expires in 5 hours
+                    domain.startsWith("localhost") ? null : domain
             );
+            // Redirect user if login succeeds
+            redirectAttributes.addFlashAttribute("message", "Successfully logged in.");
+            return "redirect:/greeting";
         }
 
-        model.addAttribute("loginMessage", loginReply.getMessage());
-        return "login";
+        redirectAttributes.addAttribute("error", loginReply.getMessage());
+        return "redirect:/login";
     }
-
 }
