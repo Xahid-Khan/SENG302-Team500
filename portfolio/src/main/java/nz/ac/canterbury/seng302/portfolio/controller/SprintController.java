@@ -2,10 +2,13 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
+
 import nz.ac.canterbury.seng302.portfolio.model.contract.BaseSprintContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.SprintContract;
 import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
 import nz.ac.canterbury.seng302.portfolio.service.SprintService;
+import nz.ac.canterbury.seng302.portfolio.service.ValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -32,6 +35,9 @@ public class SprintController {
 
     @Autowired
     private ProjectService projectService;
+
+    @Autowired
+    private ValidationService validationService;
 
     /**
      * This method will be invoked when API receives a GET request with a sprint ID embedded in URL.
@@ -75,7 +81,15 @@ public class SprintController {
      * @return A list of sprints of a given project in Sprint Contract (JSON) type.
      */
     @PostMapping(value = "/projects/{projectId}/sprints", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<SprintContract> createSprint(@PathVariable String projectId, @RequestBody BaseSprintContract sprint) {
+    public ResponseEntity<?> createSprint(@PathVariable String projectId, @RequestBody BaseSprintContract sprint) {
+        String errorMessage = validationService.checkAddSprint(projectId, sprint);
+        if (!errorMessage.equals("Okay")) {
+            if (errorMessage.equals("Project ID does not exist") || errorMessage.equals("Sprint ID does not exist")) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
+            }
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
+        }
+
         try {
             var result = sprintService.create(projectId, sprint);
 
@@ -93,7 +107,16 @@ public class SprintController {
      * @return A list of sprints of a given project in Sprint Contract (JSON) type.
      */
     @PutMapping(value = "/sprints/{id}")
-    public ResponseEntity<Void> updateSprint(@PathVariable String id, @RequestBody BaseSprintContract sprint) {
+    public ResponseEntity<?> updateSprint(@PathVariable String id, @RequestBody BaseSprintContract sprint) {
+        String errorMessage = validationService.checkUpdateSprint(id, sprint);
+        System.err.println(errorMessage);
+        if (!errorMessage.equals("Okay")) {
+            if (errorMessage.equals("Project ID does not exist") || errorMessage.equals("Sprint ID does not exist")) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
+            }
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
+        }
+
         try {
             sprintService.update(id, sprint);
 

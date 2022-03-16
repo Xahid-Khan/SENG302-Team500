@@ -1,19 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.time.Instant;
-import java.util.ArrayList;
 import nz.ac.canterbury.seng302.portfolio.model.contract.SprintContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.ProjectEntity;
 import nz.ac.canterbury.seng302.portfolio.model.entity.SprintEntity;
@@ -26,6 +14,15 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.time.Instant;
+import java.util.ArrayList;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
@@ -129,7 +126,7 @@ public class SprintControllerTest {
 
     @Test
     public void createNew() throws Exception {
-        var project = new ProjectEntity("test project", null, Instant.EPOCH, Instant.parse("2007-12-03T10:15:30.00Z"));
+        var project = new ProjectEntity("test project", null, Instant.parse("2022-12-01T10:15:30.00Z"), Instant.parse("2023-01-20T10:15:30.00Z"));
         projectRepository.save(project);
 
         var apiPath = String.format("/api/v1/projects/%s/sprints", project.getId());
@@ -181,7 +178,7 @@ public class SprintControllerTest {
 
     @Test
     public void createNewNoDescription() throws Exception {
-        var project = new ProjectEntity("test project", null, Instant.EPOCH, Instant.parse("2007-12-03T10:15:30.00Z"));
+        var project = new ProjectEntity("test project", null, Instant.parse("2022-12-01T10:15:30.00Z"), Instant.parse("2023-01-20T10:15:30.00Z"));
         projectRepository.save(project);
 
         var apiPath = String.format("/api/v1/projects/%s/sprints", project.getId());
@@ -232,21 +229,23 @@ public class SprintControllerTest {
 
     @Test
     public void updateValidSprint() throws Exception {
-        var project = new ProjectEntity("test project", null, Instant.EPOCH, Instant.parse("2007-12-03T10:15:30.00Z"));
-        var sprint = new SprintEntity("pre-edit test sprint", "pre-test description", Instant.EPOCH, Instant.parse("2007-12-03T10:15:30.00Z"));
+        var project = new ProjectEntity("test project", null, Instant.parse("2022-12-01T10:15:30.00Z"), Instant.parse("2023-01-20T10:15:30.00Z"));
+        var sprint = new SprintEntity("pre-edit test sprint", "pre-test description", Instant.parse("2023-01-01T10:15:30.00Z"), Instant.parse("2023-01-03T10:15:30.00Z"));
         project.addSprint(sprint);
         projectRepository.save(project);
         sprintRepository.save(sprint);
-
+        String projectId = project.getId();
+        String sprintId = sprint.getId();
         var apiPath = String.format("/api/v1/sprints/%s", sprint.getId());
-        var body = """
+        var body = String.format("""
             {
+                "projectId": "%s",
+                "sprintId": "%s",
                 "name": "post-edit test sprint",
-                "startDate": "2023-01-01T10:00:00.00Z",
+                "startDate": "2023-01-04T10:00:00.00Z",
                 "endDate": "2023-01-15T10:00:00.00Z"
             }
-            """;
-
+            """, projectId, sprintId);
         this.mockMvc.perform(
                 put(apiPath)
                     .contentType(MediaType.APPLICATION_JSON)
@@ -267,7 +266,7 @@ public class SprintControllerTest {
 
         assertEquals("post-edit test sprint" , decodedResponse.name());
         assertNull(decodedResponse.description());
-        assertEquals(Instant.parse("2023-01-01T10:00:00.00Z"), decodedResponse.startDate());
+        assertEquals(Instant.parse("2023-01-04T10:00:00.00Z"), decodedResponse.startDate());
         assertEquals(Instant.parse("2023-01-15T10:00:00.00Z"), decodedResponse.endDate());
     }
 

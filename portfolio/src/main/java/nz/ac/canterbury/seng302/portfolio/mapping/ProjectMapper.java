@@ -43,10 +43,11 @@ public class ProjectMapper {
 
         for (int i=0; i < sprintEntities.size(); i++) {
             sprintContracts.add(sprintMapper.toContract(
-                sprintEntities.get(i),
-                i+1
+                    sprintEntities.get(i),
+                    i+1
             ));
         }
+
 
         return new ProjectContract(
                 entity.getId(),
