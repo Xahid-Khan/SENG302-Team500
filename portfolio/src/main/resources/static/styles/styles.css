@@ -1,0 +1,301 @@
+.project-view {
+    outline-style: solid;
+    outline-color: #43C0FE;
+    width: 100%;
+    padding: 30px 40px;
+}
+
+.sprint-details {
+    display: none;
+    overflow: hidden;
+}
+
+.sprint-details p {
+    padding-left: 20px;
+}
+
+.sprint-view p {
+    color: #fff;
+}
+
+.button {
+    color: #fff;
+    cursor: pointer;
+    background-color: #43C0FE;
+    border: none;
+    padding: 8px 12px;
+    transition-duration: 0.4s;
+    font-size: 14px;
+    margin: 15px 5px;
+}
+
+.button:hover {
+    background-color: #0332D1;
+}
+
+.toggle-sprint-details {
+    padding: 8px 12px;
+}
+
+.toggle-sprint-details:hover {
+    background-color: #0332D1;
+}
+
+.navbar-items {
+    list-style: none;
+    display: flex;
+    align-items: center;
+}
+
+.navbar-items a {
+    color: #fff;
+    font-size: 18px;
+    text-decoration: none;
+    padding: 20px 10px;
+    transition-duration: 0.4s;
+}
+
+.navbar-items a:hover {
+    color: #43C0FE;
+}
+
+.fullscreen {
+    min-height: 100vh;
+    background-image: linear-gradient(#13007A, #000949);
+}
+
+.title {
+    font-size: 30px;
+    color: #fff;
+    display: flex;
+    padding-right: 30px
+}
+
+.add-project {
+    display: flex;
+    justify-content: right;
+    padding-right: 100px;
+}
+
+.projects {
+    display: flex;
+    justify-content: center;
+    padding: 0 100px 100px 100px;
+}
+
+#edit-project {
+    margin-right: 5px;
+}
+
+.sprint-view-controls {
+    display: flex;
+    justify-content: right;
+    margin-right: 5px;
+}
+
+.sprint-controls {
+    margin-right: 5px;
+}
+
+.sprint-view {
+    outline-style: solid;
+    outline-color: #43C0FE;
+    padding: 20px;
+    margin-top: 15px
+}
+
+.sprint-title {
+    color: #fff;
+    font-size: 15px;
+    font-weight: bold;
+    padding-bottom: 20px;
+}
+
+.project-title {
+    color: #fff;
+    font-size: 25px;
+    font-weight: bold;
+    margin-bottom: 40px
+}
+
+.project-details {
+    color: #fff;
+    padding-left: 20px;
+}
+
+.toggle-sprints {
+    margin-left: 10px;
+}
+
+.sprints {
+    display: none;
+}
+
+.add-sprint {
+    display: none;
+}
+
+.spud {
+    float: right;
+}
+
+@media only screen and (max-width: 960px) {
+
+    .projects {
+        padding: 0 30px 50px 30px;
+    }
+
+    .project-view {
+        padding: 15px 20px;
+    }
+
+    .add-project {
+        margin-bottom: 8px;
+        padding-right: 35px;
+    }
+
+    .sprint-details {
+        font-size: 14px;
+    }
+
+    .sprint-view {
+        margin-bottom: 10px;
+    }
+
+    .button {
+        margin: 3px;
+    }
+
+    #edit-project {
+        margin-right: 0px;
+    }
+
+    .sprint-controls {
+        margin-right: 0px;
+    }
+
+    .add-sprint {
+        margin-right: 5px;
+    }
+}
+
+@media only screen and (max-width: 640px) {
+
+    .projects {
+        padding: 0 20px 30px 20px;
+    }
+
+    .project-title {
+        margin-bottom: 25px;
+    }
+
+    .project-view {
+        padding: 10px 10px;
+    }
+
+    .add-project {
+        padding-right: 19px;
+        margin-bottom: 10px;
+    }
+
+    .sprint-view {
+        margin-bottom: 10px;
+        padding: 10px;
+    }
+
+    .project-title {
+        font-size: 15px;
+    }
+
+    .button {
+        padding: 4px 6px;
+        font-size: 10px;
+    }
+
+    .project-details {
+        font-size: 10px;
+    }
+
+    .sprint-details {
+        font-size: 10px;
+    }
+
+    .sprint-details p {
+        padding-left: 15px;
+    }
+
+    .sprint-title {
+        font-size: 13px;
+        padding-bottom: 15px;
+    }
+
+    .title {
+        font-size: 25px;
+    }
+
+    .navbar-items a {
+        font-size: 15px;
+    }
+}
+
+@media only screen and (max-width: 480px) {
+
+    .projects {
+        padding: 0 15px 20px 15px;
+    }
+
+    .project-view {
+        padding: 8px;
+    }
+
+    .button {
+        font-size: 9px;
+        margin: 1px;
+    }
+
+    .add-project {
+        padding-right: 14px;
+        margin-bottom: 5px;
+    }
+
+    .project-title {
+        font-size: 12px;
+        margin-bottom: 15px;
+    }
+
+    .project-details {
+        font-size: 8px;
+        padding-left: 10px;
+    }
+
+    .sprint-details {
+        font-size: 8px;
+    }
+
+    .sprint-details p {
+        padding-left: 7px;
+    }
+
+    .sprint-title {
+        font-size: 10px;
+        padding-bottom: 10px;
+    }
+
+    .sprint-view {
+        padding: 8px;
+    }
+
+    .add-sprint {
+        margin-right: 3px;
+    }
+
+    .title {
+        font-size: 20px;
+    }
+
+    .navbar-items a {
+        font-size: 12px;
+    }
+}
+
+

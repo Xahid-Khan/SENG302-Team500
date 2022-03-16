@@ -97,4 +97,16 @@ public class LoginController {
         redirectAttributes.addAttribute("error", loginReply.getMessage());
         return "redirect:/login?error";
     }
+
+    /**
+     * Allows get requests to / to redirect to the login form
+     */
+    @GetMapping("/")
+    public String index(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            Model model
+    ) {
+        return "login";
+    }
 }

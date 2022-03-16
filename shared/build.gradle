@@ -14,6 +14,7 @@ group "nz.ac.canterbury.seng302"
 version "1.0"
 sourceCompatibility = '17'
 
+
 repositories {
     mavenLocal()
     mavenCentral()
@@ -69,3 +70,5 @@ publishing {
         }
     }
 }
+
+targetCompatibility = JavaVersion.VERSION_17
