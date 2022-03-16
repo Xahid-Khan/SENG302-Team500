@@ -44,12 +44,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         // let the H2 console embed itself in a frame
         security.headers().frameOptions().sameOrigin();
-
     }
 
     @Override
     public void configure(WebSecurity web) throws Exception
     {
-        web.ignoring().antMatchers("/login", "/register");
+        web.ignoring().antMatchers("/login", "/register")
+            .and().ignoring().antMatchers("/api/*").anyRequest();
     }
 }
