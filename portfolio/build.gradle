@@ -8,6 +8,7 @@ group = 'nz.ac.canterbury.seng302'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '17'
 
+
 wrapper {
     gradleVersion = '7.4'
 }
@@ -23,8 +24,11 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-security'
 
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa:2.6.4'
+
     implementation 'net.devh:grpc-client-spring-boot-starter:2.13.1.RELEASE' // GRPC client dependencies
     implementation 'nz.ac.canterbury.seng302:shared:1.0' // Local package containing .proto files
+
 
     implementation 'io.jsonwebtoken:jjwt-api:0.11.0'
 
@@ -37,6 +41,10 @@ dependencies {
 
 
 
+    implementation 'com.h2database:h2:2.1.210'
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.0'
+
+
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
@@ -44,3 +52,5 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+targetCompatibility = JavaVersion.VERSION_17
