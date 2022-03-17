@@ -36,7 +36,8 @@
 <h1>Sign Up<br/></h1>
 <form action="#" th:action="@{/register}" th:object="${user}" method="post">
     <!--    Submits a populated UserDTO to endpoint register -->
-    Username: <br/><input type="text" th:field="*{username}" /><br/>
+    Username: <br/><input class="form-control" type="text" th:field="*{username}" id="username" />
+    <div class="alert alert-warning" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div><br/>
     Password: <br/><input type="text" th:field="*{password}" /><br/>
     First Name: <br/><input type="text" th:field="*{firstName}" /><br/>
     Middle Name: <br/><input type="text" th:field="*{middleName}" /><br/>
