@@ -13,16 +13,18 @@ public class User {
     @GeneratedValue(strategy= GenerationType.AUTO)
     private int id;
 
-    @NotBlank
-    @Column(unique=true)
+    @NotBlank(message = "Username cannot be blank")
     private String username;
     private String password;
 
-    @NotBlank
+    @NotBlank(message = "First name cannot be blank")
     private String firstName;
+
     private String middleName;
-    @NotBlank
+
+    @NotBlank(message = "Last name cannot be blank")
     private String lastName;
+
     private String nickname;
     private String bio;
     private String pronouns;
