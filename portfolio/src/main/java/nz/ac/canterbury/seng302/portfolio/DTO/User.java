@@ -1,9 +1,12 @@
 package nz.ac.canterbury.seng302.portfolio.DTO;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.Pattern;
 import java.util.Objects;
 
 @Entity
@@ -14,19 +17,26 @@ public class User {
     private int id;
 
     @NotBlank(message = "Username cannot be blank")
+    @Pattern(regexp="^[a-zA-Z0-9_.-]*$", message="Name must only consist of letters and numbers")
     private String username;
     private String password;
 
     @NotBlank(message = "First name cannot be blank")
+    @Pattern(regexp="/^[a-z ,.'-]+$/i", message="First name must only consist of letters and valid character")
     private String firstName;
 
     private String middleName;
 
     @NotBlank(message = "Last name cannot be blank")
+    @Pattern(regexp="^[a-zA-Z-]+$", message="Last name must only consist of letters and valid characters")
     private String lastName;
 
+    @Pattern(regexp="^[a-zA-Z-]+$", message="Nickname must only consist of letters and valid characters")
     private String nickname;
+
+    @Pattern(regexp="^[a-zA-Z-]+$", message="Bio must only consist of letters and valid characters")
     private String bio;
+    @Pattern(regexp="^[a-zA-Z-]+$", message="Bio must only consist of letters and valid characters")
     private String pronouns;
     @Email
     private String email;
