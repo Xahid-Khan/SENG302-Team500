@@ -1,0 +1,50 @@
+/**
+ * Stylesheet for elements common across the portfolio application
+ */
+
+/* Globals */
+body {
+  font-family: Helvetica, sans-serif;
+  background-color: #ededec;
+
+  margin: 0;
+  padding: 0;
+  border: none;
+  box-sizing: border-box;
+}
+
+/* Raised Card */
+.raised-card {
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  background: white;
+}
+
+/* Buttons */
+button {
+  color: #fff;
+  cursor: pointer;
+  background-color: #43C0FE;
+  border: none;
+  padding: 8px 12px;
+  transition-duration: 0.4s;
+  font-size: 14px;
+}
+
+button:hover {
+  background-color: #0332D1;
+}
+
+/* inputs */
+input {
+  padding: 5px;
+  background-color: transparent;
+  color: black;
+}
+
+/* form info */
+.form-error {
+  font-size: 14px;
+  color: red;
+  font-weight: bold;
+}
