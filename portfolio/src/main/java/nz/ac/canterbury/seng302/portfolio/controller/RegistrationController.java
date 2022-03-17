@@ -43,6 +43,7 @@ public class RegistrationController {
         if(result.hasErrors()){
             return "registration_form";
         }
-        return "registered";//return the template in templates folder
+        System.out.println("GOT HERE");
+        return "greeting";//return the template in templates folder
     }
 }
