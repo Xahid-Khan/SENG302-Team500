@@ -28,6 +28,7 @@ public class User {
     private String nickname;
     private String bio;
     private String pronouns;
+    @Email
     private String email;
 
     public void setUsername(String username) {
