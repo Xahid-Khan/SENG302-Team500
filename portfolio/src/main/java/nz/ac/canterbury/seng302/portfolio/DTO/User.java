@@ -22,13 +22,13 @@ public class User {
     private String password;
 
     @NotBlank(message = "First name cannot be blank")
-    @Pattern(regexp="/^[a-z ,.'-]+$/i", message="First name must only consist of letters and valid character")
+    @Pattern(regexp="^[a-z ,.'-]+$", message="First name must only consist of letters and valid characters")
     private String firstName;
 
     private String middleName;
 
     @NotBlank(message = "Last name cannot be blank")
-    @Pattern(regexp="^[a-zA-Z-]+$", message="Last name must only consist of letters and valid characters")
+    @Pattern(regexp="^[a-z ,.'-]+$", message="Last name must only consist of letters and valid characters")
     private String lastName;
 
     @Pattern(regexp="^[a-zA-Z-]+$", message="Nickname must only consist of letters and valid characters")
