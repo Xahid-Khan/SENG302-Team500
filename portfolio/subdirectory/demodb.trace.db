@@ -226,3 +226,72 @@ Caused by: java.lang.NumberFormatException: For input string: "2022/"
 	at org.h2.util.DateTimeUtils.parseTimestamp(DateTimeUtils.java:338)
 	at org.h2.value.ValueTimestamp.parse(ValueTimestamp.java:86)
 	... 99 more
+2022-03-17 22:48:38 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "drop table if exists [*]user CASCADE "; expected "identifier"; SQL statement:
+drop table if exists user CASCADE  [42001-210]
+2022-03-17 22:48:38 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "create table [*]user (id integer not null, bio varchar(255), email varchar(255), first_name varchar(255), last_name varchar(255), middle_name varchar(255), nickname varchar(255), password varchar(255), pronouns varchar(255), username varchar(255), primary key (id))"; expected "identifier"; SQL statement:
+create table user (id integer not null, bio varchar(255), email varchar(255), first_name varchar(255), last_name varchar(255), middle_name varchar(255), nickname varchar(255), password varchar(255), pronouns varchar(255), username varchar(255), primary key (id)) [42001-210]
+2022-03-17 23:13:24 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "drop table if exists [*]user CASCADE "; expected "identifier"; SQL statement:
+drop table if exists user CASCADE  [42001-210]
+2022-03-17 23:13:37 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "drop table if exists [*]user CASCADE "; expected "identifier"; SQL statement:
+drop table if exists user CASCADE  [42001-210]
+2022-03-17 23:13:37 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "create table [*]user (id integer not null, bio varchar(255), email varchar(255), first_name varchar(255), last_name varchar(255), middle_name varchar(255), nickname varchar(255), password varchar(255), pronouns varchar(255), username varchar(255), primary key (id))"; expected "identifier"; SQL statement:
+create table user (id integer not null, bio varchar(255), email varchar(255), first_name varchar(255), last_name varchar(255), middle_name varchar(255), nickname varchar(255), password varchar(255), pronouns varchar(255), username varchar(255), primary key (id)) [42001-210]
+2022-03-17 23:20:13 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "drop table if exists [*]user CASCADE "; expected "identifier"; SQL statement:
+drop table if exists user CASCADE  [42001-210]
+2022-03-17 23:20:21 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "drop table if exists [*]user CASCADE "; expected "identifier"; SQL statement:
+drop table if exists user CASCADE  [42001-210]
+2022-03-17 23:20:21 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "create table [*]user (id integer not null, bio varchar(255), email varchar(255), first_name varchar(255), last_name varchar(255), middle_name varchar(255), nickname varchar(255), password varchar(255), pronouns varchar(255), username varchar(255), primary key (id))"; expected "identifier"; SQL statement:
+create table user (id integer not null, bio varchar(255), email varchar(255), first_name varchar(255), last_name varchar(255), middle_name varchar(255), nickname varchar(255), password varchar(255), pronouns varchar(255), username varchar(255), primary key (id)) [42001-210]
+2022-03-17 23:25:22 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "drop table if exists [*]user CASCADE "; expected "identifier"; SQL statement:
+drop table if exists user CASCADE  [42001-210]
+2022-03-17 23:25:31 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "drop table if exists [*]user CASCADE "; expected "identifier"; SQL statement:
+drop table if exists user CASCADE  [42001-210]
+2022-03-17 23:25:31 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "create table [*]user (id integer not null, bio varchar(255), email varchar(255), first_name varchar(255), last_name varchar(255), middle_name varchar(255), nickname varchar(255), password varchar(255), pronouns varchar(255), username varchar(255), primary key (id))"; expected "identifier"; SQL statement:
+create table user (id integer not null, bio varchar(255), email varchar(255), first_name varchar(255), last_name varchar(255), middle_name varchar(255), nickname varchar(255), password varchar(255), pronouns varchar(255), username varchar(255), primary key (id)) [42001-210]
+2022-03-17 23:27:08 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "drop table if exists [*]user CASCADE "; expected "identifier"; SQL statement:
+drop table if exists user CASCADE  [42001-210]
+2022-03-17 23:27:13 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "drop table if exists [*]user CASCADE "; expected "identifier"; SQL statement:
+drop table if exists user CASCADE  [42001-210]
+2022-03-17 23:27:13 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "create table [*]user (id integer not null, bio varchar(255), email varchar(255), first_name varchar(255), last_name varchar(255), middle_name varchar(255), nickname varchar(255), password varchar(255), pronouns varchar(255), username varchar(255), primary key (id))"; expected "identifier"; SQL statement:
+create table user (id integer not null, bio varchar(255), email varchar(255), first_name varchar(255), last_name varchar(255), middle_name varchar(255), nickname varchar(255), password varchar(255), pronouns varchar(255), username varchar(255), primary key (id)) [42001-210]
+2022-03-17 23:28:46 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "drop table if exists [*]user CASCADE "; expected "identifier"; SQL statement:
+drop table if exists user CASCADE  [42001-210]
+2022-03-17 23:28:52 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "drop table if exists [*]user CASCADE "; expected "identifier"; SQL statement:
+drop table if exists user CASCADE  [42001-210]
+2022-03-17 23:28:52 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "create table [*]user (id integer not null, bio varchar(255), email varchar(255), first_name varchar(255), last_name varchar(255), middle_name varchar(255), nickname varchar(255), password varchar(255), pronouns varchar(255), username varchar(255), primary key (id))"; expected "identifier"; SQL statement:
+create table user (id integer not null, bio varchar(255), email varchar(255), first_name varchar(255), last_name varchar(255), middle_name varchar(255), nickname varchar(255), password varchar(255), pronouns varchar(255), username varchar(255), primary key (id)) [42001-210]
+2022-03-17 23:29:58 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "drop table if exists [*]user CASCADE "; expected "identifier"; SQL statement:
+drop table if exists user CASCADE  [42001-210]
+2022-03-17 23:30:03 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "drop table if exists [*]user CASCADE "; expected "identifier"; SQL statement:
+drop table if exists user CASCADE  [42001-210]
+2022-03-17 23:30:03 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "create table [*]user (id integer not null, bio varchar(255), email varchar(255), first_name varchar(255), last_name varchar(255), middle_name varchar(255), nickname varchar(255), password varchar(255), pronouns varchar(255), username varchar(255), primary key (id))"; expected "identifier"; SQL statement:
+create table user (id integer not null, bio varchar(255), email varchar(255), first_name varchar(255), last_name varchar(255), middle_name varchar(255), nickname varchar(255), password varchar(255), pronouns varchar(255), username varchar(255), primary key (id)) [42001-210]
+2022-03-17 23:36:19 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "drop table if exists [*]user CASCADE "; expected "identifier"; SQL statement:
+drop table if exists user CASCADE  [42001-210]
+2022-03-17 23:36:30 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "drop table if exists [*]user CASCADE "; expected "identifier"; SQL statement:
+drop table if exists user CASCADE  [42001-210]
+2022-03-17 23:36:30 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "create table [*]user (id integer not null, bio varchar(255), email varchar(255), first_name varchar(255), last_name varchar(255), middle_name varchar(255), nickname varchar(255), password varchar(255), pronouns varchar(255), username varchar(255), primary key (id))"; expected "identifier"; SQL statement:
+create table user (id integer not null, bio varchar(255), email varchar(255), first_name varchar(255), last_name varchar(255), middle_name varchar(255), nickname varchar(255), password varchar(255), pronouns varchar(255), username varchar(255), primary key (id)) [42001-210]

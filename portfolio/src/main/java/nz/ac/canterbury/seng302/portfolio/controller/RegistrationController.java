@@ -1,7 +1,9 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import io.grpc.StatusRuntimeException;
 import nz.ac.canterbury.seng302.portfolio.DTO.User;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,16 +32,16 @@ public class RegistrationController {
     public String register(
             @Valid @ModelAttribute User user, BindingResult result, Model model
     ){//return data to the view using model
-//        UserRegisterResponse registerReply;
-//        try {
-//            registerReply = registerClientService.register(user.getUsername(), user.getPassword(), user.getFirstName(), user.getMiddleName(), user.getLastName(),
-//                    user.getNickname(), user.getBio(), user.getPronouns(), user.getEmail());
-//        } catch (StatusRuntimeException e){
-//            model.addAttribute("registerMessage", "Error connecting to Identity Provider...");
-//            return "registration_form";
-//
-//        }
-//        model.addAttribute("registerMessage",registerReply.getMessage());//add data to the model
+        UserRegisterResponse registerReply;
+        try {
+            registerReply = registerClientService.register(user.getUsername(), user.getPassword(), user.getFirstName(), user.getMiddleName(), user.getLastName(),
+                    user.getNickname(), user.getBio(), user.getPronouns(), user.getEmail());
+        } catch (StatusRuntimeException e){
+            model.addAttribute("registerMessage", "Error connecting to Identity Provider...");
+            return "registration_form";
+
+        }
+        model.addAttribute("registerMessage",registerReply.getMessage());//add data to the model
         if(result.hasErrors()){
             return "registration_form";
         }
