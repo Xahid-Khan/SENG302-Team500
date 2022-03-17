@@ -1,12 +1,27 @@
 package nz.ac.canterbury.seng302.portfolio.DTO;
 
+import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.util.Objects;
 
+@Entity
 public class User {
+
+    @Id
+    @GeneratedValue(strategy= GenerationType.AUTO)
+    private int id;
+
+    @NotBlank
+    @Column(unique=true)
     private String username;
     private String password;
+
+    @NotBlank
     private String firstName;
     private String middleName;
+    @NotBlank
     private String lastName;
     private String nickname;
     private String bio;
