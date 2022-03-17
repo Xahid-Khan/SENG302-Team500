@@ -29,6 +29,16 @@ public class PasswordService {
   /**
    * Securely hash a password string into a string that can be safely stored in the database.
    *
+   * <p>
+   *   In fact, the string returned actually contains more than just the plain hash.
+   *   It contains three pieces of data, seperated by the pipe symbol: version, salt, and the hash.
+   * </p>
+   *
+   * <p>
+   *   This allows all necessary information to be stored in a single database column while
+   *   conserving the metadata needed to verify the password later.
+   * </p>
+   *
    * @param password plaintext password to hash.
    * @return hashed version of the given password (including the salt attached in plaintext)
    */
@@ -60,6 +70,11 @@ public class PasswordService {
 
   /**
    * Verify that the given password and the hash match.
+   *
+   * <p>
+   *   Note that this method extracts metadata (such as the version and the salt) from the string.
+   *   Please refer to {@link PasswordService#hashPassword(String)} for more information.
+   * </p>
    *
    * @param password to check against the hash
    * @param hashString to check the password against
