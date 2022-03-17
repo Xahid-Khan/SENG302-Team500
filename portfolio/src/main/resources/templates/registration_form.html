@@ -38,14 +38,18 @@
     <!--    Submits a populated UserDTO to endpoint register -->
     Username: <br/><input class="form-control" type="text" th:field="*{username}" id="username" />
     <div class="alert alert-warning" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div><br/>
-    Password: <br/><input type="text" th:field="*{password}" /><br/>
-    First Name: <br/><input type="text" th:field="*{firstName}" /><br/>
-    Middle Name: <br/><input type="text" th:field="*{middleName}" /><br/>
-    Last Name: <br/><input type="text" th:field="*{lastName}" /><br/>
-    Nickname: <br/><input type="text" th:field="*{nickname}" /><br/>
-    Bio: <br/><input type="text" th:field="*{bio}" /><br/>
-    Pronouns: <br/><input type="text" th:field="*{pronouns}" /><br/>
-    Email: <br/><input type="text" th:field="*{email}" /><br/>
+    Password: <br/><input type="text" th:field="*{password}" id="password" /><br/>
+    <div class="alert alert-warning" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div><br/>
+    First Name: <br/><input type="text" th:field="*{firstName}" id="firstName"/><br/>
+    <div class="alert alert-warning" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></div><br/>
+    Middle Name: <br/><input type="text" th:field="*{middleName}" id="middleName"/><br/>
+    Last Name: <br/><input type="text" th:field="*{lastName}" id="lastName"/><br/>
+    <div class="alert alert-warning" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></div><br/>
+    Nickname: <br/><input type="text" th:field="*{nickname}" id="nickname" /><br/>
+    Bio: <br/><input type="text" th:field="*{bio}" id="bio"/><br/>
+    Pronouns: <br/><input type="text" th:field="*{pronouns}" id="pronouns"/><br/>
+    Email: <br/><input type="text" th:field="*{email}" id="email"/><br/>
+    <div class="alert alert-warning" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div><br/>
 
     <button name=”register” type=”Submit” value=”0”>Register</button><br/>
     <a href="http://localhost:9000/login">Have an account? Login</a>
