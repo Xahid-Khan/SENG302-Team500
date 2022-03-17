@@ -28,7 +28,7 @@ public class RegistrationController {
 
     @PostMapping("/register")//set path
     public String register(
-            @Valid @ModelAttribute User user, Model model, BindingResult result
+            @Valid @ModelAttribute User user, BindingResult result, Model model
     ){//return data to the view using model
 //        UserRegisterResponse registerReply;
 //        try {
