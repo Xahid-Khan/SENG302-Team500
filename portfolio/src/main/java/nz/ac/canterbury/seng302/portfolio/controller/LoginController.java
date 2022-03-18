@@ -94,6 +94,7 @@ public class LoginController {
             return "redirect:/greeting";
         }
 
+
         redirectAttributes.addAttribute("error", loginReply.getMessage());
         return "redirect:/login?error";
     }
@@ -107,6 +108,6 @@ public class LoginController {
             HttpServletResponse response,
             Model model
     ) {
-        return "login";
+        return "login_form";
     }
 }
