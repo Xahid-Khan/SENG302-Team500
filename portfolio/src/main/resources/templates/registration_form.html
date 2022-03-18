@@ -36,16 +36,17 @@
 <h1>Sign Up<br/></h1>
 <form action="#" th:action="@{/register}" th:object="${user}" method="post">
     <!--    Submits a populated UserDTO to endpoint register -->
-    Username: <br/><input type="text" th:field="*{username}" /><br/>
-    Password: <br/><input type="text" th:field="*{password}" /><br/>
-    First Name: <br/><input type="text" th:field="*{firstName}" /><br/>
+    Username*: <br/><input type="text" th:field="*{username}" th:required="required" /><br/>
+    Password*: <br/><input type="text" th:field="*{password}" th:required="required" /><br/>
+    First Name*: <br/><input type="text" th:field="*{firstName}" th:required="required" /><br/>
     Middle Name: <br/><input type="text" th:field="*{middleName}" /><br/>
-    Last Name: <br/><input type="text" th:field="*{lastName}" /><br/>
+    Last Name*: <br/><input type="text" th:field="*{lastName}" th:required="required" /><br/>
     Nickname: <br/><input type="text" th:field="*{nickname}" /><br/>
     Bio: <br/><input type="text" th:field="*{bio}" /><br/>
     Pronouns: <br/><input type="text" th:field="*{pronouns}" /><br/>
-    Email: <br/><input type="text" th:field="*{email}" /><br/>
+    Email*: <br/><input type="text" th:field="*{email}" th:required="required" /><br/>
 
+    <br/>* = Required field.<br/>
     <button name=”register” type=”Submit” value=”0”>Register</button><br/>
     <a href="http://localhost:9000/login">Have an account? Login</a>
 </form>
