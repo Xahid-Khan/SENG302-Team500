@@ -2,12 +2,12 @@ package nz.ac.canterbury.seng302.identityprovider.service;
 
 import com.google.protobuf.Empty;
 import io.grpc.stub.StreamObserver;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 import net.devh.boot.grpc.server.service.GrpcService;
 
 import nz.ac.canterbury.seng302.identityprovider.authentication.AuthenticationServerInterceptor;
 import nz.ac.canterbury.seng302.identityprovider.authentication.JwtTokenUtil;
+import nz.ac.canterbury.seng302.identityprovider.database.UserModel;
+import nz.ac.canterbury.seng302.identityprovider.database.UserRepository;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticateRequest;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticateResponse;
@@ -18,53 +18,38 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class AuthenticateServerService extends AuthenticationServiceImplBase{
 
     @Autowired
-    private PasswordService passwordService;
+    private UserRepository repository;
 
-    private final int VALID_USER_ID = 1;
-    private final String VALID_USER = "abc123";
-    private final String VALID_PASSWORD = "Password123!";
-    private final String FIRST_NAME_OF_USER = "Valid";
-    private final String LAST_NAME_OF_USER = "User";
-    private final String FULL_NAME_OF_USER = FIRST_NAME_OF_USER + " " + LAST_NAME_OF_USER;
     private final String ROLE_OF_USER = "student"; // Puce teams may want to change this to "teacher" to test some functionality
 
     private JwtTokenUtil jwtTokenService = JwtTokenUtil.getInstance();
 
-    private String getValidPassword() throws NoSuchAlgorithmException, InvalidKeySpecException {
-        return passwordService.hashPassword(VALID_PASSWORD);
-    }
-
     /**
-     * Attempts to authenticate a user with a given username and password. 
+     * Attempts to authenticate a user with a given username and password.
      */
     @Override
     public void authenticate(AuthenticateRequest request, StreamObserver<AuthenticateResponse> responseObserver) {
         AuthenticateResponse.Builder reply = AuthenticateResponse.newBuilder();
 
-        boolean validPassword = false;
+        UserModel user = repository.findByUsername(request.getUsername()).get(0);
 
-        try {
-            validPassword = passwordService.verifyPassword(request.getPassword(), getValidPassword());
-        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-            e.printStackTrace();
-        }
+        if (request.getPassword().equals(user.getPassword())) {
 
-        if (request.getUsername().equals(VALID_USER) && validPassword) {
-            String token = jwtTokenService.generateTokenForUser(VALID_USER, VALID_USER_ID, FULL_NAME_OF_USER, ROLE_OF_USER);
+            String token = jwtTokenService.generateTokenForUser(user.getUsername(), user.getId(), user.getFirstName() + user.getLastName(), ROLE_OF_USER);
             reply
-                .setEmail("validuser@email.com")
-                .setFirstName(FIRST_NAME_OF_USER)
-                .setLastName(LAST_NAME_OF_USER)
-                .setMessage("Logged in successfully!")
-                .setSuccess(true)
-                .setToken(token)
-                .setUserId(1)
-                .setUsername(VALID_USER);
+                    .setUserId(user.getId())
+                    .setUsername(user.getUsername())
+                    .setFirstName(user.getFirstName())
+                    .setLastName(user.getLastName())
+                    .setEmail(user.getEmail())
+                    .setMessage("Logged in successfully!")
+                    .setSuccess(true)
+                    .setToken(token);
         } else {
             reply
-            .setMessage("Log in attempt failed: username or password incorrect")
-            .setSuccess(false)
-            .setToken("");
+                    .setMessage("Log in attempt failed: username or password incorrect")
+                    .setSuccess(false)
+                    .setToken("");
         }
 
         responseObserver.onNext(reply.build());
