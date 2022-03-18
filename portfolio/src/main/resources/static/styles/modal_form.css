@@ -7,7 +7,6 @@ body {
 }
 
 .form {
-  margin: auto;
   max-width: 100vw;
   width: 400px;
 
@@ -43,4 +42,10 @@ body {
 input, textarea {
   width: 100%;
   max-width: 100%;
+}
+
+@media (max-width: 420px) {
+  .form {
+    margin: auto 10px;
+  }
 }
