@@ -32,6 +32,11 @@ public class RegistrationController {
     public String register(
             @Valid @ModelAttribute User user, BindingResult result, Model model
     ){//return data to the view using model
+
+        if(result.hasErrors()){
+            return "registration_form";
+        }
+
         UserRegisterResponse registerReply;
         try {
             registerReply = registerClientService.register(user.getUsername(), user.getPassword(), user.getFirstName(), user.getMiddleName(), user.getLastName(),
@@ -42,10 +47,7 @@ public class RegistrationController {
 
         }
         model.addAttribute("registerMessage",registerReply.getMessage());//add data to the model
-        if(result.hasErrors()){
-            return "registration_form";
-        }
-        System.out.println("GOT HERE");
+
         return "greeting";//return the template in templates folder
     }
 }

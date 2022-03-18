@@ -1,43 +1,42 @@
 package nz.ac.canterbury.seng302.portfolio.DTO;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import java.util.Objects;
 
-@Entity
+
 public class User {
 
-    @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
-    private int id;
+    private final String ONLY_LETTERS_REGEX = "^[a-zA-Z ]*$";
+    private final String NO_SPECIAL_CHAR_REGEX = "^[a-zA-Z0-9.\\-+=@_ ]*$";
 
     @NotBlank(message = "Username cannot be blank")
-    @Pattern(regexp="^[a-zA-Z0-9_.-]*$", message="Name must only consist of letters and numbers")
+    @Pattern(regexp=NO_SPECIAL_CHAR_REGEX, message="Name cannot contain special characters or spaces")
     private String username;
+
     private String password;
 
     @NotBlank(message = "First name cannot be blank")
-    @Pattern(regexp="^[a-zA-Z_.-]*$", message="First name must only consist of letters and valid characters")
+    @Pattern(regexp=ONLY_LETTERS_REGEX, message="First name must only consist of letters")
     private String firstName;
 
+    @Pattern(regexp=ONLY_LETTERS_REGEX, message="Last name must only consist of letters")
     private String middleName;
 
     @NotBlank(message = "Last name cannot be blank")
-    @Pattern(regexp="^[a-zA-Z_.-]*$", message="Last name must only consist of letters and valid characters")
+    @Pattern(regexp=ONLY_LETTERS_REGEX, message="Last name must only consist of letters")
     private String lastName;
 
-    @Pattern(regexp="^[a-zA-Z-]+$", message="Nickname must only consist of letters and valid characters")
+    @Pattern(regexp=NO_SPECIAL_CHAR_REGEX, message="Nickname cannot contain special characters")
     private String nickname;
 
-    @Pattern(regexp="^[a-zA-Z-]+$", message="Bio must only consist of letters and valid characters")
+    @Pattern(regexp=NO_SPECIAL_CHAR_REGEX, message="Bio cannot contain special characters")
     private String bio;
-    @Pattern(regexp="^[a-zA-Z-]+$", message="Bio must only consist of letters and valid characters")
+
+    @Pattern(regexp=NO_SPECIAL_CHAR_REGEX, message="Pronouns cannot contain special characters")
     private String pronouns;
+
     @Email
     private String email;
 

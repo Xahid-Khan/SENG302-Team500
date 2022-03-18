@@ -39,15 +39,18 @@
     Username*: <br/><input class="form-control" type="text" th:field="*{username}" id="username" th:required="required"/>
     <div class="alert alert-warning" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div><br/>
     Password*: <br/><input type="password" th:field="*{password}" id="password" th:required="required"/><br/>
-    <div class="alert alert-warning" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div><br/>
     First Name*: <br/><input type="text" th:field="*{firstName}" id="firstName" th:required="required"/><br/>
     <div class="alert alert-warning" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></div><br/>
     Middle Name: <br/><input type="text" th:field="*{middleName}" id="middleName" /><br/>
+    <div class="alert alert-warning" th:if="${#fields.hasErrors('middleName')}" th:errors="*{middleName}"></div><br/>
     Last Name*: <br/><input type="text" th:field="*{lastName}" id="lastName" th:required="required"/><br/>
     <div class="alert alert-warning" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></div><br/>
     Nickname: <br/><input type="text" th:field="*{nickname}" id="nickname" /><br/>
+    <div class="alert alert-warning" th:if="${#fields.hasErrors('nickname')}" th:errors="*{nickname}"></div><br/>
     Bio: <br/><input type="text" th:field="*{bio}" id="bio"/><br/>
+    <div class="alert alert-warning" th:if="${#fields.hasErrors('bio')}" th:errors="*{bio}"></div><br/>
     Pronouns: <br/><input type="text" th:field="*{pronouns}" id="pronouns"/><br/>
+    <div class="alert alert-warning" th:if="${#fields.hasErrors('pronouns')}" th:errors="*{pronouns}"></div><br/>
     Email*: <br/><input type="text" th:field="*{email}" id="email" th:required="required"/><br/>
     <div class="alert alert-warning" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div><br/>
 
