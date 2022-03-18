@@ -14,11 +14,18 @@ import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticateResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticationServiceGrpc.AuthenticationServiceImplBase;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.util.List;
+
 @GrpcService
 public class AuthenticateServerService extends AuthenticationServiceImplBase{
 
     @Autowired
     private UserRepository repository;
+
+    @Autowired
+    private PasswordService passwordService;
 
     private final String ROLE_OF_USER = "student"; // Puce teams may want to change this to "teacher" to test some functionality
 
@@ -31,29 +38,32 @@ public class AuthenticateServerService extends AuthenticationServiceImplBase{
     public void authenticate(AuthenticateRequest request, StreamObserver<AuthenticateResponse> responseObserver) {
         AuthenticateResponse.Builder reply = AuthenticateResponse.newBuilder();
 
-        UserModel user = repository.findByUsername(request.getUsername()).get(0);
+        UserModel user = repository.findByUsername(request.getUsername());
+        try {
+            if (user != null && passwordService.verifyPassword(request.getPassword(), user.getPassword())) {
 
-        if (request.getPassword().equals(user.getPassword())) {
-
-            String token = jwtTokenService.generateTokenForUser(user.getUsername(), user.getId(), user.getFirstName() + user.getLastName(), ROLE_OF_USER);
-            reply
-                    .setUserId(user.getId())
-                    .setUsername(user.getUsername())
-                    .setFirstName(user.getFirstName())
-                    .setLastName(user.getLastName())
-                    .setEmail(user.getEmail())
-                    .setMessage("Logged in successfully!")
-                    .setSuccess(true)
-                    .setToken(token);
-        } else {
-            reply
-                    .setMessage("Log in attempt failed: username or password incorrect")
-                    .setSuccess(false)
-                    .setToken("");
+                String token = jwtTokenService.generateTokenForUser(user.getUsername(), user.getId(), user.getFirstName() + user.getLastName(), ROLE_OF_USER);
+                reply
+                        .setUserId(user.getId())
+                        .setUsername(user.getUsername())
+                        .setFirstName(user.getFirstName())
+                        .setLastName(user.getLastName())
+                        .setEmail(user.getEmail())
+                        .setMessage("Logged in successfully!")
+                        .setSuccess(true)
+                        .setToken(token);
+            } else {
+                reply
+                        .setMessage("Log in attempt failed: username or password incorrect")
+                        .setSuccess(false)
+                        .setToken("");
+            }
+            responseObserver.onNext(reply.build());
+            responseObserver.onCompleted();
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            e.printStackTrace();
+            responseObserver.onError(e);
         }
-
-        responseObserver.onNext(reply.build());
-        responseObserver.onCompleted();
     }
 
     /**
