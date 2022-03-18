@@ -1,7 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
-import nz.ac.canterbury.seng302.portfolio.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import net.devh.boot.grpc.client.inject.GrpcClient;
+import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -13,17 +13,20 @@ import javax.transaction.Transactional;
 @Service
 @Transactional
 public class ViewAccountService {
-    @Autowired
-    private UserRepository userRepository;
 
-    /**
-     * Retrieves the details of a specific user.
-     * @param id This is the Id of the user
-     * @return A string containing all the details of a user.
-     */
-    public String get(String id) {
-        var user = userRepository.findById(id).orElseThrow();
-        return user.toString();
+    @GrpcClient("User-Account-Service-Grpc")
+    private UserAccountServiceGrpc.UserAccountServiceBlockingStub userAccountServiceBlockingStub;
+
+    public UserResponse getUserById(int userId) {
+        GetUserByIdRequest userRequest = GetUserByIdRequest.newBuilder()
+                .setId(userId)
+                .build();
+        return userAccountServiceBlockingStub.getUserAccountById(userRequest);
     }
 
+
+    public PaginatedUsersResponse getAllUsers() {
+        GetPaginatedUsersRequest usersRequest = GetPaginatedUsersRequest.newBuilder().build();
+        return userAccountServiceBlockingStub.getPaginatedUsers(usersRequest);
+    }
 }
