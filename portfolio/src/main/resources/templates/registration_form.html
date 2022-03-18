@@ -52,12 +52,12 @@
 
     <div class="form-row">
         <label th:for="pronouns">Personal Pronouns</label>
-        <input type="text" th:field="*{pronouns}" placeholder="Pronouns"/>
+        <input type="text" th:field="*{pronouns}"/>
     </div>
 
     <div class="form-row">
         <label th:for="bio">Bio</label>
-        <textarea th:field="*{bio}" placeholder="Bio"></textarea>
+        <textarea th:field="*{bio}"></textarea>
     </div>
 
     <div class="form-error" th:if="${registerMessage != null}" th:text="${registerMessage}"></div>

@@ -9,7 +9,7 @@ public class UserModel {
     @GeneratedValue(strategy= GenerationType.AUTO)
     private int id;
 
-//    @Column(unique=true, nullable = false)
+    @Column(unique=true, nullable = false)
     private String username;
 
     @Column(nullable = false)
