@@ -36,10 +36,11 @@ button:hover {
 }
 
 /* inputs */
-input {
+input, textarea {
   padding: 5px;
   background-color: transparent;
   color: black;
+  box-sizing: border-box;
 }
 
 /* form info */

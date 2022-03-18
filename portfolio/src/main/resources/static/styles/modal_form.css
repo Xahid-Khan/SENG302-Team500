@@ -6,7 +6,7 @@ body {
   align-items: center;
 }
 
-.login-form {
+.form {
   margin: auto;
   max-width: 100vw;
   width: 400px;
@@ -27,7 +27,20 @@ body {
   margin-top: 10px;
 }
 
-input {
+.form .form-row {
   width: 100%;
-  margin-bottom: 10px;
+}
+
+.form .form-row > * {
+  display: block;
+}
+
+.form .form-row > label {
+  font-size: 14px;
+  color: dimgrey;
+}
+
+input, textarea {
+  width: 100%;
+  max-width: 100%;
 }

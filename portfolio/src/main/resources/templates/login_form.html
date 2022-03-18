@@ -5,14 +5,15 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
   <link rel="stylesheet" th:href="@{/styles/common.css}" />
-  <link rel="stylesheet" th:href="@{/styles/pages/login_form.css}">
+  <link rel="stylesheet" th:href="@{/styles/modal_form.css}">
 </head>
+
 <body>
-    <form action="#" th:action="@{/login}" th:object="${login}" method="post" class="raised-card login-form">
+    <form action="#" th:action="@{/login}" th:object="${login}" method="post" class="raised-card form">
       <h1 class="title">Log In</h1>
 
       <!--    Submits a populated UserDTO to endpoint register -->
-      <input type="text" th:field="*{username}" placeholder="email" autofocus/>
+      <input type="email" th:field="*{username}" placeholder="email" autofocus/>
       <input type="password" th:field="*{password}" placeholder="password"/>
 
       <div class="form-error" th:if="${error != null}" th:text="${error}"></div>
