@@ -35,6 +35,9 @@ dependencies {
     implementation 'com.h2database:h2:2.1.210'
     // allows the server to also run on a non-grpc port default 8080
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'io.nity.grpc:grpc-server-spring-boot-starter:1.0.0'
+    implementation 'net.devh:grpc-client-spring-boot-starter:2.13.1.RELEASE'
+    implementation 'org.springframework.boot:spring-boot-autoconfigure:2.6.4'
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
