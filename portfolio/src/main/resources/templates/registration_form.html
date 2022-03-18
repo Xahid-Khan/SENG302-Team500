@@ -1,54 +1,70 @@
 <!DOCTYPE HTML>
-<html xmlns:th="http://thymeleaf.org" lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Sign Up</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <style>
-    h1 {
-        text-align: center;
-        font-weight:normal;
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    }
-    form{
-        text-align: center;
-    }
-    input{
-        width: 50%;
-        height: 25%;
-        padding: 12px 20px;
-        margin: 8px 0;
-        box-sizing: border-box;
-    }
-    button{
-        border: solid;
-        border-width: thin;
-        padding: 15px 60px;
-        text-align: center;
-        display: inline-block;
-        font-size: 16px;
-    }
-    href{
-        text-align: center;
-    }
-    </style>
+    <link rel="stylesheet" th:href="@{/styles/common.css}" />
+    <link rel="stylesheet" th:href="@{/styles/modal_form.css}">
 </head>
+
 <body>
-<h1>Sign Up<br/></h1>
-<form action="#" th:action="@{/register}" th:object="${user}" method="post">
+
+<form action="#" th:action="@{/register}" th:object="${user}" method="post" class="raised-card form">
+    <h1 class="title">Sign Up</h1>
+
     <!--    Submits a populated UserDTO to endpoint register -->
-    Username*: <br/><input type="text" th:field="*{username}" th:required="required" /><br/>
-    Password*: <br/><input type="text" th:field="*{password}" th:required="required" /><br/>
-    First Name*: <br/><input type="text" th:field="*{firstName}" th:required="required" /><br/>
-    Middle Name: <br/><input type="text" th:field="*{middleName}" /><br/>
-    Last Name*: <br/><input type="text" th:field="*{lastName}" th:required="required" /><br/>
-    Nickname: <br/><input type="text" th:field="*{nickname}" /><br/>
-    Bio: <br/><input type="text" th:field="*{bio}" /><br/>
-    Pronouns: <br/><input type="text" th:field="*{pronouns}" /><br/>
-    Email*: <br/><input type="text" th:field="*{email}" th:required="required" /><br/>
+    <div class="form-row">
+        <label th:for="username">Username *</label>
+        <input type="text" th:field="*{username}" th:required="required" autofocus/>
+    </div>
+
+    <div class="form-row">
+        <label th:for="email">Email *</label>
+        <input type="email" th:field="*{email}" th:required="required" />
+    </div>
+
+    <div class="form-row">
+        <label th:for="password">Password *</label>
+        <input type="password" th:field="*{password}" th:required="required"/>
+    </div>
+
+    <div class="form-row">
+        <label th:for="firstName">First Name *</label>
+        <input type="text" th:field="*{firstName}" th:required="required"/>
+    </div>
+
+    <div class="form-row">
+        <label th:for="middleName">Middle Name</label>
+        <input type="text" th:field="*{middleName}"/>
+    </div>
+
+    <div class="form-row">
+        <label th:for="lastName">Last Name *</label>
+        <input type="text" th:field="*{lastName}" th:required="required"/>
+    </div>
+
+    <div class="form-row">
+        <label th:for="nickname">Nickname</label>
+        <input type="text" th:field="*{nickname}"/>
+    </div>
+
+    <div class="form-row">
+        <label th:for="pronouns">Personal Pronouns</label>
+        <input type="text" th:field="*{pronouns}" placeholder="Pronouns"/>
+    </div>
+
+    <div class="form-row">
+        <label th:for="bio">Bio</label>
+        <textarea th:field="*{bio}" placeholder="Bio"></textarea>
+    </div>
+
+    <div class="form-error" th:if="${registerMessage != null}" th:text="${registerMessage}"></div>
 
     <br/>* = Required field.<br/>
-    <button name=”register” type=”Submit” value=”0”>Register</button><br/>
-    <a href="http://localhost:9000/login">Have an account? Login</a>
+    <button name="register" type="Submit" value="0">Register</button>
+    <a href="/login">Have an account? Login</a>
 </form>
 
 </body>
