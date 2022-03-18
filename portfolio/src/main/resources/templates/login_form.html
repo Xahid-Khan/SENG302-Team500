@@ -38,10 +38,14 @@
   <!--    Submits a populated UserDTO to endpoint register -->
   Username: <br/><input type="text" th:field="*{username}" /><br/>
   Password: <br/><input type="password" th:field="*{password}" /><br/>
+  <div class="alert alert-warning" th:text="${error}"></div><br/>
+
+
 
   <button name=”login” type=”Submit” value=”0”>Log In</button><br/>
   <a href="http://localhost:9000/register">Don't have an account yet? Sign Up</a>
 </form>
+
 
 </body>
 </html>

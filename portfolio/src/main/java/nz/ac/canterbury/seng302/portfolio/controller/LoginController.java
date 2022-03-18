@@ -94,7 +94,6 @@ public class LoginController {
             return "redirect:/greeting";
         }
 
-
         redirectAttributes.addAttribute("error", loginReply.getMessage());
         return "redirect:/login?error";
     }
