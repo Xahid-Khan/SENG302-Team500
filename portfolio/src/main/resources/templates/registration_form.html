@@ -11,7 +11,7 @@
 
 <body>
 
-<form action="#" th:action="@{/register}" th:object="${user}" method="post" class="raised-card form">
+<form id='form' action="#" th:action="@{/register}" th:object="${user}" method="post" class="raised-card form">
     <h1 class="title">Sign Up</h1>
 
     <!--    Submits a populated UserDTO to endpoint register -->
@@ -27,7 +27,12 @@
 
     <div class="form-row">
         <label th:for="password">Password *</label>
-        <input type="password" th:field="*{password}" th:required="required"/>
+        <input id="password" type="password" th:field="*{password}" th:required="required"/>
+    </div>
+
+    <div class="form-row">
+        <label th:for="confirmPassword">Confirm password *</label>
+        <input id="confirmPassword" type="password" th:required="required" onchange="checkPasswordsMatch()"/>
     </div>
 
     <div class="form-row">
@@ -61,11 +66,15 @@
     </div>
 
     <div class="form-error" th:if="${registerMessage != null}" th:text="${registerMessage}"></div>
+    <div id="field-error" class="form-error" ></div><br>
 
     <br/>* = Required field.<br/>
-    <button name="register" type="Submit" value="0">Register</button>
+    <button id='submit' name="register" type="Submit" value="0">Register</button>
     <a href="/login">Have an account? Login</a>
 </form>
 
 </body>
+
+<script type="text/javascript" th:src="@{/scripts/registration.js}"></script>
+
 </html>
