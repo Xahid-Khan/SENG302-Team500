@@ -1,0 +1,27 @@
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.name-container {
+    display: flex;
+    flex-wrap: nowrap;
+}
+
+.card-padding {
+    padding: 75px;
+    margin: 50px
+}
+
+.image-container {
+    display: flex; justify-content: center; align-items: center
+}
+
+.left-padding {
+    padding-left: 30px;
+}
+
+.right-padding {
+    padding-right: 30px;
+}
