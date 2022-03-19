@@ -11,28 +11,33 @@
 
 <body>
 
-<form action="#" th:action="@{/register}" th:object="${user}" method="post" class="raised-card form">
+<form id='form' action="#" th:action="@{/register}" th:object="${user}" method="post" class="raised-card form">
     <h1 class="title">Sign Up</h1>
-    
+
     <!--    Submits a populated UserDTO to endpoint register -->
     <div class="form-row">
         <label th:for="username">Username *</label>
-        <input type="text" th:field="*{username}" autofocus/>
+        <input type="text" th:field="*{username}" th:required="required" autofocus/>
     </div>
 
     <div class="form-row">
         <label th:for="email">Email *</label>
-        <input type="email" th:field="*{email}" />
+        <input type="email" th:field="*{email}" th:required="required" />
     </div>
 
     <div class="form-row">
         <label th:for="password">Password *</label>
-        <input type="password" th:field="*{password}"/>
+        <input id="password" type="password" th:field="*{password}" th:required="required"/>
+    </div>
+
+    <div class="form-row">
+        <label th:for="confirmPassword">Confirm password *</label>
+        <input id="confirmPassword" type="password" th:required="required" onchange="checkPasswordsMatch()"/>
     </div>
 
     <div class="form-row">
         <label th:for="firstName">First Name *</label>
-        <input type="text" th:field="*{firstName}"/>
+        <input type="text" th:field="*{firstName}" th:required="required"/>
     </div>
 
     <div class="form-row">
@@ -42,7 +47,7 @@
 
     <div class="form-row">
         <label th:for="lastName">Last Name *</label>
-        <input type="text" th:field="*{lastName}"/>
+        <input type="text" th:field="*{lastName}" th:required="required"/>
     </div>
 
     <div class="form-row">
@@ -52,19 +57,24 @@
 
     <div class="form-row">
         <label th:for="pronouns">Personal Pronouns</label>
-        <input type="text" th:field="*{pronouns}" placeholder="Pronouns"/>
+        <input type="text" th:field="*{pronouns}"/>
     </div>
 
     <div class="form-row">
         <label th:for="bio">Bio</label>
-        <textarea th:field="*{bio}" placeholder="Bio"></textarea>
+        <textarea th:field="*{bio}"></textarea>
     </div>
 
     <div class="form-error" th:if="${registerMessage != null}" th:text="${registerMessage}"></div>
+    <div id="field-error" class="form-error" ></div><br>
 
-    <button name="register" type="Submit" value="0">Register</button>
+    <br/>* = Required field.<br/>
+    <button id='submit' name="register" type="Submit" value="0">Register</button>
     <a href="/login">Have an account? Login</a>
 </form>
 
 </body>
+
+<script type="text/javascript" th:src="@{/scripts/registration.js}"></script>
+
 </html>
