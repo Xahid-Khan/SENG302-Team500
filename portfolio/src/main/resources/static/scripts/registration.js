@@ -1,7 +1,9 @@
-form = document.getElementById("form");
-password1 = document.getElementById("password");
-password2 = document.getElementById("confirmPassword");
-error = document.getElementById("field-error");
+'use strict';
+
+const form = document.getElementById("form");
+const password1 = document.getElementById("password");
+const password2 = document.getElementById("confirmPassword");
+const error = document.getElementById("field-error");
 
 form.addEventListener('submit', passwordMatchValidator);
 
