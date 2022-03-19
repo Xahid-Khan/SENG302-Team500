@@ -120,6 +120,6 @@ public class LoginController {
             HttpServletResponse response,
             Model model
     ) {
-        return "accountdetails";
+        return "account_details";
     }
 }
