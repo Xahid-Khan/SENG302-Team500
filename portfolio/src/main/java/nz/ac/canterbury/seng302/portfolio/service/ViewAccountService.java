@@ -16,13 +16,28 @@ public class ViewAccountService {
     private UserAccountServiceGrpc.UserAccountServiceBlockingStub userAccountServiceBlockingStub;
 
 
+    /**
+     * This service is used by controller to request the details of a given user
+     * @param userId Id of a user
+     * @return details of user or null in case of no user found.
+     */
     public UserResponse getUserById(int userId) {
         GetUserByIdRequest userRequest = GetUserByIdRequest.newBuilder()
                 .setId(userId)
                 .build();
-        return userAccountServiceBlockingStub.getUserAccountById(userRequest);
+        var user = userAccountServiceBlockingStub.getUserAccountById(userRequest);
+        if (user.getUsername().length() > 0) {
+            return user;
+        } else {
+            return null;
+        }
     }
 
+
+    /**
+     * Skeleton -
+     * @return
+     */
     public PaginatedUsersResponse getAllUsers() {
         GetPaginatedUsersRequest allUsers = GetPaginatedUsersRequest.newBuilder().build();
         return userAccountServiceBlockingStub.getPaginatedUsers(allUsers);

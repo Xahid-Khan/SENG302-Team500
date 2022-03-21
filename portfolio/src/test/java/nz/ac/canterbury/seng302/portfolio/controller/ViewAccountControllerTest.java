@@ -2,7 +2,6 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,13 +11,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 
-import java.util.List;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
@@ -38,8 +32,8 @@ public class ViewAccountControllerTest {
     private  UserRegisterResponse newUser;
     @BeforeEach
     public void addNewUser() throws Exception {
-         newUser = registerClientService.register("SomeUserName", "thisisMypassWord", "MyFirst Name",
-                "MyMiddle Name", "MyLast Name", "Name", "THis is a mock profile", "Mr.",
+         newUser = registerClientService.register("SomeUserName", "thisisMypassWord", "MyFirstName",
+                "MyMiddle Name", "MyLastName", "Name", "THis is a mock profile", "Mr.",
                 "thisisanemail@fakeemail.com");
     }
 
@@ -48,7 +42,10 @@ public class ViewAccountControllerTest {
         var user = this.mockMvc.perform(get("/api/v1/account/" + newUser.getNewUserId()))
                                 .andExpect(status().isOk())
                                 .andReturn();
-        var stringContent = user.getResponse().getContentAsString();
+        var stringContent = user.getResponse().getContentAsString().split("\n");
+
+        assertEquals(stringContent[0].split(" ")[1], "\"SomeUserName\"");
+        assertEquals(stringContent[1].split(" ")[1], "\"MyFirstName\"");
     }
 
     @Test
