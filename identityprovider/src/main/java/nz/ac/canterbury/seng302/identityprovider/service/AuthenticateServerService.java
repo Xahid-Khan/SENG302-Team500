@@ -40,7 +40,7 @@ public class AuthenticateServerService extends AuthenticationServiceImplBase{
 
         UserModel user = repository.findByUsername(request.getUsername());
         try {
-            if (user != null && passwordService.verifyPassword(request.getPassword(), user.getPassword())) {
+            if (user != null && passwordService.verifyPassword(request.getPassword(), user.getPasswordHash())) {
 
                 String token = jwtTokenService.generateTokenForUser(user.getUsername(), user.getId(), user.getFirstName() + user.getLastName(), ROLE_OF_USER);
                 reply
