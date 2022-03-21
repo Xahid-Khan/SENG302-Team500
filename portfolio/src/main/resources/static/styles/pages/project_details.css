@@ -1,36 +1,23 @@
-.project-view {
-    outline-style: solid;
-    outline-color: #43C0FE;
-    width: 100%;
-    padding: 30px 40px;
+.studentMode [data-privilege="teacher"] {
+    display: none !important;
 }
 
-.sprint-details {
+body {
+    min-height: 100vh;
+}
+
+.project-view {
+    width: 100%;
+    margin-bottom: 40px;
+    padding: 20px;
+}
+
+.sprint-description {
     display: none;
     overflow: hidden;
-}
-
-.sprint-details p {
     padding-left: 20px;
-}
-
-.sprint-view p {
-    color: #fff;
-}
-
-.button {
-    color: #fff;
-    cursor: pointer;
-    background-color: #43C0FE;
-    border: none;
-    padding: 8px 12px;
-    transition-duration: 0.4s;
-    font-size: 14px;
-    margin: 15px 5px;
-}
-
-.button:hover {
-    background-color: #0332D1;
+    padding-bottom: 10px;
+    color: #666666;
 }
 
 .toggle-sprint-details {
@@ -48,7 +35,7 @@
 }
 
 .navbar-items a {
-    color: #fff;
+    color: black;
     font-size: 18px;
     text-decoration: none;
     padding: 20px 10px;
@@ -59,14 +46,8 @@
     color: #43C0FE;
 }
 
-.fullscreen {
-    min-height: 100vh;
-    background-image: linear-gradient(#13007A, #000949);
-}
-
 .title {
     font-size: 30px;
-    color: #fff;
     display: flex;
     padding-right: 30px
 }
@@ -77,13 +58,16 @@
     padding-right: 100px;
 }
 
-.projects {
-    display: flex;
-    justify-content: center;
-    padding: 0 100px 100px 100px;
+.add-project-button {
+    margin: 15px 5px;
 }
 
-#edit-project {
+.projects {
+    justify-content: center;
+    padding: 0 142px 100px 100px;
+}
+
+.edit-project {
     margin-right: 5px;
 }
 
@@ -98,29 +82,27 @@
 }
 
 .sprint-view {
-    outline-style: solid;
-    outline-color: #43C0FE;
     padding: 20px;
     margin-top: 15px
 }
 
 .sprint-title {
-    color: #fff;
-    font-size: 15px;
+    font-size: 18px;
     font-weight: bold;
     padding-bottom: 20px;
 }
 
 .project-title {
-    color: #fff;
     font-size: 25px;
     font-weight: bold;
-    margin-bottom: 40px
+    margin-bottom: 20px
 }
 
-.project-details {
-    color: #fff;
+.project-description {
+    color: #666666;
     padding-left: 20px;
+    padding-right: 180px;
+    margin-bottom: 10px;
 }
 
 .toggle-sprints {
@@ -135,18 +117,61 @@
     display: none;
 }
 
-.spud {
+.crud {
     float: right;
+}
+
+.edit-project-section {}
+
+.edit-section-title {
+    font-size: 25px;
+    font-weight: bold;
+    margin: 0 0 30px 0;
+}
+
+.edit-project-section label {
+    padding-right: 5px;
+}
+
+.user-inputs {
+    padding-left: 20px;
+}
+
+.user-inputs input {
+    width: 130px;
+}
+
+::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+}
+
+.save-buttons {
+    display: flex;
+    justify-content: right;
+    padding-right: 15px;
+}
+.save-buttons > button:not(:last-child) {
+    margin-right: 10px;
+}
+
+.description textarea {
+    background-color: transparent;
+    max-width: calc(100% - 20px);
+}
+
+.description label {
+    vertical-align: top;
 }
 
 @media only screen and (max-width: 960px) {
 
     .projects {
-        padding: 0 30px 50px 30px;
+        padding: 0 75px 50px 30px;
     }
 
     .project-view {
         padding: 15px 20px;
+        margin-bottom: 30px;
     }
 
     .add-project {
@@ -154,43 +179,59 @@
         padding-right: 35px;
     }
 
-    .sprint-details {
+    .sprint-description {
         font-size: 14px;
+    }
+
+    .project-title {
+        font-size: 22px;
     }
 
     .sprint-view {
         margin-bottom: 10px;
+        padding: 15px;
     }
 
-    .button {
+    button {
         margin: 3px;
+        font-size: 12px;
     }
 
-    #edit-project {
-        margin-right: 0px;
+    .edit-project {
+        margin-right: 0;
+    }
+
+    .sprint-title {
+        padding-bottom: 10px;
     }
 
     .sprint-controls {
-        margin-right: 0px;
+        margin-right: 0;
     }
 
     .add-sprint {
         margin-right: 5px;
+    }
+
+    .project-description {
+        padding-right: 150px;
     }
 }
 
 @media only screen and (max-width: 640px) {
 
     .projects {
-        padding: 0 20px 30px 20px;
+        padding: 0 40px 30px 20px;
     }
 
     .project-title {
         margin-bottom: 25px;
+        font-size: 18px;
     }
 
     .project-view {
         padding: 10px 10px;
+        margin-bottom: 20px;
     }
 
     .add-project {
@@ -203,30 +244,25 @@
         padding: 10px;
     }
 
-    .project-title {
-        font-size: 15px;
-    }
-
-    .button {
+    button {
         padding: 4px 6px;
         font-size: 10px;
     }
 
-    .project-details {
+    .project-description {
         font-size: 10px;
+        padding-right: 120px;
     }
 
-    .sprint-details {
+    .sprint-description {
         font-size: 10px;
-    }
-
-    .sprint-details p {
         padding-left: 15px;
     }
 
+
     .sprint-title {
         font-size: 13px;
-        padding-bottom: 15px;
+        padding-bottom: 5px;
     }
 
     .title {
@@ -241,14 +277,15 @@
 @media only screen and (max-width: 480px) {
 
     .projects {
-        padding: 0 15px 20px 15px;
+        padding: 0 30px 20px 15px;
     }
 
     .project-view {
         padding: 8px;
+        margin-bottom: 15px;
     }
 
-    .button {
+    button {
         font-size: 9px;
         margin: 1px;
     }
@@ -263,22 +300,19 @@
         margin-bottom: 15px;
     }
 
-    .project-details {
+    .project-description {
         font-size: 8px;
         padding-left: 10px;
+        padding-right: 100px;
     }
 
-    .sprint-details {
+    .sprint-description {
         font-size: 8px;
-    }
-
-    .sprint-details p {
         padding-left: 7px;
     }
 
     .sprint-title {
         font-size: 10px;
-        padding-bottom: 10px;
     }
 
     .sprint-view {
@@ -298,4 +332,32 @@
     }
 }
 
+@media only screen and (max-width: 350px) {
 
+    .project-title {
+        font-size: 9px;
+    }
+
+    .project-description {
+        font-size: 7px;
+    }
+
+    button {
+        font-size: 7px;
+    }
+
+    .title {
+        font-size: 20px;
+        padding-right: 25px;
+    }
+
+    .navbar-items a {
+        font-size: 10px;
+        padding-left: 0;
+    }
+
+    .sprint-title {
+        font-size: 7px;
+    }
+    
+}

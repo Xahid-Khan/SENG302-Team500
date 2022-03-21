@@ -9,11 +9,11 @@ public class UserModel {
     @GeneratedValue(strategy= GenerationType.AUTO)
     private int id;
 
-//    @Column(unique=true, nullable = false)
+    @Column(unique=true, nullable = false)
     private String username;
 
     @Column(nullable = false)
-    private String password;
+    private String passwordHash;
 
     @Column(nullable = false)
     private String firstName;
@@ -35,10 +35,10 @@ public class UserModel {
     protected UserModel() {
     }
 
-    public UserModel(String username, String password, String firstName, String middleName, String lastName,
+    public UserModel(String username, String passwordHash, String firstName, String middleName, String lastName,
                      String nickname, String bio, String pronouns, String email) {
         this.username = username;
-        this.password = password;
+        this.passwordHash = passwordHash;
         this.firstName = firstName;
         this.middleName = middleName;
         this.lastName = lastName;
@@ -56,8 +56,8 @@ public class UserModel {
         return username;
     }
 
-    public String getPassword() {
-        return password;
+    public String getPasswordHash() {
+        return passwordHash;
     }
 
     public String getFirstName() {
@@ -93,7 +93,7 @@ public class UserModel {
         return "User{" +
                 "id=" + id +
                 ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
+                ", password='" + passwordHash + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", middleName='" + middleName + '\'' +
                 ", lastName='" + lastName + '\'' +

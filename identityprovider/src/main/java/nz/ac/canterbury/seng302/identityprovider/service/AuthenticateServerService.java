@@ -2,6 +2,8 @@ package nz.ac.canterbury.seng302.identityprovider.service;
 
 import com.google.protobuf.Empty;
 import io.grpc.stub.StreamObserver;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import net.devh.boot.grpc.server.service.GrpcService;
 
 import nz.ac.canterbury.seng302.identityprovider.authentication.AuthenticationServerInterceptor;
@@ -10,9 +12,13 @@ import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticateRequest;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticateResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticationServiceGrpc.AuthenticationServiceImplBase;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @GrpcService
 public class AuthenticateServerService extends AuthenticationServiceImplBase{
+
+    @Autowired
+    private PasswordService passwordService;
 
     private final int VALID_USER_ID = 1;
     private final String VALID_USER = "abc123";
@@ -24,15 +30,26 @@ public class AuthenticateServerService extends AuthenticationServiceImplBase{
 
     private JwtTokenUtil jwtTokenService = JwtTokenUtil.getInstance();
 
+    private String getValidPassword() throws NoSuchAlgorithmException, InvalidKeySpecException {
+        return passwordService.hashPassword(VALID_PASSWORD);
+    }
+
     /**
      * Attempts to authenticate a user with a given username and password. 
      */
     @Override
     public void authenticate(AuthenticateRequest request, StreamObserver<AuthenticateResponse> responseObserver) {
         AuthenticateResponse.Builder reply = AuthenticateResponse.newBuilder();
-        
-        if (request.getUsername().equals(VALID_USER) && request.getPassword().equals(VALID_PASSWORD)) {
 
+        boolean validPassword = false;
+
+        try {
+            validPassword = passwordService.verifyPassword(request.getPassword(), getValidPassword());
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            e.printStackTrace();
+        }
+
+        if (request.getUsername().equals(VALID_USER) && validPassword) {
             String token = jwtTokenService.generateTokenForUser(VALID_USER, VALID_USER_ID, FULL_NAME_OF_USER, ROLE_OF_USER);
             reply
                 .setEmail("validuser@email.com")

@@ -251,7 +251,7 @@ public class SprintControllerTest {
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(body)
             )
-            .andExpect(status().isNoContent());
+            .andExpect(status().isOk());
 
         // Check that update was persisted.
         var result = this.mockMvc.perform(
