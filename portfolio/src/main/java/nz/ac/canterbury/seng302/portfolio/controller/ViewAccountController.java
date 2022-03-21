@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 
 import nz.ac.canterbury.seng302.portfolio.service.ViewAccountService;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -29,11 +30,11 @@ public class ViewAccountController {
      * @return returns the details of user as String type
      */
     @GetMapping(value = "/account/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> getUserById(@PathVariable int userId) {
+    public ResponseEntity<UserResponse> getUserById(@PathVariable int userId) {
         try {
             var userById = viewAccountService.getUserById(userId);
             if (userById != null) {
-                return ResponseEntity.ok(userById.toString());
+                return ResponseEntity.ok(userById);
             } else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
