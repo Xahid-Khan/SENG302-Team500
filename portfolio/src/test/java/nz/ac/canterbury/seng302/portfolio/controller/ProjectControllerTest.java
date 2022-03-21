@@ -1,20 +1,31 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import nz.ac.canterbury.seng302.portfolio.model.contract.ProjectContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.ProjectEntity;
 import nz.ac.canterbury.seng302.portfolio.model.entity.SprintEntity;
 import nz.ac.canterbury.seng302.portfolio.repository.ProjectRepository;
 import nz.ac.canterbury.seng302.portfolio.repository.SprintRepository;
+import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
+import nz.ac.canterbury.seng302.shared.identityprovider.AuthStateOrBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.RequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.time.Instant;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -22,20 +33,20 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
-@AutoConfigureMockMvc(addFilters = false)
+@AutoConfigureMockMvc
 public class ProjectControllerTest {
 
     @Autowired
-    MockMvc mockMvc;
+    private MockMvc mockMvc ;
 
     @Autowired
-    ObjectMapper mapper;
+    private ObjectMapper mapper;
 
     @Autowired
-    ProjectRepository projectRepository;
+    private ProjectRepository projectRepository;
 
     @Autowired
-    SprintRepository sprintRepository;
+    private SprintRepository sprintRepository;
 
     private String projectId;
 
@@ -146,8 +157,29 @@ public class ProjectControllerTest {
     @Test
     public void removeProject() throws Exception {
         var apiPath = "/api/v1/projects/" + projectId;
+        Map<String, Object> claims = new HashMap<>();
 
-        this.mockMvc.perform(delete(apiPath))
+        claims.put("unique_name", "SomeUserName");
+        claims.put("nameid", 1);
+        claims.put("name", "FistName");
+        claims.put("role", "Student");
+        var token = Jwts.builder()
+                .setClaims(claims)
+                .setSubject("SomeUserName")
+                .setIssuer("Local Authority")
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() * 1000))
+                .signWith(Keys.secretKeyFor(SignatureAlgorithm.HS256)).compact();
+
+
+        RequestBuilder request = MockMvcRequestBuilders
+                .delete(apiPath)
+                .header("Authorization", "Bearer " +token)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON);
+
+
+        this.mockMvc.perform(request)
                 .andExpect(status().isNoContent());
 
         this.mockMvc.perform(get(apiPath))

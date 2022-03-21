@@ -3,10 +3,13 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import nz.ac.canterbury.seng302.portfolio.model.contract.BaseProjectContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.ProjectContract;
 import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
+import nz.ac.canterbury.seng302.portfolio.service.RolesService;
 import nz.ac.canterbury.seng302.portfolio.service.ValidationService;
+import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
@@ -25,6 +28,9 @@ public class ProjectController {
 
     @Autowired
     private ValidationService validationService;
+
+    @Autowired
+    private RolesService rolesService;
 
     /**
      * This method will be invoked when API receives a GET request, and will produce a list of all the projects.
@@ -87,7 +93,9 @@ public class ProjectController {
      * @return a project contract (JSON) type of the project.
      */
     @DeleteMapping(value = "/projects/{id}", produces = "application/json")
-    public ResponseEntity<?> removeProject(@PathVariable String id) {
+    public ResponseEntity<?> removeProject(@AuthenticationPrincipal AuthState principal, @PathVariable String id) {
+        var roles = rolesService.getRolesByToken(principal);
+        System.out.println(roles);
         try{
             projectService.delete(id);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
