@@ -1,8 +1,5 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
-import java.util.Set;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
@@ -25,24 +22,20 @@ public class RegisterClientService {
   @GrpcClient(value = "identity-provider-grpc-server")
   private UserAccountServiceGrpc.UserAccountServiceBlockingStub registrationStub;
 
-  public UserRegisterResponse register(User user) throws ConstraintViolationException {
-    Set<ConstraintViolation<User>> errors = validator.validate(user);
-    if (errors.isEmpty()) {
-      UserRegisterRequest regRequest =
-          UserRegisterRequest.newBuilder()
-              .setUsername(user.username())
-              .setPassword(user.password())
-              .setFirstName(user.firstName())
-              .setMiddleName(user.middleName())
-              .setLastName(user.lastName())
-              .setNickname(user.nickname())
-              .setBio(user.bio())
-              .setPersonalPronouns(user.pronouns())
-              .setEmail(user.email())
-              .build();
-      return registrationStub.register(regRequest);
-    } else {
-      throw new ConstraintViolationException(errors);
-    }
+  public UserRegisterResponse register(User user) {
+    // TODO: Add in duplicate username check here
+    UserRegisterRequest regRequest =
+        UserRegisterRequest.newBuilder()
+            .setUsername(user.username())
+            .setPassword(user.password())
+            .setFirstName(user.firstName())
+            .setMiddleName(user.middleName())
+            .setLastName(user.lastName())
+            .setNickname(user.nickname())
+            .setBio(user.bio())
+            .setPersonalPronouns(user.pronouns())
+            .setEmail(user.email())
+            .build();
+    return registrationStub.register(regRequest);
   }
 }

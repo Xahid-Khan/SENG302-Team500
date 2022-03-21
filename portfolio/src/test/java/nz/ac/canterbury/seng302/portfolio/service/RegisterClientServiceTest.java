@@ -14,7 +14,17 @@ public class RegisterClientServiceTest {
 
   @Test
   public void TestValidUser() {
-    User user = new User();
+    User user = new User(
+        "Username",
+        "Password",
+        "FirstName",
+        "MiddleName",
+        "LastName",
+        "Nickname",
+        "Bio",
+        "Pronouns",
+        "Email"
+    );
   }
 
 }
