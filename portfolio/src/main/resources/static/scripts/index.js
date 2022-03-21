@@ -199,11 +199,22 @@ class ProjectView {
     formContainerElement.id = `create-sprint-form-container-${this.project.id}`;
     this.sprintsContainer.insertBefore(formContainerElement, this.sprintsContainer.firstChild);
 
+    let defaultName;
+
+    if (this.project.sprints.length === 0) {
+      defaultName = 1;
+    } else {
+      defaultName = this.project.sprints[(this.project.sprints.length - 1)].orderNumber + 1;
+    }
+
+    // Default date can either be the day after the project was created or the date of the last sprint ending
+
+
     const defaultSprint = {
       id: `__NEW_SPRINT_FORM_${this.project.id}`,
-      name: "",
+      name: `Sprint ${defaultName}`,
       description: null,
-      startDate: null,
+      startDate: null, //TODO change this to default date
       endDate: null
     };
 
