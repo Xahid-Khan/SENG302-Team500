@@ -31,7 +31,7 @@ public class LoginController {
      * @return      The login_form.html page // TODO: Change to login.html?
      */
     @GetMapping(value = "/login")//Mapped to GET
-    public String registerForm(
+    public String login(
             @RequestParam(name="error", required=false) String error,
             Model model
     ) {

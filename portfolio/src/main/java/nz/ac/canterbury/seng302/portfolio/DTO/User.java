@@ -1,115 +1,45 @@
 package nz.ac.canterbury.seng302.portfolio.DTO;
 
-import java.util.Objects;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
-public class User {
-    private String username;
-    private String password;
-    private String firstName;
-    private String middleName;
-    private String lastName;
-    private String nickname;
-    private String bio;
-    private String pronouns;
-    private String email;
+/**
+ * A user in the context of the portfolio is used for validation and transportation to the IDP.
+ * This record stores all attributes about the user, validates them using Javax.validation, and
+ *  sends them off to the IDP to put in the database.
+ */
+public record User(
+    @NotBlank(message = "Username is required")
+    @Size(min = 3, max = 32, message = "Username must be between 3 and 32 characters")
+    String username,
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+    @NotBlank(message = "Password is required")
+    @Min(value = 8, message = "Password must be longer than 8 characters")
+    String password,
 
-    public String getPassword() {
-        return password;
-    }
+    @NotBlank(message = "First name is required")
+    @Max(value = 50, message = "First name cannot be longer than 50 characters")
+    String firstName,
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+    @Max(value = 50, message = "Middle name(s) cannot be longer than 50 characters")
+    String middleName,
 
-    public String getFirstName() {
-        return firstName;
-    }
+    @NotBlank(message = "Last name is required")
+    @Max(value = 50, message = "Last name cannot be longer than 50 characters")
+    String lastName,
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
+    @Max(value = 32, message = "Nickname cannot be longer than 32 characters")
+    String nickname,
 
-    public String getMiddleName() {
-        return middleName;
-    }
+    @Max(value = 512, message = "Bio cannot be longer than 512 characters")
+    String bio,
 
-    public void setMiddleName(String middleName) {
-        this.middleName = middleName;
-    }
+    @Max(value = 50, message = "Personal pronouns cannot be longer than 50 characters")
+    String pronouns,
 
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getNickname() {
-        return nickname;
-    }
-
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
-    }
-
-    public String getBio() {
-        return bio;
-    }
-
-    public void setBio(String bio) {
-        this.bio = bio;
-    }
-
-    public String getPronouns() {
-        return pronouns;
-    }
-
-    public void setPronouns(String pronouns) {
-        this.pronouns = pronouns;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getUsername(){
-        return username;
-    }
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", middleName='" + middleName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", nickname='" + nickname + '\'' +
-                ", bio='" + bio + '\'' +
-                ", pronouns='" + pronouns + '\'' +
-                ", email='" + email + '\'' +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        User User = (User) o;
-        return Objects.equals(username, User.username) && Objects.equals(password, User.password) && Objects.equals(firstName, User.firstName) && Objects.equals(middleName, User.middleName) && Objects.equals(lastName, User.lastName) && Objects.equals(nickname, User.nickname) && Objects.equals(bio, User.bio) && Objects.equals(pronouns, User.pronouns) && Objects.equals(email, User.email);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(username, password, firstName, middleName, lastName, nickname, bio, pronouns, email);
-    }
-}
+    @Email(message = "Email must be valid")
+    String email
+) {}
