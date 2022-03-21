@@ -33,6 +33,7 @@ public class RegistrationController {
   @PostMapping("/register")
   public String register(@ModelAttribute User user, Model model) {
     UserRegisterResponse registerReply;
+    System.out.println(user.toString());
     try {
       registerReply = registerClientService.register(user);
       model.addAttribute("registerMessage", registerReply.getMessage());
@@ -40,9 +41,9 @@ public class RegistrationController {
       model.addAttribute("registerMessage", "Error connecting to Identity Provider...");
       return "registration_form";
     } catch (ConstraintViolationException violations) {
-        for (ConstraintViolation violation : violations.getConstraintViolations()) {
-            System.out.println(violation.getMessage());
-        }
+      for (ConstraintViolation violation : violations.getConstraintViolations()) {
+        System.out.println(violation.getMessage());
+      }
     }
     return "registered"; // return the template in templates folder
   }
