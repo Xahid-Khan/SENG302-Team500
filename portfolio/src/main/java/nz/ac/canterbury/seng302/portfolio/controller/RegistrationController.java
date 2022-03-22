@@ -1,8 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import io.grpc.StatusRuntimeException;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import nz.ac.canterbury.seng302.portfolio.DTO.User;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
@@ -27,14 +25,17 @@ public class RegistrationController {
    */
   @GetMapping(value = "/register")
   public String registerForm(Model model) {
+    // TODO: Will this mean `Null` can never occur? Test this!
+    model.addAttribute("user", new User("", "", "", "", "", "", "", "", ""));
     return "registration_form";
   }
 
   @Autowired private RegisterClientService registerClientService;
 
   @PostMapping("/register")
-  public String register(@ModelAttribute @Valid User user, BindingResult bindingResult, Model model) {
-
+  public String register(
+      @ModelAttribute @Valid User user, BindingResult bindingResult, Model model) {
+    System.out.println(user.toString());
     // If there are errors in the validation of the user, display them
     if (bindingResult.hasErrors()) {
       return "registration_form";

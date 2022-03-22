@@ -1,8 +1,5 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import nz.ac.canterbury.seng302.portfolio.DTO.User;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc;
@@ -12,12 +9,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class RegisterClientService {
-  private static Validator validator;
-
-  static {
-    ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-    validator = factory.getValidator();
-  }
 
   @GrpcClient(value = "identity-provider-grpc-server")
   private UserAccountServiceGrpc.UserAccountServiceBlockingStub registrationStub;

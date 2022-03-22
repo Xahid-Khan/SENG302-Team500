@@ -5,8 +5,8 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface UserRepository extends CrudRepository<UserModel, Long> {
 
-  @Query("SELECT count(user) FROM UserModel user WHERE UserModel.username = ?1")
-  boolean usernameExists(String username);
+  //@Query("SELECT count(user) FROM UserModel user WHERE UserModel.username = ?1")
+  //boolean usernameExists(String username);
 
   UserModel findById(long id);
 }
