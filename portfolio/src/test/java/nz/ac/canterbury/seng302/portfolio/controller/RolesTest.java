@@ -26,6 +26,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
@@ -62,6 +63,7 @@ public class RolesTest {
     private String projectId;
 
 
+
     /**
      * This method will make sure the database is reset prior to testing,
      * and it will create a mock project and sprint and save it in the database
@@ -89,35 +91,24 @@ public class RolesTest {
     @Test
     public void removeProject() throws Exception {
         var apiPath = "/api/v1/projects/" + projectId;
-//
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("unique_name", "SomeUserName");
-        claims.put("nameid", 1);
-        claims.put("name", "FistName");
-        claims.put("role", "Student");
-
-        var token = Jwts.builder()
-                .setClaims(claims)
-                .setSubject("SomeUserName")
-                .setIssuer("Local Authority")
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() * 1000))
-                .signWith(Keys.secretKeyFor(SignatureAlgorithm.HS256)).compact();
-
-//        Authentication auth = new UsernamePasswordAuthenticationToken(token, null);
-//        SecurityContextHolder.getContext().setAuthentication(auth);
 
         AuthState.Builder newState = AuthState.newBuilder();
         newState.setName("User");
         newState.setRoleClaimType("Teacher");
 
-        Principal mockPrincipal = Mockito.mock(Principal.class);
-        Mockito.when(mockPrincipal.getName()).thenReturn(String.valueOf(newState.build()));
+        // With complements to: https://stackoverflow.com/a/46631015
+        Authentication authentication = Mockito.mock(Authentication.class);
+        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
 
+        SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_GLOBAL);
+        SecurityContextHolder.setContext(securityContext);
+
+        AuthState principal = newState.build();
+        Mockito.when(authentication.getPrincipal()).thenReturn(principal);
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .delete(apiPath)
-                .principal(mockPrincipal)
                 .accept(MediaType.APPLICATION_JSON);
 
         var result = this.mockMvc.perform(requestBuilder)
