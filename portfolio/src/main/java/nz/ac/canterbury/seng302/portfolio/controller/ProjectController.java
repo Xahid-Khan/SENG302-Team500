@@ -94,8 +94,10 @@ public class ProjectController {
      */
     @DeleteMapping(value = "/projects/{id}", produces = "application/json")
     public ResponseEntity<?> removeProject(@AuthenticationPrincipal AuthState principal, @PathVariable String id) {
-        var roles = rolesService.getRolesByToken(principal);
-        System.out.println(roles);
+        System.out.println("111111111111111111111111111111111111111111111111111111111");
+        System.out.println(principal);
+//        var roles = rolesService.getRolesByToken(principal);
+//        System.out.println(roles);
         try{
             projectService.delete(id);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

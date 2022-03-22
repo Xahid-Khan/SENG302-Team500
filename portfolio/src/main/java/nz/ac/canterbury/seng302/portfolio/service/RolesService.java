@@ -16,5 +16,4 @@ public class RolesService {
                 .orElse("NOT FOUND");
         return role.split(",");
     }
-
 }

@@ -157,29 +157,8 @@ public class ProjectControllerTest {
     @Test
     public void removeProject() throws Exception {
         var apiPath = "/api/v1/projects/" + projectId;
-        Map<String, Object> claims = new HashMap<>();
 
-        claims.put("unique_name", "SomeUserName");
-        claims.put("nameid", 1);
-        claims.put("name", "FistName");
-        claims.put("role", "Student");
-        var token = Jwts.builder()
-                .setClaims(claims)
-                .setSubject("SomeUserName")
-                .setIssuer("Local Authority")
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() * 1000))
-                .signWith(Keys.secretKeyFor(SignatureAlgorithm.HS256)).compact();
-
-
-        RequestBuilder request = MockMvcRequestBuilders
-                .delete(apiPath)
-                .header("Authorization", "Bearer " +token)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .accept(MediaType.APPLICATION_JSON);
-
-
-        this.mockMvc.perform(request)
+        this.mockMvc.perform(get(apiPath))
                 .andExpect(status().isNoContent());
 
         this.mockMvc.perform(get(apiPath))
