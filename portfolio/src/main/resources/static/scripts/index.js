@@ -200,22 +200,26 @@ class ProjectView {
     this.sprintsContainer.insertBefore(formContainerElement, this.sprintsContainer.firstChild);
 
     let defaultName;
+    let defaultStartDate = new Date(this.project.startDate.valueOf());
+    defaultStartDate.setTime(defaultStartDate.getTime() + (60)); // Added to prevent error of sprint starting at the exact same time as the project
 
     if (this.project.sprints.length === 0) {
       defaultName = 1;
     } else {
       defaultName = this.project.sprints[(this.project.sprints.length - 1)].orderNumber + 1;
+      defaultStartDate = new Date(this.project.sprints[(this.project.sprints.length - 1)].endDate.valueOf());
+      defaultStartDate.setTime(defaultStartDate.getTime() + (60));
     }
 
-    // Default date can either be the day after the project was created or the date of the last sprint ending
-
+    let defaultEndDate = new Date(defaultStartDate.valueOf());
+    defaultEndDate.setDate(defaultEndDate.getDate() + 21);
 
     const defaultSprint = {
       id: `__NEW_SPRINT_FORM_${this.project.id}`,
       name: `Sprint ${defaultName}`,
       description: null,
-      startDate: null, //TODO change this to default date
-      endDate: null
+      startDate: defaultStartDate,
+      endDate: defaultEndDate
     };
 
     this.addSprintForm = {
