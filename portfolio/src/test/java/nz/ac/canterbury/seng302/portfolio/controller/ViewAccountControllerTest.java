@@ -39,9 +39,10 @@ public class ViewAccountControllerTest {
 
     @Test
     public void getUserById() throws Exception {
-        var user = this.mockMvc.perform(get("/api/v1/account/" + newUser.getNewUserId()))
+        MvcResult user = this.mockMvc.perform(get("/api/v1/account/" + newUser.getNewUserId()))
                                 .andExpect(status().isOk())
                                 .andReturn();
+        System.out.println(user);
         var stringContent = user.getResponse().getContentAsString().split("\n");
 
         assertEquals(stringContent[0].split(" ")[1], "\"SomeUserName\"");
