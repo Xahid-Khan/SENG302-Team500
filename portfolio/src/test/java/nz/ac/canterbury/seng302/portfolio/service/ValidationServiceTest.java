@@ -56,7 +56,7 @@ public class ValidationServiceTest {
                 Instant.parse("2021-12-03T10:15:30.00Z"),
                 Instant.parse("2021-12-05T10:15:30.00Z"));
         response = validationService.checkAddProject(project);
-        assertEquals("Project must have a name", response);
+        assertEquals("Project name must not be empty", response);
     }
 
     @Test
@@ -72,7 +72,7 @@ public class ValidationServiceTest {
                 "",
                 Instant.parse("2021-12-03T10:15:30.00Z"),
                 Instant.parse("2021-12-05T10:15:30.00Z"));
-        assertEquals("Project must have a name", response);
+        assertEquals("Project name must not be empty", response);
 
         response = validationService.checkBaseFields("Sprint",
                 "Sprint$Two",
@@ -121,7 +121,7 @@ public class ValidationServiceTest {
         projectRepository.save(newProject);
 
         response = validationService.checkUpdateProject(newProject.getId(), projectMapper.toContract(newProject));
-        assertEquals("Project must have a name", response);
+        assertEquals("Project name must not be empty", response);
     }
 
     @Test
@@ -146,7 +146,7 @@ public class ValidationServiceTest {
                 Instant.parse("2021-12-03T10:15:30.00Z"),
                 Instant.parse("2021-12-05T10:15:30.00Z"));
         response = validationService.checkAddSprint(project.getId(), sprint);
-        assertEquals("Sprint must have a name", response);
+        assertEquals("Sprint name must not be empty", response);
 
         sprint = new BaseSprintContract("Test Sprint",
                 "testing",
@@ -202,7 +202,7 @@ public class ValidationServiceTest {
         project.addSprint(sprintEntity);
         sprintRepository.save(sprintEntity);
         response = validationService.checkUpdateSprint(sprintEntity.getId(), sprint);
-        assertEquals("Sprint must have a name", response);
+        assertEquals("Sprint name must not be empty", response);
 
     }
 

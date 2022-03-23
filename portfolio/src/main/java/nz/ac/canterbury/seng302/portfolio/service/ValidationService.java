@@ -30,8 +30,8 @@ public class ValidationService {
     }
 
     public String checkBaseFields(String type, String name, Instant start, Instant end) {
-        if (name.equals("")) {
-            return type + " must have a name";
+        if (name.trim().equals("")) {
+            return type + " name must not be empty";
         }
 
         if (!name.matches("[A-Za-z0-9 _ -]*")) {
@@ -51,7 +51,15 @@ public class ValidationService {
     public String checkUpdateProject(String projectId, ProjectContract projectContract) {
 
         try {
-            projectService.getById(projectId);
+            ProjectContract project = projectService.getById(projectId);
+            for (SprintContract sprint: project.sprints()) {
+                if (projectContract.startDate().isAfter(sprint.startDate())) {
+                    return "Project cannot begin after one of its sprints start date";
+                }
+                if ((projectContract.endDate().isBefore(sprint.endDate()))) {
+                    return "Project cannot end before one of its sprints end date";
+                }
+            }
         } catch (NoSuchElementException error) {
             return "Project ID does not exist";
         }
