@@ -68,17 +68,18 @@ public class LoginController {
     ) {
         System.out.println("Received POST request with credentials:" + login.toString());
         if (login.getUsername() == null || login.getPassword() == null) {
-            redirectAttributes.addAttribute("error", "Invalid form data provided");
-            return "redirect:/login?error";
+            model.addAttribute("error", "Invalid form data provided");
+            return "login_form";
         }
+
         AuthenticateResponse loginReply;
         try {
             loginReply = authenticateClientService.authenticate(login.getUsername(), login.getPassword());
         } catch (StatusRuntimeException e){
-            redirectAttributes.addAttribute("error", "Error connecting to Identity Provider...");
-            //model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
-            return "redirect:/login?error";
+            model.addAttribute("error", "Error connecting to Identity Provider...");
+            return "login_form";
         }
+
         if (loginReply.getSuccess()) {
             var domain = request.getHeader("host");
             CookieUtil.create(
@@ -94,8 +95,8 @@ public class LoginController {
             return "redirect:/greeting";
         }
 
-        redirectAttributes.addAttribute("error", loginReply.getMessage());
-        return "redirect:/login?error";
+        model.addAttribute("error", loginReply.getMessage());
+        return "login_form";
     }
 
     /**
@@ -107,6 +108,18 @@ public class LoginController {
             HttpServletResponse response,
             Model model
     ) {
-        return "login";
+        return "redirect:/login";
+    }
+
+    /**
+     * Temporary mapping for account page.
+     */
+    @GetMapping("/account")
+    public String account(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            Model model
+    ) {
+        return "account_details";
     }
 }
