@@ -457,7 +457,7 @@ class ProjectOrSprintEditor {
   }
 
   /**
-   * Gets the end date from user input, otherwise dafaults to initial default value.
+C   * Gets the end date from user input, otherwise defaults to initial default value.
    */
   getEndDateInputValue() {
     if (!this.endDateEdited) {
@@ -563,6 +563,8 @@ class ProjectOrSprintEditor {
    */
   static makeProjectSprintDatesValidator(project, sprintIdUnderEdit) {
     return (startDate, endDate) => {
+      console.log("start Date", startDate);
+      console.log("proj start date", project.startDate);
       if (startDate < project.startDate || project.endDate < endDate) {
         return "Sprint must fit within the project dates.";
       }
@@ -574,7 +576,7 @@ class ProjectOrSprintEditor {
           }
 
           // Taken from: https://stackoverflow.com/a/325964
-          if (startDate <= sprint.endDate && endDate >= sprint.startDate) {
+          if (startDate < sprint.endDate && endDate > sprint.startDate) {
             return `This date range overlaps with Sprint ${sprint.orderNumber}. Please choose a non-overlapping date range.`;
           }
         }
