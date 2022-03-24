@@ -3,20 +3,38 @@ package nz.ac.canterbury.seng302.identityprovider.service;
 import io.grpc.stub.StreamObserver;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.persistence.Query;
 import net.devh.boot.grpc.server.service.GrpcService;
 import nz.ac.canterbury.seng302.identityprovider.database.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.database.UserRepository;
+import nz.ac.canterbury.seng302.identityprovider.mapping.UserMapper;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
+import org.hibernate.HibernateError;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 
 @GrpcService
 public class RegisterServerService extends UserAccountServiceGrpc.UserAccountServiceImplBase {
+    private static HashSet<String> validOrderByFieldNames = new HashSet<String>(
+        List.of(new String[]{"name", "username", "nickname", "roles"}));
 
     @Autowired
     private UserRepository repository;
 
     @Autowired
     private PasswordService passwordService;
+
+    @Autowired
+    private SessionFactory sessionFactory;
+
+    @Autowired
+    private UserMapper userMapper;
 
     @Override
     public void register(UserRegisterRequest request, StreamObserver<UserRegisterResponse> responseObserver) {
@@ -46,20 +64,10 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
      */
     @Override
     public void getUserAccountById(GetUserByIdRequest request, StreamObserver<UserResponse> responseObserver) {
-        UserResponse.Builder reply = UserResponse.newBuilder();
         int userId = request.getId();
         var userFound = repository.findById(userId);
         if (userFound != null) {
-            reply.setFirstName(userFound.getFirstName())
-                    .setMiddleName(userFound.getMiddleName())
-                    .setLastName(userFound.getLastName())
-                    .setBio(userFound.getBio())
-                    .setUsername(userFound.getUsername())
-                    .setPersonalPronouns(userFound.getPronouns())
-                    .setEmail(userFound.getEmail())
-                    .setNickname(userFound.getNickname());
-
-            responseObserver.onNext(reply.build());
+            responseObserver.onNext(userMapper.toUserResponse(userFound));
             responseObserver.onCompleted();
         }
         else {
@@ -68,35 +76,54 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
         }
     }
 
-
     /**
-     * Skeleton for pagination -
-     * @param request
-     * @param responseObserver
+     * GRPC service method that provides a list of user details with a caller-supplied sort order,
+     * maximum length, and offset.
+     *
+     * @param request parameters from the caller
+     * @param responseObserver to receive results or errors
      */
     @Override
     public void getPaginatedUsers(GetPaginatedUsersRequest request, StreamObserver<PaginatedUsersResponse> responseObserver) {
-        PaginatedUsersResponse.Builder reply = PaginatedUsersResponse.newBuilder();
-        Iterable<UserModel> userList = repository.findAll();
-        if (userList != null) {
-            for (UserModel user : userList) {
-                UserResponse.Builder subUser = UserResponse.newBuilder();
-                subUser.setFirstName(user.getFirstName())
-                        .setMiddleName(user.getMiddleName())
-                        .setLastName(user.getLastName())
-                        .setBio(user.getBio())
-                        .setUsername(user.getUsername())
-                        .setPersonalPronouns(user.getPronouns())
-                        .setEmail(user.getEmail())
-                        .setNickname(user.getNickname());
-                reply.addUsers(subUser);
-            }
-            responseObserver.onNext(reply.build());
+        var orderByField = request.getOrderBy();
+        var limit = request.getLimit();
+        var offset = request.getOffset();
+
+        // Validate inputs
+        if (!validOrderByFieldNames.contains(orderByField) || limit <= 0 || offset < 0) {
+            responseObserver.onError(new IllegalArgumentException());
             responseObserver.onCompleted();
-        } else {
-            responseObserver.onNext(null);
-            responseObserver.onCompleted();
+            return;
         }
 
+        try (Session session = sessionFactory.openSession()) {
+            var queryOrderByComponent = switch (orderByField) {
+                case "name" -> "firstName, middleName, lastName";
+                case "username" -> "username";
+                case "nickname" -> "nickname";
+                case "roles" -> throw new Exception("Roles support hasn't been implemented yet");
+                default -> throw new Exception("Unsupported orderBy field");
+            };
+
+            Query query = session.createQuery("FROM UserModel ORDER BY " + queryOrderByComponent, UserModel.class)
+                .setFirstResult(offset)
+                .setMaxResults(limit);
+            List<UserModel> resultList = query.getResultList();
+
+            Query countQuery = session.createQuery("SELECT COUNT(u.id) FROM UserModel u");
+            int totalCount = (int) (long) countQuery.getSingleResult();
+
+            var response = PaginatedUsersResponse.newBuilder()
+                .addAllUsers(resultList.stream().map(userMapper::toUserResponse).toList())
+                .setResultSetSize(totalCount)
+                .build();
+
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
+        }
+        catch (Exception e) {
+            responseObserver.onError(e);
+            responseObserver.onCompleted();
+        }
     }
 }
