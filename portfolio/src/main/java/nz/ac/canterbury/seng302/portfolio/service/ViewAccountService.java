@@ -3,8 +3,6 @@ import net.devh.boot.grpc.client.inject.GrpcClient;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
-
 /**
  * A service that manages CRUD operations for View Account Controller.
  */
