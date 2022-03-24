@@ -35,7 +35,6 @@ public class RegistrationController {
   @PostMapping("/register")
   public String register(
       @ModelAttribute @Valid User user, BindingResult bindingResult, Model model) {
-    System.out.println(user.toString());
     // If there are errors in the validation of the user, display them
     if (bindingResult.hasErrors()) {
       return "registration_form";
