@@ -29,6 +29,22 @@ public class RegistrationControllerTest {
 
   private final String API_PATH = "/register";
 
+  // Helper function to place create a Post Body out of a user.
+  // Note that a factory or builder pattern could've been used here,
+  //  however this is just for testing.
+  private String buildPostBody(User user) {
+    return "username=" + user.username()
+        + "&email=" + user.email()
+        + "&password=" + user.password()
+        + "&firstName=" + user.firstName()
+        + "&middleName=" + user.middleName()
+        + "&lastName=" + user.lastName()
+        + "&nickname=" + user.nickname()
+        + "&pronouns=" + user.pronouns()
+        + "&bio=" + user.bio()
+        + "&register=0";
+  }
+
   /**
    * A simple test to ensure that the Thymeleaf template is not broken for the registration form.
    *
@@ -42,7 +58,6 @@ public class RegistrationControllerTest {
   @Test
   public void registerValidUser() throws Exception {
     // TODO: Does this require a database drop each time running?
-    // TODO: Move to integration test. Figure out how to run the IDP
     var validUser = new User(
             "Username",
             "Password",
@@ -55,17 +70,7 @@ public class RegistrationControllerTest {
             "email%40email.com"
     );
 
-    var postBody = // Generated from a valid post request
-            "username=" + validUser.username()
-                    + "&email=" + validUser.email()
-                    + "&password=" + validUser.password()
-                    + "&firstName=" + validUser.firstName()
-                    + "&middleName=" + validUser.middleName()
-                    + "&lastName=" + validUser.lastName()
-                    + "&nickname=" + validUser.nickname()
-                    + "&pronouns=" + validUser.pronouns()
-                    + "&bio=" + validUser.bio()
-                    + "&register=0";
+    String postBody = buildPostBody(validUser);
 
     // TODO: Fix and figure out I guess
     given(this.service.register(validUser))

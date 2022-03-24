@@ -14,7 +14,6 @@ public class RegisterClientService {
   private UserAccountServiceGrpc.UserAccountServiceBlockingStub registrationStub;
 
   public UserRegisterResponse register(User user) {
-    // TODO: Add in duplicate username check here
     UserRegisterRequest regRequest =
         UserRegisterRequest.newBuilder()
             .setUsername(user.username())
