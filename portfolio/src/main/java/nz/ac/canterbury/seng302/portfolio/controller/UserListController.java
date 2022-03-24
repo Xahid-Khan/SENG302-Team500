@@ -6,7 +6,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 
@@ -14,15 +13,17 @@ import java.util.ArrayList;
 public class UserListController {
 
     @GetMapping("/user-list")
-    public String greeting(
+    public String listUsers(
             @AuthenticationPrincipal AuthState principal,
             Model model
     ) {
-        //User user = new User("john connor", "xxx", "yyy", "roo");
-        ArrayList<User> users = new ArrayList<User>();
-        //users.add(user);
-        //users.add(user);
-        //users.add(user);
+        User user = new User();
+        user.setUsername("usrnm");
+        user.setFirstName("joe");
+        user.setLastName("mama");
+        user.setNickname("nick");
+        ArrayList<User> users = new ArrayList<>();
+        users.add(user);
         model.addAttribute("users", users);
         return "user_list";
     }
