@@ -37,6 +37,13 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
         }
     }
 
+
+    /**
+     * This is a GRPC user serivce method that is beign over-ridden to get the user details and encase them into a User Response
+     * body. if the user is not found the User response is set to null
+     * @param request
+     * @param responseObserver
+     */
     @Override
     public void getUserAccountById(GetUserByIdRequest request, StreamObserver<UserResponse> responseObserver) {
         UserResponse.Builder reply = UserResponse.newBuilder();
@@ -62,6 +69,11 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
     }
 
 
+    /**
+     * Skeleton for pagination -
+     * @param request
+     * @param responseObserver
+     */
     @Override
     public void getPaginatedUsers(GetPaginatedUsersRequest request, StreamObserver<PaginatedUsersResponse> responseObserver) {
         PaginatedUsersResponse.Builder reply = PaginatedUsersResponse.newBuilder();

@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 
+import nz.ac.canterbury.seng302.portfolio.model.contract.UserContract;
 import nz.ac.canterbury.seng302.portfolio.service.ViewAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,22 +20,22 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1")
 public class ViewAccountController {
+
     @Autowired
     private ViewAccountService viewAccountService;
 
-
-
+    /**
+     * This method will be invoked when API receives a GET request with User ID embedded in the URL.
+     * @param userId This is an ID of the User
+     * @return returns the details of user as String type
+     */
     @GetMapping(value = "/account/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> getUserById(@PathVariable int userId) {
-        try {
-            var userById = viewAccountService.getUserById(userId);
-            if (userById.getUsername().length() > 0) {
-                return ResponseEntity.ok(userById.toString());
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    public ResponseEntity<UserContract> getUserById(@PathVariable int userId) {
+        var userById = viewAccountService.getUserById(userId);
+        if (userById != null) {
+            return ResponseEntity.ok(userById);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 }

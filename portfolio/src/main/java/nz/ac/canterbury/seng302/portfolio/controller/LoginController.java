@@ -108,6 +108,18 @@ public class LoginController {
             HttpServletResponse response,
             Model model
     ) {
-        return "redirect:/login";
+        return "redirect:/login_form";
+    }
+
+    /**
+     * Temporary mapping for account page.
+     */
+    @GetMapping("/account")
+    public String account(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            Model model
+    ) {
+        return "account_details";
     }
 }
