@@ -61,15 +61,18 @@ public class RegisterServerServiceTest {
     // Get the UserRegisterResponse from the captor
     UserRegisterResponse response = captor.getValue();
     // Check it was successful
-    assertTrue(captor.getValue().getIsSuccess());
+    assertTrue(response.getIsSuccess());
     // Ensure that the message is sent successfully
-    assertEquals("Registered", captor.getValue().getMessage().split(" ", 2)[0]);
+    assertEquals("Registered", response.getMessage().split(" ", 2)[0]);
     // Ensure only 1 user exists
     assertEquals(1, registerServerService.getRepository().count());
     // Ensure user exists
     assertTrue(registerServerService.getRepository().findByUsername("Username") != null);
   }
 
+  /**
+   * Runs a test by inputting the same user twice, which should cause a username error.
+   */
   @Test
   public void duplicateUsername() {
     registerServerService.register(request, observer);
@@ -78,7 +81,16 @@ public class RegisterServerServiceTest {
     Mockito.verify(observer, times(2)).onCompleted();
     // Ensure only 1 user exists
     assertEquals(1, registerServerService.getRepository().count());
-    // Ensure user exists
-    assertTrue(registerServerService.getRepository().findByUsername("Username") != null);
+    // Set up a captor for the second response
+    ArgumentCaptor<UserRegisterResponse> captor
+        = ArgumentCaptor.forClass(UserRegisterResponse.class);
+    // Capture the response
+    Mockito.verify(observer, times(2)).onNext(captor.capture());
+    // Get the UserRegisterResponse from the captor
+    UserRegisterResponse response = captor.getValue();
+    // Ensure it failed
+    assertTrue(!response.getIsSuccess());
+    // Ensure that the message is sent successfully
+    assertEquals("Error:", response.getMessage().split(" ", 2)[0]);
   }
 }
