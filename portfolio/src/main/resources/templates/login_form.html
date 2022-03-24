@@ -14,7 +14,7 @@
       <h1 class="title">Log In</h1>
 
       <!--    Submits a populated UserDTO to endpoint register -->
-      <input type="email" th:field="*{username}" placeholder="email" autofocus/>
+      <input type="text" th:field="*{username}" placeholder="username" autofocus/>
       <input type="password" th:field="*{password}" placeholder="password"/>
 
       <div class="form-error" th:if="${error != null}" th:text="${error}"></div>

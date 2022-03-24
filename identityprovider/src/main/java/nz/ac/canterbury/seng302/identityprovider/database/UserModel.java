@@ -93,7 +93,7 @@ public class UserModel {
         return "User{" +
                 "id=" + id +
                 ", username='" + username + '\'' +
-                ", password='" + passwordHash + '\'' +
+                ", passwordHash='" + passwordHash + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", middleName='" + middleName + '\'' +
                 ", lastName='" + lastName + '\'' +

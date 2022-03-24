@@ -108,7 +108,7 @@ public class LoginController {
             HttpServletResponse response,
             Model model
     ) {
-        return "redirect:/login";
+        return "redirect:/login_form";
     }
 
     /**
