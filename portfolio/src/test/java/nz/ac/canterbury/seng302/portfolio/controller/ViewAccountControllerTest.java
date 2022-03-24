@@ -67,31 +67,28 @@ public class ViewAccountControllerTest {
     @Test
     public void getUserById() throws Exception {
         Mockito.when(grpcService.getUserAccountById(getResponseUser)).thenReturn(responseUser);
-
-        System.out.println("55555555555555555555555555555555555555555555555555");
-//        System.out.println(result);
         var user = this.mockMvc.perform(get("/api/v1/account/" + 1))
                                 .andExpect(status().isOk())
                                 .andReturn();
-//
-//        var userContract = mapper.readValue(user.getResponse().getContentAsString(), UserContract.class);
-//        assertEquals(userContract.firstName(), "MyFirstName");
-//        assertEquals(userContract.bio(), "THis is a mock profile");
-//        assertEquals(userContract.username(), "SomeUserName");
+
+        var userContract = mapper.readValue(user.getResponse().getContentAsString(), UserContract.class);
+        assertEquals(userContract.firstName(), "MyFirstName");
+        assertEquals(userContract.bio(), "THis is a mock profile");
+        assertEquals(userContract.username(), "SomeUserName");
     }
 
-//    @Test
-//    public void invalidUserId() throws Exception {
-//        MvcResult users = this.mockMvc.perform(get("/api/v1/account/123"))
-//                .andExpect(status().isNotFound())
-//                .andReturn();
-//    }
-//
-//    @Test
-//    public void alphaUserId() throws Exception {
-//        MvcResult users = this.mockMvc.perform(get("/api/v1/account/abc"))
-//                .andExpect(status().isBadRequest())
-//                .andReturn();
-//    }
+    @Test
+    public void invalidUserId() throws Exception {
+        MvcResult users = this.mockMvc.perform(get("/api/v1/account/123"))
+                .andExpect(status().isNotFound())
+                .andReturn();
+    }
+
+    @Test
+    public void alphaUserId() throws Exception {
+        MvcResult users = this.mockMvc.perform(get("/api/v1/account/abc"))
+                .andExpect(status().isBadRequest())
+                .andReturn();
+    }
 
 }

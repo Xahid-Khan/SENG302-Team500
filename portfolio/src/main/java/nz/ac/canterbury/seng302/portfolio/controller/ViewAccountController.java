@@ -31,15 +31,11 @@ public class ViewAccountController {
      */
     @GetMapping(value = "/account/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserContract> getUserById(@PathVariable int userId) {
-//        try {
         var userById = viewAccountService.getUserById(userId);
         if (userById != null) {
             return ResponseEntity.ok(userById);
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-//        }
     }
 }
