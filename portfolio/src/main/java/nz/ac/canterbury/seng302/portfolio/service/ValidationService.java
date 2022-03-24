@@ -30,7 +30,7 @@ public class ValidationService {
     }
 
     public String checkBaseFields(String type, String name, Instant start, Instant end) {
-        if (name.trim().equals("")) {
+        if (name.equals("")) {
             return type + " name must not be empty";
         }
 
@@ -51,15 +51,7 @@ public class ValidationService {
     public String checkUpdateProject(String projectId, ProjectContract projectContract) {
 
         try {
-            ProjectContract project = projectService.getById(projectId);
-            for (SprintContract sprint: project.sprints()) {
-                if (projectContract.startDate().isAfter(sprint.startDate())) {
-                    return "Project cannot begin after one of its sprints start date";
-                }
-                if ((projectContract.endDate().isBefore(sprint.endDate()))) {
-                    return "Project cannot end before one of its sprints end date";
-                }
-            }
+            projectService.getById(projectId);
         } catch (NoSuchElementException error) {
             return "Project ID does not exist";
         }
@@ -93,6 +85,10 @@ public class ValidationService {
             try {
                 ProjectContract project = projectService.getById(sprint.projectId());
                 String response = checkSprintDetails(project, sprint.sprintId(), sprint.startDate(), sprint.endDate());
+                if (!response.equals("Okay")) {
+                    return response;
+                }
+                response = checkBaseFields("Sprint", sprint.getName, sprint.getStartDate, sprint.getEndDate);
                 if (!response.equals("Okay")) {
                     return response;
                 }
