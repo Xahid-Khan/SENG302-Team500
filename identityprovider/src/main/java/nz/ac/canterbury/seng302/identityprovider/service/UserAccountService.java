@@ -5,22 +5,18 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.HashSet;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.persistence.Query;
 import net.devh.boot.grpc.server.service.GrpcService;
 import nz.ac.canterbury.seng302.identityprovider.database.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.database.UserRepository;
 import nz.ac.canterbury.seng302.identityprovider.mapping.UserMapper;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
-import org.hibernate.HibernateError;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 
 @GrpcService
-public class RegisterServerService extends UserAccountServiceGrpc.UserAccountServiceImplBase {
+public class UserAccountService extends UserAccountServiceGrpc.UserAccountServiceImplBase {
     private static HashSet<String> validOrderByFieldNames = new HashSet<String>(
         List.of(new String[]{"name", "username", "nickname", "roles"}));
 

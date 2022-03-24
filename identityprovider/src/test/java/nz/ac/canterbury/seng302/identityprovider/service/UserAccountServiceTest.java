@@ -19,12 +19,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-public class RegisterServiceTest {
+public class UserAccountServiceTest {
 
   @Autowired
   private PasswordService passwordService;
@@ -33,7 +32,7 @@ public class RegisterServiceTest {
   private UserRepository repository;
 
   @Autowired
-  private RegisterServerService service;
+  private UserAccountService service;
 
   @Mock
   private StreamObserver<PaginatedUsersResponse> responseObserver;
