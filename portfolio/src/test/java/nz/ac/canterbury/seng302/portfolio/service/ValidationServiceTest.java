@@ -93,10 +93,10 @@ public class ValidationServiceTest {
 
         assertEquals("Sprint cannot start more than one year ago from today", response);
 
-        response = validationService.checkBaseFields("    ",
-                "Sprint Two",
-                Instant.parse("2020-12-03T10:15:30.00Z"),
-                Instant.parse("2021-12-01T10:15:30.00Z"));
+        response = validationService.checkBaseFields("Sprint",
+                "    ",
+                Instant.parse("2021-12-03T10:15:30.00Z"),
+                Instant.parse("2022-12-01T10:15:30.00Z"));
 
         assertEquals("Sprint name must not contain only whitespaces", response);
     }
@@ -113,7 +113,7 @@ public class ValidationServiceTest {
         String response = validationService.checkUpdateProject("randomId", project);
         assertEquals("Project ID does not exist", response);
 
-        ProjectEntity validProject = new ProjectEntity("",
+        ProjectEntity validProject = new ProjectEntity("Test",
                 "testing",
                 Instant.parse("2021-12-03T10:15:30.00Z"),
                 Instant.parse("2021-12-05T10:15:30.00Z"));
@@ -135,11 +135,12 @@ public class ValidationServiceTest {
 
         response = validationService.checkUpdateProject(validProject.getId(), projectMapper.toContract(newProject));
         assertEquals("Okay", response);
-
-        validProject.addSprint(new SprintEntity("test",
+        SprintEntity sprint = new SprintEntity("test",
                 "",
                 Instant.parse("2021-12-03T10:15:30.00Z"),
-                Instant.parse("2021-12-05T10:15:30.00Z")));
+                Instant.parse("2021-12-05T10:15:30.00Z"));
+        validProject.addSprint(sprint);
+        sprintRepository.save(sprint);
         projectRepository.save(validProject);
 
         ProjectEntity invalidProject = new ProjectEntity("    ",
@@ -150,15 +151,14 @@ public class ValidationServiceTest {
         response = validationService.checkUpdateProject(validProject.getId(), projectMapper.toContract(invalidProject));
         assertEquals("Project name must not contain only whitespaces", response);
 
-        invalidProject = ProjectEntity("Invalid details",
+        invalidProject = new ProjectEntity("Invalid details",
                 "testing",
                 Instant.parse("2021-12-04T10:15:30.00Z"),
                 Instant.parse("2021-12-05T10:15:30.00Z"));
-
         response = validationService.checkUpdateProject(validProject.getId(), projectMapper.toContract(invalidProject));
         assertEquals("Project cannot begin after one of its sprints start date", response);
 
-        invalidProject = ProjectEntity("Invalid details",
+        invalidProject = new ProjectEntity("Invalid details",
                 "testing",
                 Instant.parse("2021-12-03T10:15:30.00Z"),
                 Instant.parse("2021-12-03T10:18:30.00Z"));
