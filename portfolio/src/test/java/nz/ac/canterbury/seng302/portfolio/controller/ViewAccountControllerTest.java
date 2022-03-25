@@ -4,10 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.grpc.stub.StreamObserver;
 import nz.ac.canterbury.seng302.portfolio.model.contract.UserContract;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
-import nz.ac.canterbury.seng302.shared.identityprovider.GetUserByIdRequest;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -23,6 +20,9 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import org.springframework.test.web.servlet.MvcResult;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -56,12 +56,16 @@ public class ViewAccountControllerTest {
 //                "MyMiddle Name", "MyLastName", "Name", "THis is a mock profile", "Mr.",
 //                "thisisanemail@fakeemail.com");
 
+        List<UserRole> roles = new ArrayList<>();
+        roles.add(UserRole.STUDENT);
+
         var responseUserBuilder = UserResponse.newBuilder();
         responseUserBuilder.setFirstName("First Name");
         responseUserBuilder.setLastName("Last Name");
         responseUserBuilder.setEmail("Thisisanemail@email.com");
         responseUserBuilder.setBio("THIS IS A BIO FIELD");
         responseUserBuilder.setPersonalPronouns("she/her");
+        responseUserBuilder.addAllRoles(roles);
     }
 
     @Test

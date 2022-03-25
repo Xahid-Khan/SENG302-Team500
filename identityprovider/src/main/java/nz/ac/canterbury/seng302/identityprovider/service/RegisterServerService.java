@@ -3,6 +3,9 @@ package nz.ac.canterbury.seng302.identityprovider.service;
 import io.grpc.stub.StreamObserver;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.ArrayList;
+import java.util.List;
+
 import net.devh.boot.grpc.server.service.GrpcService;
 import nz.ac.canterbury.seng302.identityprovider.database.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.database.UserRepository;
@@ -24,8 +27,9 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
 
         try {
             var passwordHash = passwordService.hashPassword(request.getPassword());
-
-            UserModel user = new UserModel(request.getUsername(), passwordHash, request.getFirstName(), request.getMiddleName(), request.getLastName(), request.getNickname(), request.getBio(), request.getPersonalPronouns(), request.getEmail());
+            List<UserRole> roles = new ArrayList<>();
+            roles.add(UserRole.STUDENT);
+            UserModel user = new UserModel(request.getUsername(), passwordHash, request.getFirstName(), request.getMiddleName(), request.getLastName(), request.getNickname(), request.getBio(), request.getPersonalPronouns(), request.getEmail(), roles);
             repository.save(user);
             reply.setIsSuccess(true).setNewUserId(user.getId()).setMessage("registered new user: " + user);
 
@@ -57,7 +61,8 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
                     .setUsername(userFound.getUsername())
                     .setPersonalPronouns(userFound.getPronouns())
                     .setEmail(userFound.getEmail())
-                    .setNickname(userFound.getNickname());
+                    .setNickname(userFound.getNickname())
+                    .addAllRoles(userFound.getRoles());
 
             responseObserver.onNext(reply.build());
             responseObserver.onCompleted();
@@ -88,7 +93,8 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
                         .setUsername(user.getUsername())
                         .setPersonalPronouns(user.getPronouns())
                         .setEmail(user.getEmail())
-                        .setNickname(user.getNickname());
+                        .setNickname(user.getNickname())
+                        .addAllRoles(user.getRoles());
                 reply.addUsers(subUser);
             }
             responseObserver.onNext(reply.build());

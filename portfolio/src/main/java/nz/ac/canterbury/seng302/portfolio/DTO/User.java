@@ -1,5 +1,8 @@
 package nz.ac.canterbury.seng302.portfolio.DTO;
 
+import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
+
+import java.util.List;
 import java.util.Objects;
 
 public class User {
@@ -12,6 +15,7 @@ public class User {
     private String bio;
     private String pronouns;
     private String email;
+    private List<UserRole> roles;
 
     public void setUsername(String username) {
         this.username = username;
@@ -85,6 +89,10 @@ public class User {
         return username;
     }
 
+    public void setRoles(List<UserRole> roles) { this.roles = roles; }
+
+    public List<UserRole> getRoles() { return roles; }
+
     @Override
     public String toString() {
         return "User{" +
@@ -97,6 +105,7 @@ public class User {
                 ", bio='" + bio + '\'' +
                 ", pronouns='" + pronouns + '\'' +
                 ", email='" + email + '\'' +
+                ", roles='" + roles.toString() + '\'' +
                 '}';
     }
 
@@ -105,11 +114,11 @@ public class User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User User = (User) o;
-        return Objects.equals(username, User.username) && Objects.equals(password, User.password) && Objects.equals(firstName, User.firstName) && Objects.equals(middleName, User.middleName) && Objects.equals(lastName, User.lastName) && Objects.equals(nickname, User.nickname) && Objects.equals(bio, User.bio) && Objects.equals(pronouns, User.pronouns) && Objects.equals(email, User.email);
+        return Objects.equals(username, User.username) && Objects.equals(password, User.password) && Objects.equals(firstName, User.firstName) && Objects.equals(middleName, User.middleName) && Objects.equals(lastName, User.lastName) && Objects.equals(nickname, User.nickname) && Objects.equals(bio, User.bio) && Objects.equals(pronouns, User.pronouns) && Objects.equals(email, User.email) && Objects.equals(roles, User.roles);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(username, password, firstName, middleName, lastName, nickname, bio, pronouns, email);
+        return Objects.hash(username, password, firstName, middleName, lastName, nickname, bio, pronouns, email, roles);
     }
 }
