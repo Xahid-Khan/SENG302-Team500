@@ -32,7 +32,7 @@ import org.springframework.test.web.servlet.MvcResult;
  */
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
-public class RegistrationControllerTest {
+class RegistrationControllerTest {
 
   @Autowired MockMvc mockMvc;
 
@@ -99,7 +99,7 @@ public class RegistrationControllerTest {
    * @throws Exception if perform fails for some reason
    */
   @Test
-  public void getRegistrationForm() throws Exception {
+  void getRegistrationForm() throws Exception {
     // If Thymeleaf throws an exception, it will be caught via this test.
     this.mockMvc.perform(get(API_PATH)).andExpect(status().isOk());
   }
@@ -110,7 +110,7 @@ public class RegistrationControllerTest {
    * @throws Exception if perform fails for some reason
    */
   @Test
-  public void registerValidUser() throws Exception {
+  void registerValidUser() throws Exception {
     var validUser =
         new User(
             "Username",
@@ -136,7 +136,7 @@ public class RegistrationControllerTest {
    */
   @ParameterizedTest
   @ValueSource(strings = {"", "AA", "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"})
-  public void registerInvalidUsernames(String username) throws Exception {
+  void registerInvalidUsernames(String username) throws Exception {
     var user =
         new User(
             username,
@@ -161,7 +161,7 @@ public class RegistrationControllerTest {
    */
   @ParameterizedTest
   @ValueSource(strings = {"AAA", "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"})
-  public void registerBoundaryUsernames(String username) throws Exception {
+  void registerBoundaryUsernames(String username) throws Exception {
     var user =
         new User(
             username,
@@ -186,7 +186,7 @@ public class RegistrationControllerTest {
    */
   @ParameterizedTest
   @ValueSource(strings = {"", "AAAAAAA"})
-  public void registerInvalidPasswords(String password) throws Exception {
+  void registerInvalidPasswords(String password) throws Exception {
     var user =
         new User(
             "Username",
@@ -210,7 +210,7 @@ public class RegistrationControllerTest {
    * @throws Exception if perform fails for some reason
    */
   @Test
-  public void registerBoundaryPassword() throws Exception {
+  void registerBoundaryPassword() throws Exception {
     var user =
         new User(
             "Username",
@@ -246,7 +246,7 @@ public class RegistrationControllerTest {
     "FirstName,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA,LastName",
     "FirstName,Middle Names,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
   })
-  public void registerInvalidNames(String firstName, String middleNames, String lastName) throws Exception {
+  void registerInvalidNames(String firstName, String middleNames, String lastName) throws Exception {
     var user =
         new User(
             "Username",
@@ -278,7 +278,7 @@ public class RegistrationControllerTest {
       "FirstName,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA,LastName",
       "FirstName,Middle Names,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
   })
-  public void registerBoundaryNames(String firstName, String middleNames, String lastName) throws Exception {
+  void registerBoundaryNames(String firstName, String middleNames, String lastName) throws Exception {
     var user =
         new User(
             "Username",
@@ -310,7 +310,7 @@ public class RegistrationControllerTest {
       "nickname,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA,pronouns",
       "nickname,bio,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
   })
-  public void registerInvalidAdditionalInfo(String nickname, String bio, String pronouns) throws Exception {
+  void registerInvalidAdditionalInfo(String nickname, String bio, String pronouns) throws Exception {
     var user =
         new User(
             "Username",
@@ -348,7 +348,7 @@ public class RegistrationControllerTest {
       "nickname,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA,pronouns",
       "nickname,bio,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
   })
-  public void registerBoundaryAdditionalInfo(String nickname, String bio, String pronouns) throws Exception {
+  void registerBoundaryAdditionalInfo(String nickname, String bio, String pronouns) throws Exception {
     var user =
         new User(
             "Username",
@@ -371,7 +371,7 @@ public class RegistrationControllerTest {
    *  has the correct regex for it. The valid email test falls under the valid user test.
    */
   @Test
-  public void registerEmptyEmail() throws Exception {
+  void registerEmptyEmail() throws Exception {
     var user =
         new User(
             "Username",

@@ -12,6 +12,11 @@ import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
 import nz.ac.canterbury.seng302.shared.util.ValidationError;
 import org.springframework.beans.factory.annotation.Autowired;
 
+/**
+ * This gRPC service handles registration from the server side.
+ * If the user is valid, it will add it into the UserRepository and return a success. Otherwise an
+ *  error will be returned.
+ */
 @GrpcService
 public class RegisterServerService extends UserAccountServiceGrpc.UserAccountServiceImplBase {
 

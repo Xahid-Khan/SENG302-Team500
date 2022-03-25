@@ -7,12 +7,21 @@ import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterRequest;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
 import org.springframework.stereotype.Service;
 
+/**
+ * Registers a new client by passing off the details to the RegisterServerService.
+ */
 @Service
 public class RegisterClientService {
 
   @GrpcClient(value = "identity-provider-grpc-server")
   private UserAccountServiceGrpc.UserAccountServiceBlockingStub registrationStub;
 
+  /**
+   * Registers a new user.
+   *
+   * @param user The user to register
+   * @return a UserRegisterResponse for the status of the registration
+   */
   public UserRegisterResponse register(User user) {
     UserRegisterRequest regRequest =
         UserRegisterRequest.newBuilder()

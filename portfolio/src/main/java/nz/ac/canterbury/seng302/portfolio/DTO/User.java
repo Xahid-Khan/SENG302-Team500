@@ -1,19 +1,14 @@
 package nz.ac.canterbury.seng302.portfolio.DTO;
 
 import javax.annotation.Nullable;
-import javax.annotation.RegEx;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 /**
  * A user in the context of the portfolio is used for validation and transportation to the IDP.
  * This record stores all attributes about the user, validates them using Javax.validation, and
  *  sends them off to the IDP to put in the database.
- *
- * TODO: These numbers are fairly arbitrary limitations. This should be reviewed upon database
- * TODO:    constraints or similar.
  */
 public record User(
     @NotBlank(message = "Username is required")
@@ -48,29 +43,41 @@ public record User(
     @Email(message = "Email must be valid", regexp = "[^@]+@[^@]+\\.[^@.]+")
     String email
 ) {
-    // Canonical constructor to ensure that all nulls are instead filled with empty strings.
-    // Null safety is important :)
-    public User(
-        String username,
-        String password,
-        String firstName,
-        String middleName,
-        String lastName,
-        String nickname,
-        String bio,
-        String pronouns,
-        String email
-    ) {
-        // Required values
-        this.username = username;
-        this.password = password;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        // Optional values
-        this.middleName = middleName == null ? "" : middleName;
-        this.nickname = nickname == null ? "" : nickname;
-        this.bio = bio == null ? "" : bio;
-        this.pronouns = pronouns == null ? "" : pronouns;
-    }
+  /**
+   * Canonical constructor to ensure that all nulls are instead filled with empty strings.
+   * Null safety is important :)
+   *
+   * @param username      The user's username
+   * @param password      The user's password
+   * @param firstName     The user's first name
+   * @param middleName    The user's middle name(s)
+   * @param lastName      The user's last name
+   * @param nickname      The user's nickname
+   * @param bio           The user's bio
+   * @param pronouns      The user's pronouns
+   * @param email         The user's email
+   */
+  public User(
+      String username,
+      String password,
+      String firstName,
+      String middleName,
+      String lastName,
+      String nickname,
+      String bio,
+      String pronouns,
+      String email
+  ) {
+    // Required values
+    this.username = username;
+    this.password = password;
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.email = email;
+    // Optional values
+    this.middleName = middleName == null ? "" : middleName;
+    this.nickname = nickname == null ? "" : nickname;
+    this.bio = bio == null ? "" : bio;
+    this.pronouns = pronouns == null ? "" : pronouns;
+  }
 }
