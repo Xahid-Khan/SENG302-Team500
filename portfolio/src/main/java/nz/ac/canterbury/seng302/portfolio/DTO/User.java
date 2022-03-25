@@ -1,21 +1,16 @@
 package nz.ac.canterbury.seng302.portfolio.DTO;
 
 import javax.annotation.Nullable;
+import javax.annotation.RegEx;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 /**
  * A user in the context of the portfolio is used for validation and transportation to the IDP.
  * This record stores all attributes about the user, validates them using Javax.validation, and
  *  sends them off to the IDP to put in the database.
- *
- * Please note that all @Nullable fields may indeed be null, such as if a POST request is made
- *  without the fields in mind, such as: `curl IP:PORT/register -X POST`. As such, both a null AND
- *  empty check should be held for fields such as the Bio when choosing to display.
- *
- * Whilst *technically* the required features could be null, the @NotBlank() decorator will catch
- *  that and throw an exception anyway, so it does not matter.
  *
  * TODO: These numbers are fairly arbitrary limitations. This should be reviewed upon database
  * TODO:    constraints or similar.
@@ -26,7 +21,7 @@ public record User(
     String username,
 
     @NotBlank(message = "Password is required")
-    @Size(min = 8, message = "Password must be longer than 8 characters")
+    @Size(min = 8, message = "Password must be at least 8 characters long")
     String password,
 
     @NotBlank(message = "First name is required")
@@ -49,7 +44,8 @@ public record User(
     @Size(max = 50, message = "Personal pronouns cannot be longer than 50 characters")
     @Nullable String pronouns,
 
-    @Email(message = "Email must be valid")
+    // Emails are stupidly complicated. This basic Regex should suffice for most use cases however.
+    @Email(message = "Email must be valid", regexp = "[^@]+@[^@]+\\.[^@.]+")
     String email
 ) {
     // Canonical constructor to ensure that all nulls are instead filled with empty strings.
