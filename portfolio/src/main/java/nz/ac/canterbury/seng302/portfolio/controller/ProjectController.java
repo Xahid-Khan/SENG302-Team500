@@ -109,7 +109,6 @@ public class ProjectController {
     public ResponseEntity<?> updateProject(@RequestBody ProjectContract updatedProject, @PathVariable String id) {
         try {
             var errorMessage = validationService.checkUpdateProject(id, updatedProject);
-
             if (!errorMessage.equals("Okay")) {
                 if (errorMessage.equals("Project ID does not exist")) {
                     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
