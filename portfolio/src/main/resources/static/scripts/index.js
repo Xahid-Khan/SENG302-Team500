@@ -424,6 +424,11 @@ class ProjectOrSprintEditor {
       return false;
     }
 
+    if (this.nameInput.value.trim() === "") {
+      this.setNameError("Name must not contain only whitespaces.");
+      return false;
+    }
+
     this.setNameError(null);
     return true;
   }
@@ -568,6 +573,18 @@ class ProjectOrSprintEditor {
       return null;
     }
   }
+
+  static makeProjectProjectDatesValidator(project) {
+    return (startDate, endDate) => {
+      for (const sprint of project.sprints.values()) {
+        // Taken from: https://stackoverflow.com/a/325964
+        if (startDate <= sprint.endDate && endDate >= sprint.startDate) {
+          return `This date range overlaps with Sprint ${sprint.orderNumber}. Please choose a non-overlapping date range.`;
+        }
+      }
+      return null;
+    }
+  }
 }
 
 /**
@@ -704,7 +721,12 @@ class Project {
    */
   showEditor() {
     this.currentView?.dispose();
-    this.currentView = new ProjectOrSprintEditor(this.containerElement, "Edit project details:", this.project, this.showViewer.bind(this), this.updateProject.bind(this));
+    this.currentView = new ProjectOrSprintEditor(this.containerElement,
+        "Edit project details:",
+        this.project,
+        this.showViewer.bind(this),
+        this.updateProject.bind(this),
+        ProjectOrSprintEditor.makeProjectProjectDatesValidator(this.project));
   }
 
   /**
