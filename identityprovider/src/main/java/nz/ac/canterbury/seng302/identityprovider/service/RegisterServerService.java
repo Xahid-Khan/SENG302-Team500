@@ -73,6 +73,54 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
     }
   }
 
+    @Override
+    public void editUser(
+            EditUserRequest request,
+            StreamObserver<EditUserResponse> responseObserver
+    ) {
+        UserRegisterResponse.Builder reply = UserRegisterResponse.newBuilder();
+
+        try {
+            var passwordHash = passwordService.hashPassword(request.getPassword());
+
+            UserModel user =
+                    new UserModel(
+                            request.getUsername(),
+                            passwordHash,
+                            request.getFirstName(),
+                            request.getMiddleName(),
+                            request.getLastName(),
+                            request.getNickname(),
+                            request.getBio(),
+                            request.getPersonalPronouns(),
+                            request.getEmail());
+
+
+            if (repository.findByUsername(request.getUsername()) == null) {
+                reply
+                        .setIsSuccess(false)
+                        .setNewUserId(-1)
+                        .setMessage("Error: Username not in database")
+                        .addValidationErrors(
+                                ValidationError.newBuilder()
+                                        .setFieldName("username")
+                                        .setErrorText("Error: Username not in database"));
+            } else {
+                repository.save(user);
+                reply
+                        .setIsSuccess(true)
+                        .setNewUserId(user.getId())
+                        .setMessage("Updated details for user: " + user);
+            }
+
+            responseObserver.onNext(reply.build());
+            responseObserver.onCompleted();
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            e.printStackTrace();
+            responseObserver.onError(e);
+        }
+    }
+
   public UserRepository getRepository() {
     return repository;
   }

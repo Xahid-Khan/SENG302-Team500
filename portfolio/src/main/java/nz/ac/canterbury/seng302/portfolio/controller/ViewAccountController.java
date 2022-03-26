@@ -31,7 +31,7 @@ public class ViewAccountController {
      * @return returns the details of user as String type
      */
     @GetMapping(value = "/account/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UserContract> getUserById(@PathVariable int userId) {
+    public ResponseEntity<UserResponse> getUserById(@PathVariable int userId) {
         var userById = viewAccountService.getUserById(userId);
         if (userById != null) {
             return ResponseEntity.ok(userById);
@@ -46,17 +46,16 @@ public class ViewAccountController {
      * @return User
      */
     public User UserResponseToUserDTO(UserResponse userResponse) {
-        User user = new User();
-        user.setUsername(userResponse.getUsername());
-        user.setFirstName(userResponse.getFirstName());
-        user.setLastName(userResponse.getLastName());
-        user.setEmail(userResponse.getEmail());
-        user.setNickname(userResponse.getNickname());
-        user.setBio(userResponse.getBio());
-        user.setPronouns(userResponse.getPersonalPronouns());
+        return new User(userResponse.getUsername(),
+                "",
+                userResponse.getFirstName(),
+                userResponse.getMiddleName(),
+                userResponse.getLastName(),
+                userResponse.getNickname(),
+                userResponse.getPersonalPronouns(),
+                userResponse.getEmail(),
+                userResponse.getEmail());
 
-        return user;
     }
-
 
 }

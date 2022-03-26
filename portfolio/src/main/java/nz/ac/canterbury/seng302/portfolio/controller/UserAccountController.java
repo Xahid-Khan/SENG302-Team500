@@ -31,21 +31,13 @@ public class UserAccountController {
     @GetMapping(value="/my_account")
     public String getPage(Model model){
         //@TODO Get the user's object from the database instead of making a preset user
-        User currentDetails = new User();
-        var userById = viewAccountService.getUserById(1);
-        currentDetails.setFirstName("John");
-        currentDetails.setLastName("Doe");
-        currentDetails.setEmail("test@gmail.com");
-        currentDetails.setPassword("password");
-        currentDetails.setUsername("test");
-        currentDetails.setNickname("test");
-        currentDetails.setBio("I am a test user");
-        currentDetails.setPronouns("They/Them");
+        User currentDetails = new User("abc", "", "John", "Jane", "Doe", "Jonny", "hi im john", "he/him", "test@gmail.com");
+//        var userById = viewAccountService.getUserById(1);
 
-        String registrationDate = "Member since: 2 April 2021 (10 months)";
+        String registrationDate = "Member since: 2 April 2021 (10 months)"; //TODO Sort this out
 
         //Prefill the form with the user's details
-        model.addAttribute("user",currentDetails);
+        model.addAttribute("user", currentDetails);
         model.addAttribute("registration_date", registrationDate);
 
         return "account_details";
@@ -71,18 +63,15 @@ public class UserAccountController {
      * @return User
      */
     public User UserResponseToUserDTO(UserResponse userResponse) {
-        User user = new User();
-        user.setUsername(userResponse.getUsername());
-        user.setFirstName(userResponse.getFirstName());
-        user.setLastName(userResponse.getLastName());
-        user.setEmail(userResponse.getEmail());
-        user.setNickname(userResponse.getNickname());
-        user.setBio(userResponse.getBio());
-        user.setPronouns(userResponse.getPersonalPronouns());
-
-        return user;
+        return new User(userResponse.getUsername(),
+                "",
+                userResponse.getFirstName(),
+                userResponse.getMiddleName(),
+                userResponse.getLastName(),
+                userResponse.getNickname(),
+                userResponse.getPersonalPronouns(),
+                userResponse.getEmail(),
+                userResponse.getEmail());
     }
-
-
 
 }

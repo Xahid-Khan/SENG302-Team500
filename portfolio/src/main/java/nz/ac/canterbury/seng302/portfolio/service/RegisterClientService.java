@@ -2,9 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.service;
 
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import nz.ac.canterbury.seng302.portfolio.DTO.User;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterRequest;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.springframework.stereotype.Service;
 
 /**
@@ -37,4 +35,20 @@ public class RegisterClientService {
             .build();
     return registrationStub.register(regRequest);
   }
+
+  public EditUserResponse updateDetails(User user) {
+    EditUserRequest regRequest =
+            EditUserRequest.newBuilder()
+                    .setFirstName(user.firstName())
+                    .setMiddleName(user.middleName())
+                    .setLastName(user.lastName())
+                    .setNickname(user.nickname())
+                    .setBio(user.bio())
+                    .setPersonalPronouns(user.pronouns())
+                    .setEmail(user.email())
+                    .build();
+    return registrationStub.editUser(regRequest);
+  }
+
+
 }

@@ -45,7 +45,7 @@ public class UserModel {
         this.nickname = nickname;
         this.bio = bio;
         this.pronouns = pronouns;
-        this.email = email;
+        this.email = email; // TODO add create account dates
     }
 
     public int getId() {
