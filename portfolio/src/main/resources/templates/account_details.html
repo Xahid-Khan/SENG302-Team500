@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://thymeleaf.org">
 <head>
     <title>My Account</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
@@ -29,24 +29,24 @@
                      width="150" height="150" alt="Placeholder Profile Photo">
             </div>
             <div class="left-padding">
-                <h1>FirstName LastName</h1>
-                <h2>Nickname</h2>
-                <h3>They/Them</h3>
+                <h1 th:text="'Name: ' + ${user.firstName} + ' ' + ${user.lastName}" />
+                <h2 th:text="${user.nickname} "/>
+                <h3 th:text="${user.pronouns}"/>
             </div>
         </div>
         <div>
         </div>
         <div class="right-padding">
             <div>
-                <button class="button">Edit</button>
+                <button onclick="location.href='/edit_account'" type="button">Edit</button>
             </div>
         </div>
     </div>
     <div>
-        <h3>abc123</h3>
-        <h3>abc123@uclive.ac.nz</h3>
-        <h3>Member since: 2 April 2021 (10 months)</h3>
-        <p>Bio</p>
+        <h3 th:text="${user.username}"/>
+        <h3 th:text="${user.email}"/>
+        <h3 th:text="${registration_date}"/>
+        <h3 th:text="${user.bio}"/>
     </div>
 </div>
 
