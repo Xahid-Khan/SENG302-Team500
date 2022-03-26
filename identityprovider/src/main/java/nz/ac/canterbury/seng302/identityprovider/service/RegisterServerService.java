@@ -78,15 +78,22 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
             EditUserRequest request,
             StreamObserver<EditUserResponse> responseObserver
     ) {
-        UserRegisterResponse.Builder reply = UserRegisterResponse.newBuilder();
+        EditUserResponse.Builder reply = EditUserResponse.newBuilder();
 
-        try {
-            var passwordHash = passwordService.hashPassword(request.getPassword());
-
-            UserModel user =
+        UserModel existingUser = repository.findById(request.getUserId());
+        if (existingUser == null) {
+            reply
+                    .setIsSuccess(false)
+                    .setMessage("Error: Username not in database")
+                    .addValidationErrors(
+                            ValidationError.newBuilder()
+                                    .setFieldName("username")
+                                    .setErrorText("Error: Username not in database"));
+        } else {
+            UserModel newUser =
                     new UserModel(
-                            request.getUsername(),
-                            passwordHash,
+                            existingUser.getUsername(),
+                            existingUser.getPasswordHash(),
                             request.getFirstName(),
                             request.getMiddleName(),
                             request.getLastName(),
@@ -94,31 +101,14 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
                             request.getBio(),
                             request.getPersonalPronouns(),
                             request.getEmail());
-
-
-            if (repository.findByUsername(request.getUsername()) == null) {
-                reply
-                        .setIsSuccess(false)
-                        .setNewUserId(-1)
-                        .setMessage("Error: Username not in database")
-                        .addValidationErrors(
-                                ValidationError.newBuilder()
-                                        .setFieldName("username")
-                                        .setErrorText("Error: Username not in database"));
-            } else {
-                repository.save(user);
-                reply
-                        .setIsSuccess(true)
-                        .setNewUserId(user.getId())
-                        .setMessage("Updated details for user: " + user);
-            }
-
-            responseObserver.onNext(reply.build());
-            responseObserver.onCompleted();
-        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-            e.printStackTrace();
-            responseObserver.onError(e);
+            repository.save(newUser);
+            reply
+                    .setIsSuccess(true)
+                    .setMessage("Updated details for user: " + newUser);
         }
+
+        responseObserver.onNext(reply.build());
+        responseObserver.onCompleted();
     }
 
   public UserRepository getRepository() {

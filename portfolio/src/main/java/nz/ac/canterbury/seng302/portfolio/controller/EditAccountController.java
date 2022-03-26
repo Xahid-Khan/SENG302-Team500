@@ -26,7 +26,7 @@ public class EditAccountController {
     public String getPage(Model model){
         //TODO Get the user's object from the database instead of making a preset user
         //TODO Field Validation
-        User currentDetails = new User("abc", "", "John", "Jane", "Doe", "Jonny", "hi im john", "he/him", "test@gmail.com");
+        User currentDetails = new User("abc", "pass", "John", "Jane", "Doe", "Jonny", "hi im john", "he/him", "test@gmail.com");
 
         String registrationDate = "Member since: 2 April 2021 (10 months)"; // TODO fix this
 
@@ -38,8 +38,8 @@ public class EditAccountController {
     }
 
     @PostMapping(value="/edit_account")
-    public String postPage(@ModelAttribute @Valid User user, BindingResult bindingResult, Model model) {
-        //TODO User object needs to be passed to DB
+    public String postPage(@ModelAttribute User user, BindingResult bindingResult, Model model) {
+        //TODO Add validation
         if (bindingResult.hasErrors()) {
             return "edit_account";
         }
@@ -51,8 +51,7 @@ public class EditAccountController {
             return "edit_account";
         }
 
-
-        return "account_details";
+        return "redirect:/my_account";
     }
 
 }
