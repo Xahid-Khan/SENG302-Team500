@@ -99,6 +99,24 @@ public class UserModel {
 
     public List<UserRole> getRoles() { return roles; }
 
+    /**
+     * Adds a role to a user
+     *
+     * @param role  The role to add
+     */
+    public void addRole(UserRole role) {
+        roles.add(role);
+    }
+
+    /**
+     * Deletes a role from a user
+     *
+     * @param role  The role to remove
+     */
+    public void deleteRole(UserRole role) {
+        roles.remove(role);
+    }
+
     @Override
     public String toString() {
         return "User{" +
