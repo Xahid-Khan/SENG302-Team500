@@ -6,8 +6,6 @@ import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
-
 /**
  * A service that manages CRUD operations for View Account Controller.
  */
