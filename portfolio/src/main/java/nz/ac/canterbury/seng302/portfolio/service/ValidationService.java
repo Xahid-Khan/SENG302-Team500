@@ -111,8 +111,6 @@ public class ValidationService {
 
 
         if (start.isBefore(project.startDate())) {
-            System.out.println(project.startDate());
-            System.out.println(start);
             return "Sprint cannot start before project start date";
         }
         if (end.isAfter(project.endDate())) {

@@ -19,19 +19,15 @@ function leftPadNumber(number, places) {
 
 class DatetimeUtils {
   static networkStringToLocalDate(utcString) {
-    console.log("networkstringtoLocalDate utc", utcString);
     let LocalDate = new Date(Date.parse(utcString));
-    console.log(LocalDate);
     return LocalDate;
   }
 
   static localToNetworkString(localDate) {
-    console.log("localtoNetowrkstring local",localDate);
     return localDate.toISOString();
   }
 
   static toLocalYMD(localDate) {
-    console.log("tolocalyearmonthdate localdate",localDate);
     return `${leftPadNumber(localDate.getFullYear(), 4)}-${leftPadNumber(localDate.getMonth() + 1, 2)}-${leftPadNumber(localDate.getDate(), 2)}`
   }
 
@@ -405,9 +401,7 @@ class ProjectOrSprintEditor {
   fillDefaults() {
     this.nameInput.value = this.initialData.name ?? "";
     this.descriptionInput.value = this.initialData.description ?? "";
-    console.log("initialdata's startDate", this.initialData.startDate);
     this.startDateInput.value = (this.initialData.startDate) ? DatetimeUtils.toLocalYMD(this.initialData.startDate) : "";
-    console.log("startDateInput value after conversion to local ymd", this.startDateInput.value);
     this.endDateInput.value = (this.initialData.endDate) ? DatetimeUtils.toLocalYMD(this.initialData.endDate) : "";
 
     if (this.initialData.startDate) {
@@ -568,8 +562,6 @@ C   * Gets the end date from user input, otherwise defaults to initial default v
    */
   static makeProjectSprintDatesValidator(project, sprintIdUnderEdit) {
     return (startDate, endDate) => {
-      console.log("start Date from validator", startDate);
-      console.log("proj start date from validator", project.startDate);
       if (startDate < project.startDate || project.endDate < endDate) {
         return "Sprint must fit within the project dates.";
       }
@@ -832,7 +824,6 @@ class Project {
    * @param sprintId - sprint to be deleted
    */
   deleteSprint(sprintId) {
-    console.log(this.project.sprints);
     for (let i=0; i < this.project.sprints.length; i++) {
       if (this.project.sprints[i].sprintId === sprintId) {
         this.project.sprints.splice(i, 1);
@@ -963,7 +954,6 @@ class Sprint {
       const response = await fetch(`/api/v1/sprints/${this.sprint.sprintId}`, {
         method: 'DELETE'
       })
-      console.log(this.sprint.sprintId);
       if (!response.ok) {
         await ErrorHandlerUtils.handleNetworkError(response, "delete sprint");
       }

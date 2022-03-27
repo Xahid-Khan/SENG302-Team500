@@ -35,12 +35,8 @@ public class PortfolioApplication {
             System.out.println(projectName);
             ProjectEntity defaultProject = new ProjectEntity(projectName,
                     "",
-                    LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant(), // Instant gets the date in UTC
-                    // LocalDate.now().plusMonths(8).atStartOfDay().toString() + ":00.00Z" this needs to be converted properly to UTC
-                    // LocalDate will be the current system date - so this is most likely not being parsed correctly as Instant expects it in UTC
+                    LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant(), // toInstant() converts the date to UTC
                     LocalDate.now().plusMonths(8).atStartOfDay(ZoneId.systemDefault()).toInstant());
-
-                    //Instant.parse(LocalDate.now().plusMonths(8).atStartOfDay() + ":00.00Z"));
             projectRepository.save(defaultProject);
         }
     }
