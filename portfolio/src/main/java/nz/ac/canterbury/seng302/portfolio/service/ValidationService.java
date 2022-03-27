@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.NoSuchElementException;
 
 
@@ -34,19 +35,19 @@ public class ValidationService {
             return type + " name must not be empty";
         }
         if (name.trim().equals("")) {
-            return type + " name must not contain only whitespaces";
+            return type + " name must not contain only whitespaces"; // TODO might need a check for trailing whitespaces
         }
 
         if (!name.matches("[A-Za-z0-9 _ -]*")) {
-            return type + " name cannot contain any special characters";
+            return type + " name cannot contain any special characters"; // Needs to be checked with frontend
         }
 
         if (end.isBefore(start)) {
             return type + " start date must be earlier than the end date";
         }
 
-        if (start.isBefore(Instant.parse(LocalDate.now().minusYears(1).atStartOfDay().toString() + ":00.00Z"))) {
-            return type + " cannot start more than one year ago from today";
+        if (start.isBefore(LocalDate.now().minusYears(1).atStartOfDay(ZoneId.systemDefault()).toInstant())) {
+            return type + " cannot start more than one year ago from today"; // Needs to be added to frontend
         }
         return "Okay";
     }
