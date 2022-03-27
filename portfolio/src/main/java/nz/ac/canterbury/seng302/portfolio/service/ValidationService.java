@@ -7,6 +7,7 @@ import nz.ac.canterbury.seng302.portfolio.model.contract.SprintContract;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.xml.bind.SchemaOutputResolver;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.NoSuchElementException;
@@ -110,6 +111,8 @@ public class ValidationService {
 
 
         if (start.isBefore(project.startDate())) {
+            System.out.println(project.startDate());
+            System.out.println(start);
             return "Sprint cannot start before project start date";
         }
         if (end.isAfter(project.endDate())) {

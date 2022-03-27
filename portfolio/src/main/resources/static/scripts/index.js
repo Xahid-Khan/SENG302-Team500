@@ -19,14 +19,19 @@ function leftPadNumber(number, places) {
 
 class DatetimeUtils {
   static networkStringToLocalDate(utcString) {
-    return new Date(Date.parse(utcString));
+    console.log("networkstringtoLocalDate utc", utcString);
+    let LocalDate = new Date(Date.parse(utcString));
+    console.log(LocalDate);
+    return LocalDate;
   }
 
   static localToNetworkString(localDate) {
+    console.log("localtoNetowrkstring local",localDate);
     return localDate.toISOString();
   }
 
   static toLocalYMD(localDate) {
+    console.log("tolocalyearmonthdate localdate",localDate);
     return `${leftPadNumber(localDate.getFullYear(), 4)}-${leftPadNumber(localDate.getMonth() + 1, 2)}-${leftPadNumber(localDate.getDate(), 2)}`
   }
 
@@ -201,17 +206,15 @@ class ProjectView {
 
     let defaultName;
     let defaultStartDate = new Date(this.project.startDate.valueOf());
-    defaultStartDate.setTime(defaultStartDate.getTime() + (60)); // Added to prevent error of sprint starting at the exact same time as the project
 
     if (this.project.sprints.length === 0) {
       defaultName = 1;
     } else {
       defaultName = this.project.sprints[(this.project.sprints.length - 1)].orderNumber + 1;
       defaultStartDate = new Date(this.project.sprints[(this.project.sprints.length - 1)].endDate.valueOf());
-      defaultStartDate.setTime(defaultStartDate.getTime() + (60));
     }
 
-    let defaultEndDate = new Date(defaultStartDate.valueOf());
+    const defaultEndDate = new Date(defaultStartDate.valueOf());
     defaultEndDate.setDate(defaultEndDate.getDate() + 21);
 
     const defaultSprint = {
@@ -402,7 +405,9 @@ class ProjectOrSprintEditor {
   fillDefaults() {
     this.nameInput.value = this.initialData.name ?? "";
     this.descriptionInput.value = this.initialData.description ?? "";
+    console.log("initialdata's startDate", this.initialData.startDate);
     this.startDateInput.value = (this.initialData.startDate) ? DatetimeUtils.toLocalYMD(this.initialData.startDate) : "";
+    console.log("startDateInput value after conversion to local ymd", this.startDateInput.value);
     this.endDateInput.value = (this.initialData.endDate) ? DatetimeUtils.toLocalYMD(this.initialData.endDate) : "";
 
     if (this.initialData.startDate) {
@@ -563,8 +568,8 @@ C   * Gets the end date from user input, otherwise defaults to initial default v
    */
   static makeProjectSprintDatesValidator(project, sprintIdUnderEdit) {
     return (startDate, endDate) => {
-      console.log("start Date", startDate);
-      console.log("proj start date", project.startDate);
+      console.log("start Date from validator", startDate);
+      console.log("proj start date from validator", project.startDate);
       if (startDate < project.startDate || project.endDate < endDate) {
         return "Sprint must fit within the project dates.";
       }
