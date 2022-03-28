@@ -29,7 +29,7 @@ public class RegistrationController {
    */
   @GetMapping(value = "/register")
   public String registerForm(Model model) {
-    model.addAttribute("user", new User("", "", "", "", "", "", "", "", "", Timestamp.newBuilder().build()));
+    model.addAttribute("user", new User("", "", "", "", "", "", "", "", ""));
     return "registration_form";
   }
 

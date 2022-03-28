@@ -1,6 +1,5 @@
 package nz.ac.canterbury.seng302.portfolio.model.contract;
 
-import com.google.protobuf.Timestamp;
 
 public record UserContract(
         String firstName,
@@ -10,6 +9,5 @@ public record UserContract(
         String username,
         String email,
         String personalPronouns,
-        String bio,
-        Timestamp dateJoined
+        String bio
 ) {}

@@ -47,10 +47,7 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
               request.getNickname(),
               request.getBio(),
               request.getPersonalPronouns(),
-              request.getEmail(),
-                  Timestamp.newBuilder().setSeconds(Instant.now().getEpochSecond())
-                  .setNanos(Instant.now().getNano()).build()
-              );
+              request.getEmail());
 
       // If a username already exists in the database, return an error
       if (repository.findByUsername(request.getUsername()) != null) {
@@ -104,8 +101,7 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
                             request.getNickname(),
                             request.getBio(),
                             request.getPersonalPronouns(),
-                            request.getEmail(),
-                            existingUser.getCreated());
+                            request.getEmail());
             newUser.setId(request.getUserId());
             repository.save(newUser);
             reply

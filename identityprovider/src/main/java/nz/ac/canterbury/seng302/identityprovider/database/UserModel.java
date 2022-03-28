@@ -34,13 +34,12 @@ public class UserModel {
     @Column(nullable = false)
     private String email;
 
-    private Timestamp created;
 
     protected UserModel() {
     }
 
     public UserModel(String username, String passwordHash, String firstName, String middleName, String lastName,
-                     String nickname, String bio, String personalPronouns, String email, Timestamp created) {
+                     String nickname, String bio, String personalPronouns, String email) {
         this.username = username;
         this.passwordHash = passwordHash;
         this.firstName = firstName;
@@ -50,7 +49,6 @@ public class UserModel {
         this.bio = bio;
         this.personalPronouns = personalPronouns;
         this.email = email; // TODO add create account dates
-        this.created = created;
     }
 
     public int getId() {
@@ -95,10 +93,6 @@ public class UserModel {
 
     public void setId(int id) { this.id = id; }
 
-    public Timestamp getCreated() {return created;}
-
-    public void setCreated(Timestamp created) {this.created = created;}
-
     @Override
     public String toString() {
         return "User{" +
@@ -112,7 +106,6 @@ public class UserModel {
                 ", bio='" + bio + '\'' +
                 ", personalPronouns='" + personalPronouns + '\'' +
                 ", email='" + email + '\'' +
-                ", created='" + created.toString() + '\'' +
                 '}';
     }
 }
