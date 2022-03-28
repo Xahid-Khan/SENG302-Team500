@@ -633,7 +633,7 @@ class SprintView {
     document.getElementById(`sprint-title-text-${this.sprint.sprintId}`).innerText = this.sprint.name;
     this.description.innerText = this.sprint.description;
     document.getElementById(`start-date-${this.sprint.sprintId}`).innerText = DatetimeUtils.localToUserDMY(this.sprint.startDate);
-    let displayedDate = new Date(this.sprint.endDate.valueOf());
+    const displayedDate = new Date(this.sprint.endDate.valueOf());
     displayedDate.setDate(displayedDate.getDate() - 1);
     document.getElementById(`end-date-${this.sprint.sprintId}`).innerText = DatetimeUtils.localToUserDMY(displayedDate);
   }
