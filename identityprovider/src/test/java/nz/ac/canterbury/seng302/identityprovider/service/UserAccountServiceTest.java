@@ -52,7 +52,7 @@ public class UserAccountServiceTest {
 
     var user1 = new UserModel("u1", passwordService.hashPassword("pass"), "c", "a", "a", "Y", "u1bio", "they/them", "u1@example.com", List.of(
         UserRole.STUDENT, UserRole.TEACHER));
-    var user2 = new UserModel("u2", passwordService.hashPassword("pass"), "b", "b", "b", "Z", "u2bio", "he/him", "u2@example.com", List.of(UserRole.COURSE_ADMINISTRATOR));
+    var user2 = new UserModel("u2", passwordService.hashPassword("pass"), "b", "b", "b", "Z", "u2bio", "he/him", "u2@example.com", List.of(UserRole.STUDENT, UserRole.COURSE_ADMINISTRATOR));
     var user3 = new UserModel("u3", passwordService.hashPassword("pass"), "a", "c", "c", "X", "u3bio", "she/her", "u3@example.com", List.of(UserRole.TEACHER));
 
     repository.saveAll(Arrays.stream(new UserModel[] {user1, user2, user3}).toList());

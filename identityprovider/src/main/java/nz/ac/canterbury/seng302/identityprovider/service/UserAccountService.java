@@ -4,8 +4,12 @@ import io.grpc.stub.StreamObserver;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import javax.persistence.Query;
 import net.devh.boot.grpc.server.service.GrpcService;
 import nz.ac.canterbury.seng302.identityprovider.database.UserModel;
@@ -18,7 +22,9 @@ import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterRequest;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
 import nz.ac.canterbury.seng302.shared.util.ValidationError;
+import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,20 +35,20 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 @GrpcService
 public class UserAccountService extends UserAccountServiceGrpc.UserAccountServiceImplBase {
-    private static HashSet<String> validOrderByFieldNames = new HashSet<String>(
-        List.of(new String[]{"name", "username", "nickname", "roles"}));
+  private static HashSet<String> validOrderByFieldNames = new HashSet<String>(
+      List.of(new String[]{"name", "username", "nickname", "roles"}));
 
   @Autowired private UserRepository repository;
 
   @Autowired private PasswordService passwordService;
 
   @Autowired
-    private SessionFactory sessionFactory;
+  private SessionFactory sessionFactory;
 
-    @Autowired
-    private UserMapper userMapper;
+  @Autowired
+  private UserMapper userMapper;
 
-    @Override
+  @Override
   public void register(
       UserRegisterRequest request, StreamObserver<UserRegisterResponse> responseObserver) {
     UserRegisterResponse.Builder reply = UserRegisterResponse.newBuilder();
@@ -95,14 +101,14 @@ public class UserAccountService extends UserAccountServiceGrpc.UserAccountServic
    * them into a User Response body. if the user is not found the User response is set to null
    *
    * @param request
-     * @param responseObserver
-     */
-    @Override
-    public void getUserAccountById(GetUserByIdRequest request, StreamObserver<UserResponse> responseObserver) {
-        int userId = request.getId();
-        var userFound = repository.findById(userId);
-        if (userFound != null) {
-            responseObserver.onNext(userMapper.toUserResponse(userFound));
+   * @param responseObserver
+   */
+  @Override
+  public void getUserAccountById(GetUserByIdRequest request, StreamObserver<UserResponse> responseObserver) {
+    int userId = request.getId();
+    var userFound = repository.findById(userId);
+    if (userFound != null) {
+      responseObserver.onNext(userMapper.toUserResponse(userFound));
       responseObserver.onCompleted();
     } else {
       responseObserver.onNext(null);
@@ -110,57 +116,79 @@ public class UserAccountService extends UserAccountServiceGrpc.UserAccountServic
     }
   }
 
-    /**
-     * GRPC service method that provides a list of user details with a caller-supplied sort order,
-     * maximum length, and offset.
-     *
+  /**
+   * GRPC service method that provides a list of user details with a caller-supplied sort order,
+   * maximum length, and offset.
+   *
    *
    * @param request parameters from the caller
-     * @param responseObserver to receive results or errors
+   * @param responseObserver to receive results or errors
    */
   @Override
   public void getPaginatedUsers(
       GetPaginatedUsersRequest request, StreamObserver<PaginatedUsersResponse> responseObserver) {
     var orderByField = request.getOrderBy();
-        var limit = request.getLimit();
-        var offset = request.getOffset();
+    var limit = request.getLimit();
+    var offset = request.getOffset();
 
-        // Validate inputs
+    // Validate inputs
     if (!validOrderByFieldNames.contains(orderByField) || limit <= 0 || offset < 0) {
-            responseObserver.onError(new IllegalArgumentException());
-            responseObserver.onCompleted();
-            return;
+      responseObserver.onError(new IllegalArgumentException());
+      responseObserver.onCompleted();
+      return;
+    }
+
+    try (Session session = sessionFactory.openSession()) {
+      Query countQuery = session.createQuery("SELECT COUNT(u.id) FROM UserModel u");
+      int totalCount = (int) (long) countQuery.getSingleResult();
+
+      List<UserModel> resultList;
+      if (orderByField.equals("roles")) {
+        // Receive IDs in order by roles
+        var query = session.createQuery("SELECT u.id FROM UserModel u JOIN u.roles r GROUP BY u.id ORDER BY string_agg((case when r = ?1 then 'student' else (case when r=?2 then 'teacher' else 'course_administrator' end) end), ',')", Integer.class)
+            .setParameter(1, UserRole.STUDENT)
+            .setParameter(2, UserRole.TEACHER)
+            .setFirstResult(offset)
+            .setMaxResults(limit);
+
+        // Get the UserModels for the IDs
+        var idList = query.getResultList();
+        session.close();  // Close the session early so the repository query will work.
+
+        // findAllById doesn't guarantee result order, so we need to manually re-order the data to match idList.
+        Map<Integer, UserModel> resultsById = new HashMap<>();
+        repository.findAllById(idList).forEach(user -> resultsById.put(user.getId(), user));
+        resultList = new ArrayList<>(idList.size());
+        for (var userId : idList) {
+          resultList.add(resultsById.get(userId));
         }
+      }
+      else {
+        var queryOrderByComponent = switch (orderByField) {
+          case "name" -> "firstName, middleName, lastName";
+          case "username" -> "username";
+          case "nickname" -> "nickname";
+          default -> throw new Error("Unsupported orderBy field");
+        };
 
-        try (Session session = sessionFactory.openSession()) {
-            var queryOrderByComponent = switch (orderByField) {
-                case "name" -> "firstName, middleName, lastName";
-                case "username" -> "username";
-                case "nickname" -> "nickname";
-                case "roles" -> "roles";
-                default -> throw new Exception("Unsupported orderBy field");
-            };
+        var query = session.createQuery("FROM UserModel ORDER BY " + queryOrderByComponent, UserModel.class)
+            .setFirstResult(offset)
+            .setMaxResults(limit);
+        resultList = query.getResultList();
+      }
 
-            Query query = session.createQuery("FROM UserModel ORDER BY " + queryOrderByComponent, UserModel.class)
-                .setFirstResult(offset)
-        .setMaxResults(limit);
-            List<UserModel> resultList = query.getResultList();
-
-            Query countQuery = session.createQuery("SELECT COUNT(u.id) FROM UserModel u");
-            int totalCount = (int) (long) countQuery.getSingleResult();
-
-            var response = PaginatedUsersResponse.newBuilder()
-                .addAllUsers(resultList.stream().map(userMapper::toUserResponse).toList())
-                .setResultSetSize(totalCount)
-        .build();
+      var response = PaginatedUsersResponse.newBuilder()
+          .addAllUsers(resultList.stream().map(userMapper::toUserResponse).toList())
+          .setResultSetSize(totalCount)
+          .build();
 
       responseObserver.onNext(response);
-            responseObserver.onCompleted();
-        }
-        catch (Exception e) {
+      responseObserver.onCompleted();
+    }
+    catch (Exception e) {
       responseObserver.onError(e);
-            responseObserver.onCompleted();
-        }
+      responseObserver.onCompleted();
+    }
   }
 
   public UserRepository getRepository() {
