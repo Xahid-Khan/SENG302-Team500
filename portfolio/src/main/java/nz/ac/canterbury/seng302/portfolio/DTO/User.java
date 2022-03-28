@@ -13,36 +13,36 @@ import javax.validation.constraints.Size;
  *  sends them off to the IDP to put in the database.
  */
 public record User(
-    @NotBlank(message = "Username is required")
-    @Size(min = 3, max = 32, message = "Username must be between 3 and 32 characters")
+    @NotBlank(message = "Username is required", groups = RegisteredUserValidation.class)
+    @Size(min = 3, max = 32, message = "Username must be between 3 and 32 characters", groups = RegisteredUserValidation.class)
     String username,
 
-    @NotBlank(message = "Password is required")
-    @Size(min = 8, message = "Password must be at least 8 characters long")
+    @NotBlank(message = "Password is required", groups = RegisteredUserValidation.class)
+    @Size(min = 8, message = "Password must be at least 8 characters long", groups = RegisteredUserValidation.class)
     String password,
 
-    @NotBlank(message = "First name is required", groups = EditedUserValidation.class)
-    @Size(max = 50, message = "First name cannot be longer than 50 characters", groups = EditedUserValidation.class)
+    @NotBlank(message = "First name is required", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
+    @Size(max = 50, message = "First name cannot be longer than 50 characters", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
     String firstName,
 
-    @Size(max = 50, message = "Middle name(s) cannot be longer than 50 characters", groups = EditedUserValidation.class)
+    @Size(max = 50, message = "Middle name(s) cannot be longer than 50 characters", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
     @Nullable String middleName,
 
-    @NotBlank(message = "Last name is required", groups = EditedUserValidation.class)
-    @Size(max = 50, message = "Last name cannot be longer than 50 characters", groups = EditedUserValidation.class)
+    @NotBlank(message = "Last name is required", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
+    @Size(max = 50, message = "Last name cannot be longer than 50 characters", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
     String lastName,
 
-    @Size(max = 32, message = "Nickname cannot be longer than 32 characters", groups = EditedUserValidation.class)
+    @Size(max = 32, message = "Nickname cannot be longer than 32 characters", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
     @Nullable String nickname,
 
-    @Size(max = 512, message = "Bio cannot be longer than 512 characters", groups = EditedUserValidation.class)
+    @Size(max = 512, message = "Bio cannot be longer than 512 characters", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
     @Nullable String bio,
 
-    @Size(max = 50, message = "Personal pronouns cannot be longer than 50 characters", groups = EditedUserValidation.class)
+    @Size(max = 50, message = "Personal pronouns cannot be longer than 50 characters", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
     @Nullable String personalPronouns,
 
     // Emails are stupidly complicated. This basic Regex should suffice for most use cases however.
-    @Email(message = "Email must be valid", regexp = "[^@]+@[^@]+\\.[^@.]+", groups = EditedUserValidation.class)
+    @Email(message = "Email must be valid", regexp = "[^@]+@[^@]+\\.[^@.]+", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
     String email
     ) {
   /**

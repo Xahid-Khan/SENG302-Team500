@@ -85,11 +85,11 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
         if (existingUser == null) {
             reply
                     .setIsSuccess(false)
-                    .setMessage("Error: Username not in database")
+                    .setMessage("Error: User not in database")
                     .addValidationErrors(
                             ValidationError.newBuilder()
-                                    .setFieldName("username")
-                                    .setErrorText("Error: Username not in database"));
+                                    .setFieldName("ID")
+                                    .setErrorText("Error: User not in database"));
         } else {
             UserModel newUser =
                     new UserModel(

@@ -37,14 +37,12 @@ public class EditAccountController {
 
     @GetMapping(value="/edit_account")
     public String getPage(Model model, @AuthenticationPrincipal AuthState principal){
-
         Integer userId = Integer.valueOf(principal.getClaimsList().stream()
                 .filter(claim -> claim.getType().equals("nameid"))
                 .findFirst()
                 .map(ClaimDTO::getValue)
                 .orElse("-100"));
         UserResponse userDetails = viewAccountService.getUserById(userId);
-        System.out.println(userDetails.getCreated());
         String registrationDate = "2 April 2021 (10 months)"; // TODO fix this
 
         //Prefill the form with the user's details
@@ -59,7 +57,6 @@ public class EditAccountController {
         if (bindingResult.hasErrors()) {
             return "edit_account";
         }
-        System.out.println("Start: "  + user.firstName());
         try {
             Integer userId = Integer.valueOf(principal.getClaimsList().stream()
                     .filter(claim -> claim.getType().equals("nameid"))
@@ -67,7 +64,6 @@ public class EditAccountController {
                     .map(ClaimDTO::getValue)
                     .orElse("-100"));
 
-            UserResponse userDetails = viewAccountService.getUserById(userId);
             registerClientService.updateDetails(user, userId);
 
         } catch (StatusRuntimeException e){
