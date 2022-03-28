@@ -18,6 +18,10 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
     @Autowired
     private PasswordService passwordService;
 
+    @Autowired
+    UserDataValidationServerService dataValidation;
+
+
     @Override
     public void register(UserRegisterRequest request, StreamObserver<UserRegisterResponse> responseObserver) {
         UserRegisterResponse.Builder reply = UserRegisterResponse.newBuilder();
@@ -67,6 +71,67 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
             responseObserver.onCompleted();
         }
     }
+
+
+
+    @Override
+    public void editUser(EditUserRequest request, StreamObserver<EditUserResponse> response) {
+        UserModel user = repository.findById(request.getUserId());
+        EditUserResponse.Builder update = EditUserResponse.newBuilder().setIsSuccess(false);
+
+        if (!dataValidation.validateName(request.getFirstName())) {
+            response.onNext(update.setMessage("Invalid First Name").build());
+            response.onCompleted();
+        }
+
+        if (!dataValidation.validateName(request.getLastName())) {
+            response.onNext(update.setMessage("Invalid Last Name").build());
+            response.onCompleted();
+        }
+
+        if (!dataValidation.optionalFields(request.getNickname())) {
+            response.onNext(update.setMessage("Invalid Nick Name").build());
+            response.onCompleted();
+        }
+
+        if (!dataValidation.optionalFields(request.getMiddleName())) {
+            response.onNext(update.setMessage("Invalid Middle Name").build());
+            response.onCompleted();
+        }
+
+        if (!dataValidation.validateEmail(request.getEmail())) {
+            response.onNext(update.setMessage("Invalid Email Address").build());
+            response.onCompleted();
+        }
+
+        if (!dataValidation.optionalFields(request.getBio())) {
+            response.onNext(update.setMessage("Invalid Characters in Bio").build());
+            response.onCompleted();
+        }
+
+        if (!dataValidation.pronounsValidation(request.getPersonalPronouns())) {
+            response.onNext(update.setMessage("Invalid Pronoun").build());
+            response.onCompleted();
+        }
+
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
+        user.setMiddleName(request.getMiddleName());
+        user.setNickname(request.getNickname());
+        user.setEmail(request.getEmail());
+        user.setPronouns(request.getPersonalPronouns());
+        user.setBio(request.getBio());
+
+        update.setIsSuccess(true);
+        response.onNext(update.build());
+        response.onCompleted();
+
+    }
+
+
+
+
+
 
 
     /**

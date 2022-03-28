@@ -10,7 +10,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class EditingUserAccountService {
+public class EditingUserAccountServiceTest {
     @Autowired
     private MockMvc mockMvc;
 
