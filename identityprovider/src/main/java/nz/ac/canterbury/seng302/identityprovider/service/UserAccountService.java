@@ -137,7 +137,7 @@ public class UserAccountService extends UserAccountServiceGrpc.UserAccountServic
                 case "name" -> "firstName, middleName, lastName";
                 case "username" -> "username";
                 case "nickname" -> "nickname";
-                case "roles" -> throw new Exception("Roles support hasn't been implemented yet");
+                case "roles" -> "roles";
                 default -> throw new Exception("Unsupported orderBy field");
             };
 
