@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.identityprovider.service;
 import io.grpc.stub.StreamObserver;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import javax.persistence.Query;
@@ -59,7 +60,9 @@ public class UserAccountService extends UserAccountServiceGrpc.UserAccountServic
               request.getNickname(),
               request.getBio(),
               request.getPersonalPronouns(),
-              request.getEmail());
+              request.getEmail(),
+              new ArrayList<>()
+          );
 
       // If a username already exists in the database, return an error
       if (repository.findByUsername(request.getUsername()) != null) {
