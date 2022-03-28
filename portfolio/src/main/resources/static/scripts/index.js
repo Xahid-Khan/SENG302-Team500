@@ -469,7 +469,7 @@ class ProjectOrSprintEditor {
       return this.initialData.endDate ?? null;
     }const rawValue = this.endDateInput.value;
     if (rawValue) {
-      let dayAfter = DatetimeUtils.fromLocalYMD(rawValue);
+      const dayAfter = DatetimeUtils.fromLocalYMD(rawValue);
       dayAfter.setDate(dayAfter.getDate() + 1);
       return dayAfter;
     }
