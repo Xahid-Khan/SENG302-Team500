@@ -6,7 +6,6 @@ import javax.persistence.*;
 @Entity
 public class UserModel {
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
     private int id;
 
     @Column(unique=true, nullable = false)
@@ -37,6 +36,7 @@ public class UserModel {
 
     public UserModel(String username, String passwordHash, String firstName, String middleName, String lastName,
                      String nickname, String bio, String pronouns, String email) {
+    this.id = 1;
         this.username = username;
         this.passwordHash = passwordHash;
         this.firstName = firstName;

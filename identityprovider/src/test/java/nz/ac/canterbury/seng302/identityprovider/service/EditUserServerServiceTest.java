@@ -5,16 +5,12 @@ import nz.ac.canterbury.seng302.identityprovider.database.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.database.UserRepository;
 import nz.ac.canterbury.seng302.shared.identityprovider.EditUserRequest;
 import nz.ac.canterbury.seng302.shared.identityprovider.EditUserResponse;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
-
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -69,12 +65,9 @@ public class EditUserServerServiceTest {
     @Test
     public void UpdateValidFirstName() {
         modifiedUser.setFirstName("Joy");
-//        System.out.println(modifiedUser.toString());
         StreamObserver<EditUserResponse> userResponse = new StreamObserver<EditUserResponse>() {
             @Override
             public void onNext(EditUserResponse value) {
-                System.out.println("111111111111111111111111111111111111111111111111111");
-                System.out.println(value.getMessage());
                 assertEquals(true, value.getIsSuccess());
             }
 
@@ -84,12 +77,76 @@ public class EditUserServerServiceTest {
             @Override
             public void onCompleted() {}
         };
-
-//        System.out.println(modifiedUser.toString());
         editUserServerService.editUser(modifiedUser.build(), userResponse);
-
-
     }
+
+
+    @Test
+    public void UpdateInvalidFirstName() {
+        modifiedUser.setFirstName("");
+        StreamObserver<EditUserResponse> userResponse = new StreamObserver<EditUserResponse>() {
+            @Override
+            public void onNext(EditUserResponse value) {
+                assertEquals(false, value.getIsSuccess());
+                assertEquals("Invalid First Name", value.getMessage());
+            }
+
+            @Override
+            public void onError(Throwable t) {}
+
+            @Override
+            public void onCompleted() {}
+        };
+        editUserServerService.editUser(modifiedUser.build(), userResponse);
+        modifiedUser.setFirstName("123");
+        editUserServerService.editUser(modifiedUser.build(), userResponse);
+        modifiedUser.setFirstName("Jame@DSD");
+        editUserServerService.editUser(modifiedUser.build(), userResponse);
+    }
+
+
+    @Test
+    public void UpdateValidLastName() {
+        modifiedUser.setLastName("Joy");
+        StreamObserver<EditUserResponse> userResponse = new StreamObserver<EditUserResponse>() {
+            @Override
+            public void onNext(EditUserResponse value) {
+                assertEquals(true, value.getIsSuccess());
+            }
+
+            @Override
+            public void onError(Throwable t) {}
+
+            @Override
+            public void onCompleted() {}
+        };
+        editUserServerService.editUser(modifiedUser.build(), userResponse);
+    }
+
+
+    @Test
+    public void UpdateInvalidLastName() {
+        modifiedUser.setLastName("");
+        StreamObserver<EditUserResponse> userResponse = new StreamObserver<EditUserResponse>() {
+            @Override
+            public void onNext(EditUserResponse value) {
+                assertEquals(false, value.getIsSuccess());
+                assertEquals("Invalid Last Name", value.getMessage());
+            }
+
+            @Override
+            public void onError(Throwable t) {}
+
+            @Override
+            public void onCompleted() {}
+        };
+        editUserServerService.editUser(modifiedUser.build(), userResponse);
+        modifiedUser.setLastName("123");
+        editUserServerService.editUser(modifiedUser.build(), userResponse);
+        modifiedUser.setLastName("Jame@DSD");
+        editUserServerService.editUser(modifiedUser.build(), userResponse);
+    }
+
 
 
 }

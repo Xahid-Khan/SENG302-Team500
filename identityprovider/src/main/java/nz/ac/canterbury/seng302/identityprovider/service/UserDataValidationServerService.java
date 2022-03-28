@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class UserDataValidationServerService {
     public boolean validateName(String name) {
         var nameRegex = "^[-a-zA-Z\s]+$";
-        return (name.strip().length() > 0 &&  name.matches(nameRegex));
+        return (!(name.strip().length()== 0) && (name.matches(nameRegex)));
     }
 
     public boolean validateEmail(String email) {
