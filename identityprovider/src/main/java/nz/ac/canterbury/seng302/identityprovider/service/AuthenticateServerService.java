@@ -46,7 +46,7 @@ public class AuthenticateServerService extends AuthenticationServiceImplBase {
                 user.getRoles().stream()
                     .map(UserRole::toString)
                     .map(String::toLowerCase)
-                    .map(s -> s.replaceAll(" ", ""))
+                    .map(s -> s.replace(" ", ""))
                     .collect(Collectors.joining(",")));
 
         reply

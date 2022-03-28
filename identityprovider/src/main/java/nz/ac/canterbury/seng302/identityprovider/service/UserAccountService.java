@@ -17,6 +17,10 @@ import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRoleChangeResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 
+/**
+ * This base service contains multiple other services, and is used as a hub so GRPC does not
+ * complain about multiple services extending UserAccountServiceGrpc.UserAccountServiceImplBase.
+ */
 @GrpcService
 public class UserAccountService extends UserAccountServiceGrpc.UserAccountServiceImplBase {
 
