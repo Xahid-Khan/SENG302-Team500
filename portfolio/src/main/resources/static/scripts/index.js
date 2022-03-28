@@ -202,12 +202,10 @@ class ProjectView {
     formContainerElement.id = `create-sprint-form-container-${this.project.id}`;
     this.sprintsContainer.insertBefore(formContainerElement, this.sprintsContainer.firstChild);
 
-    let defaultName;
+    let defaultName = 1;
     let defaultStartDate = new Date(this.project.startDate.valueOf());
 
-    if (this.project.sprints.length === 0) {
-      defaultName = 1;
-    } else {
+    if (this.project.sprints.length !== 0) {
       defaultName = this.project.sprints[(this.project.sprints.length - 1)].orderNumber + 1;
       defaultStartDate = new Date(this.project.sprints[(this.project.sprints.length - 1)].endDate.valueOf());
     }
@@ -464,7 +462,7 @@ class ProjectOrSprintEditor {
   }
 
   /**
-C   * Gets the end date from user input, otherwise defaults to initial default value.
+   * Gets the end date from user input, otherwise defaults to initial default value.
    */
   getEndDateInputValue() {
     if (!this.endDateEdited) {
