@@ -1,0 +1,12 @@
+2022-03-18 03:18:22 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PROJECT" not found (this database is empty); SQL statement:
+select projectent0_.id as id1_0_, projectent0_.description as descript6_0_, projectent0_.end_date as end_date7_0_, projectent0_.name as name8_0_, projectent0_.start_date as start_da9_0_ from project projectent0_ [42104-210]
+2022-03-21 21:26:55 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PROJECT" not found (this database is empty); SQL statement:
+select projectent0_.id as id1_0_, projectent0_.description as descript6_0_, projectent0_.end_date as end_date7_0_, projectent0_.name as name8_0_, projectent0_.start_date as start_da9_0_ from project projectent0_ [42104-210]
+2022-03-21 21:27:15 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PROJECT" not found (this database is empty); SQL statement:
+select projectent0_.id as id1_0_, projectent0_.description as descript6_0_, projectent0_.end_date as end_date7_0_, projectent0_.name as name8_0_, projectent0_.start_date as start_da9_0_ from project projectent0_ [42104-210]
+2022-03-21 21:27:37 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PROJECT" not found (this database is empty); SQL statement:
+select projectent0_.id as id1_0_, projectent0_.description as descript6_0_, projectent0_.end_date as end_date7_0_, projectent0_.name as name8_0_, projectent0_.start_date as start_da9_0_ from project projectent0_ [42104-210]

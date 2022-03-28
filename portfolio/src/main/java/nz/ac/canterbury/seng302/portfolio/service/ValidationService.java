@@ -31,7 +31,10 @@ public class ValidationService {
 
     public String checkBaseFields(String type, String name, Instant start, Instant end) {
         if (name.equals("")) {
-            return type + " must have a name";
+            return type + " name must not be empty";
+        }
+        if (name.trim().equals("")) {
+            return type + " name must not contain only whitespaces";
         }
 
         if (!name.matches("[A-Za-z0-9 _ -]*")) {
@@ -51,7 +54,15 @@ public class ValidationService {
     public String checkUpdateProject(String projectId, ProjectContract projectContract) {
 
         try {
-            projectService.getById(projectId);
+            ProjectContract project = projectService.getById(projectId);
+            for (SprintContract sprint: project.sprints()) {
+                if (projectContract.startDate().isAfter(sprint.startDate())) {
+                    return "Project cannot begin after one of its sprints start date";
+                }
+                if (projectContract.endDate().isBefore(sprint.endDate())) {
+                    return "Project cannot end before one of its sprints end date";
+                }
+            }
         } catch (NoSuchElementException error) {
             return "Project ID does not exist";
         }
@@ -84,7 +95,11 @@ public class ValidationService {
             SprintContract sprint = sprintService.get(sprintId);
             try {
                 ProjectContract project = projectService.getById(sprint.projectId());
-                String response = checkSprintDetails(project, sprint.sprintId(), sprint.startDate(), sprint.endDate());
+                String response = checkSprintDetails(project, sprint.sprintId(), sprintContract.startDate(), sprintContract.endDate());
+                if (!response.equals("Okay")) {
+                    return response;
+                }
+                response = checkBaseFields("Sprint", sprintContract.name(), sprintContract.startDate(), sprintContract.endDate());
                 if (!response.equals("Okay")) {
                     return response;
                 }
