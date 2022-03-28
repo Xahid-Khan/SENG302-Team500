@@ -78,37 +78,37 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
     public void editUser(EditUserRequest request, StreamObserver<EditUserResponse> response) {
         UserModel user = repository.findById(request.getUserId());
         EditUserResponse.Builder update = EditUserResponse.newBuilder().setIsSuccess(false);
-
+        System.out.println("1");
         if (!dataValidation.validateName(request.getFirstName())) {
             response.onNext(update.setMessage("Invalid First Name").build());
             response.onCompleted();
         }
-
+        System.out.println("2");
         if (!dataValidation.validateName(request.getLastName())) {
             response.onNext(update.setMessage("Invalid Last Name").build());
             response.onCompleted();
         }
-
+        System.out.println("3");
         if (!dataValidation.optionalFields(request.getNickname())) {
             response.onNext(update.setMessage("Invalid Nick Name").build());
             response.onCompleted();
         }
-
+        System.out.println("4");
         if (!dataValidation.optionalFields(request.getMiddleName())) {
             response.onNext(update.setMessage("Invalid Middle Name").build());
             response.onCompleted();
         }
-
+        System.out.println("5");
         if (!dataValidation.validateEmail(request.getEmail())) {
             response.onNext(update.setMessage("Invalid Email Address").build());
             response.onCompleted();
         }
-
+        System.out.println("6");
         if (!dataValidation.optionalFields(request.getBio())) {
             response.onNext(update.setMessage("Invalid Characters in Bio").build());
             response.onCompleted();
         }
-
+        System.out.println("7");
         if (!dataValidation.pronounsValidation(request.getPersonalPronouns())) {
             response.onNext(update.setMessage("Invalid Pronoun").build());
             response.onCompleted();
@@ -123,6 +123,7 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
         user.setBio(request.getBio());
 
         update.setIsSuccess(true);
+        update.setMessage("Success");
         response.onNext(update.build());
         response.onCompleted();
 

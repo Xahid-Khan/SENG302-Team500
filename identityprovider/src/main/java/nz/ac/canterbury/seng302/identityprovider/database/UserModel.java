@@ -12,7 +12,7 @@ public class UserModel {
     @Column(unique=true, nullable = false)
     private String username;
 
-    @Column(nullable = false, name = "password_hash")
+    @Column(nullable = false)
     private String passwordHash;
 
     @Column(nullable = false)

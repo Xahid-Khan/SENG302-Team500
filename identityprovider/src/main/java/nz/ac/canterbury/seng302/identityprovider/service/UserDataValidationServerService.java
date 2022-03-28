@@ -31,7 +31,13 @@ public class UserDataValidationServerService {
         allowedNouns.add("HIS");
         allowedNouns.add("THEY");
         allowedNouns.add("THEM");
-        return allowedNouns.contains(data.split("/"));
+
+        for (String title: data.split("/")) {
+            if (!allowedNouns.contains(title.toUpperCase())) {
+                return false;
+            }
+        }
+        return true;
     }
 
 
