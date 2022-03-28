@@ -27,7 +27,7 @@ public class UserModel {
 
     private String bio;
 
-    private String pronouns;
+    private String personalPronouns;
 
     @Column(nullable = false)
     private String email;
@@ -36,7 +36,7 @@ public class UserModel {
     }
 
     public UserModel(String username, String passwordHash, String firstName, String middleName, String lastName,
-                     String nickname, String bio, String pronouns, String email) {
+                     String nickname, String bio, String personalPronouns, String email) {
         this.username = username;
         this.passwordHash = passwordHash;
         this.firstName = firstName;
@@ -44,7 +44,7 @@ public class UserModel {
         this.lastName = lastName;
         this.nickname = nickname;
         this.bio = bio;
-        this.pronouns = pronouns;
+        this.personalPronouns = personalPronouns;
         this.email = email; // TODO add create account dates
     }
 
@@ -80,8 +80,8 @@ public class UserModel {
         return bio;
     }
 
-    public String getPronouns() {
-        return pronouns;
+    public String getPersonalPronouns() {
+        return personalPronouns;
     }
 
     public String getEmail() {
@@ -99,7 +99,7 @@ public class UserModel {
                 ", lastName='" + lastName + '\'' +
                 ", nickname='" + nickname + '\'' +
                 ", bio='" + bio + '\'' +
-                ", pronouns='" + pronouns + '\'' +
+                ", personalPronouns='" + personalPronouns + '\'' +
                 ", email='" + email + '\'' +
                 '}';
     }

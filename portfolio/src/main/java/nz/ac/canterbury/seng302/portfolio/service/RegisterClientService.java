@@ -30,7 +30,7 @@ public class RegisterClientService {
             .setLastName(user.lastName())
             .setNickname(user.nickname())
             .setBio(user.bio())
-            .setPersonalPronouns(user.pronouns())
+            .setPersonalPronouns(user.personalPronouns())
             .setEmail(user.email())
             .build();
     return registrationStub.register(regRequest);
@@ -44,7 +44,7 @@ public class RegisterClientService {
                     .setLastName(user.lastName())
                     .setNickname(user.nickname())
                     .setBio(user.bio())
-                    .setPersonalPronouns(user.pronouns())
+                    .setPersonalPronouns(user.personalPronouns())
                     .setEmail(user.email())
                     .build();
     return registrationStub.editUser(regRequest);

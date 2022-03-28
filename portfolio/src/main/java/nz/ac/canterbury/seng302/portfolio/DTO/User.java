@@ -19,28 +19,28 @@ public record User(
     @Size(min = 8, message = "Password must be at least 8 characters long")
     String password,
 
-    @NotBlank(message = "First name is required")
-    @Size(max = 50, message = "First name cannot be longer than 50 characters")
+    @NotBlank(message = "First name is required", groups = EditedUserValidation.class)
+    @Size(max = 50, message = "First name cannot be longer than 50 characters", groups = EditedUserValidation.class)
     String firstName,
 
-    @Size(max = 50, message = "Middle name(s) cannot be longer than 50 characters")
+    @Size(max = 50, message = "Middle name(s) cannot be longer than 50 characters", groups = EditedUserValidation.class)
     @Nullable String middleName,
 
-    @NotBlank(message = "Last name is required")
-    @Size(max = 50, message = "Last name cannot be longer than 50 characters")
+    @NotBlank(message = "Last name is required", groups = EditedUserValidation.class)
+    @Size(max = 50, message = "Last name cannot be longer than 50 characters", groups = EditedUserValidation.class)
     String lastName,
 
-    @Size(max = 32, message = "Nickname cannot be longer than 32 characters")
+    @Size(max = 32, message = "Nickname cannot be longer than 32 characters", groups = EditedUserValidation.class)
     @Nullable String nickname,
 
-    @Size(max = 512, message = "Bio cannot be longer than 512 characters")
+    @Size(max = 512, message = "Bio cannot be longer than 512 characters", groups = EditedUserValidation.class)
     @Nullable String bio,
 
-    @Size(max = 50, message = "Personal pronouns cannot be longer than 50 characters")
-    @Nullable String pronouns,
+    @Size(max = 50, message = "Personal pronouns cannot be longer than 50 characters", groups = EditedUserValidation.class)
+    @Nullable String personalPronouns,
 
     // Emails are stupidly complicated. This basic Regex should suffice for most use cases however.
-    @Email(message = "Email must be valid", regexp = "[^@]+@[^@]+\\.[^@.]+")
+    @Email(message = "Email must be valid", regexp = "[^@]+@[^@]+\\.[^@.]+", groups = EditedUserValidation.class)
     String email
 ) {
   /**
@@ -54,7 +54,7 @@ public record User(
    * @param lastName      The user's last name
    * @param nickname      The user's nickname
    * @param bio           The user's bio
-   * @param pronouns      The user's pronouns
+   * @param personalPronouns      The user's pronouns
    * @param email         The user's email
    */
   public User(
@@ -65,7 +65,7 @@ public record User(
       String lastName,
       String nickname,
       String bio,
-      String pronouns,
+      String personalPronouns,
       String email
   ) {
     // Required values
@@ -78,6 +78,6 @@ public record User(
     this.middleName = middleName == null ? "" : middleName;
     this.nickname = nickname == null ? "" : nickname;
     this.bio = bio == null ? "" : bio;
-    this.pronouns = pronouns == null ? "" : pronouns;
+    this.personalPronouns = personalPronouns == null ? "" : personalPronouns;
   }
 }

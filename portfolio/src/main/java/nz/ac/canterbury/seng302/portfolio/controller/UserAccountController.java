@@ -3,8 +3,11 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import nz.ac.canterbury.seng302.portfolio.DTO.User;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
 import nz.ac.canterbury.seng302.portfolio.service.ViewAccountService;
+import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
+import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,15 +32,19 @@ public class UserAccountController {
      * @return user account page
      */
     @GetMapping(value="/my_account")
-    public String getPage(Model model){
-        //@TODO Get the user's object from the database instead of making a preset user
-        User currentDetails = new User("abc", "", "John", "Jane", "Doe", "Jonny", "hi im john", "he/him", "test@gmail.com");
-//        var userById = viewAccountService.getUserById(1);
+    public String getPage(Model model, @AuthenticationPrincipal AuthState principal){
 
-        String registrationDate = "Member since: 2 April 2021 (10 months)"; //TODO Sort this out
+        Integer userId = Integer.valueOf(principal.getClaimsList().stream()
+                .filter(claim -> claim.getType().equals("nameid"))
+                .findFirst()
+                .map(ClaimDTO::getValue)
+                .orElse("-100"));
+        UserResponse userDetails = viewAccountService.getUserById(userId);
+
+        String registrationDate = "2 April 2021 (10 months)"; //TODO Sort this out
 
         //Prefill the form with the user's details
-        model.addAttribute("user", currentDetails);
+        model.addAttribute("user", userDetails);
         model.addAttribute("registration_date", registrationDate);
 
         return "account_details";
@@ -47,7 +54,7 @@ public class UserAccountController {
     public String getUserAccount(@PathVariable int id, Model model, UserResponse user){
         var userById = viewAccountService.getUserById(id);
 
-        String registrationDate = "Member since: 2 April 2021 (10 months)";
+        String registrationDate = "Member since: 2 April 2021 (10 months)"; // TODO implement this
 
         User currentDetails= UserResponseToUserDTO(userById);
         model.addAttribute("user",currentDetails);

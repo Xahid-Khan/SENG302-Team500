@@ -1,20 +1,27 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import io.grpc.StatusRuntimeException;
+import nz.ac.canterbury.seng302.portfolio.DTO.EditedUserValidation;
 import nz.ac.canterbury.seng302.portfolio.DTO.User;
+import nz.ac.canterbury.seng302.portfolio.authentication.CookieUtil;
+import nz.ac.canterbury.seng302.portfolio.authentication.JwtAuthenticationToken;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
-import nz.ac.canterbury.seng302.shared.identityprovider.EditUserRequest;
-import nz.ac.canterbury.seng302.shared.identityprovider.EditUserResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
+import nz.ac.canterbury.seng302.portfolio.service.ViewAccountService;
+import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
+import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import javax.validation.Valid;
+import javax.servlet.http.HttpServletRequest;
 
 @Controller
 public class EditAccountController {
@@ -22,24 +29,32 @@ public class EditAccountController {
     @Autowired
     private RegisterClientService registerClientService;
 
+    @Autowired
+    private ViewAccountService viewAccountService;
+
     @GetMapping(value="/edit_account")
-    public String getPage(Model model){
+    public String getPage(Model model, @AuthenticationPrincipal AuthState principal){
         //TODO Get the user's object from the database instead of making a preset user
         //TODO Field Validation
-        User currentDetails = new User("abc", "pass", "John", "Jane", "Doe", "Jonny", "hi im john", "he/him", "test@gmail.com");
 
-        String registrationDate = "Member since: 2 April 2021 (10 months)"; // TODO fix this
+        Integer userId = Integer.valueOf(principal.getClaimsList().stream()
+                .filter(claim -> claim.getType().equals("nameid"))
+                .findFirst()
+                .map(ClaimDTO::getValue)
+                .orElse("-100"));
+        UserResponse userDetails = viewAccountService.getUserById(userId);
+        String registrationDate = "2 April 2021 (10 months)"; // TODO fix this
 
         //Prefill the form with the user's details
-        model.addAttribute("user",currentDetails);
+        model.addAttribute("user", userDetails);
         model.addAttribute("registration_date", registrationDate);
 
         return "edit_account";
     }
 
     @PostMapping(value="/edit_account")
-    public String postPage(@ModelAttribute User user, BindingResult bindingResult, Model model) {
-        //TODO Add validation
+    public String postPage(@ModelAttribute @Validated(EditedUserValidation.class) User user, BindingResult bindingResult, Model model) {
+        // TODO deal with validation
         if (bindingResult.hasErrors()) {
             return "edit_account";
         }
@@ -47,10 +62,9 @@ public class EditAccountController {
         try {
             registerClientService.updateDetails(user);
         } catch (StatusRuntimeException e){
-            model.addAttribute("registerMessage", "Error connecting to Identity Provider...");
+            model.addAttribute("registerMessage", "Error connecting to Identity Provider..."); // TODO fix
             return "edit_account";
         }
-
         return "redirect:/my_account";
     }
 

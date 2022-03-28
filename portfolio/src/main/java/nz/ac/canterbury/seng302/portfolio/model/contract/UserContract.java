@@ -7,6 +7,6 @@ public record UserContract(
         String nickName,
         String username,
         String email,
-        String pronouns,
+        String personalPronouns,
         String bio
 ) {}

@@ -132,7 +132,7 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
                     .setLastName(userFound.getLastName())
                     .setBio(userFound.getBio())
                     .setUsername(userFound.getUsername())
-                    .setPersonalPronouns(userFound.getPronouns())
+                    .setPersonalPronouns(userFound.getPersonalPronouns())
                     .setEmail(userFound.getEmail())
                     .setNickname(userFound.getNickname());
 
@@ -163,7 +163,7 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
                         .setLastName(user.getLastName())
                         .setBio(user.getBio())
                         .setUsername(user.getUsername())
-                        .setPersonalPronouns(user.getPronouns())
+                        .setPersonalPronouns(user.getPersonalPronouns())
                         .setEmail(user.getEmail())
                         .setNickname(user.getNickname());
                 reply.addUsers(subUser);
