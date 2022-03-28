@@ -1,7 +1,11 @@
 package nz.ac.canterbury.seng302.identityprovider.database;
 
 
+import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
+
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class UserModel {
@@ -32,11 +36,15 @@ public class UserModel {
     @Column(nullable = false)
     private String email;
 
+    @ElementCollection
+    @Column(nullable = false)
+    private List<UserRole> roles = new ArrayList<>();
+
     protected UserModel() {
     }
 
     public UserModel(String username, String passwordHash, String firstName, String middleName, String lastName,
-                     String nickname, String bio, String pronouns, String email) {
+        String nickname, String bio, String pronouns, String email, List<UserRole> roles) {
         this.username = username;
         this.passwordHash = passwordHash;
         this.firstName = firstName;
@@ -46,6 +54,7 @@ public class UserModel {
         this.bio = bio;
         this.pronouns = pronouns;
         this.email = email;
+        this.roles = roles;
     }
 
     public int getId() {
@@ -88,19 +97,40 @@ public class UserModel {
         return email;
     }
 
+    public List<UserRole> getRoles() { return roles; }
+
+    /**
+     * Adds a role to a user
+     *
+     * @param role  The role to add
+     */
+    public void addRole(UserRole role) {
+        roles.add(role);
+    }
+
+    /**
+     * Deletes a role from a user
+     *
+     * @param role  The role to remove
+     */
+    public void deleteRole(UserRole role) {
+        roles.remove(role);
+    }
+
     @Override
     public String toString() {
         return "User{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", passwordHash='" + passwordHash + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", middleName='" + middleName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", nickname='" + nickname + '\'' +
-                ", bio='" + bio + '\'' +
-                ", pronouns='" + pronouns + '\'' +
-                ", email='" + email + '\'' +
-                '}';
+            "id=" + id +
+            ", username='" + username + '\'' +
+            ", passwordHash='" + passwordHash + '\'' +
+            ", firstName='" + firstName + '\'' +
+            ", middleName='" + middleName + '\'' +
+            ", lastName='" + lastName + '\'' +
+            ", nickname='" + nickname + '\'' +
+            ", bio='" + bio + '\'' +
+            ", pronouns='" + pronouns + '\'' +
+            ", email='" + email + '\'' +
+            ", roles='" + roles.toString() + '\'' +
+            '}';
     }
 }

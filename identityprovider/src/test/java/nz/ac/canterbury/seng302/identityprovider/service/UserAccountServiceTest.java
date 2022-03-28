@@ -8,6 +8,7 @@ import static org.mockito.Mockito.verify;
 import io.grpc.stub.StreamObserver;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import nz.ac.canterbury.seng302.identityprovider.database.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.database.UserRepository;
@@ -47,9 +48,9 @@ public class UserAccountServiceTest {
   public void setup() throws NoSuchAlgorithmException, InvalidKeySpecException {
     repository.deleteAll();
 
-    var user1 = new UserModel("u1", passwordService.hashPassword("pass"), "c", "a", "a", "Y", "u1bio", "they/them", "u1@example.com");
-    var user2 = new UserModel("u2", passwordService.hashPassword("pass"), "b", "b", "b", "Z", "u2bio", "he/him", "u2@example.com");
-    var user3 = new UserModel("u3", passwordService.hashPassword("pass"), "a", "c", "c", "X", "u3bio", "she/her", "u3@example.com");
+    var user1 = new UserModel("u1", passwordService.hashPassword("pass"), "c", "a", "a", "Y", "u1bio", "they/them", "u1@example.com", new ArrayList<>());
+    var user2 = new UserModel("u2", passwordService.hashPassword("pass"), "b", "b", "b", "Z", "u2bio", "he/him", "u2@example.com", new ArrayList<>());
+    var user3 = new UserModel("u3", passwordService.hashPassword("pass"), "a", "c", "c", "X", "u3bio", "she/her", "u3@example.com", new ArrayList<>());
 
     repository.saveAll(Arrays.stream(new UserModel[] {user1, user2, user3}).toList());
   }
