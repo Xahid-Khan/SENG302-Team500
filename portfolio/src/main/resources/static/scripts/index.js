@@ -155,7 +155,9 @@ class ProjectView {
     document.getElementById(`project-title-text-${this.project.id}`).innerText = this.project.name;
     document.getElementById(`project-description-${this.project.id}`).innerText = this.project.description;
     document.getElementById(`project-startDate-${this.project.id}`).innerText = DatetimeUtils.localToUserDMY(this.project.startDate);
-    document.getElementById(`project-endDate-${this.project.id}`).innerText = DatetimeUtils.localToUserDMY(this.project.endDate);
+    let displayedDate = new Date(this.project.endDate.valueOf());
+    displayedDate.setDate(displayedDate.getDate()  - 1);
+    document.getElementById(`project-endDate-${this.project.id}`).innerText = DatetimeUtils.localToUserDMY(displayedDate);
 
     this.addSprintButton = document.getElementById(`add-sprint-button-${this.project.id}`);
     this.toggleSprintsButton = document.getElementById(`toggle-sprint-button-${this.project.id}`);
@@ -211,7 +213,7 @@ class ProjectView {
     }
 
     const defaultEndDate = new Date(defaultStartDate.valueOf());
-    defaultEndDate.setDate(defaultEndDate.getDate() + 21);
+    defaultEndDate.setDate(defaultEndDate.getDate() + 22);
 
     const defaultSprint = {
       id: `__NEW_SPRINT_FORM_${this.project.id}`,
@@ -402,7 +404,13 @@ class ProjectOrSprintEditor {
     this.nameInput.value = this.initialData.name ?? "";
     this.descriptionInput.value = this.initialData.description ?? "";
     this.startDateInput.value = (this.initialData.startDate) ? DatetimeUtils.toLocalYMD(this.initialData.startDate) : "";
-    this.endDateInput.value = (this.initialData.endDate) ? DatetimeUtils.toLocalYMD(this.initialData.endDate) : "";
+    if (this.initialData.endDate) {
+      const displayedDate = new Date(this.initialData.endDate.valueOf());
+      displayedDate.setDate(displayedDate.getDate() - 1);
+      this.endDateInput.value = DatetimeUtils.toLocalYMD(displayedDate);
+    } else {
+      this.endDateInput.value = "";
+    }
 
     if (this.initialData.startDate) {
       const startDateHours = DatetimeUtils.getTimeStringIfNonZeroLocally(this.initialData.startDate);
@@ -463,7 +471,9 @@ C   * Gets the end date from user input, otherwise defaults to initial default v
       return this.initialData.endDate ?? null;
     }const rawValue = this.endDateInput.value;
     if (rawValue) {
-      return DatetimeUtils.fromLocalYMD(rawValue);
+      let dayAfter = DatetimeUtils.fromLocalYMD(rawValue);
+      dayAfter.setDate(dayAfter.getDate() + 1);
+      return dayAfter;
     }
     return null;
   }
@@ -625,7 +635,9 @@ class SprintView {
     document.getElementById(`sprint-title-text-${this.sprint.sprintId}`).innerText = this.sprint.name;
     this.description.innerText = this.sprint.description;
     document.getElementById(`start-date-${this.sprint.sprintId}`).innerText = DatetimeUtils.localToUserDMY(this.sprint.startDate);
-    document.getElementById(`end-date-${this.sprint.sprintId}`).innerText = DatetimeUtils.localToUserDMY(this.sprint.endDate);
+    let displayedDate = new Date(this.sprint.endDate.valueOf());
+    displayedDate.setDate(displayedDate.getDate() - 1);
+    document.getElementById(`end-date-${this.sprint.sprintId}`).innerText = DatetimeUtils.localToUserDMY(displayedDate);
   }
 
   /**

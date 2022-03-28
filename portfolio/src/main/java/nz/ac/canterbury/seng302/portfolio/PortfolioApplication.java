@@ -36,7 +36,7 @@ public class PortfolioApplication {
             ProjectEntity defaultProject = new ProjectEntity(projectName,
                     "",
                     LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant(), // toInstant() converts the date to UTC
-                    LocalDate.now().plusMonths(8).atStartOfDay(ZoneId.systemDefault()).toInstant());
+                    LocalDate.now().plusDays(1).plusMonths(8).atStartOfDay(ZoneId.systemDefault()).toInstant());
             projectRepository.save(defaultProject);
         }
     }
