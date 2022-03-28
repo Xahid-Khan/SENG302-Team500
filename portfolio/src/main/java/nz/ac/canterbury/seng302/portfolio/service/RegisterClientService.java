@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.portfolio.service;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import nz.ac.canterbury.seng302.portfolio.DTO.User;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -36,9 +37,10 @@ public class RegisterClientService {
     return registrationStub.register(regRequest);
   }
 
-  public EditUserResponse updateDetails(User user) {
+  public EditUserResponse updateDetails(User user, Integer userId) {
     EditUserRequest regRequest =
             EditUserRequest.newBuilder()
+                    .setUserId(userId)
                     .setFirstName(user.firstName())
                     .setMiddleName(user.middleName())
                     .setLastName(user.lastName())

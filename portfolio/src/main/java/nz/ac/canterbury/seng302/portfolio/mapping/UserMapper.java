@@ -15,7 +15,8 @@ public class UserMapper {
                 userResponse.getUsername(),
                 userResponse.getEmail(),
                 userResponse.getPersonalPronouns(),
-                userResponse.getBio()
+                userResponse.getBio(),
+                userResponse.getCreated()
         );
     }
 }

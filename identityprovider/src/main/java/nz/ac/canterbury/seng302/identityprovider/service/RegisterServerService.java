@@ -1,8 +1,11 @@
 package nz.ac.canterbury.seng302.identityprovider.service;
 
+import com.google.protobuf.Timestamp;
 import io.grpc.stub.StreamObserver;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.time.Instant;
+
 import net.devh.boot.grpc.server.service.GrpcService;
 import nz.ac.canterbury.seng302.identityprovider.database.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.database.UserRepository;
@@ -34,7 +37,6 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
 
     try {
       var passwordHash = passwordService.hashPassword(request.getPassword());
-
       UserModel user =
           new UserModel(
               request.getUsername(),
@@ -45,7 +47,10 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
               request.getNickname(),
               request.getBio(),
               request.getPersonalPronouns(),
-              request.getEmail());
+              request.getEmail(),
+                  Timestamp.newBuilder().setSeconds(Instant.now().getEpochSecond())
+                  .setNanos(Instant.now().getNano()).build()
+              );
 
       // If a username already exists in the database, return an error
       if (repository.findByUsername(request.getUsername()) != null) {
@@ -79,7 +84,6 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
             StreamObserver<EditUserResponse> responseObserver
     ) {
         EditUserResponse.Builder reply = EditUserResponse.newBuilder();
-
         UserModel existingUser = repository.findById(request.getUserId());
         if (existingUser == null) {
             reply
@@ -100,7 +104,9 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
                             request.getNickname(),
                             request.getBio(),
                             request.getPersonalPronouns(),
-                            request.getEmail());
+                            request.getEmail(),
+                            existingUser.getCreated());
+            newUser.setId(request.getUserId());
             repository.save(newUser);
             reply
                     .setIsSuccess(true)

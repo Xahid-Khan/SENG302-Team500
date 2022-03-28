@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import com.google.protobuf.Timestamp;
 import io.grpc.StatusRuntimeException;
 import javax.validation.Valid;
 import nz.ac.canterbury.seng302.portfolio.DTO.User;
@@ -28,7 +29,7 @@ public class RegistrationController {
    */
   @GetMapping(value = "/register")
   public String registerForm(Model model) {
-    model.addAttribute("user", new User("", "", "", "", "", "", "", "", ""));
+    model.addAttribute("user", new User("", "", "", "", "", "", "", "", "", Timestamp.newBuilder().build()));
     return "registration_form";
   }
 
@@ -62,6 +63,6 @@ public class RegistrationController {
       model.addAttribute("registerMessage", "Error connecting to Identity Provider...");
       return "registration_form";
     }
-    return "registered"; // return the template in templates folder
+    return "redirect:/login"; // return the template in templates folder
   }
 }

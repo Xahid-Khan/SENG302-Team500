@@ -34,37 +34,44 @@
                     <div class="form-row">
                         <label th:for="email">Email</label>
                         <input type="email" th:field="*{email}" th:required="required"/>
+                        <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="form-error">Email Error</div>
                     </div>
 
 
                     <div class="form-row">
                         <label th:for="firstName">First Name</label>
                         <input type="text" th:field="*{firstName}" th:required="required"/>
+                        <div th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}" class="form-error">First Name Error</div>
                     </div>
 
                     <div class="form-row">
                         <label th:for="middleName">Middle Name</label>
                         <input type="text" th:field="*{middleName}"/>
+                        <div th:if="${#fields.hasErrors('middleName')}" th:errors="*{middleName}" class="form-error">Middle Name Error</div>
                     </div>
 
                     <div class="form-row">
                         <label th:for="lastName">Last Name</label>
                         <input type="text" th:field="*{lastName}" th:required="required"/>
+                        <div th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}" class="form-error">Last Name Error</div>
                     </div>
 
                     <div class="form-row">
                         <label th:for="nickname">Nickname</label>
                         <input type="text" th:field="*{nickname}"/>
+                        <div th:if="${#fields.hasErrors('nickname')}" th:errors="*{nickname}" class="form-error">Nickname Error</div>
                     </div>
 
                     <div class="form-row">
                         <label th:for="personalPronouns">Personal Pronouns</label>
                         <input type="text" th:field="*{personalPronouns}"/>
+                        <div th:if="${#fields.hasErrors('personalPronouns')}" th:errors="*{personalPronouns}" class="form-error">Pronouns Error</div>
                     </div>
 
                     <div class="form-row">
                         <label th:for="bio">Bio</label>
                         <textarea th:field="*{bio}"></textarea>
+                        <div th:if="${#fields.hasErrors('bio')}" th:errors="*{bio}" class="form-error">Bio Error</div>
                     </div>
 
 

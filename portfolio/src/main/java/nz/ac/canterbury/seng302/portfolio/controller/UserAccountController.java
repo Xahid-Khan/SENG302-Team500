@@ -78,7 +78,8 @@ public class UserAccountController {
                 userResponse.getNickname(),
                 userResponse.getPersonalPronouns(),
                 userResponse.getEmail(),
-                userResponse.getEmail());
+                userResponse.getEmail(),
+                userResponse.getCreated());
     }
 
 }
