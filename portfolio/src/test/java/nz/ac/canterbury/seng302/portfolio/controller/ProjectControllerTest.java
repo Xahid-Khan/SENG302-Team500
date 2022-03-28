@@ -21,12 +21,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-<<<<<<< HEAD
-import org.springframework.test.web.servlet.RequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-
-=======
->>>>>>> U2_T12/registration_backend_field_validation
 import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;

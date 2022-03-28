@@ -6,20 +6,19 @@ import java.security.spec.InvalidKeySpecException;
 import net.devh.boot.grpc.server.service.GrpcService;
 import nz.ac.canterbury.seng302.identityprovider.database.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.database.UserRepository;
-<<<<<<< HEAD
-import nz.ac.canterbury.seng302.shared.identityprovider.*;
-=======
+import nz.ac.canterbury.seng302.shared.identityprovider.GetPaginatedUsersRequest;
+import nz.ac.canterbury.seng302.shared.identityprovider.GetUserByIdRequest;
+import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedUsersResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterRequest;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import nz.ac.canterbury.seng302.shared.util.ValidationError;
->>>>>>> U2_T12/registration_backend_field_validation
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * This gRPC service handles registration from the server side.
- * If the user is valid, it will add it into the UserRepository and return a success. Otherwise an
- *  error will be returned.
+ * This gRPC service handles registration from the server side. If the user is valid, it will add it
+ * into the UserRepository and return a success. Otherwise an error will be returned.
  */
 @GrpcService
 public class RegisterServerService extends UserAccountServiceGrpc.UserAccountServiceImplBase {
@@ -30,9 +29,7 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
 
   @Override
   public void register(
-      UserRegisterRequest request,
-      StreamObserver<UserRegisterResponse> responseObserver
-  ) {
+      UserRegisterRequest request, StreamObserver<UserRegisterResponse> responseObserver) {
     UserRegisterResponse.Builder reply = UserRegisterResponse.newBuilder();
 
     try {
@@ -74,75 +71,74 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
       e.printStackTrace();
       responseObserver.onError(e);
     }
-<<<<<<< HEAD
+  }
 
+  /**
+   * This is a GRPC user serivce method that is beign over-ridden to get the user details and encase
+   * them into a User Response body. if the user is not found the User response is set to null
+   *
+   * @param request
+   * @param responseObserver
+   */
+  @Override
+  public void getUserAccountById(
+      GetUserByIdRequest request, StreamObserver<UserResponse> responseObserver) {
+    UserResponse.Builder reply = UserResponse.newBuilder();
+    int userId = request.getId();
+    var userFound = repository.findById(userId);
+    if (userFound != null) {
+      reply
+          .setFirstName(userFound.getFirstName())
+          .setMiddleName(userFound.getMiddleName())
+          .setLastName(userFound.getLastName())
+          .setBio(userFound.getBio())
+          .setUsername(userFound.getUsername())
+          .setPersonalPronouns(userFound.getPronouns())
+          .setEmail(userFound.getEmail())
+          .setNickname(userFound.getNickname());
 
-    /**
-     * This is a GRPC user serivce method that is beign over-ridden to get the user details and encase them into a User Response
-     * body. if the user is not found the User response is set to null
-     * @param request
-     * @param responseObserver
-     */
-    @Override
-    public void getUserAccountById(GetUserByIdRequest request, StreamObserver<UserResponse> responseObserver) {
-        UserResponse.Builder reply = UserResponse.newBuilder();
-        int userId = request.getId();
-        var userFound = repository.findById(userId);
-        if (userFound != null) {
-            reply.setFirstName(userFound.getFirstName())
-                    .setMiddleName(userFound.getMiddleName())
-                    .setLastName(userFound.getLastName())
-                    .setBio(userFound.getBio())
-                    .setUsername(userFound.getUsername())
-                    .setPersonalPronouns(userFound.getPronouns())
-                    .setEmail(userFound.getEmail())
-                    .setNickname(userFound.getNickname());
-
-            responseObserver.onNext(reply.build());
-            responseObserver.onCompleted();
-        }
-        else {
-            responseObserver.onNext(null);
-            responseObserver.onCompleted();
-        }
+      responseObserver.onNext(reply.build());
+      responseObserver.onCompleted();
+    } else {
+      responseObserver.onNext(null);
+      responseObserver.onCompleted();
     }
+  }
 
-
-    /**
-     * Skeleton for pagination -
-     * @param request
-     * @param responseObserver
-     */
-    @Override
-    public void getPaginatedUsers(GetPaginatedUsersRequest request, StreamObserver<PaginatedUsersResponse> responseObserver) {
-        PaginatedUsersResponse.Builder reply = PaginatedUsersResponse.newBuilder();
-        Iterable<UserModel> userList = repository.findAll();
-        if (userList != null) {
-            for (UserModel user : userList) {
-                UserResponse.Builder subUser = UserResponse.newBuilder();
-                subUser.setFirstName(user.getFirstName())
-                        .setMiddleName(user.getMiddleName())
-                        .setLastName(user.getLastName())
-                        .setBio(user.getBio())
-                        .setUsername(user.getUsername())
-                        .setPersonalPronouns(user.getPronouns())
-                        .setEmail(user.getEmail())
-                        .setNickname(user.getNickname());
-                reply.addUsers(subUser);
-            }
-            responseObserver.onNext(reply.build());
-            responseObserver.onCompleted();
-        } else {
-            responseObserver.onNext(null);
-            responseObserver.onCompleted();
-        }
-
+  /**
+   * Skeleton for pagination -
+   *
+   * @param request
+   * @param responseObserver
+   */
+  @Override
+  public void getPaginatedUsers(
+      GetPaginatedUsersRequest request, StreamObserver<PaginatedUsersResponse> responseObserver) {
+    PaginatedUsersResponse.Builder reply = PaginatedUsersResponse.newBuilder();
+    Iterable<UserModel> userList = repository.findAll();
+    if (userList != null) {
+      for (UserModel user : userList) {
+        UserResponse.Builder subUser = UserResponse.newBuilder();
+        subUser
+            .setFirstName(user.getFirstName())
+            .setMiddleName(user.getMiddleName())
+            .setLastName(user.getLastName())
+            .setBio(user.getBio())
+            .setUsername(user.getUsername())
+            .setPersonalPronouns(user.getPronouns())
+            .setEmail(user.getEmail())
+            .setNickname(user.getNickname());
+        reply.addUsers(subUser);
+      }
+      responseObserver.onNext(reply.build());
+      responseObserver.onCompleted();
+    } else {
+      responseObserver.onNext(null);
+      responseObserver.onCompleted();
     }
-=======
   }
 
   public UserRepository getRepository() {
     return repository;
   }
->>>>>>> U2_T12/registration_backend_field_validation
 }

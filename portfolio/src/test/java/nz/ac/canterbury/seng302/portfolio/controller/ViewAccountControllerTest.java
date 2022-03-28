@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.grpc.stub.StreamObserver;
+import nz.ac.canterbury.seng302.portfolio.DTO.User;
 import nz.ac.canterbury.seng302.portfolio.model.contract.UserContract;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.GetUserByIdRequest;
@@ -36,9 +37,9 @@ public class ViewAccountControllerTest {
     private  UserRegisterResponse newUser;
     @BeforeEach
     public void addNewUser() throws Exception {
-         newUser = registerClientService.register("SomeUserName", "thisisMypassWord", "MyFirst Name",
+         newUser = registerClientService.register(new User("SomeUserName", "thisisMypassWord", "MyFirst Name",
                 "MyMiddle Name", "MyLast Name", "Name", "THis is a mock profile", "Mr.",
-                "thisisanemail@fakeemail.com");
+                "thisisanemail@fakeemail.com"));
     }
 
     @Test
