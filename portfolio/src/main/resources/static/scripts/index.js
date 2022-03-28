@@ -19,8 +19,7 @@ function leftPadNumber(number, places) {
 
 class DatetimeUtils {
   static networkStringToLocalDate(utcString) {
-    let LocalDate = new Date(Date.parse(utcString));
-    return LocalDate;
+    return new Date(Date.parse(utcString))
   }
 
   static localToNetworkString(localDate) {
@@ -155,7 +154,7 @@ class ProjectView {
     document.getElementById(`project-title-text-${this.project.id}`).innerText = this.project.name;
     document.getElementById(`project-description-${this.project.id}`).innerText = this.project.description;
     document.getElementById(`project-startDate-${this.project.id}`).innerText = DatetimeUtils.localToUserDMY(this.project.startDate);
-    let displayedDate = new Date(this.project.endDate.valueOf());
+    const displayedDate = new Date(this.project.endDate.valueOf());
     displayedDate.setDate(displayedDate.getDate()  - 1);
     document.getElementById(`project-endDate-${this.project.id}`).innerText = DatetimeUtils.localToUserDMY(displayedDate);
 
