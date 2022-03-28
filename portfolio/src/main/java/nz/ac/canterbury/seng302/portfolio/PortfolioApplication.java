@@ -3,14 +3,14 @@ package nz.ac.canterbury.seng302.portfolio;
 import com.google.type.DateTime;
 import nz.ac.canterbury.seng302.portfolio.model.entity.ProjectEntity;
 import nz.ac.canterbury.seng302.portfolio.repository.ProjectRepository;
+import org.apache.tomcat.jni.Local;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 
-import java.time.Instant;
-import java.time.LocalDate;
+import java.time.*;
 
 @SpringBootApplication
 public class PortfolioApplication {
@@ -35,10 +35,12 @@ public class PortfolioApplication {
             System.out.println(projectName);
             ProjectEntity defaultProject = new ProjectEntity(projectName,
                     "",
-                    Instant.now(),
-                    Instant.parse(LocalDate.now().plusMonths(8).atStartOfDay().toString() + ":00.00Z"));
+                    LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant(), // toInstant() converts the date to UTC
+                    LocalDate.now().plusDays(1).plusMonths(8).atStartOfDay(ZoneId.systemDefault()).toInstant());
             projectRepository.save(defaultProject);
         }
     }
 
 }
+
+

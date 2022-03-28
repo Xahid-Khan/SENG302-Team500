@@ -17,13 +17,7 @@ public class UserListController {
             @AuthenticationPrincipal AuthState principal,
             Model model
     ) {
-        User user = new User();
-        user.setUsername("usrnm");
-        user.setFirstName("joe");
-        user.setLastName("mama");
-        user.setNickname("nick");
         ArrayList<User> users = new ArrayList<>();
-        users.add(user);
         model.addAttribute("users", users);
         return "user_list";
     }
