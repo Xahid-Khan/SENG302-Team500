@@ -1,7 +1,11 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import com.google.protobuf.Timestamp;
 import io.grpc.StatusRuntimeException;
 import javax.validation.Valid;
+
+import nz.ac.canterbury.seng302.portfolio.DTO.EditedUserValidation;
+import nz.ac.canterbury.seng302.portfolio.DTO.RegisteredUserValidation;
 import nz.ac.canterbury.seng302.portfolio.DTO.User;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
@@ -9,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -48,7 +53,7 @@ public class RegistrationController {
    */
   @PostMapping("/register")
   public String register(
-      @ModelAttribute @Valid User user, BindingResult bindingResult, Model model) {
+          @ModelAttribute @Validated(RegisteredUserValidation.class) User user, BindingResult bindingResult, Model model) {
     // If there are errors in the validation of the user, display them
     if (bindingResult.hasErrors()) {
       return "registration_form";
@@ -64,4 +69,5 @@ public class RegistrationController {
     }
     return "registered"; // return the template in templates folder
   }
+
 }

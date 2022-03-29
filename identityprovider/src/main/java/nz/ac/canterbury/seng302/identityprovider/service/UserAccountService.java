@@ -3,92 +3,41 @@ package nz.ac.canterbury.seng302.identityprovider.service;
 import io.grpc.stub.StreamObserver;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
-import javax.persistence.Query;
 import net.devh.boot.grpc.server.service.GrpcService;
-import nz.ac.canterbury.seng302.identityprovider.database.UserModel;
-import nz.ac.canterbury.seng302.identityprovider.database.UserRepository;
-import nz.ac.canterbury.seng302.identityprovider.mapping.UserMapper;
-import nz.ac.canterbury.seng302.shared.identityprovider.GetPaginatedUsersRequest;
-import nz.ac.canterbury.seng302.shared.identityprovider.GetUserByIdRequest;
-import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedUsersResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterRequest;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
-import nz.ac.canterbury.seng302.shared.util.ValidationError;
-import org.hibernate.Criteria;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
+import nz.ac.canterbury.seng302.identityprovider.exceptions.IrremovableRoleException;
+import nz.ac.canterbury.seng302.identityprovider.exceptions.UserDoesNotExistException;
+import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * This gRPC service handles registration from the server side. If the user is valid, it will add it
- * into the UserRepository and return a success. Otherwise an error will be returned.
+ * This base service contains multiple other services, and is used as a hub so GRPC does not
+ * complain about multiple services extending UserAccountServiceGrpc.UserAccountServiceImplBase.
  */
 @GrpcService
 public class UserAccountService extends UserAccountServiceGrpc.UserAccountServiceImplBase {
-  private static HashSet<String> validOrderByFieldNames = new HashSet<String>(
-      List.of(new String[]{"name", "username", "nickname", "roles"}));
 
-  @Autowired private UserRepository repository;
+  @Autowired private RegisterServerService registerServerService;
 
-  @Autowired private PasswordService passwordService;
+  @Autowired private GetUserService getUserService;
 
-  @Autowired
-  private SessionFactory sessionFactory;
+  @Autowired private RoleService roleService;
 
-  @Autowired
-  private UserMapper userMapper;
+  @Autowired private EditUserService editUserService;
 
+  /**
+   * This is a GRPC user service method that is being over-ridden to register a user and return
+   * a UserRegisterRequest
+   *
+   * @param request parameters from the caller
+   * @param responseObserver to receive results or errors
+   */
   @Override
   public void register(
       UserRegisterRequest request, StreamObserver<UserRegisterResponse> responseObserver) {
-    UserRegisterResponse.Builder reply = UserRegisterResponse.newBuilder();
-
     try {
-      var passwordHash = passwordService.hashPassword(request.getPassword());
+      var response = registerServerService.register(request);
 
-      UserModel user =
-          new UserModel(
-              request.getUsername(),
-              passwordHash,
-              request.getFirstName(),
-              request.getMiddleName(),
-              request.getLastName(),
-              request.getNickname(),
-              request.getBio(),
-              request.getPersonalPronouns(),
-              request.getEmail(),
-              new ArrayList<>()
-          );
-
-      // If a username already exists in the database, return an error
-      if (repository.findByUsername(request.getUsername()) != null) {
-        reply
-            .setIsSuccess(false)
-            .setNewUserId(-1)
-            .setMessage("Error: Username in use")
-            .addValidationErrors(
-                ValidationError.newBuilder()
-                    .setFieldName("username")
-                    .setErrorText("Error: Username in use"));
-      } else {
-        repository.save(user);
-        reply
-            .setIsSuccess(true)
-            .setNewUserId(user.getId())
-            .setMessage("Registered new user: " + user);
-      }
-
-      responseObserver.onNext(reply.build());
+      responseObserver.onNext(response);
       responseObserver.onCompleted();
     } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
       e.printStackTrace();
@@ -97,22 +46,42 @@ public class UserAccountService extends UserAccountServiceGrpc.UserAccountServic
   }
 
   /**
-   * This is a GRPC user serivce method that is beign over-ridden to get the user details and encase
+   * This is a GRPC user service method that is being over-ridden to edit the users details and return
+   *    * a EditUserResponse
+   *
+   * @param request parameters from the caller
+   * @param responseObserver to receive results or errors
+   */
+  @Override
+  public void editUser(EditUserRequest request, StreamObserver<EditUserResponse> responseObserver) {
+    try {
+      var res = editUserService.editUser(request, responseObserver);
+
+      responseObserver.onNext(res);
+      responseObserver.onCompleted();
+    } catch (Exception e) {
+      e.printStackTrace();
+      responseObserver.onError(e);
+    }
+  }
+
+  /**
+   * This is a GRPC user service method that is being over-ridden to get the user details and encase
    * them into a User Response body. if the user is not found the User response is set to null
    *
-   * @param request
-   * @param responseObserver
+   * @param request parameters from the caller
+   * @param responseObserver to receive results or errors
    */
   @Override
   public void getUserAccountById(GetUserByIdRequest request, StreamObserver<UserResponse> responseObserver) {
-    int userId = request.getId();
-    var userFound = repository.findById(userId);
-    if (userFound != null) {
-      responseObserver.onNext(userMapper.toUserResponse(userFound));
+    try {
+      var res = getUserService.getUserAccountById(request);
+
+      responseObserver.onNext(res);
       responseObserver.onCompleted();
-    } else {
-      responseObserver.onNext(null);
-      responseObserver.onCompleted();
+    } catch (Exception e) {
+      e.printStackTrace();
+      responseObserver.onError(e);
     }
   }
 
@@ -195,14 +164,51 @@ public class UserAccountService extends UserAccountServiceGrpc.UserAccountServic
 
       responseObserver.onNext(response);
       responseObserver.onCompleted();
-    }
-    catch (Exception e) {
+    } catch (UserDoesNotExistException e) {
+      e.printStackTrace();
       responseObserver.onError(e);
-      responseObserver.onCompleted();
     }
   }
 
-  public UserRepository getRepository() {
-    return repository;
+  /**
+   * Adds a role to the user if the user does not already have the role.
+   *
+   * @param modificationRequest the modification request for the role
+   * @param responseObserver to receive results or errors
+   */
+  @Override
+  public void addRoleToUser(
+      ModifyRoleOfUserRequest modificationRequest,
+      StreamObserver<UserRoleChangeResponse> responseObserver) {
+    try {
+      var response = roleService.addRoleToUser(modificationRequest);
+
+      responseObserver.onNext(response);
+      responseObserver.onCompleted();
+    } catch (UserDoesNotExistException e) {
+      e.printStackTrace();
+      responseObserver.onError(e);
+    }
+  }
+
+  /**
+   * Removes a role to the user if the user does not already have the role.
+   *
+   * @param modificationRequest The modification request for the role
+   * @param responseObserver to receive results or errors
+   */
+  @Override
+  public void removeRoleFromUser(
+      ModifyRoleOfUserRequest modificationRequest,
+      StreamObserver<UserRoleChangeResponse> responseObserver) {
+    try {
+      var response = roleService.removeRoleFromUser(modificationRequest);
+
+      responseObserver.onNext(response);
+      responseObserver.onCompleted();
+    } catch (UserDoesNotExistException | IrremovableRoleException e) {
+      e.printStackTrace();
+      responseObserver.onError(e);
+    }
   }
 }

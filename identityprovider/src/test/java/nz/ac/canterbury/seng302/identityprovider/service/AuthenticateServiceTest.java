@@ -6,6 +6,7 @@ import nz.ac.canterbury.seng302.identityprovider.database.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.database.UserRepository;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticateRequest;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticateResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -15,6 +16,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -35,8 +38,10 @@ public class AuthenticateServiceTest {
     @BeforeAll
     void createUsers() {
         try {
-            UserModel user1 = new UserModel("a", passwordService.hashPassword("password"), "a", "", "a", "", "", "", "a@a", new ArrayList<>());
-            UserModel user2 = new UserModel("b", passwordService.hashPassword("password"), "b", "", "b", "", "", "", "b@b", new ArrayList<>());
+            List<UserRole> roles = new ArrayList<>();
+            roles.add(UserRole.STUDENT);
+            UserModel user1 = new UserModel("a", passwordService.hashPassword("password"), "a", "", "a", "", "", "", "a@a", roles);
+            UserModel user2 = new UserModel("b", passwordService.hashPassword("password"), "b", "", "b", "", "", "", "b@b", roles);
             repository.save(user1);
             repository.save(user2);
         }catch(Exception e){

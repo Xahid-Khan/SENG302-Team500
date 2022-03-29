@@ -58,8 +58,8 @@ class RegistrationControllerTest {
         + user.lastName()
         + "&nickname="
         + user.nickname()
-        + "&pronouns="
-        + user.pronouns()
+        + "&personalPronouns="
+        + user.personalPronouns()
         + "&bio="
         + user.bio()
         + "&register=0";
@@ -242,8 +242,8 @@ class RegistrationControllerTest {
   @CsvSource({
     "'',Middle Names,LastName",
     "FirstName,Middle Names,''",
-    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA,Middle Names,LastName",
-    "FirstName,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA,LastName",
+    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA,Middle Names,LastName",
+    "FirstName,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA,LastName",
     "FirstName,Middle Names,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
   })
   void registerInvalidNames(String firstName, String middleNames, String lastName) throws Exception {
@@ -298,19 +298,19 @@ class RegistrationControllerTest {
 
   /**
    * Tests (in order): <br>
-   *  Invalid nickname (too long), valid bio, valid pronouns <br>
-   *  Valid nickname, invalid bio (too long), valid pronouns <br>
-   *  Valid nickname, valid bio, invalid pronouns (too long) <br>
+   *  Invalid nickname (too long), valid bio, valid personalPronouns <br>
+   *  Valid nickname, invalid bio (too long), valid personalPronouns <br>
+   *  Valid nickname, valid bio, invalid personalPronouns (too long) <br>
    *
    * @throws Exception if perform fails for some reason
    */
   @ParameterizedTest
   @CsvSource({
-      "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA,bio,pronouns",
-      "nickname,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA,pronouns",
+      "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA,bio,personalPronouns",
+      "nickname,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA,personalPronouns",
       "nickname,bio,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
   })
-  void registerInvalidAdditionalInfo(String nickname, String bio, String pronouns) throws Exception {
+  void registerInvalidAdditionalInfo(String nickname, String bio, String personalPronouns) throws Exception {
     var user =
         new User(
             "Username",
@@ -320,7 +320,7 @@ class RegistrationControllerTest {
             "lastName",
             nickname,
             bio,
-            pronouns,
+            personalPronouns,
             "email%40email.com");
 
     var result = submitRegistration(user);
@@ -330,25 +330,25 @@ class RegistrationControllerTest {
 
   /**
    * Tests (in order): <br>
-   *  Empty nickname, valid bio, valid pronouns <br>
-   *  Valid nickname, empty bio, valid pronouns <br>
-   *  Valid nickname, valid bio, empty pronouns <br>
-   *  Size 32 nickname, valid bio, valid pronouns <br>
-   *  Valid nickname, size 512 bio, valid pronouns <br>
-   *  Valid nickname, valid bio, size 50 pronouns <br>
+   *  Empty nickname, valid bio, valid personalPronouns <br>
+   *  Valid nickname, empty bio, valid personalPronouns <br>
+   *  Valid nickname, valid bio, empty personalPronouns <br>
+   *  Size 32 nickname, valid bio, valid personalPronouns <br>
+   *  Valid nickname, size 512 bio, valid personalPronouns <br>
+   *  Valid nickname, valid bio, size 50 personalPronouns <br>
    *
    * @throws Exception if perform fails for some reason
    */
   @ParameterizedTest
   @CsvSource({
-      "'',bio,pronouns",
-      "nickname,'',pronouns",
+      "'',bio,personalPronouns",
+      "nickname,'',personalPronouns",
       "nickname,bio,''",
-      "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA,bio,pronouns",
-      "nickname,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA,pronouns",
+      "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA,bio,personalPronouns",
+      "nickname,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA,personalPronouns",
       "nickname,bio,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
   })
-  void registerBoundaryAdditionalInfo(String nickname, String bio, String pronouns) throws Exception {
+  void registerBoundaryAdditionalInfo(String nickname, String bio, String personalPronouns) throws Exception {
     var user =
         new User(
             "Username",
@@ -358,7 +358,7 @@ class RegistrationControllerTest {
             "lastName",
             nickname,
             bio,
-            pronouns,
+            personalPronouns,
             "email%40email.com");
 
     var result = submitRegistration(user);
@@ -381,7 +381,7 @@ class RegistrationControllerTest {
             "lastName",
             "nickname",
             "bio",
-            "pronouns",
+            "personalPronouns",
             "");
 
     var result = submitRegistration(user);

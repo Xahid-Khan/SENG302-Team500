@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
 import nz.ac.canterbury.seng302.portfolio.service.GreeterClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
@@ -18,6 +19,9 @@ public class GreeterController {
     @Autowired
     private GreeterClientService greeterClientService;
 
+    @Autowired
+    private AuthStateService authStateService;
+
     @GetMapping("/greeting")
     public String greeting(
             @AuthenticationPrincipal AuthState principal,
@@ -28,18 +32,9 @@ public class GreeterController {
         String idpMessage = greeterClientService.receiveGreeting(favouriteColour);
         model.addAttribute("idpMessage", idpMessage);
 
-        // Below code is just begging to be added as a method somewhere...
-        String role = principal.getClaimsList().stream()
-                .filter(claim -> claim.getType().equals("role"))
-                .findFirst()
-                .map(ClaimDTO::getValue)
-                .orElse("NOT FOUND");
+        String role = authStateService.getRole(principal);
 
-        Integer id = Integer.valueOf(principal.getClaimsList().stream()
-                .filter(claim -> claim.getType().equals("nameid"))
-                .findFirst()
-                .map(ClaimDTO::getValue)
-                .orElse("-100"));
+        Integer id = authStateService.getId(principal);
 
         // Generate our own message, based on the information we have available to us
         String portfolioMessage = String.format(
