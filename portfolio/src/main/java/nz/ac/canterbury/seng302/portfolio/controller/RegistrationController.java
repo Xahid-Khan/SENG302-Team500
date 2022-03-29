@@ -1,43 +1,73 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import com.google.protobuf.Timestamp;
 import io.grpc.StatusRuntimeException;
+import javax.validation.Valid;
+
+import nz.ac.canterbury.seng302.portfolio.DTO.EditedUserValidation;
+import nz.ac.canterbury.seng302.portfolio.DTO.RegisteredUserValidation;
+import nz.ac.canterbury.seng302.portfolio.DTO.User;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-//import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import nz.ac.canterbury.seng302.portfolio.DTO.User;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 
+/**
+ * Handles the /register endpoint for either GET requests or POST requests.
+ */
 @Controller
 public class RegistrationController {
 
-    //
-    @GetMapping(value = "/register")//Mapped to GET
-    public String registerForm(Model model) { //model turns the view into a thymeleaf object
-        model.addAttribute("user", new User());//creates the DTO object which captures the inpuitd
-        return "registration_form"; //returns the view which renders the HTML content
+  /**
+   * Calling the /register endpoint with a GET request will return the user a form to fill out for
+   * registration.
+   *
+   * @param model Adds a blank user for the user to fill in
+   * @return      The registration_form thymeleaf page
+   */
+  @GetMapping(value = "/register")
+  public String registerForm(Model model) {
+    model.addAttribute("user", new User("", "", "", "", "", "", "", "", ""));
+    return "registration_form";
+  }
+
+  @Autowired private RegisterClientService registerClientService;
+
+  /**
+   * Calling the /register endpoint with a POST request will validate the user, and send the user to
+   *  the RegisterClientService to be sent up for database validation and saving. If an error occurs
+   *  along the way, it will be caught here. If all is successful, the registered thymeleaf page
+   *  will be loaded.
+   *
+   * @param user            The user passed to the controller
+   * @param bindingResult   The result of validation on the user
+   * @param model           The model to update for errors for thymeleaf
+   * @return                The registration_form thymeleaf page if unsuccessful,
+   *     the registered thymeleaf page otherwise.
+   */
+  @PostMapping("/register")
+  public String register(
+          @ModelAttribute @Validated(RegisteredUserValidation.class) User user, BindingResult bindingResult, Model model) {
+    // If there are errors in the validation of the user, display them
+    if (bindingResult.hasErrors()) {
+      return "registration_form";
     }
 
-
-    @Autowired
-    private RegisterClientService registerClientService;
-
-    @PostMapping("/register")//set path
-    public String register(
-            @ModelAttribute User user,  Model model
-    ){//return data to the view using model
-        UserRegisterResponse registerReply;
-        try {
-            registerReply = registerClientService.register(user.getUsername(), user.getPassword(), user.getFirstName(), user.getMiddleName(), user.getLastName(),
-                    user.getNickname(), user.getBio(), user.getPronouns(), user.getEmail());
-        } catch (StatusRuntimeException e){
-            model.addAttribute("registerMessage", "Error connecting to Identity Provider...");
-            return "registration_form";
-
-        }
-        model.addAttribute("registerMessage",registerReply.getMessage());//add data to the model
-        return "registered";//return the template in templates folder
+    UserRegisterResponse registerReply;
+    try {
+      registerReply = registerClientService.register(user);
+      model.addAttribute("registerMessage", registerReply.getMessage());
+    } catch (StatusRuntimeException e) {
+      model.addAttribute("registerMessage", "Error connecting to Identity Provider...");
+      return "registration_form";
     }
+    return "registered"; // return the template in templates folder
+  }
+
 }

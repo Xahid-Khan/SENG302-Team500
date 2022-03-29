@@ -31,7 +31,7 @@ public class LoginController {
      * @return      The login_form.html page // TODO: Change to login.html?
      */
     @GetMapping(value = "/login")//Mapped to GET
-    public String registerForm(
+    public String login(
             @RequestParam(name="error", required=false) String error,
             Model model
     ) {
@@ -92,7 +92,7 @@ public class LoginController {
             );
             // Redirect user if login succeeds
             redirectAttributes.addFlashAttribute("message", "Successfully logged in.");
-            return "redirect:/greeting";
+            return "redirect:/my_account";
         }
 
         model.addAttribute("error", loginReply.getMessage());
