@@ -576,6 +576,12 @@ class ProjectOrSprintEditor {
 
   static makeProjectProjectDatesValidator(project) {
     return (startDate, endDate) => {
+      let date = new Date();
+      date.setFullYear( date.getFullYear() - 1 );
+      if (date > startDate) {
+        return "Project cannot start more than a year ago"
+      }
+
       for (const sprint of project.sprints.values()) {
         // Taken from: https://stackoverflow.com/a/325964
         if (startDate <= sprint.endDate && endDate >= sprint.startDate) {

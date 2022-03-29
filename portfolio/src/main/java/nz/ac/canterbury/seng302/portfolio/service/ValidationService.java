@@ -35,11 +35,7 @@ public class ValidationService {
             return type + " name must not be empty";
         }
         if (name.trim().equals("")) {
-            return type + " name must not contain only whitespaces"; // TODO might need a check for trailing whitespaces
-        }
-
-        if (!name.matches("[A-Za-z0-9 _ -]*")) {
-            return type + " name cannot contain any special characters"; // Needs to be checked with frontend
+            return type + " name must not contain only whitespaces";
         }
 
         if (end.isBefore(start)) {
