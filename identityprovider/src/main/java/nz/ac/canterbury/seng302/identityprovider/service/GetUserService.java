@@ -1,18 +1,35 @@
 package nz.ac.canterbury.seng302.identityprovider.service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import javax.persistence.Query;
 import nz.ac.canterbury.seng302.identityprovider.database.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.database.UserRepository;
+import nz.ac.canterbury.seng302.identityprovider.mapping.UserMapper;
 import nz.ac.canterbury.seng302.shared.identityprovider.GetPaginatedUsersRequest;
 import nz.ac.canterbury.seng302.shared.identityprovider.GetUserByIdRequest;
 import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedUsersResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class GetUserService {
+  private static HashSet<String> validOrderByFieldNames = new HashSet<String>(
+      List.of(new String[]{"name", "username", "nickname", "roles"}));
 
   @Autowired private UserRepository repository;
+
+  @Autowired private UserMapper userMapper;
+
+  @Autowired private SessionFactory sessionFactory;
+
 
   /**
    * This is a GRPC user serivce method that is beign over-ridden to get the user details and encase
@@ -21,7 +38,7 @@ public class GetUserService {
    * @param request the request containing the user ID to get
    * @return a UserResponse with the correct information if found
    */
-  public void getUserAccountById(GetUserByIdRequest request) {
+  public UserResponse getUserAccountById(GetUserByIdRequest request) {
     int userId = request.getId();
     var userFound = repository.findById(userId);
     return userFound != null ? userMapper.toUserResponse(userFound) : null;
@@ -35,8 +52,7 @@ public class GetUserService {
    * @param request parameters from the caller
    * @return a PaginatedUsersResponse filled in
    */
-  @Override
-  public void getPaginatedUsers(GetPaginatedUsersRequest request) throws Exception {
+  public PaginatedUsersResponse getPaginatedUsers(GetPaginatedUsersRequest request) throws Exception {
     var orderByField = request.getOrderBy();
     var limit = request.getLimit();
     var offset = request.getOffset();
