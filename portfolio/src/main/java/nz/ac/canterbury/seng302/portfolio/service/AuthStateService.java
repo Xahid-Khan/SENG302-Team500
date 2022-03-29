@@ -4,13 +4,24 @@ import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import org.springframework.stereotype.Service;
 
+/**
+ * A Service that takes in AuthState objects and returns fields from inside them
+ */
 @Service
 public class AuthStateService {
 
+    /**
+     * The user's id from this AuthState
+     * @return The user's id from this AuthState
+     */
     public Integer getId(AuthState authState){
         return Integer.valueOf(getClaimByType(authState, "nameid", "-100"));
     }
 
+    /**
+     * The user's role from this AuthState
+     * @return The user's role from this AuthState
+     */
     public String getRole(AuthState authState){
         return getClaimByType(authState, "role", "NOT FOUND");
     }
