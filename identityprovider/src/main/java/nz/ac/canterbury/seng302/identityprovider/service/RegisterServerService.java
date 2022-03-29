@@ -46,7 +46,7 @@ public class RegisterServerService {
                         request.getEmail(),
                         roles);
         repository.save(user);
-        reply.setIsSuccess(true).setNewUserId(user.getId()).setMessage("registered new user: " + user);
+        reply.setIsSuccess(true).setNewUserId(user.getId()).setMessage("Registered new user: " + user);
 
         return reply.build();
     }
