@@ -59,6 +59,15 @@ public class UserListController {
         model.addAttribute("users", response.getUsersList());
         model.addAttribute("totalUserCount", response.getResultSetSize());
         model.addAttribute("pageOffset", offset);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("sortDir", ascending);
+        model.addAttribute("sortBy", sortAttributeString);
+        model.addAttribute("urlFormatter", this);
+        model.addAttribute("pageSize", PAGE_SIZE);
         return "user_list";
+    }
+
+    public String formatUrl(int page, String sortBy, boolean sortDir) {
+        return String.format("?page=%d&sortBy=%s&asc=%b", page, sortBy, sortDir);
     }
 }
