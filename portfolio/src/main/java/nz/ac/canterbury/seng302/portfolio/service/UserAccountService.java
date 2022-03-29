@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.service;;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import nz.ac.canterbury.seng302.portfolio.mapping.UserMapper;
+import nz.ac.canterbury.seng302.portfolio.model.GetPaginatedUsersOrderingElement;
 import nz.ac.canterbury.seng302.portfolio.model.contract.UserContract;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Service;
  */
 
 @Service
-public class ViewAccountService {
+public class UserAccountService {
 
     @GrpcClient("identity-provider-grpc-server")
     private UserAccountServiceGrpc.UserAccountServiceBlockingStub userAccountServiceBlockingStub;
@@ -37,13 +38,26 @@ public class ViewAccountService {
         }
     }
 
-
     /**
-     * Skeleton -
-     * @return
+     * Retrieve a window into a list of all users, sorted into a given order.
+     *
+     * @param offset number of users to skip before opening the window
+     * @param limit maximum number of users to include in the window
+     * @param orderBy parameter of a user to order the list by
+     * @return list of users within the window and the total number of users available
      */
-    public PaginatedUsersResponse getAllUsers() {
-        GetPaginatedUsersRequest allUsers = GetPaginatedUsersRequest.newBuilder().build();
+    public PaginatedUsersResponse getPaginatedUsers(int offset, int limit, GetPaginatedUsersOrderingElement orderBy) {
+        GetPaginatedUsersRequest allUsers = GetPaginatedUsersRequest.newBuilder()
+            .setOffset(offset)
+            .setLimit(limit)
+            .setOrderBy(switch (orderBy) {
+                case NAME -> "name";
+                case NICKNAME -> "nickname";
+                case USERNAME -> "username";
+                case ROLES -> "roles";
+            })
+            .build();
+
         return userAccountServiceBlockingStub.getPaginatedUsers(allUsers);
     }
 

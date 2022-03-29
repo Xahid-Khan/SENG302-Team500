@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.identityprovider.service;
 
 import io.grpc.stub.StreamObserver;
+import java.util.ArrayList;
 import nz.ac.canterbury.seng302.identityprovider.database.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.database.UserRepository;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticateRequest;
@@ -19,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
-@AutoConfigureMockMvc(addFilters = false)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class AuthenticateServiceTest {
 
@@ -35,8 +35,8 @@ public class AuthenticateServiceTest {
     @BeforeAll
     void createUsers() {
         try {
-            UserModel user1 = new UserModel("a", passwordService.hashPassword("password"), "a", "", "a", "", "", "", "a@a");
-            UserModel user2 = new UserModel("b", passwordService.hashPassword("password"), "b", "", "b", "", "", "", "b@b");
+            UserModel user1 = new UserModel("a", passwordService.hashPassword("password"), "a", "", "a", "", "", "", "a@a", new ArrayList<>());
+            UserModel user2 = new UserModel("b", passwordService.hashPassword("password"), "b", "", "b", "", "", "", "b@b", new ArrayList<>());
             repository.save(user1);
             repository.save(user2);
         }catch(Exception e){

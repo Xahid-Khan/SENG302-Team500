@@ -2,7 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 
 import nz.ac.canterbury.seng302.portfolio.model.contract.UserContract;
-import nz.ac.canterbury.seng302.portfolio.service.ViewAccountService;
+import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ViewAccountController {
 
     @Autowired
-    private ViewAccountService viewAccountService;
+    private UserAccountService userAccountService;
 
     /**
      * This method will be invoked when API receives a GET request with User ID embedded in the URL.
@@ -31,7 +31,7 @@ public class ViewAccountController {
      */
     @GetMapping(value = "/account/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserContract> getUserById(@PathVariable int userId) {
-        var userById = viewAccountService.getUserById(userId);
+        var userById = userAccountService.getUserById(userId);
         if (userById != null) {
             return ResponseEntity.ok(userById);
         } else {
