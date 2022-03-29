@@ -49,7 +49,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(WebSecurity web) throws Exception
     {
-        web.ignoring().antMatchers("/login", "/register")
+        web.ignoring().antMatchers("/login", "/register","my_account","/edit_account")
             .and().ignoring().antMatchers("/api/*").anyRequest();
     }
 }

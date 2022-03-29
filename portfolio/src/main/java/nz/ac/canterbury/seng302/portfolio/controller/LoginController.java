@@ -92,7 +92,7 @@ public class LoginController {
             );
             // Redirect user if login succeeds
             redirectAttributes.addFlashAttribute("message", "Successfully logged in.");
-            return "redirect:/greeting";
+            return "redirect:/my_account";
         }
 
         model.addAttribute("error", loginReply.getMessage());

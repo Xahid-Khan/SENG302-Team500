@@ -2,9 +2,8 @@ package nz.ac.canterbury.seng302.portfolio.service;
 
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import nz.ac.canterbury.seng302.portfolio.DTO.User;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterRequest;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -32,9 +31,27 @@ public class RegisterClientService {
             .setLastName(user.lastName())
             .setNickname(user.nickname())
             .setBio(user.bio())
-            .setPersonalPronouns(user.pronouns())
+            .setPersonalPronouns(user.personalPronouns())
             .setEmail(user.email())
             .build();
     return registrationStub.register(regRequest);
   }
+
+  public EditUserResponse updateDetails(User user, Integer userId) {
+    System.out.println("update client");
+    EditUserRequest editRequest =
+            EditUserRequest.newBuilder()
+                    .setUserId(userId)
+                    .setFirstName(user.firstName())
+                    .setMiddleName(user.middleName())
+                    .setLastName(user.lastName())
+                    .setNickname(user.nickname())
+                    .setBio(user.bio())
+                    .setPersonalPronouns(user.personalPronouns())
+                    .setEmail(user.email())
+                    .build();
+    return registrationStub.editUser(editRequest);
+  }
+
+
 }

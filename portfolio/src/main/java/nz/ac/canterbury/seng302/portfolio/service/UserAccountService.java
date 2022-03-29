@@ -1,4 +1,5 @@
-package nz.ac.canterbury.seng302.portfolio.service;;
+package nz.ac.canterbury.seng302.portfolio.service;
+
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import nz.ac.canterbury.seng302.portfolio.mapping.UserMapper;
 import nz.ac.canterbury.seng302.portfolio.model.GetPaginatedUsersOrderingElement;
@@ -6,6 +7,8 @@ import nz.ac.canterbury.seng302.portfolio.model.contract.UserContract;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+;
 
 /**
  * A service that manages CRUD operations for View Account Controller.
@@ -26,13 +29,13 @@ public class UserAccountService {
      * @param userId Id of a user
      * @return details of user or null in case of no user found.
      */
-    public UserContract getUserById(int userId) {
+    public UserResponse getUserById(int userId) {
         GetUserByIdRequest userRequest = GetUserByIdRequest.newBuilder()
                 .setId(userId)
                 .build();
         var user = userAccountServiceBlockingStub.getUserAccountById(userRequest);
         if (user.getUsername().length() > 0) {
-            return mapper.toContract(user);
+            return user;
         } else {
             return null;
         }
