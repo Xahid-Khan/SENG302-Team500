@@ -50,42 +50,5 @@ public class RegisterServerService {
 
         return reply.build();
     }
-
-    public void editUser(
-            EditUserRequest request,
-            StreamObserver<EditUserResponse> responseObserver
-    ) {
-        EditUserResponse.Builder reply = EditUserResponse.newBuilder();
-        UserModel existingUser = repository.findById(request.getUserId());
-        if (existingUser == null) {
-            reply
-                    .setIsSuccess(false)
-                    .setMessage("Error: User not in database")
-                    .addValidationErrors(
-                            ValidationError.newBuilder()
-                                    .setFieldName("ID")
-                                    .setErrorText("Error: User not in database"));
-        } else {
-            UserModel newUser =
-                    new UserModel(
-                            existingUser.getUsername(),
-                            existingUser.getPasswordHash(),
-                            request.getFirstName(),
-                            request.getMiddleName(),
-                            request.getLastName(),
-                            request.getNickname(),
-                            request.getBio(),
-                            request.getPersonalPronouns(),
-                            request.getEmail());
-            newUser.setId(request.getUserId());
-            repository.save(newUser);
-            reply
-                    .setIsSuccess(true)
-                    .setMessage("Updated details for user: " + newUser);
-        }
-
-        responseObserver.onNext(reply.build());
-        responseObserver.onCompleted();
-    }
 }
 

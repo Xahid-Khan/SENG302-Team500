@@ -38,7 +38,8 @@ public class RegisterClientService {
   }
 
   public EditUserResponse updateDetails(User user, Integer userId) {
-    EditUserRequest regRequest =
+    System.out.println("update client");
+    EditUserRequest editRequest =
             EditUserRequest.newBuilder()
                     .setUserId(userId)
                     .setFirstName(user.firstName())
@@ -49,7 +50,7 @@ public class RegisterClientService {
                     .setPersonalPronouns(user.personalPronouns())
                     .setEmail(user.email())
                     .build();
-    return registrationStub.editUser(regRequest);
+    return registrationStub.editUser(editRequest);
   }
 
 

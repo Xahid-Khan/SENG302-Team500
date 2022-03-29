@@ -12,7 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import nz.ac.canterbury.seng302.portfolio.DTO.User;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
-import nz.ac.canterbury.seng302.portfolio.service.ViewAccountService;
+import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -38,7 +38,7 @@ class EditAccountControllerTest {
 
     @MockBean private RegisterClientService service;
 
-    @MockBean private ViewAccountService viewAccountService;
+    @MockBean private UserAccountService userAccountService;
 
     @MockBean private AuthStateService authStateService;
 
@@ -105,7 +105,7 @@ class EditAccountControllerTest {
     void getEditAccountForm() throws Exception {
 
         // Creates a mock for the /edit_account endpoint
-        when(viewAccountService.getUserById(anyInt()))
+        when(userAccountService.getUserById(anyInt()))
                 .thenReturn(
                         UserResponse.newBuilder()
                                 .build());

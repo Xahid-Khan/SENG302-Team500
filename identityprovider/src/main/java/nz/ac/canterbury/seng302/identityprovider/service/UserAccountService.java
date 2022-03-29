@@ -6,15 +6,7 @@ import java.security.spec.InvalidKeySpecException;
 import net.devh.boot.grpc.server.service.GrpcService;
 import nz.ac.canterbury.seng302.identityprovider.exceptions.IrremovableRoleException;
 import nz.ac.canterbury.seng302.identityprovider.exceptions.UserDoesNotExistException;
-import nz.ac.canterbury.seng302.shared.identityprovider.GetPaginatedUsersRequest;
-import nz.ac.canterbury.seng302.shared.identityprovider.GetUserByIdRequest;
-import nz.ac.canterbury.seng302.shared.identityprovider.ModifyRoleOfUserRequest;
-import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedUsersResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterRequest;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserRoleChangeResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -30,6 +22,15 @@ public class UserAccountService extends UserAccountServiceGrpc.UserAccountServic
 
   @Autowired private RoleService roleService;
 
+  @Autowired private EditUserService editUserService;
+  
+  /**
+   * This is a GRPC user service method that is being over-ridden to register a user and return
+   * a UserRegisterRequest
+   *
+   * @param request parameters from the caller
+   * @param responseObserver to receive results or errors
+   */
   @Override
   public void register(
       UserRegisterRequest request, StreamObserver<UserRegisterResponse> responseObserver) {
@@ -43,18 +44,45 @@ public class UserAccountService extends UserAccountServiceGrpc.UserAccountServic
       responseObserver.onError(e);
     }
   }
-
+  
   /**
-   * This is a GRPC user serivce method that is beign over-ridden to get the user details and encase
-   * them into a User Response body. if the user is not found the User response is set to null
+   * This is a GRPC user service method that is being over-ridden to edit the users details and return
+   *    * a EditUserResponse
    *
-   * @param request
-   * @return
+   * @param request parameters from the caller
+   * @param responseObserver to receive results or errors
    */
   @Override
-  public void getUserAccountById(
-      GetUserByIdRequest request, StreamObserver<UserResponse> responseObserver) {
-    getUserService.getUserAccountById(request);
+  public void editUser(EditUserRequest request, StreamObserver<EditUserResponse> responseObserver) {
+    try {
+      var res = editUserService.editUser(request, responseObserver);
+      
+      responseObserver.onNext(res);
+      responseObserver.onCompleted();
+    } catch (Exception e) {
+      e.printStackTrace();
+      responseObserver.onError(e);
+    }
+  }
+
+  /**
+   * This is a GRPC user service method that is being over-ridden to get the user details and encase
+   * them into a User Response body. if the user is not found the User response is set to null
+   *
+   * @param request parameters from the caller
+   * @param responseObserver to receive results or errors
+   */
+  @Override
+  public void getUserAccountById(GetUserByIdRequest request, StreamObserver<UserResponse> responseObserver) {
+    try {
+      var res = getUserService.getUserAccountById(request);
+
+      responseObserver.onNext(res);
+      responseObserver.onCompleted();
+    } catch (Exception e) {
+      e.printStackTrace();
+      responseObserver.onError(e);
+    }
   }
 
   /**

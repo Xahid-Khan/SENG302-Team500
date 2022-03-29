@@ -1,8 +1,9 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.DTO.User;
+import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
-import nz.ac.canterbury.seng302.portfolio.service.ViewAccountService;
+import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
@@ -19,10 +20,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 public class UserAccountController {
 
     @Autowired
-    private ViewAccountService viewAccountService;
+    private UserAccountService userAccountService;
 
     @Autowired
     RegisterClientService registerClientService;
+
+    @Autowired
+    private AuthStateService authStateService;
 
 
     /**
@@ -34,12 +38,9 @@ public class UserAccountController {
     @GetMapping(value="/my_account")
     public String getPage(Model model, @AuthenticationPrincipal AuthState principal){
 
-        Integer userId = Integer.valueOf(principal.getClaimsList().stream()
-                .filter(claim -> claim.getType().equals("nameid"))
-                .findFirst()
-                .map(ClaimDTO::getValue)
-                .orElse("-100"));
-        UserResponse userDetails = viewAccountService.getUserById(userId);
+        Integer userId = authStateService.getId(principal);
+
+        UserResponse userDetails = userAccountService.getUserById(userId);
 
         String registrationDate = "2 April 2021 (10 months)"; //TODO Sort this out
 
@@ -52,7 +53,7 @@ public class UserAccountController {
 
     @GetMapping(value="/account/{id}")
     public String getUserAccount(@PathVariable int id, Model model, UserResponse user){
-        var userById = viewAccountService.getUserById(id);
+        var userById = userAccountService.getUserById(id);
 
         String registrationDate = "Member since: 2 April 2021 (10 months)"; // TODO implement this
 

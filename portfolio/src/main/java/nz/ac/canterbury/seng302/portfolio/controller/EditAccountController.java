@@ -5,7 +5,7 @@ import nz.ac.canterbury.seng302.portfolio.DTO.EditedUserValidation;
 import nz.ac.canterbury.seng302.portfolio.DTO.User;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
-import nz.ac.canterbury.seng302.portfolio.service.ViewAccountService;
+import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ public class EditAccountController {
     private RegisterClientService registerClientService;
 
     @Autowired
-    private ViewAccountService viewAccountService;
+    private UserAccountService userAccountService;
 
     @Autowired
     private AuthStateService authStateService;
@@ -35,7 +35,7 @@ public class EditAccountController {
 
         Integer userId = authStateService.getId(principal);
 
-        UserResponse userDetails = viewAccountService.getUserById(userId);
+        UserResponse userDetails = userAccountService.getUserById(userId);
 
         String registrationDate = "2 April 2021 (10 months)"; // TODO fix this
 
@@ -48,10 +48,12 @@ public class EditAccountController {
 
     @PostMapping(value="/edit_account")
     public String postPage(@ModelAttribute @Validated(EditedUserValidation.class) User user, BindingResult bindingResult, Model model, @AuthenticationPrincipal AuthState principal) {
+
         if (bindingResult.hasErrors()) {
             return "edit_account";
         }
         try {
+
             Integer userId = authStateService.getId(principal);
 
             registerClientService.updateDetails(user, userId);
