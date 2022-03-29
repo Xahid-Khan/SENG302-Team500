@@ -27,7 +27,9 @@
     <div class="raised-card card-padding">
         <h1>Users</h1>
         <div class="container">
-            Displaying users ${} of ${}
+            <span th:with="pageEndOffset=${pageOffset + users.size()}">
+                Displaying users <span th:text="${pageOffset}"></span> - <span th:text="${pageEndOffset}"></span> of <span th:text="${totalUserCount}"></span>
+            </span>
             <div>
                 <button id='previous' name="previous" type="submit" value="0">Previous Page</button>
                 <button id='next' name="next" type="submit" value="1">Next Page</button>

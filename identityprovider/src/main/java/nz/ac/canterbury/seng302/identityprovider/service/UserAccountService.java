@@ -127,7 +127,14 @@ public class UserAccountService extends UserAccountServiceGrpc.UserAccountServic
   @Override
   public void getPaginatedUsers(
       GetPaginatedUsersRequest request, StreamObserver<PaginatedUsersResponse> responseObserver) {
-    var orderByField = request.getOrderBy();
+    var orderByFields = request.getOrderBy().split("\\|", 2);
+
+    if (orderByFields.length != 2) {
+      throw new IllegalArgumentException("Please provide an orderBy field name, pipe symbol, followed by 'asc' or 'desc'.");
+    }
+    boolean ascending = orderByFields[1].equals("asc");
+    var orderByField = orderByFields[0];
+
     var limit = request.getLimit();
     var offset = request.getOffset();
 
@@ -145,7 +152,7 @@ public class UserAccountService extends UserAccountServiceGrpc.UserAccountServic
       List<UserModel> resultList;
       if (orderByField.equals("roles")) {
         // Receive IDs in order by roles
-        var query = session.createQuery("SELECT u.id FROM UserModel u JOIN u.roles r GROUP BY u.id ORDER BY string_agg((case when r = ?1 then 'student' else (case when r=?2 then 'teacher' else 'course_administrator' end) end), ',')", Integer.class)
+        var query = session.createQuery("SELECT u.id FROM UserModel u JOIN u.roles r GROUP BY u.id ORDER BY string_agg((case when r = ?1 then 'student' else (case when r=?2 then 'teacher' else 'course_administrator' end) end), ',') " + ((ascending) ? "ASC" : "DESC"), Integer.class)
             .setParameter(1, UserRole.STUDENT)
             .setParameter(2, UserRole.TEACHER)
             .setFirstResult(offset)
@@ -171,7 +178,7 @@ public class UserAccountService extends UserAccountServiceGrpc.UserAccountServic
           default -> throw new IllegalArgumentException("Unsupported orderBy field");
         };
 
-        var query = session.createQuery("FROM UserModel ORDER BY " + queryOrderByComponent, UserModel.class)
+        var query = session.createQuery("FROM UserModel ORDER BY " + queryOrderByComponent + ((ascending) ? " ASC" : " DESC"), UserModel.class)
             .setFirstResult(offset)
             .setMaxResults(limit);
         resultList = query.getResultList();
