@@ -168,7 +168,7 @@ public class UserAccountService extends UserAccountServiceGrpc.UserAccountServic
           case "name" -> "firstName, middleName, lastName";
           case "username" -> "username";
           case "nickname" -> "nickname";
-          default -> throw new Error("Unsupported orderBy field");
+          default -> throw new IllegalArgumentException("Unsupported orderBy field");
         };
 
         var query = session.createQuery("FROM UserModel ORDER BY " + queryOrderByComponent, UserModel.class)
