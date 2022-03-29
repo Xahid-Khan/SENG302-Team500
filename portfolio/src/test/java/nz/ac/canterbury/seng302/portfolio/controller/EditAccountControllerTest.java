@@ -10,26 +10,20 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import nz.ac.canterbury.seng302.portfolio.DTO.User;
+import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
+import nz.ac.canterbury.seng302.portfolio.service.ViewAccountService;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.ValueSource;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-
-import java.security.Principal;
 
 /**
  * This class tests the Edit Account Controller, which is used for handling reasonable inputs on
@@ -43,6 +37,10 @@ class EditAccountControllerTest {
     @Autowired MockMvc mockMvc;
 
     @MockBean private RegisterClientService service;
+
+    @MockBean private ViewAccountService viewAccountService;
+
+    @MockBean private AuthStateService authStateService;
 
     private final String API_PATH = "/edit_account";
 
@@ -72,9 +70,9 @@ class EditAccountControllerTest {
     }
 
     // Helper function to submit an edit account request to a mock /edit_account endpoint.
-    private MvcResult submitEditAccount(User user) throws Exception {
-        // Creates the Post Body to be sent to the mock /register endpoint
-        var postBody = buildPostBody(user);
+    private String submitEditAccount(User user) {
+        // Creates the Post Body to be sent to the mock /edit endpoint
+        String postBody = buildPostBody(user);
 
         // Creates a mock for the /edit_account endpoint
         when(service.updateDetails(any(), any()))
@@ -83,15 +81,12 @@ class EditAccountControllerTest {
                                 .setIsSuccess(true)
                                 .setMessage("Mock executed successfully")
                                 .build());
-        AuthState principal = AuthState.newBuilder().build();
-        // Performs the request to the /edit_account endpoint
-        Principal principal1;
-        SecurityContextHolder.getContext().setAuthentication(principal);
-        return this.mockMvc
-                .perform(
-                        post(API_PATH).contentType(MediaType.APPLICATION_FORM_URLENCODED).content(postBody).)
-                .andExpect(status().is2xxSuccessful())
-                .andReturn();
+
+        // Mocks getting the users id out of authstate
+        when(authStateService.getId(any()))
+                .thenReturn(1);
+
+        return postBody;
     }
 
     // Helper function for extrapolating if the request was invalid.
@@ -102,12 +97,22 @@ class EditAccountControllerTest {
 
 
     /**
-     * A simple test to ensure that the Thymeleaf template is not broken for the registration form.
+     * A simple test to ensure that the Thymeleaf template is not broken for the edit account form.
      *
      * @throws Exception if perform fails for some reason
      */
     @Test
     void getEditAccountForm() throws Exception {
+
+        // Creates a mock for the /edit_account endpoint
+        when(viewAccountService.getUserById(anyInt()))
+                .thenReturn(
+                        UserResponse.newBuilder()
+                                .build());
+
+        // Mocks getting the users id out of authstate
+        when(authStateService.getId(any()))
+                .thenReturn(1);
 
         // If Thymeleaf throws an exception, it will be caught via this test.
         this.mockMvc.perform(get(API_PATH)).andExpect(status().isOk());
@@ -131,7 +136,7 @@ class EditAccountControllerTest {
             "FirstName,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA,LastName",
             "FirstName,Middle Names,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
     })
-    void registerInvalidNames(String firstName, String middleNames, String lastName) throws Exception {
+    void editInvalidNames(String firstName, String middleNames, String lastName) throws Exception {
         var user =
                 new User(
                         "Username",
@@ -144,8 +149,15 @@ class EditAccountControllerTest {
                         "Pronouns",
                         "email%40email.com");
 
-        var result = submitEditAccount(user);
+        String postBody = submitEditAccount(user);
 
+        var result = this.mockMvc
+                .perform(
+                        post(API_PATH)
+                                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                                .content(postBody))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn();
         assertTrue(wasError(result));
     }
 
@@ -163,7 +175,7 @@ class EditAccountControllerTest {
             "FirstName,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA,LastName",
             "FirstName,Middle Names,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
     })
-    void registerBoundaryNames(String firstName, String middleNames, String lastName) throws Exception {
+    void editBoundaryNames(String firstName, String middleNames, String lastName) throws Exception {
         var user =
                 new User(
                         "Username",
@@ -176,7 +188,15 @@ class EditAccountControllerTest {
                         "Pronouns",
                         "email%40email.com");
 
-        var result = submitEditAccount(user);
+        String postBody = submitEditAccount(user);
+
+        var result = this.mockMvc
+                .perform(
+                        post(API_PATH)
+                                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                                .content(postBody))
+                .andExpect(status().is3xxRedirection())
+                .andReturn();
 
         assertFalse(wasError(result));
     }
@@ -195,7 +215,7 @@ class EditAccountControllerTest {
             "nickname,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA,personalPronouns",
             "nickname,bio,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
     })
-    void registerInvalidAdditionalInfo(String nickname, String bio, String personalPronouns) throws Exception {
+    void editInvalidAdditionalInfo(String nickname, String bio, String personalPronouns) throws Exception {
         var user =
                 new User(
                         "Username",
@@ -208,7 +228,15 @@ class EditAccountControllerTest {
                         personalPronouns,
                         "email%40email.com");
 
-        var result = submitEditAccount(user);
+        String postBody = submitEditAccount(user);
+
+        var result = this.mockMvc
+                .perform(
+                        post(API_PATH)
+                                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                                .content(postBody))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn();
 
         assertTrue(wasError(result));
     }
@@ -233,7 +261,7 @@ class EditAccountControllerTest {
             "nickname,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA,personalPronouns",
             "nickname,bio,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
     })
-    void registerBoundaryAdditionalInfo(String nickname, String bio, String personalPronouns) throws Exception {
+    void editBoundaryAdditionalInfo(String nickname, String bio, String personalPronouns) throws Exception {
         var user =
                 new User(
                         "Username",
@@ -246,7 +274,15 @@ class EditAccountControllerTest {
                         personalPronouns,
                         "email%40email.com");
 
-        var result = submitEditAccount(user);
+        String postBody = submitEditAccount(user);
+
+        var result = this.mockMvc
+                .perform(
+                        post(API_PATH)
+                                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                                .content(postBody))
+                .andExpect(status().is3xxRedirection())
+                .andReturn();
 
         assertFalse(wasError(result));
     }
@@ -256,7 +292,7 @@ class EditAccountControllerTest {
      *  has the correct regex for it. The valid email test falls under the valid user test.
      */
     @Test
-    void registerEmptyEmail() throws Exception {
+    void editEmptyEmail() throws Exception {
         var user =
                 new User(
                         "Username",
@@ -269,7 +305,15 @@ class EditAccountControllerTest {
                         "personalPronouns",
                         "");
 
-        var result = submitEditAccount(user);
+        String postBody = submitEditAccount(user);
+
+        var result = this.mockMvc
+                .perform(
+                        post(API_PATH)
+                                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                                .content(postBody))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn();
 
         assertTrue(wasError(result));
     }
