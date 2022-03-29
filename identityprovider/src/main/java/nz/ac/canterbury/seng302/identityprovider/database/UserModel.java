@@ -42,11 +42,13 @@ public class UserModel {
     @Column(name = "roles", nullable = false)
     private List<UserRole> roles = new ArrayList<>();
 
+    private Timestamp created;
+
     protected UserModel() {
     }
 
     public UserModel(String username, String passwordHash, String firstName, String middleName, String lastName,
-        String nickname, String bio, String personalPronouns, String email, List<UserRole> roles) {
+        String nickname, String bio, String personalPronouns, String email, List<UserRole> roles, Timestamp created) {
         this.username = username;
         this.passwordHash = passwordHash;
         this.firstName = firstName;
@@ -57,6 +59,7 @@ public class UserModel {
         this.personalPronouns = personalPronouns;
         this.email = email;
         this.roles = roles;
+        this.created = created;
     }
 
     public int getId() {
@@ -102,6 +105,10 @@ public class UserModel {
     public void setId(int id) { this.id = id; }
 
     public List<UserRole> getRoles() { return roles; }
+
+    public Timestamp getCreated() {
+        return created;
+    }
 
     /**
      * Adds a role to a user
