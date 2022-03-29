@@ -1,10 +1,13 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import nz.ac.canterbury.seng302.portfolio.DTO.User;
 import nz.ac.canterbury.seng302.portfolio.model.GetPaginatedUsersOrderingElement;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -49,6 +52,7 @@ public class UserListController {
 
         var offset = (page - 1) * PAGE_SIZE;
 
+        // Make Request
         var response = userAccountService.getPaginatedUsers(
             offset,
             PAGE_SIZE,
@@ -56,18 +60,28 @@ public class UserListController {
             ascending
         );
 
+        // Construct response
         model.addAttribute("users", response.getUsersList());
         model.addAttribute("totalUserCount", response.getResultSetSize());
         model.addAttribute("pageOffset", offset);
         model.addAttribute("currentPage", page);
         model.addAttribute("sortDir", ascending);
         model.addAttribute("sortBy", sortAttributeString);
-        model.addAttribute("urlFormatter", this);
+        model.addAttribute("delegate", this);
         model.addAttribute("pageSize", PAGE_SIZE);
         return "user_list";
     }
 
     public String formatUrl(int page, String sortBy, boolean sortDir) {
         return String.format("?page=%d&sortBy=%s&asc=%b", page, sortBy, sortDir);
+    }
+
+    public String formatUserRoles(List<UserRole> roles) {
+        return roles.stream().map(role -> switch (role) {
+            case STUDENT -> "Student";
+            case TEACHER -> "Teacher";
+            case COURSE_ADMINISTRATOR -> "Course Administrator";
+            default -> "Student";
+        }).collect(Collectors.joining(", "));
     }
 }

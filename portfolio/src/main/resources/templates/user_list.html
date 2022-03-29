@@ -7,13 +7,23 @@
 
     <link rel="stylesheet" th:href="@{/styles/common.css}" />
     <link rel="stylesheet" th:href="@{/styles/table.css}" />
-    <link rel="stylesheet" th:href="@{/styles/pages/user_list.css}" />
     <link rel="stylesheet" th:href="@{/styles/navbar.css}"/>
+    <link rel="stylesheet" th:href="@{/styles/pages/user_list.css}" />
 </head>
 <body>
-    <th:block th:fragment="frag (sortAttribute)">
-        <th th:class="${(sortAttribute==sortBy&&sortDir==true ? 'headerSortUp' : (sortAttribute==sortBy&&sortDir==false ? 'headerSortDown' : ''))}" th:with="sortDirection=${sortBy == sortAttribute ? !sortDir : true}"> <a th:href="${urlFormatter.formatUrl(currentPage, sortAttribute, sortDirection)}" th:text="${sortAttribute}"></a></th>
-    </th:block>
+    <div style="display: none">
+        <!-- FRAGMENT DEFINITIONS -->
+        <th:block th:fragment="columnHeaderFragment (sortAttribute, displayName)">
+            <a
+                class="tableCell sortableHeader"
+                th:classappend="${(sortAttribute==sortBy&&sortDir==true ? 'headerSortUp' : (sortAttribute==sortBy&&sortDir==false ? 'headerSortDown' : ''))}"
+                th:with="sortDirection=${sortBy == sortAttribute ? !sortDir : true}"
+                th:href="${delegate.formatUrl(currentPage, sortAttribute, sortDirection)}"
+                th:text="${displayName}"
+            ></a>
+        </th:block>
+    </div>
+
     <div class="navbar">
         <div class="dropdown">
             <button class="dropbutton"><img
@@ -38,35 +48,34 @@
                 </span>
                 <div>
                     <span th:with="prevPage=${currentPage - 1}">
-                        <a id='previous' th:disabled="${prevPage==0}" th:href="${urlFormatter.formatUrl(prevPage, sortBy, sortDir)}">Previous Page</a>
+                        <a id='previous' th:disabled="${prevPage==0}" th:href="${delegate.formatUrl(prevPage, sortBy, sortDir)}">Previous Page</a>
                     </span>
                     <span th:with="nextPage=${currentPage + 1}">
-                        <th:block th:with="maxPage=${totalUserCount/pageSize + 1}">
-                            <a id='next' th:disabled="${nextPage>maxPage}" th:href="${urlFormatter.formatUrl(nextPage, sortBy, sortDir)}">Next Page</a>
+                        <th:block th:with="maxPage=${(totalUserCount/pageSize) + ((totalUserCount % pageSize == 0) ? 0 : 1)}">
+                            <a id='next' th:disabled="${nextPage>maxPage}" th:href="${delegate.formatUrl(nextPage, sortBy, sortDir)}">Next Page</a>
                         </th:block>
                     </span>
                 </div>
             </div>
             </br>
-            <table>
-                <tbody>
-                    <tr>
-                        <th:block th:include="::frag ('name')"></th:block>
-                        <th class="headerSortDown"> <a th:href="${urlFormatter.formatUrl(currentPage, 'username', true)}">Username</a> </th>
-                        <th class="headerSortDown"> <a th:href="${urlFormatter.formatUrl(currentPage, 'alias', true)}">Alias</a> </th>
-                        <th class="headerSortDown"> <a th:href="${urlFormatter.formatUrl(currentPage, 'roles', true)}">Roles</a> </th>
-                    </tr>
-                    <tr th:each="user: ${users}">
-                        <td th:text="${user.firstName} + ' ' + (${user.middleName} ?: '') + ' ' + ${user.lastName}"/>
-                        <td th:text="${user.username}"/>
-                        <td th:text="${user.nickname}"/>
-                        <td th:text="'role of ' + ${user.username}"/>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="table">
+                <div class="tableRow">
+                    <th:block th:include="::columnHeaderFragment ('name', 'Name')"></th:block>
+                    <th:block th:include="::columnHeaderFragment ('username', 'Username')"></th:block>
+                    <th:block th:include="::columnHeaderFragment ('alias', 'Nickname')"></th:block>
+                    <th:block th:include="::columnHeaderFragment ('roles', 'Roles')"></th:block>
+                </div>
+                <div class="tableRow" th:each="user: ${users}">
+                    <div class="tableCell" th:text="${user.firstName} + ' ' + (${user.middleName} ?: '') + ' ' + ${user.lastName}"/>
+                    <div class="tableCell" th:text="${user.username}"/>
+                    <div class="tableCell" th:text="${user.nickname}"/>
+                    <div class="tableCell" th:text="${delegate.formatUserRoles(user.rolesList)}"/>
+                </div>
+            </div>
         </th:block>
     </div>
 
+    <script type="text/javascript" th:src="@{/scripts/user_list.js}"></script>
 
 </body>
 </html>
