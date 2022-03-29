@@ -171,14 +171,18 @@ public class UserAccountService extends UserAccountServiceGrpc.UserAccountServic
         }
       }
       else {
-        var queryOrderByComponent = switch (orderByField) {
-          case "name" -> "firstName, middleName, lastName";
-          case "username" -> "username";
-          case "nickname" -> "nickname";
+        var queryOrderByAttributes = switch (orderByField) {
+          case "name" -> List.of("firstName", "middleName", "lastName");
+          case "username" -> List.of("username");
+          case "nickname" -> List.of("nickname");
           default -> throw new IllegalArgumentException("Unsupported orderBy field");
         };
 
-        var query = session.createQuery("FROM UserModel ORDER BY " + queryOrderByComponent + ((ascending) ? " ASC" : " DESC"), UserModel.class)
+        var queryOrderByComponent = queryOrderByAttributes.stream()
+            .map(component -> String.format("%s %s", component, ((ascending) ? "ASC" : "DESC")))
+            .collect(Collectors.joining(", "));
+
+        var query = session.createQuery("FROM UserModel ORDER BY " + queryOrderByComponent, UserModel.class)
             .setFirstResult(offset)
             .setMaxResults(limit);
         resultList = query.getResultList();

@@ -18,9 +18,12 @@
         <th:block th:fragment="columnHeaderFragment (sortAttribute, displayName)">
             <a
                 class="tableCell sortableHeader"
-                th:classappend="${(sortAttribute==sortBy&&sortDir==true ? 'headerSortUp' : (sortAttribute==sortBy&&sortDir==false ? 'headerSortDown' : ''))}"
-                th:with="sortDirection=${sortBy == sortAttribute ? !sortDir : true}"
-                th:href="${delegate.formatUrl(currentPage, sortAttribute, sortDirection)}"
+                th:classappend="${
+                (sortAttribute==sortBy) ? (
+                    (sortDir==true) ? 'headerSortUp' : 'headerSortDown'
+                ) : ''}"
+                th:with="targetSortDirection=${sortBy == sortAttribute ? !sortDir : true}"
+                th:href="${delegate.formatUrl(currentPage, sortAttribute, targetSortDirection)}"
                 th:text="${displayName}"
             ></a>
         </th:block>
