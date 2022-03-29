@@ -21,7 +21,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 public class RegisterServerServiceTest {
 
   @Autowired
-  private RegisterServerService registerServerService;
+  private UserAccountService registerServerService;
 
   private StreamObserver<UserRegisterResponse> observer = mock(StreamObserver.class);
 

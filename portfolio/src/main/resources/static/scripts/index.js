@@ -19,7 +19,7 @@ function leftPadNumber(number, places) {
 
 class DatetimeUtils {
   static networkStringToLocalDate(utcString) {
-    return new Date(Date.parse(utcString));
+    return new Date(Date.parse(utcString))
   }
 
   static localToNetworkString(localDate) {
@@ -154,7 +154,9 @@ class ProjectView {
     document.getElementById(`project-title-text-${this.project.id}`).innerText = this.project.name;
     document.getElementById(`project-description-${this.project.id}`).innerText = this.project.description;
     document.getElementById(`project-startDate-${this.project.id}`).innerText = DatetimeUtils.localToUserDMY(this.project.startDate);
-    document.getElementById(`project-endDate-${this.project.id}`).innerText = DatetimeUtils.localToUserDMY(this.project.endDate);
+    const displayedDate = new Date(this.project.endDate.valueOf());
+    displayedDate.setDate(displayedDate.getDate()  - 1);
+    document.getElementById(`project-endDate-${this.project.id}`).innerText = DatetimeUtils.localToUserDMY(displayedDate);
 
     this.addSprintButton = document.getElementById(`add-sprint-button-${this.project.id}`);
     this.toggleSprintsButton = document.getElementById(`toggle-sprint-button-${this.project.id}`);
@@ -199,12 +201,23 @@ class ProjectView {
     formContainerElement.id = `create-sprint-form-container-${this.project.id}`;
     this.sprintsContainer.insertBefore(formContainerElement, this.sprintsContainer.firstChild);
 
+    let defaultName = 1;
+    let defaultStartDate = new Date(this.project.startDate.valueOf());
+
+    if (this.project.sprints.length !== 0) {
+      defaultName = this.project.sprints[(this.project.sprints.length - 1)].orderNumber + 1;
+      defaultStartDate = new Date(this.project.sprints[(this.project.sprints.length - 1)].endDate.valueOf());
+    }
+
+    const defaultEndDate = new Date(defaultStartDate.valueOf());
+    defaultEndDate.setDate(defaultEndDate.getDate() + 22);
+
     const defaultSprint = {
       id: `__NEW_SPRINT_FORM_${this.project.id}`,
-      name: "",
+      name: `Sprint ${defaultName}`,
       description: null,
-      startDate: null,
-      endDate: null
+      startDate: defaultStartDate,
+      endDate: defaultEndDate
     };
 
     this.addSprintForm = {
@@ -388,7 +401,13 @@ class ProjectOrSprintEditor {
     this.nameInput.value = this.initialData.name ?? "";
     this.descriptionInput.value = this.initialData.description ?? "";
     this.startDateInput.value = (this.initialData.startDate) ? DatetimeUtils.toLocalYMD(this.initialData.startDate) : "";
-    this.endDateInput.value = (this.initialData.endDate) ? DatetimeUtils.toLocalYMD(this.initialData.endDate) : "";
+    if (this.initialData.endDate) {
+      const displayedDate = new Date(this.initialData.endDate.valueOf());
+      displayedDate.setDate(displayedDate.getDate() - 1);
+      this.endDateInput.value = DatetimeUtils.toLocalYMD(displayedDate);
+    } else {
+      this.endDateInput.value = "";
+    }
 
     if (this.initialData.startDate) {
       const startDateHours = DatetimeUtils.getTimeStringIfNonZeroLocally(this.initialData.startDate);
@@ -447,14 +466,16 @@ class ProjectOrSprintEditor {
   }
 
   /**
-   * Gets the end date from user input, otherwise dafaults to initial default value.
+   * Gets the end date from user input, otherwise defaults to initial default value.
    */
   getEndDateInputValue() {
     if (!this.endDateEdited) {
       return this.initialData.endDate ?? null;
     }const rawValue = this.endDateInput.value;
     if (rawValue) {
-      return DatetimeUtils.fromLocalYMD(rawValue);
+      const dayAfter = DatetimeUtils.fromLocalYMD(rawValue);
+      dayAfter.setDate(dayAfter.getDate() + 1);
+      return dayAfter;
     }
     return null;
   }
@@ -564,7 +585,7 @@ class ProjectOrSprintEditor {
           }
 
           // Taken from: https://stackoverflow.com/a/325964
-          if (startDate <= sprint.endDate && endDate >= sprint.startDate) {
+          if (startDate < sprint.endDate && endDate > sprint.startDate) {
             return `This date range overlaps with Sprint ${sprint.orderNumber}. Please choose a non-overlapping date range.`;
           }
         }
@@ -628,7 +649,9 @@ class SprintView {
     document.getElementById(`sprint-title-text-${this.sprint.sprintId}`).innerText = this.sprint.name;
     this.description.innerText = this.sprint.description;
     document.getElementById(`start-date-${this.sprint.sprintId}`).innerText = DatetimeUtils.localToUserDMY(this.sprint.startDate);
-    document.getElementById(`end-date-${this.sprint.sprintId}`).innerText = DatetimeUtils.localToUserDMY(this.sprint.endDate);
+    const displayedDate = new Date(this.sprint.endDate.valueOf());
+    displayedDate.setDate(displayedDate.getDate() - 1);
+    document.getElementById(`end-date-${this.sprint.sprintId}`).innerText = DatetimeUtils.localToUserDMY(displayedDate);
   }
 
   /**
@@ -832,7 +855,6 @@ class Project {
    * @param sprintId - sprint to be deleted
    */
   deleteSprint(sprintId) {
-    console.log(this.project.sprints);
     for (let i=0; i < this.project.sprints.length; i++) {
       if (this.project.sprints[i].sprintId === sprintId) {
         this.project.sprints.splice(i, 1);
@@ -963,7 +985,6 @@ class Sprint {
       const response = await fetch(`/api/v1/sprints/${this.sprint.sprintId}`, {
         method: 'DELETE'
       })
-      console.log(this.sprint.sprintId);
       if (!response.ok) {
         await ErrorHandlerUtils.handleNetworkError(response, "delete sprint");
       }

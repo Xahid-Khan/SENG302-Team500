@@ -1,0 +1,56 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Users</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" th:href="@{/styles/common.css}" />
+    <link rel="stylesheet" th:href="@{/styles/table.css}" />
+    <link rel="stylesheet" th:href="@{/styles/pages/user_list.css}" />
+    <link rel="stylesheet" th:href="@{/styles/navbar.css}"/>
+</head>
+<body>
+
+    <div class="navbar">
+        <div class="dropdown">
+            <button class="dropbutton"><img
+                    src="https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png"
+                    width="46" height="46" alt="Placeholder Profile Photo"></img><div>abc123</div>
+            </button>
+            <div class="dropdown-content">
+                <a class="dropdown-content-links" href="#">Log Out</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="raised-card card-padding">
+        <h1>Users</h1>
+        <div class="container">
+            Displaying users ${} of ${}
+            <div>
+                <button id='previous' name="previous" type="submit" value="0">Previous Page</button>
+                <button id='next' name="next" type="submit" value="1">Next Page</button>
+            </div>
+        </div>
+        </br>
+        <table>
+            <tbody>
+                <tr>
+                    <th class="headerSortUp" onclick="sortTable(0)">Name</th>
+                    <th class="headerSortDown" onclick="sortTable(1)">Username</th>
+                    <th class="headerSortDown" onclick="sortTable(2)">Alias</th>
+                    <th class="headerSortDown" onclick="sortTable(3)">Roles</th>
+                </tr>
+                <tr th:each="user: ${users}">
+                    <td th:text="${user.firstName} + ' ' + (${user.middleName} ?: '') + ' ' + ${user.lastName}"/>
+                    <td th:text="${user.username}"/>
+                    <td th:text="${user.nickname}"/>
+                    <td th:text="'role of ' + ${user.username}"/>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</body>
+</html>
