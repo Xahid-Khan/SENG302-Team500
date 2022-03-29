@@ -7,6 +7,7 @@ import nz.ac.canterbury.seng302.portfolio.model.contract.SprintContract;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.xml.bind.SchemaOutputResolver;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
