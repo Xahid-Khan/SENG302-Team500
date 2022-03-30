@@ -33,7 +33,7 @@ public class RegistrationController {
    */
   @GetMapping(value = "/register")
   public String registerForm(Model model) {
-    model.addAttribute("user", new User("", "", "", "", "", "", "", "", ""));
+    model.addAttribute("user", new User("", "", "", "", "", "", "", "", "", null));
     return "registration_form";
   }
 
@@ -63,6 +63,10 @@ public class RegistrationController {
     try {
       registerReply = registerClientService.register(user);
       model.addAttribute("registerMessage", registerReply.getMessage());
+
+      if(!registerReply.getIsSuccess()){
+        return "registration_form";
+      }
     } catch (StatusRuntimeException e) {
       model.addAttribute("registerMessage", "Error connecting to Identity Provider...");
       return "registration_form";

@@ -26,6 +26,8 @@ public class UserMapper {
         .setBio(user.getBio())
         .setPersonalPronouns(user.getPersonalPronouns())
         .setEmail(user.getEmail())
+        .setCreated(user.getCreated())
+        .addAllRoles(user.getRoles())
         .build();
   }
 }

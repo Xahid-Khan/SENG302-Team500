@@ -40,8 +40,8 @@ public class AuthenticateServiceTest {
         try {
             List<UserRole> roles = new ArrayList<>();
             roles.add(UserRole.STUDENT);
-            UserModel user1 = new UserModel("a", passwordService.hashPassword("password"), "a", "", "a", "", "", "", "a@a", roles);
-            UserModel user2 = new UserModel("b", passwordService.hashPassword("password"), "b", "", "b", "", "", "", "b@b", roles);
+            UserModel user1 = new UserModel("a", passwordService.hashPassword("password"), "a", "", "a", "", "", "", "a@a", roles, null);
+            UserModel user2 = new UserModel("b", passwordService.hashPassword("password"), "b", "", "b", "", "", "", "b@b", roles, null);
             repository.save(user1);
             repository.save(user2);
         }catch(Exception e){

@@ -62,7 +62,7 @@ public class RolesTest {
         AuthorisationParamsHelper.setParams("role", "Student");
 
         this.mockMvc.perform(get(apiPath))
-                .andExpect(status().isForbidden())
+                .andExpect(status().isOk())
                 .andReturn();
 
         AuthorisationParamsHelper.setParams("role", "Teacher");
