@@ -38,7 +38,6 @@ public class RegisterClientService {
   }
 
   public EditUserResponse updateDetails(User user, Integer userId) {
-    System.out.println("update client");
     EditUserRequest editRequest =
             EditUserRequest.newBuilder()
                     .setUserId(userId)

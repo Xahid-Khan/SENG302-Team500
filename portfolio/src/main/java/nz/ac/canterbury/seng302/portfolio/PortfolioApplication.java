@@ -32,7 +32,6 @@ public class PortfolioApplication {
         }
         if (counter == 0) {
             String projectName = "Project " + LocalDate.now().getYear();
-            System.out.println(projectName);
             ProjectEntity defaultProject = new ProjectEntity(projectName,
                     "",
                     LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant(), // toInstant() converts the date to UTC

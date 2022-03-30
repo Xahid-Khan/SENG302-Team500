@@ -43,7 +43,9 @@ public record User(
 
     // Emails are stupidly complicated. This basic Regex should suffice for most use cases however.
     @Email(message = "Email must be valid", regexp = "[^@]+@[^@]+\\.[^@.]+", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
-    String email
+    String email,
+
+    Timestamp created
     ) {
   /**
    * Canonical constructor to ensure that all nulls are instead filled with empty strings.
@@ -68,7 +70,8 @@ public record User(
       String nickname,
       String bio,
       String personalPronouns,
-      String email
+      String email,
+      Timestamp created
   ) {
     // Required values
     this.username = username;
@@ -81,5 +84,7 @@ public record User(
     this.nickname = nickname == null ? "" : nickname;
     this.bio = bio == null ? "" : bio;
     this.personalPronouns = personalPronouns == null ? "" : personalPronouns;
+    //generated
+    this.created = created;
   }
 }

@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.google.protobuf.Timestamp;
 import nz.ac.canterbury.seng302.portfolio.DTO.User;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
@@ -22,6 +23,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+
+import java.time.Instant;
 
 /**
  * This class tests the Registration Controller, which is used for handling reasonable inputs on
@@ -121,7 +124,9 @@ class RegistrationControllerTest {
             "Nickname",
             "Bio",
             "Pronouns",
-            "email%40email.com");
+            "email%40email.com",
+                currentTimestamp()
+                );
 
     var result = submitRegistration(validUser);
 
@@ -147,7 +152,8 @@ class RegistrationControllerTest {
             "Nickname",
             "Bio",
             "Pronouns",
-            "email%40email.com");
+            "email%40email.com",
+                currentTimestamp());
 
     var result = submitRegistration(user);
 
@@ -172,7 +178,8 @@ class RegistrationControllerTest {
             "Nickname",
             "Bio",
             "Pronouns",
-            "email%40email.com");
+            "email%40email.com",
+                currentTimestamp());
 
     var result = submitRegistration(user);
 
@@ -197,7 +204,8 @@ class RegistrationControllerTest {
             "Nickname",
             "Bio",
             "Pronouns",
-            "email%40email.com");
+            "email%40email.com",
+                currentTimestamp());
 
     var result = submitRegistration(user);
 
@@ -221,7 +229,8 @@ class RegistrationControllerTest {
             "Nickname",
             "Bio",
             "Pronouns",
-            "email%40email.com");
+            "email%40email.com",
+                currentTimestamp());
 
     var result = submitRegistration(user);
 
@@ -257,7 +266,8 @@ class RegistrationControllerTest {
             "Nickname",
             "Bio",
             "Pronouns",
-            "email%40email.com");
+            "email%40email.com",
+                currentTimestamp());
 
     var result = submitRegistration(user);
 
@@ -289,7 +299,8 @@ class RegistrationControllerTest {
             "Nickname",
             "Bio",
             "Pronouns",
-            "email%40email.com");
+            "email%40email.com",
+                currentTimestamp());
 
     var result = submitRegistration(user);
 
@@ -321,7 +332,8 @@ class RegistrationControllerTest {
             nickname,
             bio,
             personalPronouns,
-            "email%40email.com");
+            "email%40email.com",
+                currentTimestamp());
 
     var result = submitRegistration(user);
 
@@ -359,7 +371,8 @@ class RegistrationControllerTest {
             nickname,
             bio,
             personalPronouns,
-            "email%40email.com");
+            "email%40email.com",
+                currentTimestamp());
 
     var result = submitRegistration(user);
 
@@ -382,10 +395,19 @@ class RegistrationControllerTest {
             "nickname",
             "bio",
             "personalPronouns",
-            "");
+            "",
+            currentTimestamp());
 
     var result = submitRegistration(user);
 
     assertTrue(wasError(result));
   }
+
+  public static Timestamp currentTimestamp() {
+    return Timestamp
+            .newBuilder()
+            .setSeconds(Instant.now().getEpochSecond())
+            .build();
+  }
+
 }

@@ -4,8 +4,10 @@ import io.grpc.StatusRuntimeException;
 import nz.ac.canterbury.seng302.portfolio.DTO.Login;
 import nz.ac.canterbury.seng302.portfolio.authentication.CookieUtil;
 import nz.ac.canterbury.seng302.portfolio.service.AuthenticateClientService;
+import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticateResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -67,8 +69,7 @@ public class LoginController {
             RedirectAttributes redirectAttributes,
             Login login,
             Model model
-            ) {
-
+    ) {
         if (login.getUsername() == null || login.getPassword() == null) {
             model.addAttribute("error", "Invalid form data provided");
             return "login_form";
@@ -106,11 +107,17 @@ public class LoginController {
      */
     @GetMapping("/")
     public String index(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            Model model
+        @AuthenticationPrincipal AuthState principal,
+        HttpServletRequest request,
+        HttpServletResponse response,
+        Model model
     ) {
-        return "redirect:/login";
+        if (principal != null) {
+            return "redirect:/my_account";
+        }
+        else {
+            return "redirect:/login";
+        }
     }
 
 }

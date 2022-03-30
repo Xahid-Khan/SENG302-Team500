@@ -1,8 +1,11 @@
 package nz.ac.canterbury.seng302.identityprovider.service;
 
+import com.google.protobuf.Timestamp;
+
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import nz.ac.canterbury.seng302.identityprovider.database.UserModel;
@@ -39,7 +42,8 @@ public class RegisterServerService {
                         request.getBio(),
                         request.getPersonalPronouns(),
                         request.getEmail(),
-                        roles);
+                        roles,
+                        currentTimestamp());
 
         // If a username already exists in the database, return an error
         if (repository.findByUsername(request.getUsername()) != null) {
@@ -60,6 +64,13 @@ public class RegisterServerService {
         }
 
         return reply.build();
+    }
+
+    public static Timestamp currentTimestamp() {
+        return Timestamp
+                .newBuilder()
+                .setSeconds(Instant.now().getEpochSecond())
+                .build();
     }
 }
 
