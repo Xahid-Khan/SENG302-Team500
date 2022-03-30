@@ -19,7 +19,6 @@ public class EditUserService {
             EditUserRequest request,
             StreamObserver<EditUserResponse> responseObserver
     ) {
-        System.out.println("edit server");
         EditUserResponse.Builder reply = EditUserResponse.newBuilder();
         UserModel existingUser = repository.findById(request.getUserId());
         if (existingUser == null) {
@@ -42,7 +41,8 @@ public class EditUserService {
                             request.getBio(),
                             request.getPersonalPronouns(),
                             request.getEmail(),
-                            existingUser.getRoles());
+                            existingUser.getRoles(),
+                            existingUser.getCreated());
             newUser.setId(request.getUserId());
             repository.save(newUser);
             reply

@@ -147,7 +147,8 @@ class EditAccountControllerTest {
                         "Nickname",
                         "Bio",
                         "Pronouns",
-                        "email%40email.com");
+                        "email%40email.com",
+                        null);
 
         String postBody = submitEditAccount(user);
 
@@ -186,7 +187,8 @@ class EditAccountControllerTest {
                         "Nickname",
                         "Bio",
                         "Pronouns",
-                        "email%40email.com");
+                        "email%40email.com",
+                        null);
 
         String postBody = submitEditAccount(user);
 
@@ -226,7 +228,8 @@ class EditAccountControllerTest {
                         nickname,
                         bio,
                         personalPronouns,
-                        "email%40email.com");
+                        "email%40email.com",
+                        null);
 
         String postBody = submitEditAccount(user);
 
@@ -272,7 +275,8 @@ class EditAccountControllerTest {
                         nickname,
                         bio,
                         personalPronouns,
-                        "email%40email.com");
+                        "email%40email.com",
+                        null);
 
         String postBody = submitEditAccount(user);
 
@@ -303,7 +307,8 @@ class EditAccountControllerTest {
                         "nickname",
                         "bio",
                         "personalPronouns",
-                        "");
+                        "",
+                        null);
 
         String postBody = submitEditAccount(user);
 

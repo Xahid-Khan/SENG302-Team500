@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 
+import com.google.protobuf.Timestamp;
 import io.grpc.stub.StreamObserver;
 import nz.ac.canterbury.seng302.identityprovider.database.UserRepository;
 import nz.ac.canterbury.seng302.shared.identityprovider.EditUserRequest;
@@ -22,8 +23,7 @@ public class RegisterServerServiceTest {
 
   @Autowired private UserAccountService registerServerService;
 
-  @Autowired
-  private UserRepository userRepository;
+  @Autowired private UserRepository repository;
 
   private StreamObserver<UserRegisterResponse> observer = mock(StreamObserver.class);
 
@@ -44,7 +44,7 @@ public class RegisterServerServiceTest {
 
   @BeforeEach
   private void clearDatabase() {
-    userRepository.deleteAll();
+    repository.deleteAll();
   }
   /**
    * Tests registering a completely valid user.
@@ -69,9 +69,9 @@ public class RegisterServerServiceTest {
     // Ensure that the message is sent successfully
     assertEquals("Registered new user", response.getMessage().split(":", 2)[0]);
     // Ensure only 1 user exists
-    assertEquals(1, userRepository.count());
+    assertEquals(1, repository.count());
     // Ensure user exists
-    assertNotNull(userRepository.findByUsername("Username"));
+    assertNotNull(repository.findByUsername("Username"));
   }
 
   /**
@@ -84,7 +84,7 @@ public class RegisterServerServiceTest {
     // Ensure request was only ran twice
     Mockito.verify(observer, times(2)).onCompleted();
     // Ensure only 1 user exists
-    assertEquals(1, userRepository.count());
+    assertEquals(1, repository.count());
     // Set up a captor for the second response
     ArgumentCaptor<UserRegisterResponse> captor
         = ArgumentCaptor.forClass(UserRegisterResponse.class);
@@ -102,7 +102,7 @@ public class RegisterServerServiceTest {
   public void editValidUser() {
 
     registerServerService.register(request, observer);
-    int userID = userRepository.findByUsername("Username").getId();
+    int userID = repository.findByUsername("Username").getId();
     EditUserRequest newRequest = EditUserRequest.newBuilder()
             .setUserId(userID)
             .setFirstName("FirstName")
@@ -129,11 +129,11 @@ public class RegisterServerServiceTest {
     // Ensure that the message is sent successfully
     assertEquals("Updated details for user", response.getMessage().split(":", 2)[0]);
     // Ensure only 1 user exists
-    assertEquals(1, userRepository.count());
+    assertEquals(1, repository.count());
     // Ensure user exists
-    assertNotNull(userRepository.findByUsername("Username"));
+    assertTrue(repository.findByUsername("Username") != null);
 
-    assertEquals("NewLastName", userRepository.findByUsername("Username").getLastName());
+    assertEquals("NewLastName", repository.findByUsername("Username").getLastName());
   }
 
   @Test

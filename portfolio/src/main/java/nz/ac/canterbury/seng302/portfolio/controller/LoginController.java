@@ -66,7 +66,6 @@ public class LoginController {
             Login login,
             Model model
     ) {
-        System.out.println("Received POST request with credentials:" + login.toString());
         if (login.getUsername() == null || login.getPassword() == null) {
             model.addAttribute("error", "Invalid form data provided");
             return "login_form";

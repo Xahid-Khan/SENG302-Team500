@@ -1,11 +1,12 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import com.google.protobuf.Timestamp;
 import nz.ac.canterbury.seng302.portfolio.DTO.User;
+import nz.ac.canterbury.seng302.portfolio.mapping.UserMapper;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
-import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -14,6 +15,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 
 
 @Controller
@@ -27,6 +33,9 @@ public class UserAccountController {
 
     @Autowired
     private AuthStateService authStateService;
+
+    @Autowired
+    UserMapper mapper;
 
 
     /**
@@ -42,11 +51,11 @@ public class UserAccountController {
 
         UserResponse userDetails = userAccountService.getUserById(userId);
 
-        String registrationDate = "2 April 2021 (10 months)"; //TODO Sort this out
+        String dateString = getFormattedDate(userDetails.getCreated());
 
         //Prefill the form with the user's details
         model.addAttribute("user", userDetails);
-        model.addAttribute("registration_date", registrationDate);
+        model.addAttribute("registration_date", dateString);
 
         return "account_details";
     }
@@ -55,31 +64,24 @@ public class UserAccountController {
     public String getUserAccount(@PathVariable int id, Model model, UserResponse user){
         var userById = userAccountService.getUserById(id);
 
-        String registrationDate = "Member since: 2 April 2021 (10 months)"; // TODO implement this
-
-        User currentDetails= UserResponseToUserDTO(userById);
+        User currentDetails= mapper.UserResponseToUserDTO(userById);
         model.addAttribute("user",currentDetails);
-        model.addAttribute("registration_date", registrationDate);
+        model.addAttribute("registration_date", currentDetails.created());
 
         return "account_details";
     }
 
+    //TODO find me a new home
+    public String getFormattedDate(Timestamp created) {
+        // TODO timezone?
+        LocalDate date = Instant
+                .ofEpochSecond( created.getSeconds() , created.getNanos() )
+                .atZone( ZoneId.of( "Pacific/Auckland" ) )
+                .toLocalDate();
 
-    /**
-     * This method gets a userResponse object and returns a user DTO object for use with Thymeleaf.
-     * @param userResponse
-     * @return User
-     */
-    public User UserResponseToUserDTO(UserResponse userResponse) {
-        return new User(userResponse.getUsername(),
-                "",
-                userResponse.getFirstName(),
-                userResponse.getMiddleName(),
-                userResponse.getLastName(),
-                userResponse.getNickname(),
-                userResponse.getPersonalPronouns(),
-                userResponse.getEmail(),
-                userResponse.getEmail());
+        String dateString = date.format(DateTimeFormatter
+                .ofLocalizedDate(FormatStyle.LONG));
+        return dateString;
     }
 
 }
