@@ -5,8 +5,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import nz.ac.canterbury.seng302.portfolio.DTO.User;
 import nz.ac.canterbury.seng302.portfolio.model.GetPaginatedUsersOrderingElement;
+import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,6 +26,9 @@ public class UserListController {
     @Autowired
     private UserAccountService userAccountService;
 
+    @Autowired
+    private AuthStateService authStateService;
+
     @GetMapping("/user-list")
     public String listUsers(
             @AuthenticationPrincipal AuthState principal,
@@ -32,6 +37,12 @@ public class UserListController {
             @RequestParam("asc") Optional<Boolean> ascendingMaybe,
             Model model
     ) {
+
+        Integer userId = authStateService.getId(principal);
+
+        UserResponse userDetails = userAccountService.getUserById(userId);
+
+        model.addAttribute("username", userDetails.getUsername());
         // Supply defaults
         int page = pageMaybe.orElse(1);
         String sortAttributeString = sortAttributeMaybe.orElse("name");

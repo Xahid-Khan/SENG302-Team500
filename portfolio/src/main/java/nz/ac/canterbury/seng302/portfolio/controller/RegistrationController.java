@@ -118,7 +118,7 @@ public class RegistrationController {
       return "redirect:/my_account";
     }
 
-    return "registered"; // return the template in templates folder
+    return "redirect:/login"; // return the template in templates folder
   }
 
 }

@@ -66,7 +66,6 @@ class PortfolioNetworkError extends Error {
 class ErrorHandlerUtils {
   static async handleNetworkError(response, context) {
     const body = await response.text();
-
     if (body) {
       alert(`An error occurred. Server responded: ${body}`);
     }

@@ -57,8 +57,10 @@ public class UserAccountController {
         String dateString = getFormattedDate(userDetails.getCreated());
 
         //Prefill the form with the user's details
+        model.addAttribute("username", userDetails.getUsername());
         model.addAttribute("user", userDetails);
         model.addAttribute("registration_date", dateString);
+
 
         return "account_details";
     }

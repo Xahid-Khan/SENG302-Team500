@@ -41,14 +41,17 @@ public class EditAccountController {
     @GetMapping(value="/edit_account")
     public String getPage(Model model, @AuthenticationPrincipal AuthState principal){
 
+
         Integer userId = authStateService.getId(principal);
 
         UserResponse userDetails = userAccountService.getUserById(userId);
 
         //Prefill the form with the user's details
+        model.addAttribute("username", userDetails.getUsername());
         model.addAttribute("user", userDetails);
 
         return "edit_account";
+
     }
 
     @PostMapping(value="/edit_account")
