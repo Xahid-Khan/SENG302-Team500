@@ -5,6 +5,7 @@ import com.google.protobuf.Timestamp;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import nz.ac.canterbury.seng302.identityprovider.database.UserModel;
