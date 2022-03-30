@@ -1,30 +1,21 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
-import nz.ac.canterbury.seng302.portfolio.GetAuthorizationParams;
+import nz.ac.canterbury.seng302.portfolio.AuthorisationParamsHelper;
 import nz.ac.canterbury.seng302.portfolio.model.contract.ProjectContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.ProjectEntity;
 import nz.ac.canterbury.seng302.portfolio.model.entity.SprintEntity;
 import nz.ac.canterbury.seng302.portfolio.repository.ProjectRepository;
 import nz.ac.canterbury.seng302.portfolio.repository.SprintRepository;
-import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
-import nz.ac.canterbury.seng302.shared.identityprovider.AuthStateOrBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import java.time.Instant;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -73,7 +64,7 @@ public class ProjectControllerTest {
         sprintRepository.save(sprint);
 
         projectId = project1.getId();
-        GetAuthorizationParams param1 = new GetAuthorizationParams("role", "TEACHER");
+        AuthorisationParamsHelper.setParams("role", "TEACHER");
     }
 
 
@@ -158,25 +149,25 @@ public class ProjectControllerTest {
      */
     @Test
     public void removeProject() throws Exception {
-        GetAuthorizationParams principal = new GetAuthorizationParams("role", "TEACHER");
+        AuthorisationParamsHelper.setParams("role", "TEACHER");
         var apiPath = "/api/v1/projects/" + projectId;
 
         this.mockMvc.perform(delete(apiPath))
                 .andExpect(status().isNoContent());
 
-        GetAuthorizationParams principal1 = new GetAuthorizationParams("role", "TEACHER");
+        AuthorisationParamsHelper.setParams("role", "TEACHER");
         this.mockMvc.perform(delete(apiPath))
                 .andExpect(status().isBadRequest());
 
-        GetAuthorizationParams principal2 = new GetAuthorizationParams("role", "Coordinator");
+        AuthorisationParamsHelper.setParams("role", "Coordinator");
         this.mockMvc.perform(delete(apiPath))
                 .andExpect(status().isBadRequest());
 
-        GetAuthorizationParams principal3 = new GetAuthorizationParams("role", "TEACHER");
+        AuthorisationParamsHelper.setParams("role", "TEACHER");
         this.mockMvc.perform(delete("/api/v1/projects/some_project"))
                 .andExpect(status().isBadRequest());
 
-        GetAuthorizationParams principal4 = new GetAuthorizationParams("role", "TEACHER");
+        AuthorisationParamsHelper.setParams("role", "TEACHER");
         this.mockMvc.perform(delete("/api/v1/projects/123456"))
                 .andExpect(status().isBadRequest());
     }
