@@ -5,6 +5,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 
 import io.grpc.stub.StreamObserver;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import nz.ac.canterbury.seng302.identityprovider.database.UserRepository;
 import nz.ac.canterbury.seng302.shared.identityprovider.EditUserRequest;
 import nz.ac.canterbury.seng302.shared.identityprovider.EditUserResponse;
@@ -20,12 +22,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 public class RegisterServerServiceTest {
 
-  @Autowired private UserAccountService registerServerService;
-
-  @Autowired
-  private UserRepository userRepository;
-
-  private StreamObserver<UserRegisterResponse> observer = mock(StreamObserver.class);
+  @Autowired private RegisterServerService registerServerService;
 
   @Autowired private UserRepository userRepository;
 
@@ -46,25 +43,15 @@ public class RegisterServerServiceTest {
   private void clearDatabase() {
     userRepository.deleteAll();
   }
+
   /**
    * Tests registering a completely valid user.
-   * Credit to https://stackoverflow.com/a/49872463
-   *  for providing how to run a Mockito mock observer.
    */
   @Test
-  public void registerValidUser() {
-    registerServerService.register(request, observer);
+  public void registerValidUser() throws NoSuchAlgorithmException, InvalidKeySpecException {
+    var response = registerServerService.register(request);
 
-    // Ensure request was only run once
-    Mockito.verify(observer, times(1)).onCompleted();
-    // Set up a captor for the response
-    ArgumentCaptor<UserRegisterResponse> captor
-        = ArgumentCaptor.forClass(UserRegisterResponse.class);
-    // Capture the response
-    Mockito.verify(observer, times(1)).onNext(captor.capture());
-    // Get the UserRegisterResponse from the captor
-    UserRegisterResponse response = captor.getValue();
-    // Check it was successful
+    // Ensures registration was a success
     assertTrue(response.getIsSuccess());
     // Ensure that the message is sent successfully
     assertEquals("Registered new user", response.getMessage().split(":", 2)[0]);
@@ -78,91 +65,15 @@ public class RegisterServerServiceTest {
    * Runs a test by inputting the same user twice, which should cause a username error.
    */
   @Test
-  public void registerDuplicateUsername() {
-    registerServerService.register(request, observer);
-    registerServerService.register(request, observer);
-    // Ensure request was only ran twice
-    Mockito.verify(observer, times(2)).onCompleted();
+  public void registerDuplicateUsername() throws NoSuchAlgorithmException, InvalidKeySpecException {
+    registerServerService.register(request);
+    var response = registerServerService.register(request);
+
     // Ensure only 1 user exists
     assertEquals(1, userRepository.count());
-    // Set up a captor for the second response
-    ArgumentCaptor<UserRegisterResponse> captor
-        = ArgumentCaptor.forClass(UserRegisterResponse.class);
-    // Capture the response
-    Mockito.verify(observer, times(2)).onNext(captor.capture());
-    // Get the UserRegisterResponse from the captor
-    UserRegisterResponse response = captor.getValue();
     // Ensure it failed
     assertFalse(response.getIsSuccess());
     // Ensure that the message is sent successfully
     assertEquals("Error", response.getMessage().split(":", 2)[0]);
   }
-
-  @Test
-  public void editValidUser() {
-
-    registerServerService.register(request, observer);
-    int userID = userRepository.findByUsername("Username").getId();
-    EditUserRequest newRequest = EditUserRequest.newBuilder()
-            .setUserId(userID)
-            .setFirstName("FirstName")
-            .setMiddleName("Middle Names")
-            .setLastName("NewLastName")
-            .setNickname("Nickname")
-            .setBio("Bio")
-            .setPersonalPronouns("Pronoun1/Pronoun2")
-            .setEmail("email@email.email")
-            .build();
-    registerServerService.editUser(newRequest, editObserver);
-
-    // Ensure request was only run once
-    Mockito.verify(editObserver, times(1)).onCompleted();
-    // Set up a captor for the response
-    ArgumentCaptor<EditUserResponse> captor
-            = ArgumentCaptor.forClass(EditUserResponse.class);
-    // Capture the response
-    Mockito.verify(editObserver, times(1)).onNext(captor.capture());
-    // Get the UserRegisterResponse from the captor
-    EditUserResponse response = captor.getValue();
-    // Check it was successful
-    assertTrue(response.getIsSuccess());
-    // Ensure that the message is sent successfully
-    assertEquals("Updated details for user", response.getMessage().split(":", 2)[0]);
-    // Ensure only 1 user exists
-    assertEquals(1, userRepository.count());
-    // Ensure user exists
-    assertNotNull(userRepository.findByUsername("Username"));
-
-    assertEquals("NewLastName", userRepository.findByUsername("Username").getLastName());
-  }
-
-  @Test
-  public void editNonExistentUser() {
-    EditUserRequest newRequest = EditUserRequest.newBuilder()
-            .setUserId(1)
-            .setFirstName("FirstName")
-            .setMiddleName("Middle Names")
-            .setLastName("NewLastName")
-            .setNickname("Nickname")
-            .setBio("Bio")
-            .setPersonalPronouns("Pronoun1/Pronoun2")
-            .setEmail("email@email.email")
-            .build();
-    registerServerService.editUser(newRequest, editObserver);
-
-    // Ensure request was only run once
-    Mockito.verify(editObserver, times(1)).onCompleted();
-    // Set up a captor for the response
-    ArgumentCaptor<EditUserResponse> captor
-            = ArgumentCaptor.forClass(EditUserResponse.class);
-    // Capture the response
-    Mockito.verify(editObserver, times(1)).onNext(captor.capture());
-    // Get the UserRegisterResponse from the captor
-    EditUserResponse response = captor.getValue();
-    // Check it was successful
-    assertFalse(response.getIsSuccess());
-
-    assertEquals("Error: User not in database", response.getMessage());
-  }
-
 }
