@@ -49,16 +49,18 @@ public class UserAccountService {
      * @param orderBy parameter of a user to order the list by
      * @return list of users within the window and the total number of users available
      */
-    public PaginatedUsersResponse getPaginatedUsers(int offset, int limit, GetPaginatedUsersOrderingElement orderBy) {
+    public PaginatedUsersResponse getPaginatedUsers(int offset, int limit, GetPaginatedUsersOrderingElement orderBy, boolean ascending) {
+        var orderByAttributeName = switch (orderBy) {
+            case NAME -> "name";
+            case NICKNAME -> "nickname";
+            case USERNAME -> "username";
+            case ROLES -> "roles";
+        };
+
         GetPaginatedUsersRequest allUsers = GetPaginatedUsersRequest.newBuilder()
             .setOffset(offset)
             .setLimit(limit)
-            .setOrderBy(switch (orderBy) {
-                case NAME -> "name";
-                case NICKNAME -> "nickname";
-                case USERNAME -> "username";
-                case ROLES -> "roles";
-            })
+            .setOrderBy(String.format("%s|%s", orderByAttributeName, ascending ? "asc" : "desc"))
             .build();
 
         return userAccountServiceBlockingStub.getPaginatedUsers(allUsers);

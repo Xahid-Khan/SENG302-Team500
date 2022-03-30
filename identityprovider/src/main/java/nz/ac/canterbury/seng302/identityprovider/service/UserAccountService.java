@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 @GrpcService
 public class UserAccountService extends UserAccountServiceGrpc.UserAccountServiceImplBase {
-
   @Autowired private RegisterServerService registerServerService;
 
   @Autowired private GetUserService getUserService;
@@ -23,7 +22,7 @@ public class UserAccountService extends UserAccountServiceGrpc.UserAccountServic
   @Autowired private RoleService roleService;
 
   @Autowired private EditUserService editUserService;
-  
+
   /**
    * This is a GRPC user service method that is being over-ridden to register a user and return
    * a UserRegisterRequest
@@ -44,7 +43,7 @@ public class UserAccountService extends UserAccountServiceGrpc.UserAccountServic
       responseObserver.onError(e);
     }
   }
-  
+
   /**
    * This is a GRPC user service method that is being over-ridden to edit the users details and return
    *    * a EditUserResponse
@@ -56,7 +55,7 @@ public class UserAccountService extends UserAccountServiceGrpc.UserAccountServic
   public void editUser(EditUserRequest request, StreamObserver<EditUserResponse> responseObserver) {
     try {
       var res = editUserService.editUser(request, responseObserver);
-      
+
       responseObserver.onNext(res);
       responseObserver.onCompleted();
     } catch (Exception e) {
@@ -89,22 +88,22 @@ public class UserAccountService extends UserAccountServiceGrpc.UserAccountServic
    * GRPC service method that provides a list of user details with a caller-supplied sort order,
    * maximum length, and offset.
    *
-   *
    * @param request parameters from the caller
    * @param responseObserver to receive results or errors
    */
   @Override
   public void getPaginatedUsers(
       GetPaginatedUsersRequest request, StreamObserver<PaginatedUsersResponse> responseObserver) {
-        try {
-          var response = getUserService.getPaginatedUsers(request);
+    try {
+      var response = getUserService.getPaginatedUsers(request);
 
-          responseObserver.onNext(response);
-          responseObserver.onCompleted();
-        } catch (Exception e) {
-          e.printStackTrace();
-          responseObserver.onError(e);
-        }
+      responseObserver.onNext(response);
+      responseObserver.onCompleted();
+    }
+    catch (Exception e) {
+      e.printStackTrace();
+      responseObserver.onError(e);
+    }
   }
 
   /**
