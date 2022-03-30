@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import nz.ac.canterbury.seng302.portfolio.AuthorisationParamsHelper;
 import nz.ac.canterbury.seng302.portfolio.model.contract.SprintContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.ProjectEntity;
 import nz.ac.canterbury.seng302.portfolio.model.entity.SprintEntity;
@@ -43,6 +44,8 @@ public class SprintControllerTest {
     public void beforeEach() {
         sprintRepository.deleteAll();
         projectRepository.deleteAll();
+
+        AuthorisationParamsHelper.setParams("role", "TEACHER");
     }
 
     @Test
@@ -56,6 +59,7 @@ public class SprintControllerTest {
 
     @Test
     public void getById() throws Exception {
+        AuthorisationParamsHelper.setParams("role", "STUDENT");
         var project = new ProjectEntity("test project", null, Instant.EPOCH, Instant.parse("2007-12-03T10:15:30.00Z"));
         var sprint = new SprintEntity("test sprint", "test description", Instant.ofEpochSecond(120), Instant.ofEpochSecond(360));
         project.addSprint(sprint);
@@ -81,6 +85,7 @@ public class SprintControllerTest {
 
     @Test
     public void getManyByProjectId() throws Exception {
+        AuthorisationParamsHelper.setParams("role", "STUDENT");
         var project = new ProjectEntity("test project", null, Instant.EPOCH, Instant.parse("2007-12-03T10:15:30.00Z"));
         var sprint = new SprintEntity("test sprint", "test description", Instant.ofEpochSecond(120), Instant.ofEpochSecond(360));
         var sprint2 = new SprintEntity("test sprint 2", "test description 2", Instant.ofEpochSecond(420), Instant.ofEpochSecond(480));
@@ -118,6 +123,7 @@ public class SprintControllerTest {
 
     @Test
     public void getManyByNonExistentProjectId() throws Exception {
+        AuthorisationParamsHelper.setParams("role", "STUDENT");
         var result = this.mockMvc.perform(
                 get("/api/v1/projects/fake_project/sprints")
             )
@@ -292,5 +298,74 @@ public class SprintControllerTest {
         // Check that update was persisted.
         this.mockMvc.perform(get(apiPath))
             .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void tryCreateNewAsStudent() throws Exception {
+        AuthorisationParamsHelper.setParams("role", "STUDENT");
+
+        var project = new ProjectEntity("test project", null, Instant.parse("2022-12-01T10:15:30.00Z"), Instant.parse("2023-01-20T10:15:30.00Z"));
+        projectRepository.save(project);
+
+        var apiPath = String.format("/api/v1/projects/%s/sprints", project.getId());
+        var body = """
+            {
+                "name": "test sprint",
+                "startDate": "2023-01-01T10:00:00.00Z",
+                "endDate": "2023-01-15T10:00:00.00Z"
+            }
+            """;
+
+        this.mockMvc.perform(
+                post(apiPath)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(body)
+            )
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void tryUpdateValidSprintAsStudent() throws Exception {
+        AuthorisationParamsHelper.setParams("role", "STUDENT");
+
+        var project = new ProjectEntity("test project", null, Instant.parse("2022-12-01T10:15:30.00Z"), Instant.parse("2023-01-20T10:15:30.00Z"));
+        var sprint = new SprintEntity("pre-edit test sprint", "pre-test description", Instant.parse("2023-01-01T10:15:30.00Z"), Instant.parse("2023-01-03T10:15:30.00Z"));
+        project.addSprint(sprint);
+        projectRepository.save(project);
+        sprintRepository.save(sprint);
+        String projectId = project.getId();
+        String sprintId = sprint.getId();
+        var apiPath = String.format("/api/v1/sprints/%s", sprint.getId());
+        var body = String.format("""
+            {
+                "projectId": "%s",
+                "sprintId": "%s",
+                "name": "post-edit test sprint",
+                "startDate": "2023-01-04T10:00:00.00Z",
+                "endDate": "2023-01-15T10:00:00.00Z"
+            }
+            """, projectId, sprintId);
+        this.mockMvc.perform(
+                put(apiPath)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(body)
+            )
+            .andExpect(status().isForbidden());
+
+    }
+
+    @Test
+    public void tryDeleteSprintAsStudent() throws Exception {
+        AuthorisationParamsHelper.setParams("role", "STUDENT");
+        var project = new ProjectEntity("test project", null, Instant.EPOCH, Instant.parse("2007-12-03T10:15:30.00Z"));
+        var sprint = new SprintEntity("pre-edit test sprint", "pre-test description", Instant.EPOCH, Instant.parse("2007-12-03T10:15:30.00Z"));
+        project.addSprint(sprint);
+        projectRepository.save(project);
+        sprintRepository.save(sprint);
+
+        var apiPath = String.format("/api/v1/sprints/%s", sprint.getId());
+
+        this.mockMvc.perform(delete(apiPath))
+            .andExpect(status().isForbidden());
     }
 }
