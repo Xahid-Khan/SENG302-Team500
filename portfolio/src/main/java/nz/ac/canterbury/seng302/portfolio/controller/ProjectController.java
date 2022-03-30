@@ -37,17 +37,12 @@ public class ProjectController {
      * @return List of projects converted into project contract (JSON) type.
      */
     @GetMapping(value = "/projects", produces = "application/json")
-    public ResponseEntity<?> getAll(@AuthenticationPrincipal AuthState principal) {
-        ArrayList<String> roles = rolesService.getRolesByToken(principal);
-        if (roles.contains("TEACHER") || roles.contains("COORDINATOR")) {
-            try {
-                ArrayList<ProjectContract> projects = projectService.allProjects();
-                return ResponseEntity.ok(projects);
-            } catch (NoSuchElementException error) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            }
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    public ResponseEntity<?> getAll() {
+        try {
+            ArrayList<ProjectContract> projects = projectService.allProjects();
+            return ResponseEntity.ok(projects);
+        } catch (NoSuchElementException error) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 

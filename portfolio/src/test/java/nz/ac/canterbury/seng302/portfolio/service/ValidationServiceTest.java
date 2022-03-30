@@ -75,12 +75,6 @@ public class ValidationServiceTest {
         assertEquals("Project name must not be empty", response);
 
         response = validationService.checkBaseFields("Sprint",
-                "Sprint$Two",
-                Instant.parse("2021-12-03T10:15:30.00Z"),
-                Instant.parse("2021-12-05T10:15:30.00Z"));
-        assertEquals("Sprint name cannot contain any special characters", response);
-
-        response = validationService.checkBaseFields("Sprint",
                 "Sprint Two",
                 Instant.parse("2021-12-03T10:15:30.00Z"),
                 Instant.parse("2021-12-01T10:15:30.00Z"));

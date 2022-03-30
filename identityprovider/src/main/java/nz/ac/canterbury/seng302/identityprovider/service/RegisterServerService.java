@@ -4,7 +4,6 @@ import com.google.protobuf.Timestamp;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
-import java.time.Instant;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +12,7 @@ import nz.ac.canterbury.seng302.identityprovider.database.UserRepository;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterRequest;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
+import nz.ac.canterbury.seng302.shared.util.ValidationError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,10 +42,25 @@ public class RegisterServerService {
                         request.getPersonalPronouns(),
                         request.getEmail(),
                         roles,
-                        currentTimestamp()
-                        );
-        repository.save(user);
-        reply.setIsSuccess(true).setNewUserId(user.getId()).setMessage("Registered new user: " + user);
+                        currentTimestamp());
+
+        // If a username already exists in the database, return an error
+        if (repository.findByUsername(request.getUsername()) != null) {
+            reply
+                    .setIsSuccess(false)
+                    .setNewUserId(-1)
+                    .setMessage("Error: Username in use")
+                    .addValidationErrors(
+                            ValidationError.newBuilder()
+                                    .setFieldName("username")
+                                    .setErrorText("Error: Username in use"));
+        } else {
+            repository.save(user);
+            reply
+                    .setIsSuccess(true)
+                    .setNewUserId(user.getId())
+                    .setMessage("Registered new user: " + user);
+        }
 
         return reply.build();
     }
