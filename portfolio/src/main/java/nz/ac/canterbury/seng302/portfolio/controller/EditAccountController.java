@@ -37,11 +37,8 @@ public class EditAccountController {
 
         UserResponse userDetails = userAccountService.getUserById(userId);
 
-        String registrationDate = "2 April 2021 (10 months)"; // TODO fix this
-
         //Prefill the form with the user's details
         model.addAttribute("user", userDetails);
-        model.addAttribute("registration_date", registrationDate);
 
         return "edit_account";
     }

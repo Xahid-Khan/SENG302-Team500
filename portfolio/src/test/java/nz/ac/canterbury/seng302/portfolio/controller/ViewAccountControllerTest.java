@@ -42,7 +42,7 @@ public class ViewAccountControllerTest {
     public void addNewUser() throws Exception {
          newUser = registerClientService.register(new User("SomeUserName", "thisisMypassWord", "MyFirst Name",
                 "MyMiddle Name", "MyLast Name", "Name", "THis is a mock profile", "Mr.",
-                "thisisanemail@fakeemail.com"));
+                "thisisanemail@fakeemail.com", null));
     }
 
     @Test

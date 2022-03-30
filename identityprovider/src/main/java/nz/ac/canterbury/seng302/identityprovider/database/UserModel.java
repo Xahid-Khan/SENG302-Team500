@@ -42,6 +42,7 @@ public class UserModel {
     @Column(name = "roles", nullable = false)
     private List<UserRole> roles = new ArrayList<>();
 
+    @Lob
     private Timestamp created;
 
     protected UserModel() {
@@ -142,6 +143,7 @@ public class UserModel {
             ", personalPronouns='" + personalPronouns + '\'' +
             ", email='" + email + '\'' +
             ", roles='" + roles.toString() + '\'' +
+            ", created='" + created.toString() + '\'' +
             '}';
     }
 }

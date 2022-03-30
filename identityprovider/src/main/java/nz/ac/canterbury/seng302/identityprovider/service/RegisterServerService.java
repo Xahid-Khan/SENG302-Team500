@@ -1,7 +1,7 @@
 package nz.ac.canterbury.seng302.identityprovider.service;
 
 import com.google.protobuf.Timestamp;
-import io.grpc.stub.StreamObserver;
+
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.time.Instant;
@@ -10,12 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 import nz.ac.canterbury.seng302.identityprovider.database.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.database.UserRepository;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterRequest;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
-import nz.ac.canterbury.seng302.shared.util.ValidationError;
-import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -44,11 +41,20 @@ public class RegisterServerService {
                         request.getBio(),
                         request.getPersonalPronouns(),
                         request.getEmail(),
-                        roles);
+                        roles,
+                        currentTimestamp()
+                        );
         repository.save(user);
-        reply.setIsSuccess(true).setNewUserId(user.getId()).setMessage("registered new user: " + user);
+        reply.setIsSuccess(true).setNewUserId(user.getId()).setMessage("Registered new user: " + user);
 
         return reply.build();
+    }
+
+    public static Timestamp currentTimestamp() {
+        return Timestamp
+                .newBuilder()
+                .setSeconds(Instant.now().getEpochSecond())
+                .build();
     }
 }
 
