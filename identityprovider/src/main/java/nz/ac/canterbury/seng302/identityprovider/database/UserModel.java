@@ -1,6 +1,8 @@
 package nz.ac.canterbury.seng302.identityprovider.database;
 
 
+import com.google.protobuf.Timestamp;
+
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
 
 import javax.persistence.*;
@@ -31,7 +33,7 @@ public class UserModel {
 
     private String bio;
 
-    private String pronouns;
+    private String personalPronouns;
 
     @Column(nullable = false)
     private String email;
@@ -44,7 +46,7 @@ public class UserModel {
     }
 
     public UserModel(String username, String passwordHash, String firstName, String middleName, String lastName,
-        String nickname, String bio, String pronouns, String email, List<UserRole> roles) {
+        String nickname, String bio, String personalPronouns, String email, List<UserRole> roles) {
         this.username = username;
         this.passwordHash = passwordHash;
         this.firstName = firstName;
@@ -52,7 +54,7 @@ public class UserModel {
         this.lastName = lastName;
         this.nickname = nickname;
         this.bio = bio;
-        this.pronouns = pronouns;
+        this.personalPronouns = personalPronouns;
         this.email = email;
         this.roles = roles;
     }
@@ -89,13 +91,15 @@ public class UserModel {
         return bio;
     }
 
-    public String getPronouns() {
-        return pronouns;
+    public String getPersonalPronouns() {
+        return personalPronouns;
     }
 
     public String getEmail() {
         return email;
     }
+
+    public void setId(int id) { this.id = id; }
 
     public List<UserRole> getRoles() { return roles; }
 
@@ -128,7 +132,7 @@ public class UserModel {
             ", lastName='" + lastName + '\'' +
             ", nickname='" + nickname + '\'' +
             ", bio='" + bio + '\'' +
-            ", pronouns='" + pronouns + '\'' +
+            ", personalPronouns='" + personalPronouns + '\'' +
             ", email='" + email + '\'' +
             ", roles='" + roles.toString() + '\'' +
             '}';

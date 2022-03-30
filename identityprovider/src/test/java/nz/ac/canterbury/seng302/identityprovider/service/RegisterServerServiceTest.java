@@ -1,12 +1,13 @@
 package nz.ac.canterbury.seng302.identityprovider.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 
 import io.grpc.stub.StreamObserver;
 import nz.ac.canterbury.seng302.identityprovider.database.UserRepository;
+import nz.ac.canterbury.seng302.shared.identityprovider.EditUserRequest;
+import nz.ac.canterbury.seng302.shared.identityprovider.EditUserResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterRequest;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,6 +21,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 public class RegisterServerServiceTest {
 
   @Autowired private UserAccountService registerServerService;
+
+  @Autowired
+  private UserRepository userRepository;
 
   private StreamObserver<UserRegisterResponse> observer = mock(StreamObserver.class);
 
@@ -48,7 +52,7 @@ public class RegisterServerServiceTest {
    *  for providing how to run a Mockito mock observer.
    */
   @Test
-  public void validUser() {
+  public void registerValidUser() {
     registerServerService.register(request, observer);
 
     // Ensure request was only run once
@@ -63,18 +67,18 @@ public class RegisterServerServiceTest {
     // Check it was successful
     assertTrue(response.getIsSuccess());
     // Ensure that the message is sent successfully
-    assertEquals("Registered", response.getMessage().split(" ", 2)[0]);
+    assertEquals("Registered new user", response.getMessage().split(":", 2)[0]);
     // Ensure only 1 user exists
     assertEquals(1, userRepository.count());
     // Ensure user exists
-    assertTrue(userRepository.findByUsername("Username") != null);
+    assertNotNull(userRepository.findByUsername("Username"));
   }
 
   /**
    * Runs a test by inputting the same user twice, which should cause a username error.
    */
   @Test
-  public void duplicateUsername() {
+  public void registerDuplicateUsername() {
     registerServerService.register(request, observer);
     registerServerService.register(request, observer);
     // Ensure request was only ran twice
@@ -89,8 +93,76 @@ public class RegisterServerServiceTest {
     // Get the UserRegisterResponse from the captor
     UserRegisterResponse response = captor.getValue();
     // Ensure it failed
-    assertTrue(!response.getIsSuccess());
+    assertFalse(response.getIsSuccess());
     // Ensure that the message is sent successfully
-    assertEquals("Error:", response.getMessage().split(" ", 2)[0]);
+    assertEquals("Error", response.getMessage().split(":", 2)[0]);
   }
+
+  @Test
+  public void editValidUser() {
+
+    registerServerService.register(request, observer);
+    int userID = userRepository.findByUsername("Username").getId();
+    EditUserRequest newRequest = EditUserRequest.newBuilder()
+            .setUserId(userID)
+            .setFirstName("FirstName")
+            .setMiddleName("Middle Names")
+            .setLastName("NewLastName")
+            .setNickname("Nickname")
+            .setBio("Bio")
+            .setPersonalPronouns("Pronoun1/Pronoun2")
+            .setEmail("email@email.email")
+            .build();
+    registerServerService.editUser(newRequest, editObserver);
+
+    // Ensure request was only run once
+    Mockito.verify(editObserver, times(1)).onCompleted();
+    // Set up a captor for the response
+    ArgumentCaptor<EditUserResponse> captor
+            = ArgumentCaptor.forClass(EditUserResponse.class);
+    // Capture the response
+    Mockito.verify(editObserver, times(1)).onNext(captor.capture());
+    // Get the UserRegisterResponse from the captor
+    EditUserResponse response = captor.getValue();
+    // Check it was successful
+    assertTrue(response.getIsSuccess());
+    // Ensure that the message is sent successfully
+    assertEquals("Updated details for user", response.getMessage().split(":", 2)[0]);
+    // Ensure only 1 user exists
+    assertEquals(1, userRepository.count());
+    // Ensure user exists
+    assertNotNull(userRepository.findByUsername("Username"));
+
+    assertEquals("NewLastName", userRepository.findByUsername("Username").getLastName());
+  }
+
+  @Test
+  public void editNonExistentUser() {
+    EditUserRequest newRequest = EditUserRequest.newBuilder()
+            .setUserId(1)
+            .setFirstName("FirstName")
+            .setMiddleName("Middle Names")
+            .setLastName("NewLastName")
+            .setNickname("Nickname")
+            .setBio("Bio")
+            .setPersonalPronouns("Pronoun1/Pronoun2")
+            .setEmail("email@email.email")
+            .build();
+    registerServerService.editUser(newRequest, editObserver);
+
+    // Ensure request was only run once
+    Mockito.verify(editObserver, times(1)).onCompleted();
+    // Set up a captor for the response
+    ArgumentCaptor<EditUserResponse> captor
+            = ArgumentCaptor.forClass(EditUserResponse.class);
+    // Capture the response
+    Mockito.verify(editObserver, times(1)).onNext(captor.capture());
+    // Get the UserRegisterResponse from the captor
+    EditUserResponse response = captor.getValue();
+    // Check it was successful
+    assertFalse(response.getIsSuccess());
+
+    assertEquals("Error: User not in database", response.getMessage());
+  }
+
 }

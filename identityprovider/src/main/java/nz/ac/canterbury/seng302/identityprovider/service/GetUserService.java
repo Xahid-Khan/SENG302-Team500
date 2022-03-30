@@ -5,9 +5,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import javax.persistence.Query;
 import nz.ac.canterbury.seng302.identityprovider.database.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.database.UserRepository;
+import nz.ac.canterbury.seng302.identityprovider.exceptions.UserDoesNotExistException;
 import nz.ac.canterbury.seng302.identityprovider.mapping.UserMapper;
 import nz.ac.canterbury.seng302.shared.identityprovider.GetPaginatedUsersRequest;
 import nz.ac.canterbury.seng302.shared.identityprovider.GetUserByIdRequest;
@@ -21,7 +23,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class GetUserService {
-  private static HashSet<String> validOrderByFieldNames = new HashSet<String>(
+  private static final HashSet<String> validOrderByFieldNames = new HashSet<String>(
       List.of(new String[]{"name", "username", "nickname", "roles"}));
 
   @Autowired private UserRepository repository;
@@ -53,13 +55,20 @@ public class GetUserService {
    * @return a PaginatedUsersResponse filled in
    */
   public PaginatedUsersResponse getPaginatedUsers(GetPaginatedUsersRequest request) throws Exception {
-    var orderByField = request.getOrderBy();
+    var orderByFields = request.getOrderBy().split("\\|", 2);
+
+    if (orderByFields.length != 2) {
+      throw new IllegalArgumentException("Please provide an orderBy field name, pipe symbol, followed by 'asc' or 'desc'.");
+    }
+    boolean ascending = orderByFields[1].equals("asc");
+    var orderByField = orderByFields[0];
+
     var limit = request.getLimit();
     var offset = request.getOffset();
 
     // Validate inputs
     if (!validOrderByFieldNames.contains(orderByField) || limit <= 0 || offset < 0) {
-      throw new IllegalArgumentException("Error: Inputs not valid for request");
+      throw new IllegalArgumentException("Please provide a valid orderBy field name.");
     }
 
     try (Session session = sessionFactory.openSession()) {
@@ -69,7 +78,7 @@ public class GetUserService {
       List<UserModel> resultList;
       if (orderByField.equals("roles")) {
         // Receive IDs in order by roles
-        var query = session.createQuery("SELECT u.id FROM UserModel u JOIN u.roles r GROUP BY u.id ORDER BY string_agg((case when r = ?1 then 'student' else (case when r=?2 then 'teacher' else 'course_administrator' end) end), ',')", Integer.class)
+        var query = session.createQuery("SELECT u.id FROM UserModel u JOIN u.roles r GROUP BY u.id ORDER BY string_agg((case when r = ?1 then 'student' else (case when r=?2 then 'teacher' else 'course_administrator' end) end), ',') " + ((ascending) ? "ASC" : "DESC"), Integer.class)
             .setParameter(1, UserRole.STUDENT)
             .setParameter(2, UserRole.TEACHER)
             .setFirstResult(offset)
@@ -88,12 +97,16 @@ public class GetUserService {
         }
       }
       else {
-        var queryOrderByComponent = switch (orderByField) {
-          case "name" -> "firstName, middleName, lastName";
-          case "username" -> "username";
-          case "nickname" -> "nickname";
+        var queryOrderByAttributes = switch (orderByField) {
+          case "name" -> List.of("firstName", "middleName", "lastName");
+          case "username" -> List.of("username");
+          case "nickname" -> List.of("nickname");
           default -> throw new IllegalArgumentException("Unsupported orderBy field");
         };
+
+        var queryOrderByComponent = queryOrderByAttributes.stream()
+            .map(component -> String.format("%s %s", component, ((ascending) ? "ASC" : "DESC")))
+            .collect(Collectors.joining(", "));
 
         var query = session.createQuery("FROM UserModel ORDER BY " + queryOrderByComponent, UserModel.class)
             .setFirstResult(offset)

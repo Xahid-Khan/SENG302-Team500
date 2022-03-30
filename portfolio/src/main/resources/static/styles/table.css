@@ -1,30 +1,38 @@
-table{
+.table {
     width: 100%;
     margin-left:auto;
     margin-right:auto;
+    display: table;
 }
 
-th {
-     background-color: #43C0FE;
+.table .tableRow {
+    display: table-row;
+}
+
+.table  .tableCell {
+    display: table-cell;
+}
+
+.table .sortableHeader {
+    background-color: #43C0FE;
     transition-duration: 0.4s;
-     color: white;
+    color: white;
  }
 
-th:hover{
+.table .sortableHeader:hover {
     background-color: #0332D1;
 }
 
-th, td {
+.table .tableCell {
     text-align: left;
     padding: 5px;
     border-bottom: 1px solid #ddd;
 }
 
-tr:hover {
+.table .tableRow:hover {
     background-color: #aaaaaa;
 }
 
-th
 .headerSortDown:after,
 .headerSortUp:after {
     content: ' ';
@@ -35,10 +43,10 @@ th
 
 .headerSortDown:after {
     top: 10px;
-    border-top-color: silver;
+    border-top-color: white;
 }
 
 .headerSortUp:after {
     bottom: 10px;
-    border-bottom-color: silver;
+    border-bottom-color: white;
 }
