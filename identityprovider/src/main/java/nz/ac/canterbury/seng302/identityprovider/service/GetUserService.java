@@ -119,8 +119,5 @@ public class GetUserService {
           .setResultSetSize(totalCount)
           .build();
     }
-    catch (Exception e) {
-      throw e;
-    }
   }
 }
