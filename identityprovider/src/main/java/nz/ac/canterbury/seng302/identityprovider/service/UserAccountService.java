@@ -54,9 +54,9 @@ public class UserAccountService extends UserAccountServiceGrpc.UserAccountServic
   @Override
   public void editUser(EditUserRequest request, StreamObserver<EditUserResponse> responseObserver) {
     try {
-      var res = editUserService.editUser(request, responseObserver);
+      var response = editUserService.editUser(request);
 
-      responseObserver.onNext(res);
+      responseObserver.onNext(response);
       responseObserver.onCompleted();
     } catch (Exception e) {
       e.printStackTrace();
