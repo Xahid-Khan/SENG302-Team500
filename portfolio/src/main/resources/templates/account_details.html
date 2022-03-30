@@ -45,6 +45,7 @@
     <div>
         <h3 th:text="'Username:   ' + ${user.username}"/>
         <h3 th:text="'Email:   ' +${user.email}"/>
+        <h3 th:text="'Roles:   ' +${delegate.formatUserRoles(user.rolesList)}"/>
         <h3 th:text="'Joined on:   ' + ${registration_date}"/>
         <h3 th:text="'Bio:   ' + ${user.bio}"/>
     </div>
