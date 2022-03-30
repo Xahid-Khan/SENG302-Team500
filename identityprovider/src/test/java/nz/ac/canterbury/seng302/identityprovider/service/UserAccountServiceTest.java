@@ -63,7 +63,7 @@ public class UserAccountServiceTest {
     var request = GetPaginatedUsersRequest.newBuilder()
         .setLimit(5)
         .setOffset(0)
-        .setOrderBy("username")
+        .setOrderBy("username|asc")
         .build();
 
     service.getPaginatedUsers(request, responseObserver);
@@ -80,7 +80,7 @@ public class UserAccountServiceTest {
     var request = GetPaginatedUsersRequest.newBuilder()
         .setLimit(2)
         .setOffset(0)
-        .setOrderBy("username")
+        .setOrderBy("username|asc")
         .build();
 
     service.getPaginatedUsers(request, responseObserver);
@@ -97,7 +97,7 @@ public class UserAccountServiceTest {
     var request = GetPaginatedUsersRequest.newBuilder()
         .setLimit(2)
         .setOffset(0)
-        .setOrderBy("username")
+        .setOrderBy("username|asc")
         .build();
 
     service.getPaginatedUsers(request, responseObserver);
@@ -113,7 +113,7 @@ public class UserAccountServiceTest {
     var request = GetPaginatedUsersRequest.newBuilder()
         .setLimit(5)
         .setOffset(1)
-        .setOrderBy("username")
+        .setOrderBy("username|asc")
         .build();
 
     service.getPaginatedUsers(request, responseObserver);
@@ -129,7 +129,7 @@ public class UserAccountServiceTest {
     var request = GetPaginatedUsersRequest.newBuilder()
         .setLimit(5)
         .setOffset(3)
-        .setOrderBy("username")
+        .setOrderBy("username|asc")
         .build();
 
     service.getPaginatedUsers(request, responseObserver);
@@ -146,7 +146,7 @@ public class UserAccountServiceTest {
     var request = GetPaginatedUsersRequest.newBuilder()
         .setLimit(5)
         .setOffset(-1)
-        .setOrderBy("username")
+        .setOrderBy("username|asc")
         .build();
 
     service.getPaginatedUsers(request, responseObserver);
@@ -162,7 +162,7 @@ public class UserAccountServiceTest {
     var request = GetPaginatedUsersRequest.newBuilder()
         .setLimit(0)
         .setOffset(1)
-        .setOrderBy("username")
+        .setOrderBy("username|asc")
         .build();
 
     service.getPaginatedUsers(request, responseObserver);
@@ -178,7 +178,7 @@ public class UserAccountServiceTest {
     var request = GetPaginatedUsersRequest.newBuilder()
         .setLimit(5)
         .setOffset(1)
-        .setOrderBy("middleName")
+        .setOrderBy("middleName|asc")
         .build();
 
     service.getPaginatedUsers(request, responseObserver);
@@ -206,7 +206,7 @@ public class UserAccountServiceTest {
     var request = GetPaginatedUsersRequest.newBuilder()
         .setLimit(5)
         .setOffset(0)
-        .setOrderBy("username")
+        .setOrderBy("username|asc")
         .build();
 
     service.getPaginatedUsers(request, responseObserver);
@@ -223,7 +223,7 @@ public class UserAccountServiceTest {
     var request = GetPaginatedUsersRequest.newBuilder()
         .setLimit(5)
         .setOffset(0)
-        .setOrderBy("name")
+        .setOrderBy("name|asc")
         .build();
 
     service.getPaginatedUsers(request, responseObserver);
@@ -239,7 +239,7 @@ public class UserAccountServiceTest {
     var request = GetPaginatedUsersRequest.newBuilder()
         .setLimit(5)
         .setOffset(0)
-        .setOrderBy("nickname")
+        .setOrderBy("nickname|asc")
         .build();
 
     service.getPaginatedUsers(request, responseObserver);
@@ -255,7 +255,7 @@ public class UserAccountServiceTest {
     var request = GetPaginatedUsersRequest.newBuilder()
         .setLimit(5)
         .setOffset(0)
-        .setOrderBy("roles")
+        .setOrderBy("roles|asc")
         .build();
 
     service.getPaginatedUsers(request, responseObserver);
@@ -264,5 +264,21 @@ public class UserAccountServiceTest {
     var response = onNextArgumentCaptor.getValue();
 
     assertArrayEquals(new String[] {"u2", "u1", "u3"}, response.getUsersList().stream().map(UserResponse::getUsername).toArray());
+  }
+
+  @Test
+  public void given3UsersExist_whenOrderByUsernameDescending_receiveInDescendingOrder() {
+    var request = GetPaginatedUsersRequest.newBuilder()
+        .setLimit(5)
+        .setOffset(0)
+        .setOrderBy("username|desc")
+        .build();
+
+    service.getPaginatedUsers(request, responseObserver);
+
+    verify(responseObserver).onNext(onNextArgumentCaptor.capture());
+    var response = onNextArgumentCaptor.getValue();
+
+    assertArrayEquals(new String[] {"u3", "u2", "u1"}, response.getUsersList().stream().map(UserResponse::getUsername).toArray());
   }
 }

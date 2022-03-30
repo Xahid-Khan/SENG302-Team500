@@ -11,3 +11,22 @@
     overflow-y: hidden;
     overflow-x: auto;
 }
+
+a[disabled='disabled'] {
+    display: none;
+}
+
+a {
+    color: #fff;
+    cursor: pointer;
+    background-color: #43C0FE;
+    border: none;
+    padding: 8px 12px;
+    transition-duration: 0.4s;
+    font-size: 14px;
+    text-decoration: none;
+}
+
+a:hover {
+    background-color: #0332D1;
+}

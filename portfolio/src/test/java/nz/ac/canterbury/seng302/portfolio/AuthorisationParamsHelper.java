@@ -2,21 +2,15 @@ package nz.ac.canterbury.seng302.portfolio;
 
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
-import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTOOrBuilder;
 import org.mockito.Mockito;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.util.HashMap;
-import java.util.Map;
 
-import io.jsonwebtoken.MalformedJwtException;
+public class AuthorisationParamsHelper {
 
-
-public class GetAuthorizationParams {
-
-    public GetAuthorizationParams(String name, String role) {
+    public static void setParams(String name, String role) {
 
         ClaimDTO.Builder newClaim = ClaimDTO.newBuilder();
         newClaim.setIssuer("Local Auths");

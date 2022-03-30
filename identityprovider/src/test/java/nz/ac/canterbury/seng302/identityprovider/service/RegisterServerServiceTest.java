@@ -53,7 +53,6 @@ public class RegisterServerServiceTest {
    * Credit to https://stackoverflow.com/a/49872463
    *  for providing how to run a Mockito mock observer.
    */
-
   @Test
   public void registerValidUser() {
     registerServerService.register(request, observer);
@@ -74,7 +73,7 @@ public class RegisterServerServiceTest {
     // Ensure only 1 user exists
     assertEquals(1, repository.count());
     // Ensure user exists
-    assertTrue(repository.findByUsername("Username") != null);
+    assertNotNull(repository.findByUsername("Username"));
   }
 
   /**
@@ -96,7 +95,7 @@ public class RegisterServerServiceTest {
     // Get the UserRegisterResponse from the captor
     UserRegisterResponse response = captor.getValue();
     // Ensure it failed
-    assertTrue(!response.getIsSuccess());
+    assertFalse(response.getIsSuccess());
     // Ensure that the message is sent successfully
     assertEquals("Error", response.getMessage().split(":", 2)[0]);
   }
