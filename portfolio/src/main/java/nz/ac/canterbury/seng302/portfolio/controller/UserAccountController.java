@@ -20,6 +20,9 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.time.temporal.ChronoUnit;
+
+import static java.time.temporal.ChronoUnit.DAYS;
 
 
 @Controller
@@ -83,7 +86,15 @@ public class UserAccountController {
 
         String dateString = date.format(DateTimeFormatter
                 .ofLocalizedDate(FormatStyle.LONG));
-        return dateString;
+
+        long years = ChronoUnit.YEARS.between(date, LocalDate.now());
+        long months = ChronoUnit.MONTHS.between(date, LocalDate.now()) % 12;
+
+        return dateString +
+                " (" +
+                ((years == 0) ? "" : years + " years ") +
+                ((years != 0 && months == 0) ? "" : months + " months") +
+                ")";
     }
 
 }

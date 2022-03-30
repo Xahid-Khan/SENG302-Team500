@@ -1,13 +1,6 @@
 package nz.ac.canterbury.seng302.identityprovider.service;
 
 import com.google.protobuf.Timestamp;
-
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
-
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
 import nz.ac.canterbury.seng302.identityprovider.database.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.database.UserRepository;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterRequest;
@@ -17,12 +10,20 @@ import nz.ac.canterbury.seng302.shared.util.ValidationError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class RegisterServerService {
 
   @Autowired private UserRepository repository;
 
   @Autowired private PasswordService passwordService;
+
+
 
     public UserRegisterResponse register(UserRegisterRequest request)
             throws NoSuchAlgorithmException, InvalidKeySpecException {

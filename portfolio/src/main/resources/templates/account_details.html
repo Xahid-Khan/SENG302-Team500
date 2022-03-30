@@ -41,8 +41,8 @@
                      width="150" height="150" alt="Placeholder Profile Photo">
             </div>
             <div class="left-padding">
-                <h1 th:text="${user.firstName} + ' ' + ${user.lastName}" />
-                <h2 th:text="'Nickname:   ' + ${user.nickname} "/>
+                <h1 th:text="${user.firstName} + ' ' + ${user.middleName} + ' ' + ${user.lastName}" />
+                <h3 th:text="'Nickname:   ' + ${user.nickname} "/>
                 <h3 th:text="'Pronouns:   ' + ${user.personalPronouns}"/>
             </div>
         </div>
@@ -57,7 +57,7 @@
     <div>
         <h3 th:text="'Username:   ' + ${user.username}"/>
         <h3 th:text="'Email:   ' +${user.email}"/>
-        <h3 th:text="'Joined on:   ' + ${registration_date}"/>
+        <h3 th:text="'Member since:   ' + ${registration_date}"/>
         <h3 th:text="'Bio:   ' + ${user.bio}"/>
     </div>
 </div>

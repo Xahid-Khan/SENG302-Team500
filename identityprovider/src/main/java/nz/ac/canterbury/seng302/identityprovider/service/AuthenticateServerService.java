@@ -2,9 +2,6 @@ package nz.ac.canterbury.seng302.identityprovider.service;
 
 import com.google.protobuf.Empty;
 import io.grpc.stub.StreamObserver;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
-import java.util.stream.Collectors;
 import net.devh.boot.grpc.server.service.GrpcService;
 import nz.ac.canterbury.seng302.identityprovider.authentication.AuthenticationServerInterceptor;
 import nz.ac.canterbury.seng302.identityprovider.authentication.JwtTokenUtil;
@@ -16,6 +13,10 @@ import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticateResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticationServiceGrpc.AuthenticationServiceImplBase;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.util.stream.Collectors;
 
 @GrpcService
 public class AuthenticateServerService extends AuthenticationServiceImplBase {
@@ -59,10 +60,18 @@ public class AuthenticateServerService extends AuthenticationServiceImplBase {
             .setSuccess(true)
             .setToken(token);
       } else {
-        reply
-            .setMessage("Log in attempt failed: username or password incorrect")
-            .setSuccess(false)
-            .setToken("");
+        if (user == null) {
+          reply
+                  .setMessage("Username does not exist")
+                  .setSuccess(false)
+                  .setToken("");
+        }
+        else{
+          reply
+                  .setMessage("Log in attempt failed: username or password incorrect")
+                  .setSuccess(false)
+                  .setToken("");
+        }
       }
       responseObserver.onNext(reply.build());
       responseObserver.onCompleted();
