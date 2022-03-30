@@ -6,6 +6,8 @@ Adapted from W3 Schools.
 .navbar {
     overflow: hidden;
     background-color: #333;
+    display: flex;
+    margin-bottom: 50px;
 }
 
 /* The dropdown container */
@@ -61,4 +63,16 @@ Adapted from W3 Schools.
     padding-right: 15px;
     font-size: 18px;
     margin-top: 13px;
+}
+
+.account {
+    flex: 1;
+    justify-content: right;
+}
+
+@media (max-width: 640px) {
+
+    .navbar {
+        margin-bottom: 0;
+    }
 }
