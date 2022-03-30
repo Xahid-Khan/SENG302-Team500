@@ -12,11 +12,11 @@
     overflow-x: auto;
 }
 
-a[disabled='disabled'] {
+a.buttonLink[disabled='disabled'] {
     display: none;
 }
 
-a {
+a.buttonLink {
     color: #fff;
     cursor: pointer;
     background-color: #43C0FE;
@@ -27,6 +27,6 @@ a {
     text-decoration: none;
 }
 
-a:hover {
+a.buttonLink:hover {
     background-color: #0332D1;
 }
