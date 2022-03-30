@@ -42,7 +42,7 @@ public class RegisterServerServiceTest {
 
   @BeforeEach
   private void clearDatabase() {
-    repository.deleteAll();
+    userRepository.deleteAll();
   }
 
   /**
@@ -57,9 +57,9 @@ public class RegisterServerServiceTest {
     // Ensure that the message is sent successfully
     assertEquals("Registered new user", response.getMessage().split(":", 2)[0]);
     // Ensure only 1 user exists
-    assertEquals(1, repository.count());
+    assertEquals(1, userRepository.count());
     // Ensure user exists
-    assertNotNull(repository.findByUsername("Username"));
+    assertNotNull(userRepository.findByUsername("Username"));
   }
 
   /**
