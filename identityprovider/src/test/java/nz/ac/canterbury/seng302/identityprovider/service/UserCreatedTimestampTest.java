@@ -40,7 +40,6 @@ public class UserCreatedTimestampTest {
       .setEmail("email@email.email")
       .build();
 
-  // CAUTION! NEVER RUN UNIT TESTS IN PRODUCTION. TODO: How do we get around this?
   @BeforeEach
   private void clearDatabase() {
     repository.deleteAll();
