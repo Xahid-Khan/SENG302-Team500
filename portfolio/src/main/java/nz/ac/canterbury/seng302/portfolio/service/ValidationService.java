@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import javax.xml.bind.SchemaOutputResolver;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.NoSuchElementException;
 
 
@@ -30,6 +31,9 @@ public class ValidationService {
                 projectContract.endDate());
     }
 
+    /**
+     * Checks the base input fields for the user.
+     */
     public String checkBaseFields(String type, String name, Instant start, Instant end) {
         if (name.equals("")) {
             return type + " name must not be empty";
@@ -38,20 +42,19 @@ public class ValidationService {
             return type + " name must not contain only whitespaces";
         }
 
-        if (!name.matches("[A-Za-z0-9 _ -]*")) {
-            return type + " name cannot contain any special characters";
-        }
-
         if (end.isBefore(start)) {
             return type + " start date must be earlier than the end date";
         }
 
-        if (start.isBefore(Instant.parse(LocalDate.now().minusYears(1).atStartOfDay().toString() + ":00.00Z"))) {
-            return type + " cannot start more than one year ago from today";
+        if (start.isBefore(LocalDate.now().minusYears(1).atStartOfDay(ZoneId.systemDefault()).toInstant())) {
+            return type + " cannot start more than one year ago from today"; // Needs to be added to frontend
         }
         return "Okay";
     }
 
+    /**
+     * Checks dates when a project has been updated.
+     */
     public String checkUpdateProject(String projectId, ProjectContract projectContract) {
 
         try {
@@ -74,6 +77,9 @@ public class ValidationService {
                 projectContract.endDate());
     }
 
+    /**
+     * Checks sprint inputs when a sprint is added.
+     */
     public String checkAddSprint(String projectId, BaseSprintContract sprintContract) {
         try {
             ProjectContract project = projectService.getById(projectId);
@@ -90,6 +96,9 @@ public class ValidationService {
                 sprintContract.endDate());
     }
 
+    /**
+     * Checks when a sprint has been updated.
+     */
     public String checkUpdateSprint(String sprintId, BaseSprintContract sprintContract) {
 
         try {
@@ -122,6 +131,9 @@ public class ValidationService {
                 sprintContract.endDate());
     }
 
+    /**
+     * Checks sprint date details and returns respective messages.
+     */
     public String checkSprintDetails(ProjectContract project, String sprintId, Instant start, Instant end) {
 
 
