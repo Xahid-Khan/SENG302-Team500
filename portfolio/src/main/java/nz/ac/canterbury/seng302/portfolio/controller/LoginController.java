@@ -15,6 +15,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Optional;
 
 @Controller
 public class LoginController {
@@ -33,8 +34,16 @@ public class LoginController {
     @GetMapping(value = "/login")//Mapped to GET
     public String login(
             @RequestParam(name="error", required=false) String error,
-            Model model
+            Model model,
+            @RequestParam(value = "notLoggedIn", defaultValue = "false")Optional<String> notLoggedIn
     ) {
+        if (notLoggedIn.isPresent()) {
+            if (notLoggedIn.get().equals("true")) {
+                model.addAttribute("login", new Login());
+                model.addAttribute("error", "Please log in to access this page");
+                return "login_form";
+            }
+        }
         model.addAttribute("login", new Login());//creates the DTO object which captures the inpuitd
         model.addAttribute("error", error);
         return "login_form"; //returns the view which renders the HTML content
@@ -65,8 +74,8 @@ public class LoginController {
             RedirectAttributes redirectAttributes,
             Login login,
             Model model
-    ) {
-        System.out.println("Received POST request with credentials:" + login.toString());
+            ) {
+
         if (login.getUsername() == null || login.getPassword() == null) {
             model.addAttribute("error", "Invalid form data provided");
             return "login_form";
@@ -108,18 +117,7 @@ public class LoginController {
             HttpServletResponse response,
             Model model
     ) {
-        return "redirect:/login_form";
+        return "redirect:/login";
     }
 
-    /**
-     * Temporary mapping for account page.
-     */
-    @GetMapping("/account")
-    public String account(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            Model model
-    ) {
-        return "account_details";
-    }
 }

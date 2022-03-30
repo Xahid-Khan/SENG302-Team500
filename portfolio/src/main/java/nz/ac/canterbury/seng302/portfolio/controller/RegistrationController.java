@@ -67,7 +67,7 @@ public class RegistrationController {
       model.addAttribute("registerMessage", "Error connecting to Identity Provider...");
       return "registration_form";
     }
-    return "registered"; // return the template in templates folder
+    return "redirect:/login"; // return the template in templates folder
   }
 
 }

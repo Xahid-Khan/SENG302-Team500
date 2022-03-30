@@ -8,20 +8,31 @@
     <link rel="stylesheet" th:href="@{/styles/common.css}" />
     <link rel="stylesheet" th:href="@{/styles/table.css}" />
     <link rel="stylesheet" th:href="@{/styles/pages/user_list.css}" />
+    <link rel="stylesheet" th:href="@{/styles/pages/project_details.css}">
     <link rel="stylesheet" th:href="@{/styles/navbar.css}"/>
 </head>
 <body>
 
     <div class="navbar">
-        <div class="dropdown">
-            <button class="dropbutton"><img
-                    src="https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png"
-                    width="46" height="46" alt="Placeholder Profile Photo"></img><div>abc123</div>
-            </button>
-            <div class="dropdown-content">
-                <a class="dropdown-content-links" href="#">Log Out</a>
-            </div>
-        </div>
+        <ul class="navbar-items">
+            <li>
+                <p class="title">SENG 302</p>
+            </li>
+            <li>
+                <a href="project-details" id="home-page">Projects</a>
+            </li>
+            <li class="dropdown">
+                <button class="dropbutton"><div class="username" th:text="${username}"></div><img
+                        src="https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png"
+                        width="46" height="46" alt="Placeholder Profile Photo">
+                </button>
+                <div class="dropdown-content">
+                    <a class="dropdown-content-links" href="my_account">My Account</a>
+                    <a class="dropdown-content-links" href="user-list">View Users</a>
+                    <a class="dropdown-content-links" href="logout">Log Out</a>
+                </div>
+            </li>
+        </ul>
     </div>
 
     <div class="raised-card card-padding">

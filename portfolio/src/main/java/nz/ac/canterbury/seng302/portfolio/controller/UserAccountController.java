@@ -37,16 +37,20 @@ public class UserAccountController {
      */
     @GetMapping(value="/my_account")
     public String getPage(Model model, @AuthenticationPrincipal AuthState principal){
+        try {
+            Integer userId = authStateService.getId(principal);
 
-        Integer userId = authStateService.getId(principal);
+            UserResponse userDetails = userAccountService.getUserById(userId);
 
-        UserResponse userDetails = userAccountService.getUserById(userId);
+            String registrationDate = "2 April 2021 (10 months)"; //TODO Sort this out
 
-        String registrationDate = "2 April 2021 (10 months)"; //TODO Sort this out
-
-        //Prefill the form with the user's details
-        model.addAttribute("user", userDetails);
-        model.addAttribute("registration_date", registrationDate);
+            //Prefill the form with the user's details
+            model.addAttribute("username", userDetails.getUsername());
+            model.addAttribute("user", userDetails);
+            model.addAttribute("registration_date", registrationDate);
+        } catch (NullPointerException e) {
+            return "redirect:/login?notLoggedIn=true";
+        }
 
         return "account_details";
     }

@@ -3,28 +3,34 @@
 <head>
     <link rel="stylesheet" th:href="@{/styles/common.css}" />
     <link rel="stylesheet" th:href="@{/styles/pages/project_details.css}">
+    <link rel="stylesheet" th:href="@{/styles/navbar.css}"/>
 
     <title>SENG302 Homepage</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body class="fullscreen">
-    <nav>
-        <div id="navbar">
-
-            <ul class="navbar-items">
-                <li>
-                    <p class="title">SENG 302</p>
-                </li>
-                <li>
-                    <a href="/" id="home-page">Home</a>
-                </li>
-
-
-            </ul>
-        </div>
-    </nav>
-
+    <div class="navbar">
+        <ul class="navbar-items">
+            <li>
+                <p class="title">SENG 302</p>
+            </li>
+            <li>
+                <a href="project-details" id="home-page">Projects</a>
+            </li>
+            <li class="dropdown">
+                <button class="dropbutton"><div class="username" th:text="${username}"></div><img
+                        src="https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png"
+                        width="46" height="46" alt="Placeholder Profile Photo">
+                </button>
+                <div class="dropdown-content">
+                    <a class="dropdown-content-links" href="my_account">My Account</a>
+                    <a class="dropdown-content-links" href="user-list">View Users</a>
+                    <a class="dropdown-content-links" href="logout">Log Out</a>
+                </div>
+            </li>
+        </ul>
+    </div>
     <div class="add-project">
 
         <div>

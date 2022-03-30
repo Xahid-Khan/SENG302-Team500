@@ -16,9 +16,10 @@ Adapted from W3 Schools.
 
 /* Dropdown button */
 .dropbutton {
-    padding: 14px 20px;
+    padding: 10px;
     font-family: inherit; /* Important for vertical align on mobile phones */
     margin: 0; /* Important for vertical align on mobile phones */
+    display: flex;
 }
 
 /* Dropdown content */
@@ -29,6 +30,10 @@ Adapted from W3 Schools.
     min-width: 30px;
     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
     z-index: 1;
+}
+
+.dropdown-content a {
+    color: black;
 }
 
 /* Links inside the dropdown */
@@ -50,4 +55,10 @@ Adapted from W3 Schools.
 /* Show the dropdown menu on hover */
 .dropdown:hover .dropdown-content {
     display: block;
-} 
+}
+
+.username {
+    padding-right: 15px;
+    font-size: 18px;
+    margin-top: 13px;
+}

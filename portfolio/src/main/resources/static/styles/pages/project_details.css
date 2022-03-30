@@ -35,7 +35,7 @@ body {
 }
 
 .navbar-items a {
-    color: black;
+    color: white;
     font-size: 18px;
     text-decoration: none;
     padding: 20px 10px;
@@ -47,9 +47,11 @@ body {
 }
 
 .title {
+    color: white;
     font-size: 30px;
     display: flex;
-    padding-right: 30px
+    padding-right: 30px;
+    margin: 0;
 }
 
 .add-project {
