@@ -12,7 +12,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 @AutoConfigureWebTestClient
 public class RolesTest {
 
@@ -62,7 +62,7 @@ public class RolesTest {
         AuthorisationParamsHelper.setParams("role", "Student");
 
         this.mockMvc.perform(get(apiPath))
-                .andExpect(status().isForbidden())
+                .andExpect(status().isOk())
                 .andReturn();
 
         AuthorisationParamsHelper.setParams("role", "Teacher");
