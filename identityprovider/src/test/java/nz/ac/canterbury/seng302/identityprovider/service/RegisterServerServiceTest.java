@@ -19,10 +19,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 public class RegisterServerServiceTest {
 
-  @Autowired
-  private UserAccountService registerServerService;
+  @Autowired private UserAccountService registerServerService;
 
   private StreamObserver<UserRegisterResponse> observer = mock(StreamObserver.class);
+
+  @Autowired private UserRepository userRepository;
 
   // A basic request to be used for tests here
   private UserRegisterRequest request = UserRegisterRequest.newBuilder()
@@ -37,10 +38,9 @@ public class RegisterServerServiceTest {
       .setEmail("email@email.email")
       .build();
 
-  // CAUTION! NEVER RUN UNIT TESTS IN PRODUCTION. TODO: How do we get around this?
   @BeforeEach
   private void clearDatabase() {
-    registerServerService.getRepository().deleteAll();
+    userRepository.deleteAll();
   }
   /**
    * Tests registering a completely valid user.
@@ -65,9 +65,9 @@ public class RegisterServerServiceTest {
     // Ensure that the message is sent successfully
     assertEquals("Registered", response.getMessage().split(" ", 2)[0]);
     // Ensure only 1 user exists
-    assertEquals(1, registerServerService.getRepository().count());
+    assertEquals(1, userRepository.count());
     // Ensure user exists
-    assertTrue(registerServerService.getRepository().findByUsername("Username") != null);
+    assertTrue(userRepository.findByUsername("Username") != null);
   }
 
   /**
@@ -80,7 +80,7 @@ public class RegisterServerServiceTest {
     // Ensure request was only ran twice
     Mockito.verify(observer, times(2)).onCompleted();
     // Ensure only 1 user exists
-    assertEquals(1, registerServerService.getRepository().count());
+    assertEquals(1, userRepository.count());
     // Set up a captor for the second response
     ArgumentCaptor<UserRegisterResponse> captor
         = ArgumentCaptor.forClass(UserRegisterResponse.class);

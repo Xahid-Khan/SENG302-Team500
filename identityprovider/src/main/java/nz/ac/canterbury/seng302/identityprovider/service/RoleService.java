@@ -36,8 +36,8 @@ public class RoleService {
       if (addingRole) {
         user.addRole(roleToChange);
       } else {
-        if (roleToChange == UserRole.STUDENT) {
-          throw new IrremovableRoleException("Error: Cannot remove STUDENT role.");
+        if (user.getRoles().size() == 1) {
+          throw new IrremovableRoleException("Error: User must have at least 1 role.");
         }
         user.deleteRole(roleToChange);
       }
