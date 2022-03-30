@@ -605,10 +605,10 @@ class ProjectOrSprintEditor {
 
       for (const sprint of project.sprints.values()) {
         // Taken from: https://stackoverflow.com/a/325964
-        if (startDate <= sprint.endDate && endDate >= sprint.startDate) {
+        if (startDate > sprint.startDate || endDate < sprint.endDate) {
           return `This date range overlaps with Sprint ${sprint.orderNumber}. Please choose a non-overlapping date range.`;
         }
-      } // TODO Add the project start date over a year ago check here
+      }
       return null;
     }
   }
