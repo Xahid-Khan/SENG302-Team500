@@ -34,8 +34,7 @@ public class LoginController {
     @GetMapping(value = "/login")//Mapped to GET
     public String login(
             @RequestParam(name="error", required=false) String error,
-            Model model,
-            @RequestParam(value = "notLoggedIn", defaultValue = "false")Optional<String> notLoggedIn
+            Model model
     ) {
 
         model.addAttribute("login", new Login());//creates the DTO object which captures the inpuitd
