@@ -33,22 +33,20 @@ public class EditAccountController {
     @GetMapping(value="/edit_account")
     public String getPage(Model model, @AuthenticationPrincipal AuthState principal){
 
-        try {
-            Integer userId = authStateService.getId(principal);
 
-            UserResponse userDetails = userAccountService.getUserById(userId);
+        Integer userId = authStateService.getId(principal);
 
-            String registrationDate = "2 April 2021 (10 months)"; // TODO fix this
+        UserResponse userDetails = userAccountService.getUserById(userId);
 
-            //Prefill the form with the user's details
-            model.addAttribute("username", userDetails.getUsername());
-            model.addAttribute("user", userDetails);
-            model.addAttribute("registration_date", registrationDate);
+        String registrationDate = "2 April 2021 (10 months)"; // TODO fix this
 
-            return "edit_account";
-        } catch (NullPointerException e) {
-            return "redirect:/login?notLoggedIn=true";
-        }
+        //Prefill the form with the user's details
+        model.addAttribute("username", userDetails.getUsername());
+        model.addAttribute("user", userDetails);
+        model.addAttribute("registration_date", registrationDate);
+
+        return "edit_account";
+
     }
 
     @PostMapping(value="/edit_account")

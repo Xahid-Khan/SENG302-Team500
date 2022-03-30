@@ -24,16 +24,15 @@ public class ProjectDetailsController {
       @AuthenticationPrincipal AuthState principal,
       Model model
   ) {
-    try {
-        Integer userId = authStateService.getId(principal);
 
-        UserResponse userDetails = userAccountService.getUserById(userId);
+    Integer userId = authStateService.getId(principal);
 
-        model.addAttribute("username", userDetails.getUsername());
-        return "project_details";
-    } catch (NullPointerException e) {
-      return "redirect:/login?notLoggedIn=true";
-    }
+    UserResponse userDetails = userAccountService.getUserById(userId);
+
+    model.addAttribute("username", userDetails.getUsername());
+
+    return "project_details";
+
 
   }
 }

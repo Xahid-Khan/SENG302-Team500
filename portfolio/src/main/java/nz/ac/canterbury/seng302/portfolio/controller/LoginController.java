@@ -37,13 +37,7 @@ public class LoginController {
             Model model,
             @RequestParam(value = "notLoggedIn", defaultValue = "false")Optional<String> notLoggedIn
     ) {
-        if (notLoggedIn.isPresent()) {
-            if (notLoggedIn.get().equals("true")) {
-                model.addAttribute("login", new Login());
-                model.addAttribute("error", "Please log in to access this page");
-                return "login_form";
-            }
-        }
+
         model.addAttribute("login", new Login());//creates the DTO object which captures the inpuitd
         model.addAttribute("error", error);
         return "login_form"; //returns the view which renders the HTML content
