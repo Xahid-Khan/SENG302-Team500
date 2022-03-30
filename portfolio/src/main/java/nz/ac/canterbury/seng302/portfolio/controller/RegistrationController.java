@@ -63,6 +63,10 @@ public class RegistrationController {
     try {
       registerReply = registerClientService.register(user);
       model.addAttribute("registerMessage", registerReply.getMessage());
+
+      if(!registerReply.getIsSuccess()){
+        return "registration_form";
+      }
     } catch (StatusRuntimeException e) {
       model.addAttribute("registerMessage", "Error connecting to Identity Provider...");
       return "registration_form";
