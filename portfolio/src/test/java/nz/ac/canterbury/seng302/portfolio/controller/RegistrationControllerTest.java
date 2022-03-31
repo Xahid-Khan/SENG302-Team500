@@ -86,7 +86,6 @@ class RegistrationControllerTest {
     return this.mockMvc
         .perform(
             post(API_PATH).contentType(MediaType.APPLICATION_FORM_URLENCODED).content(postBody))
-        .andExpect(status().is2xxSuccessful())
         .andReturn();
   }
 
