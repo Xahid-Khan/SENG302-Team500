@@ -6,20 +6,17 @@
 import fs from "fs";
 import esbuild from "esbuild";
 import cssModulesPlugin from "esbuild-css-modules-plugin";
-
-const targetDirectory = "../static/app";
+import {entryPointPaths, targetBuildDirectory} from "./shared.mjs";
 
 // Delete ../static/app/ if it exists
-if (fs.existsSync(targetDirectory)) {
-    fs.rmdirSync(targetDirectory, { recursive: true });
+if (fs.existsSync(targetBuildDirectory)) {
+    fs.rmdirSync(targetBuildDirectory, { recursive: true });
 }
 
 // Build Project
 await esbuild.build({
-    entryPoints: [
-        "./src/entry/monthly_planner.tsx"
-    ],
-    outdir: targetDirectory,
+    entryPoints: entryPointPaths,
+    outdir: targetBuildDirectory,
     bundle: true,
     platform: "browser",
     sourcemap: "linked",

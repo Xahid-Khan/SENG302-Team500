@@ -5,7 +5,8 @@
   "private": true,
   "scripts": {
     "prebuild": "tsc --noEmit",
-    "build": "node ./build.mjs"
+    "build": "node scripts/build.mjs",
+    "clean": "node scripts/clean.mjs"
   },
   "devDependencies": {
     "@types/react": "^17.0.43",
