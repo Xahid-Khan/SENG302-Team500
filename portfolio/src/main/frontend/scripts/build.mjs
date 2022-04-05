@@ -22,5 +22,6 @@ await esbuild.build({
     sourcemap: "linked",
     plugins: [
         cssModulesPlugin()
-    ]
+    ],
+    external: ['*.woff2', '*.woff']
 });

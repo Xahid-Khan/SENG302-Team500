@@ -6,8 +6,5 @@
     "target": "ES6",
     "noImplicitAny": true,
     "jsx": "react"
-  },
-  "include": [
-    "./src/declarations.d.ts"
-  ]
+  }
 }
