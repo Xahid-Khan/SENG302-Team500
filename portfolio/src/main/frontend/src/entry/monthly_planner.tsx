@@ -1,9 +1,10 @@
 import React from "react"
 import ReactDOM from "react-dom"
+import {MonthlyPlannerPage} from "../page/monthly_planner/MonthlyPlannerPage";
 
 ReactDOM.render(
     <React.StrictMode>
-        <p>Hello from React!</p>
+        <MonthlyPlannerPage/>
     </React.StrictMode>,
     document.getElementById("react-root")
 )
