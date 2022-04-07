@@ -3,7 +3,6 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import nz.ac.canterbury.seng302.portfolio.DTO.User;
 import nz.ac.canterbury.seng302.portfolio.model.GetPaginatedUsersOrderingElement;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
@@ -15,8 +14,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-
-import java.util.ArrayList;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
@@ -54,7 +51,6 @@ public class UserListController {
         }
 
         var sortAttribute = switch (sortAttributeString) {
-            case "name" -> GetPaginatedUsersOrderingElement.NAME;
             case "username" -> GetPaginatedUsersOrderingElement.USERNAME;
             case "alias" -> GetPaginatedUsersOrderingElement.NICKNAME;
             case "roles" -> GetPaginatedUsersOrderingElement.ROLES;
