@@ -2,22 +2,34 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import nz.ac.canterbury.seng302.portfolio.model.GetPaginatedUsersOrderingElement;
+import nz.ac.canterbury.seng302.portfolio.model.entity.SortingParameterEntity;
 import nz.ac.canterbury.seng302.portfolio.repository.SortingParametersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.test.web.servlet.MockMvc;
 
+@AutoConfigureMockMvc
 public class persistent_sorting_step_definitions {
+
+  @Autowired
+  SortingParameterEntity sortingEntity;
 
   @Autowired
   SortingParametersRepository sortingParametersRepository;
 
+  @Autowired
+  private MockMvc mockMvc;
 
-  @Given("there is a user who is logged in")
-  public void givenThereIsAUserWhoIsLoggedIn() {
 
-  }
+  @Given("a user has {string} and {int} saved to their user account")
+  public void aUserHasAndSavedToTheirUserAccount(String sortBy, int order) {
+    boolean sortingOrder = order == 1 ? true : false;
+    GetPaginatedUsersOrderingElement sortAttributes = GetPaginatedUsersOrderingElement.valueOf(sortBy);
+    SortingParameterEntity newEntity = new SortingParameterEntity(1, sortAttributes, sortingOrder);
 
-  @And("they have {string} saved to their user account")
-  public void theyHaveParametersSavedToTheirUserAccount(String parameters) {
+    sortingParametersRepository.save(newEntity);
+
   }
 
   @When("the user loads the list of users page")

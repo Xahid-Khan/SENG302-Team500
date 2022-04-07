@@ -17,4 +17,36 @@ public class SortingParameterEntity {
 
   @Column
   private boolean sortOrder;
+
+  protected SortingParameterEntity() {};
+
+  public SortingParameterEntity(int id, GetPaginatedUsersOrderingElement sort, boolean order) {
+    this.id = id;
+    this.sortAttribute = sort;
+    this.sortOrder = order;
+  }
+
+  public int getId() {
+    return id;
+  }
+
+  public void setId(int id) {
+    this.id = id;
+  }
+
+  public GetPaginatedUsersOrderingElement getSortAttribute() {
+    return sortAttribute;
+  }
+
+  public void setSortAttribute(GetPaginatedUsersOrderingElement sortAttribute) {
+    this.sortAttribute = sortAttribute;
+  }
+
+  public boolean isSortOrder() {
+    return sortOrder;
+  }
+
+  public void setSortOrder(boolean sortOrder) {
+    this.sortOrder = sortOrder;
+  }
 }
