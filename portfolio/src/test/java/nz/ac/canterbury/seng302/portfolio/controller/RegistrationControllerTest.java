@@ -116,7 +116,7 @@ class RegistrationControllerTest {
   void registerValidUser() throws Exception {
     var validUser =
         new User(
-            "Username",
+            "Username1",
             "Password1",
             "FirstName",
             "Middle Names",
@@ -140,7 +140,7 @@ class RegistrationControllerTest {
    * @throws Exception if perform fails for some reason
    */
   @ParameterizedTest
-  @ValueSource(strings = {"", "AA", "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"})
+  @ValueSource(strings = {"", "AA", "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "Test!", "Test !", "Test$%"})
   void registerInvalidUsernames(String username) throws Exception {
     var user =
         new User(
@@ -180,6 +180,27 @@ class RegistrationControllerTest {
             "Pronouns",
             "email%40email.com",
                 currentTimestamp());
+
+    var result = submitRegistration(user);
+
+    assertFalse(wasError(result));
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"Ẽzra", "1IfTest", "Jо̄hn", "李二二", "张二二"})
+  void registerValidEdgeUsernames(String username) throws Exception {
+    var user =
+            new User(
+                    username,
+                    "Password1",
+                    "FirstName",
+                    "Middle Names",
+                    "LastName",
+                    "Nickname",
+                    "Bio",
+                    "Pronouns",
+                    "email%40email.com",
+                    currentTimestamp());
 
     var result = submitRegistration(user);
 
@@ -268,6 +289,32 @@ class RegistrationControllerTest {
             "Pronouns",
             "email%40email.com",
                 currentTimestamp());
+
+    var result = submitRegistration(user);
+
+    assertTrue(wasError(result));
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+          "'Cody',Middle Names,LastName",
+          "John,Middle Names,'Smith-Jackson'",
+          "Mary-Jane,Middle Names,LastName",
+          "Smíth,Middle,Smith/Watson"
+  })
+  void registerValidEdgeNames(String firstName, String middleNames, String lastName) throws Exception {
+    var user =
+            new User(
+                    "Username",
+                    "Password",
+                    firstName,
+                    middleNames,
+                    lastName,
+                    "Nickname",
+                    "Bio",
+                    "Pronouns",
+                    "email%40email.com",
+                    currentTimestamp());
 
     var result = submitRegistration(user);
 
