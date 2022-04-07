@@ -1,5 +1,5 @@
-Feature: test
+Feature:
   Scenario: test
     Given test
     When test
-    Then test
+    Then testechod

@@ -65,7 +65,7 @@ public class RoleService {
   }
 
   /**
-   * Removes a role to the user if the user does not already have the role.
+   * Removes a role to the user if the user already has the role.
    *
    * @param modificationRequest The modification request for the role
    * @return UserRoleChangeResponse The status of how successful the modification was
