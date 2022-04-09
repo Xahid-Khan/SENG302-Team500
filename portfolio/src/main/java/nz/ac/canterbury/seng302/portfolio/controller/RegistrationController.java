@@ -93,30 +93,30 @@ public class RegistrationController {
       return "registration_form";
     }
 
-
-    //Logs the user in
-    AuthenticateResponse loginReply;
-    try {
-      loginReply = authenticateClientService.authenticate(user.username(), user.password());
-    } catch (StatusRuntimeException e){
-      model.addAttribute("error", "Error connecting to Identity Provider...");
-      return "login_form";
-    }
-
-    if (loginReply.getSuccess()) {
-      var domain = request.getHeader("host");
-      CookieUtil.create(
-              response,
-              "lens-session-token",
-              loginReply.getToken(),
-              true,
-              5 * 60 * 60, // Expires in 5 hours
-              domain.startsWith("localhost") ? null : domain
-      );
-      // Redirect user if login succeeds
-      redirectAttributes.addFlashAttribute("message", "Successfully logged in.");
-      return "redirect:/my_account";
-    }
+//
+//    //Logs the user in
+//    AuthenticateResponse loginReply;
+//    try {
+//      loginReply = authenticateClientService.authenticate(user.username(), user.password());
+//    } catch (StatusRuntimeException e){
+//      model.addAttribute("error", "Error connecting to Identity Provider...");
+//      return "login_form";
+//    }
+//
+//    if (loginReply.getSuccess()) {
+//      var domain = request.getHeader("host");
+//      CookieUtil.create(
+//              response,
+//              "lens-session-token",
+//              loginReply.getToken(),
+//              true,
+//              5 * 60 * 60, // Expires in 5 hours
+//              domain.startsWith("localhost") ? null : domain
+//      );
+//      // Redirect user if login succeeds
+//      redirectAttributes.addFlashAttribute("message", "Successfully logged in.");
+//      return "redirect:/my_account";
+//    }
 
     return "redirect:/login"; // return the template in templates folder
   }
