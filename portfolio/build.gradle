@@ -73,5 +73,6 @@ tasks.named('test') {
 
 targetCompatibility = JavaVersion.VERSION_17
 
+processResources.dependsOn(assembleFrontend)
 bootRun.dependsOn(assembleFrontend)
 clean.dependsOn(cleanFrontend)

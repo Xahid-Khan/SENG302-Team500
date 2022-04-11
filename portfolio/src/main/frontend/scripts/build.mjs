@@ -10,7 +10,7 @@ import {entryPointPaths, targetBuildDirectory} from "./shared.mjs";
 
 // Delete ../static/app/ if it exists
 if (fs.existsSync(targetBuildDirectory)) {
-    fs.rmdirSync(targetBuildDirectory, { recursive: true });
+    fs.rmSync(targetBuildDirectory, { recursive: true });
 }
 
 // Build Project

@@ -1,7 +1,7 @@
 import React from "react"
 import ReactDOM from "react-dom"
 import {MonthlyPlannerPage} from "../page/monthly_planner/MonthlyPlannerPage";
-import "./globals"
+import "./monthly_planner.css"
 
 ReactDOM.render(
     <React.StrictMode>
