@@ -1,36 +1,28 @@
 import React from "react"
 import styles from "./MonthlyPlannerPage.module.css"
 import {PageLayout} from "../../component/layout/PageLayout"
-import FullCalendar from "@fullcalendar/react"
-import dayGridPlugin from "@fullcalendar/daygrid"
+import {MonthlyPlannerPageStoreProvider} from "./store/MonthlyPlannerPageStoreProvider";
+import {MonthlyPlannerPageContent} from "./component/MonthlyPlannerPageContent";
+import {MonthlyPlannerPageStore} from "./store/MonthlyPlannerPageStore";
 
+/**
+ * The root of the MonthlyPlannerPage. This does a few jobs:
+ * 1. Construct the MonthlyPlannerPageStore and wrap the whole page in a Provider so it can be used by children.
+ * 2. Wrap the entire page in a PageLayout.
+ * 3. Place the PageContent component inside that Layout component.
+ */
 export const MonthlyPlannerPage: React.FC = () => {
     return (
-        <PageLayout>
-            <div className={styles.monthlyPlannerPage}>
-                <h1>Welcome to the Monthly Planner page!</h1>
-                <div className="raised-card" style={{padding: 20}}>
-                    <FullCalendar
-                        plugins={[ dayGridPlugin ]}
-                        initialView="dayGridMonth"
-                        events={[
-                            {
-                                start: (() => {
-                                    const date = new Date()
-                                    date.setHours(0)
-                                    date.setMinutes(0)
-                                    date.setSeconds(0)
-                                    date.setMilliseconds(0)
-                                    return date
-                                })(),
-                                end: Date.parse("2023-01-01T00:00:00.00Z"),
-                                backgroundColor: "orange",
-                                title: "Test Event"
-                            }
-                        ]}
-                    />
+        <MonthlyPlannerPageStoreProvider value={new MonthlyPlannerPageStore()}>
+            <PageLayout>
+                <div className={styles.monthlyPlannerPage}>
+                    <h1>Welcome to the Monthly Planner page!</h1>
+
+                    <div className="raised-card" style={{padding: 20}}>
+                        <MonthlyPlannerPageContent/>
+                    </div>
                 </div>
-            </div>
-        </PageLayout>
+            </PageLayout>
+        </MonthlyPlannerPageStoreProvider>
     )
 }
