@@ -9,6 +9,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import nz.ac.canterbury.seng302.portfolio.DTO.User;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
@@ -43,6 +46,10 @@ class EditAccountControllerTest {
     @MockBean private AuthStateService authStateService;
 
     private final String API_PATH = "/edit_account";
+
+    private User user;
+
+    private MvcResult result;
 
     // Helper function to place create a Post Body out of a user.
     // Note that a factory or builder pattern could've been used here,
@@ -321,5 +328,37 @@ class EditAccountControllerTest {
                 .andReturn();
 
         assertTrue(wasError(result));
+    }
+
+    @Given("User tries to edit account name with a valid name")
+    public void user_tries_to_edit_account_name_with_a_valid_name() {
+        user = new User(
+                "Username",
+                "Password",
+                "Cody!",
+                "Andrew",
+                "Larsen",
+                "Nickname",
+                "Bio",
+                "Pronouns",
+                "email%40email.com",
+                null);
+
+    }
+    @When("User saves changes")
+    public void user_saves_changes() throws Exception {
+        String postBody = submitEditAccount(user);
+        result = this.mockMvc
+                .perform(
+                        post(API_PATH)
+                                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                                .content(postBody))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn();
+    }
+
+    @Then("User account details are updated")
+    public void user_account_details_are_updated() throws Exception {
+        assertFalse(wasError(result));
     }
 }
