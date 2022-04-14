@@ -9,6 +9,7 @@
     <link rel="stylesheet" th:href="@{/styles/table.css}" />
     <link rel="stylesheet" th:href="@{/styles/pages/project_details.css}"/>
     <link rel="stylesheet" th:href="@{/styles/navbar.css}"/>
+    <link rel="stylesheet" th:href="@{/styles/chip.css}"/>
     <link rel="stylesheet" th:href="@{/styles/pages/user_list.css}" />
 
     <script type="text/javascript" th:src="@{/scripts/user_list.js}"></script>
@@ -87,7 +88,16 @@
                     <div class="tableCell" th:text="${user.firstName} + ' ' + (${user.middleName} ?: '') + ' ' + ${user.lastName}"/>
                     <div class="tableCell" th:text="${user.username}"/>
                     <div class="tableCell" th:text="${user.nickname}"/>
-                    <div class="tableCell" th:text="${delegate.formatUserRoles(user.rolesList)}"/>
+                    <!--                    <div class="tableCell" th:text="${delegate.formatUserRoles(user.rolesList)}"/>-->
+                    <div class="tableCell">
+                        <span th:each="role: ${user.rolesList}">
+                            <div class="chip">
+                                <span th:text="${role}"/>
+                                <span class="closebtn" onclick="this.parentElement.style.display='none'">&times;</span>
+                            </div>
+                        </span>
+                        <span class="plusbtn" + />
+                    </div>
                 </div>
             </div>
         </th:block>

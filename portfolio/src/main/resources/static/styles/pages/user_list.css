@@ -30,3 +30,14 @@ a.buttonLink {
 a.buttonLink:hover {
     background-color: #0332D1;
 }
+
+.plusbtn{
+    color: #888;
+    font-weight: bold;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.plusbtn:hover {
+    color: #000;
+}
