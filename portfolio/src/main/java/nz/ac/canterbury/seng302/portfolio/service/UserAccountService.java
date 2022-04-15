@@ -66,4 +66,20 @@ public class UserAccountService {
         return userAccountServiceBlockingStub.getPaginatedUsers(allUsers);
     }
 
+    public UserRoleChangeResponse removeRole(int id, UserRole role) {
+        ModifyRoleOfUserRequest req = ModifyRoleOfUserRequest.newBuilder()
+                .setUserId(id)
+                .setRole(role)
+                .build();
+        return userAccountServiceBlockingStub.removeRoleFromUser(req);
+    }
+
+    public UserRoleChangeResponse addRole(int id, UserRole role) {
+        ModifyRoleOfUserRequest req = ModifyRoleOfUserRequest.newBuilder()
+                .setUserId(id)
+                .setRole(role)
+                .build();
+        return userAccountServiceBlockingStub.addRoleToUser(req);
+    }
+
 }
