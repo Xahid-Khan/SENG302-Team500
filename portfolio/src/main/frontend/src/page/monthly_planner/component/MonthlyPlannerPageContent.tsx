@@ -1,6 +1,6 @@
-import React from "react";
+import React, {useCallback} from "react";
 import {observer} from "mobx-react-lite";
-import FullCalendar from "@fullcalendar/react";
+import FullCalendar, {EventChangeArg} from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import {useMonthlyPlannerPageStore} from "../store/MonthlyPlannerPageStoreProvider";
@@ -32,24 +32,38 @@ export const MonthlyPlannerPageContent: React.FC = observer(() => {
 const ProjectCalendar: React.FC = observer(() => {
     const project = useProjectStore()
 
+    const onSaveDatesCallback = useCallback((evt: EventChangeArg) => {
+        const sprintId = evt.event.id
+        const sprint = project.sprints.find((s) => s.id === sprintId)
+        if (sprint !== undefined) {
+            sprint.setDates(evt.event.start, evt.event.end)
+        }
+    }, [project])
+
     const projectRange = {
         start: project.startDate,
         end: project.endDate
     }
 
+    console.log("Re-rendering")
+    console.log(project.sprints)
+
+    const events = project.sprints.map(sprint => ({
+        id: sprint.id,
+        start: sprint.startDate,
+        end: sprint.endDate,
+        backgroundColor: "orange",
+        title: `Sprint ${sprint.orderNumber}: ${sprint.name}`,
+        // This hides the time on the event and must be true for drag and drop resizing to be enabled
+        allDay: !DatetimeUtils.hasTimeComponent(sprint.startDate) && !DatetimeUtils.hasTimeComponent(sprint.endDate),
+        editable: !(sprint.saveSprintStatus instanceof LoadingPending)  // We shouldn't allow sprints to be updated while we're still trying to save the last update
+    }))
+
     return (
         <FullCalendar
             plugins={[ dayGridPlugin, interactionPlugin ]}
             initialView="dayGridMonth"
-            events={project.sprints.map(sprint => ({
-                id: sprint.sprintId,
-                start: sprint.startDate,
-                end: sprint.endDate,
-                backgroundColor: "orange",
-                title: `Sprint ${sprint.orderNumber}: ${sprint.name}`,
-                // This hides the time on the event and must be true for drag and drop resizing to be enabled
-                allDay: !DatetimeUtils.hasTimeComponent(sprint.startDate) && !DatetimeUtils.hasTimeComponent(sprint.endDate)
-            }))}
+            events={events}
 
             /* Drag and drop config */
             editable
@@ -58,7 +72,7 @@ const ProjectCalendar: React.FC = observer(() => {
             eventDurationEditable
             eventOverlap={false}
             eventConstraint={projectRange}
-            eventChange={(...args) => console.log(args)}  // TODO: Saving the changes!
+            eventChange={onSaveDatesCallback}
 
             /* Calendar config */
             validRange={projectRange}

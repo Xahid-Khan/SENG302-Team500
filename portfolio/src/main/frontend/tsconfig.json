@@ -1,5 +1,4 @@
 {
-
   "compilerOptions": {
     "isolatedModules": true,
     "esModuleInterop": true,
@@ -12,5 +11,5 @@
     "allowJs": true,
     "rootDir": "src"
   },
-  "include": ["src/*"]
+  "include": ["src/**/*"]
 }
