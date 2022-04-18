@@ -4,7 +4,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import nz.ac.canterbury.seng302.portfolio.model.GetPaginatedUsersOrderingElement;
+import nz.ac.canterbury.seng302.portfolio.model.entity.SortingParameterEntity;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
+import nz.ac.canterbury.seng302.portfolio.service.SortingParametersService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
@@ -26,6 +28,10 @@ public class UserListController {
     @Autowired
     private AuthStateService authStateService;
 
+    @Autowired
+    private SortingParametersService sortingParametersService;
+
+
     @GetMapping("/user-list")
     public String listUsers(
             @AuthenticationPrincipal AuthState principal,
@@ -39,11 +45,29 @@ public class UserListController {
 
         UserResponse userDetails = userAccountService.getUserById(userId);
 
+
+        String sortAttributeString;
+        boolean ascending = ascendingMaybe.orElse(true);
+
+        if (sortingParametersService.checkExistance(userId) && sortAttributeMaybe.isEmpty()) {
+            SortingParameterEntity sortingParams = sortingParametersService.getSortingParams(userId);
+            sortAttributeString = sortingParams.getSortAttribute();
+            ascending = sortingParams.isSortOrder();
+            System.out.println("333333");
+            System.out.println(sortingParams.toString());
+        } else if (!sortAttributeMaybe.isEmpty()) {
+            System.out.println("00000");
+            sortAttributeString = sortAttributeMaybe.get();
+            sortingParametersService.saveSortingParams(userId, sortAttributeString, ascending);
+        } else {
+            sortAttributeString = "name";
+            System.out.println("22222");
+        }
+
         model.addAttribute("username", userDetails.getUsername());
+
         // Supply defaults
         int page = pageMaybe.orElse(1);
-        String sortAttributeString = sortAttributeMaybe.orElse("name");
-        boolean ascending = ascendingMaybe.orElse(true);
 
         // Validate inputs
         if (page < 1) {

@@ -25,7 +25,7 @@ public class persistent_sorting_step_definitions {
   @Given("a user has {string} and {int} saved to their user account")
   public void aUserHasAndSavedToTheirUserAccount(String sortBy, int order) {
     boolean sortingOrder = order == 1 ? true : false;
-    GetPaginatedUsersOrderingElement sortAttributes = GetPaginatedUsersOrderingElement.valueOf(sortBy);
+    String sortAttributes = sortBy;
     SortingParameterEntity newEntity = new SortingParameterEntity(1, sortAttributes, sortingOrder);
 
     sortingParametersRepository.save(newEntity);

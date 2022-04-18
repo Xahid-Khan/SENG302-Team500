@@ -13,14 +13,14 @@ public class SortingParameterEntity {
   private int id;
 
   @Column
-  private GetPaginatedUsersOrderingElement sortAttribute;
+  private String  sortAttribute;
 
   @Column
   private boolean sortOrder;
 
   protected SortingParameterEntity() {};
 
-  public SortingParameterEntity(int id, GetPaginatedUsersOrderingElement sort, boolean order) {
+  public SortingParameterEntity(int id, String sort, boolean order) {
     this.id = id;
     this.sortAttribute = sort;
     this.sortOrder = order;
@@ -34,11 +34,11 @@ public class SortingParameterEntity {
     this.id = id;
   }
 
-  public GetPaginatedUsersOrderingElement getSortAttribute() {
+  public String getSortAttribute() {
     return sortAttribute;
   }
 
-  public void setSortAttribute(GetPaginatedUsersOrderingElement sortAttribute) {
+  public void setSortAttribute(String sortAttribute) {
     this.sortAttribute = sortAttribute;
   }
 
