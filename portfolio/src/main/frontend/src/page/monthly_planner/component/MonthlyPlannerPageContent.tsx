@@ -8,6 +8,10 @@ import {LoadingDone, LoadingPending} from "../../../util/network/loading_status"
 import {LoadingErrorPresenter} from "../../../component/error/LoadingErrorPresenter";
 import {ProjectStoreProvider, useProjectStore} from "../store/ProjectStoreProvider";
 import {DatetimeUtils} from "../../../util/DatetimeUtils";
+import {useToasterStore} from "../../../component/toast/internal/ToasterStoreProvider";
+import {Toast} from "../../../component/toast/Toast";
+import {ToastBase} from "../../../component/toast/ToastBase";
+import defaultToastTheme from "../../../component/toast/DefaultToast.module.css";
 
 export const MonthlyPlannerPageContent: React.FC = observer(() => {
     const pageStore = useMonthlyPlannerPageStore()
@@ -31,12 +35,31 @@ export const MonthlyPlannerPageContent: React.FC = observer(() => {
 
 const ProjectCalendar: React.FC = observer(() => {
     const project = useProjectStore()
+    const toaster = useToasterStore()
 
     const onSaveDatesCallback = useCallback((evt: EventChangeArg) => {
+        const toastId = toaster.show(() => (
+            <Toast title="Saving Sprint..." dismissable={false}/>
+        ), {
+            timeout: Infinity
+        })
+
         const sprintId = evt.event.id
         const sprint = project.sprints.find((s) => s.id === sprintId)
         if (sprint !== undefined) {
             sprint.setDates(evt.event.start, evt.event.end)
+                .then(
+                    () => toaster.dismiss(toastId),
+                    (err) => toaster.replace(toastId, () => (
+                        <ToastBase themes={[defaultToastTheme]}>
+                            <LoadingErrorPresenter loadingStatus={err} onRetry={() => {
+                                toaster.dismiss(toastId)
+                                onSaveDatesCallback(evt)
+                            }}/>
+                        </ToastBase>
+                    ), {timeout: Infinity})
+                )
+
         }
     }, [project])
 

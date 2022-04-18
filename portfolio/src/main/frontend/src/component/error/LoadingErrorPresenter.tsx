@@ -19,7 +19,9 @@ interface LoadingStatusPresenterProps {
  * @param loadingStatus to present to the user
  * @param onRetry callback to trigger a 'retry' of the loading event
  */
-export const LoadingErrorPresenter: React.FC<LoadingStatusPresenterProps> = ({loadingStatus, onRetry}) => {
+export const LoadingErrorPresenter: React.FC<LoadingStatusPresenterProps> = (props) => {
+    const {loadingStatus, onRetry} = props
+
     if (loadingStatus instanceof LoadingDone || loadingStatus instanceof LoadingPending) {
         throw new Error("LoadingErrorPresenter should not be used with a 'done' or 'pending' loadingStatus.")
     }
@@ -59,5 +61,9 @@ export const LoadingErrorPresenter: React.FC<LoadingStatusPresenterProps> = ({lo
                 ) : undefined}
             </div>
         )
+    }
+    else {
+        console.warn("LoadingErrorPresenter requires a LoadingStatus subclass, but one was not provided. Falling back by wrapping in a LoadingError")
+        return <LoadingErrorPresenter {...props} loadingStatus={new LoadingError(loadingStatus)} />
     }
 }

@@ -4,6 +4,7 @@ import {PageLayout} from "../../component/layout/PageLayout"
 import {MonthlyPlannerPageStoreProvider} from "./store/MonthlyPlannerPageStoreProvider";
 import {MonthlyPlannerPageContent} from "./component/MonthlyPlannerPageContent";
 import {MonthlyPlannerPageStore} from "./store/MonthlyPlannerPageStore";
+import {ToasterRoot} from "../../component/toast/ToasterRoot";
 
 /**
  * The root of the MonthlyPlannerPage. This does a few jobs:
@@ -14,15 +15,17 @@ import {MonthlyPlannerPageStore} from "./store/MonthlyPlannerPageStore";
 export const MonthlyPlannerPage: React.FC = () => {
     return (
         <MonthlyPlannerPageStoreProvider value={new MonthlyPlannerPageStore()}>
-            <PageLayout>
-                <div className={styles.monthlyPlannerPage}>
-                    <h1>Welcome to the Monthly Planner page!</h1>
+            <ToasterRoot>
+                <PageLayout>
+                    <div className={styles.monthlyPlannerPage}>
+                        <h1>Welcome to the Monthly Planner page!</h1>
 
-                    <div className="raised-card" style={{padding: 20}}>
-                        <MonthlyPlannerPageContent/>
+                        <div className="raised-card" style={{padding: 20}}>
+                            <MonthlyPlannerPageContent/>
+                        </div>
                     </div>
-                </div>
-            </PageLayout>
+                </PageLayout>
+            </ToasterRoot>
         </MonthlyPlannerPageStoreProvider>
     )
 }
