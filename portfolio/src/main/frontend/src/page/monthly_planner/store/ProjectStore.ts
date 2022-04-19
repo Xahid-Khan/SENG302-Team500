@@ -2,11 +2,17 @@
  * Store for a single (already loaded) project.
  */
 import {ProjectContract} from "../../../contract/ProjectContract";
-import {action, makeObservable, observable, reaction} from "mobx";
+import {action, computed, makeObservable, observable, reaction} from "mobx";
 import {SprintStore} from "./SprintStore";
 import {DatetimeUtils} from "../../../util/DatetimeUtils";
+import {LoadingPending} from "../../../util/network/loading_status";
 
 
+/**
+ * Store that contains all of the client state for a Project, including all the sprints contained within it.
+ *
+ * When sprint orderNumbers change, the Project will automatically renumber the remaining sprints.
+ */
 export class ProjectStore {
     readonly startDate: Date
     readonly endDate: Date
@@ -16,6 +22,8 @@ export class ProjectStore {
     constructor(project: ProjectContract) {
         makeObservable(this, {
             sprints: observable,
+
+            sprintsSaving: computed,
 
             renumberSprintsFromUpdate: action
         })
@@ -28,6 +36,18 @@ export class ProjectStore {
             sprintStore.setOrderNumberUpdateCallback(() => this.renumberSprintsFromUpdate(sprintStore))
             return sprintStore
         }))
+    }
+
+    /**
+     * Computed value that captures whether at least one sprint is being saved.
+     */
+    get sprintsSaving(): boolean {
+        for (const sprint of this.sprints) {
+            if (sprint.saveSprintStatus instanceof LoadingPending) {
+                return true
+            }
+        }
+        return false
     }
 
     /**

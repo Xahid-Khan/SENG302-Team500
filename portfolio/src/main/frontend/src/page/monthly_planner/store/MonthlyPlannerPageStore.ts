@@ -1,6 +1,3 @@
-/**
- * Root store for the MonthlyPlannerPage. Handles the lifecycle of retrieving a single project (from the page URL).
- */
 import {ProjectStore} from "./ProjectStore";
 import {
     LoadingDone,
@@ -12,6 +9,14 @@ import {
 import {action, makeObservable, observable, runInAction} from "mobx";
 import {handleErrorResponse} from "../../../util/network/network_error_handler";
 
+
+/**
+ * Store for the MonthlyPlannerPage. Handles loading of the Project for the page, but in future this may also contain
+ * other page-wide state.
+ *
+ * The ID of the page's project is parsed from the last segment of the page's path
+ * (e.g. `/monthly-planner/5004ef2b-0e75-4481-b710-4968335cc53e`)
+ */
 export class MonthlyPlannerPageStore {
     readonly projectId: string | undefined
 
@@ -34,7 +39,7 @@ export class MonthlyPlannerPageStore {
             return
         }
 
-        this.fetchProject()
+        this.fetchProject().catch(()=>{})  // Explicitly ignore errors here. Errors will be stored in projectLoadingStatus
     }
 
     static parseProjectIdFromUrl() {
@@ -42,6 +47,9 @@ export class MonthlyPlannerPageStore {
         return splitPath[splitPath.length - 1]
     }
 
+    /**
+     * Fetch the data of the project for this page, updating the `projectLoadingStatus` as appropriate.
+     */
     async fetchProject() {
         if (this.projectId === undefined || this.projectLoadingStatus instanceof LoadingPending) {
             return
@@ -70,6 +78,7 @@ export class MonthlyPlannerPageStore {
             runInAction(() => {
                 this.projectLoadingStatus = new LoadingError(e)
             })
+            throw e
         }
     }
 }

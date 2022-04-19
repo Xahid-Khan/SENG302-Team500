@@ -1,3 +1,6 @@
+/**
+ * Entrypoint for the JavaScript on the monthly_planner page.
+ */
 import React from "react"
 import ReactDOM from "react-dom"
 import {MonthlyPlannerPage} from "../page/monthly_planner/MonthlyPlannerPage";

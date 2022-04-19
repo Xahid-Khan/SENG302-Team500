@@ -13,11 +13,11 @@ interface LoadingStatusPresenterProps {
     onRetry?: VoidFunction
 }
 /**
- * A handy component that formats and presents loading status errors to the user in a passable format,
- * presenting a retry button if possible.
+ * A handy component that formats and presents loading status errors to the user in a readable format,
+ * presenting a retry button if an onRetry callback is provided.
  *
- * @param loadingStatus to present to the user
- * @param onRetry callback to trigger a 'retry' of the loading event
+ * @param props.loadingStatus to present to the user
+ * @param props.onRetry callback to trigger a 'retry' of the loading event
  */
 export const LoadingErrorPresenter: React.FC<LoadingStatusPresenterProps> = (props) => {
     const {loadingStatus, onRetry} = props

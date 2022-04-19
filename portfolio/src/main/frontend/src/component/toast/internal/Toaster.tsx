@@ -4,6 +4,9 @@ import {useToasterStore} from "./ToasterStoreProvider";
 import styles from "./Toaster.module.css"
 import { ToastContextProvider } from "./ToastContextProvider";
 
+/**
+ * Component that listens to updates in the ToasterStore and displays the toasts it contains.
+ */
 export const Toaster: React.FC = observer(() => {
     const store = useToasterStore()
 

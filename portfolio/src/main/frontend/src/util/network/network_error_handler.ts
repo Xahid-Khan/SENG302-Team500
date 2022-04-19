@@ -1,3 +1,6 @@
+/**
+ * Helper functions for interpreting errors encountered during network activities and wrapping them in `PortfolioNetworkError`s
+ */
 import {PortfolioNetworkError} from "./PortfolioNetworkError";
 
 export interface ErrorResponseHandlerContext {

@@ -16,6 +16,12 @@ import {
 import {BaseSprintContract} from "../../../contract/BaseSprintContract";
 import {handleErrorResponse} from "../../../util/network/network_error_handler";
 
+
+/**
+ * Store that contains all the client state for a Sprint and handles saving of updates.
+ *
+ * When a save causes the orderNumber of the sprint to change, a callback is triggered (if one is registered).
+ */
 export class SprintStore {
     readonly name: string
     readonly id: string
@@ -56,6 +62,9 @@ export class SprintStore {
         }
     }
 
+    /**
+     * Set the callback function to be called when a save causes the sprint to update its orderNumber.
+     */
     setOrderNumberUpdateCallback(listener: VoidFunction) {
         this.onOrderNumberUpdate = listener
     }
