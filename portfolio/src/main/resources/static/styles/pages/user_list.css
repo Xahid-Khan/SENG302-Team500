@@ -34,10 +34,49 @@ a.buttonLink:hover {
 .plusbtn{
     color: #888;
     font-weight: bold;
+    float: right;
     font-size: 20px;
     cursor: pointer;
 }
 
 .plusbtn:hover {
     color: #000;
+}
+
+/* Dropdown button */
+.dropbutton {
+    font-family: inherit; /* Important for vertical align on mobile phones */
+    margin: 0; /* Important for vertical align on mobile phones */
+    display: flex;
+}
+
+.add-role {
+    display: flex;
+    justify-content: right;
+}
+
+.anything{
+    display: flex;
+}
+
+.role-list{
+    right: 113px;
+}
+
+@media (max-width: 960px){
+    .role-list{
+        right: 78px;
+    }
+}
+
+@media (max-width: 640px){
+    .role-list{
+        right: 78px;
+    }
+}
+
+@media (max-width: 480px){
+    .role-list{
+        right: 78px;
+    }
 }

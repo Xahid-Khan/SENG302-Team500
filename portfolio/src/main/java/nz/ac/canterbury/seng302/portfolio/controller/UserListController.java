@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -94,5 +95,26 @@ public class UserListController {
             case COURSE_ADMINISTRATOR -> "Course Administrator";
             default -> "Student";
         }).collect(Collectors.joining(", "));
+    }
+
+    public UserRole role;
+
+    public String formatUserRole(UserRole role) {
+        switch (role) {
+            case STUDENT: return "Student";
+            case TEACHER: return "Teacher";
+            case COURSE_ADMINISTRATOR: return "Course Administrator";
+            default: return "Default";
+        }
+    }
+
+    public List<UserRole> getAvailableRoles(UserResponse user) {
+        List<UserRole> list = new ArrayList<>();
+        for(UserRole role : UserRole.values()){
+            if(role != UserRole.UNRECOGNIZED && !user.getRolesList().contains(role)){
+                list.add(role);
+            }
+        }
+        return list;
     }
 }
