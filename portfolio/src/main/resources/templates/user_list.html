@@ -11,6 +11,7 @@
     <link rel="stylesheet" th:href="@{/styles/navbar.css}"/>
     <link rel="stylesheet" th:href="@{/styles/chip.css}"/>
     <link rel="stylesheet" th:href="@{/styles/pages/user_list.css}" />
+    <link rel="stylesheet" th:href="@{/styles/dropdown.css}" />
 
     <script type="text/javascript" th:src="@{/scripts/user_list.js}"></script>
 </head>
@@ -91,21 +92,17 @@
                     <div class="tableCell">
                         <span th:each="role: ${user.rolesList}">
                             <form class="chip" th:action="@{/user-list/__${user.username}__/__${role.getNumber()}__}" th:method="post">
-                                <span th:text="${delegate.formatUserRole(role)}"/>
-                                <button class="closebtn" onclick="this.parentElement.style.display='none'" type="submit">&times;</button>
+                                <span class="label" th:text="${delegate.formatUserRole(role)}"/>
+                                <button class="remove-button" onclick="this.parentElement.style.display='none'" type="submit">&times;</button>
                             </form>
                         </span>
-                        <div class="dropdown">
-                            <div class="add-role">
-                                <button class="dropbutton">
-                                    +
-                                </button>
+                        <div class="dropdown-box">
+                            <div class="add-button">
+                                +
                             </div>
-                            <div class="anything">
-                                <div class="dropdown-content role-list" >
-                                    <div th:each="role:${delegate.getAvailableRoles(user)}">
-                                        <a class="dropdown-content-links" th:text="${delegate.formatUserRole(role)}"/>
-                                    </div>
+                            <div class="dropdown-content" >
+                                <div th:each="role:${delegate.getAvailableRoles(user)}">
+                                    <a class="dropdown-option" th:text="${delegate.formatUserRole(role)}"/>
                                 </div>
                             </div>
                         </div>
