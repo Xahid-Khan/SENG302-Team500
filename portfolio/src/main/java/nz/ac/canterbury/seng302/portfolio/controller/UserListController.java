@@ -15,10 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class UserListController {
@@ -71,7 +70,6 @@ public class UserListController {
             sortAttribute,
             ascending
         );
-
         // Construct response
         model.addAttribute("users", response.getUsersList());
         model.addAttribute("totalUserCount", response.getResultSetSize());
@@ -82,6 +80,16 @@ public class UserListController {
         model.addAttribute("delegate", this);
         model.addAttribute("pageSize", PAGE_SIZE);
         return "user_list";
+    }
+
+    @PostMapping("/user-list/{username}/{role}")
+    public String updateRoles(@AuthenticationPrincipal AuthState principal,
+                              @PathVariable String username,
+                              @PathVariable Integer role) {
+
+
+
+        return "redirect:/user-list";
     }
 
     public String formatUrl(int page, String sortBy, boolean sortDir) {

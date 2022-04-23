@@ -63,6 +63,19 @@ a.buttonLink:hover {
     right: 113px;
 }
 
+.closebtn {
+    cursor: pointer;
+    background-color: transparent;
+    border: none;
+    padding: 5px 4px;
+    transition-duration: 0s;
+    font-size: 14px;
+}
+
+.closebtn:hover {
+    background-color: transparent;
+}
+
 @media (max-width: 960px){
     .role-list{
         right: 78px;
