@@ -16,7 +16,8 @@ import {LoadingPending} from "../../../util/network/loading_status";
 export class ProjectStore {
     readonly startDate: Date
     readonly endDate: Date
-
+    readonly name: string
+    
     sprints: SprintStore[]
 
     constructor(project: ProjectContract) {
@@ -30,6 +31,7 @@ export class ProjectStore {
 
         this.startDate = DatetimeUtils.networkStringToLocalDate(project.startDate)
         this.endDate = DatetimeUtils.networkStringToLocalDate(project.endDate)
+        this.name = project.name
 
         this.sprints = observable.array(project.sprints.map(sprint => {
             const sprintStore = new SprintStore(sprint)

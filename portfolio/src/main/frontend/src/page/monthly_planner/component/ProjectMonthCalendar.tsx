@@ -48,6 +48,9 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
                     ), {timeout: Infinity})
                 )
         }
+        else {
+            toaster.dismiss(toastId)
+        }
     }, [project])
 
     const projectRange = {
@@ -66,23 +69,26 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
     }))
 
     return (
-        <FullCalendar
-            plugins={[dayGridPlugin, interactionPlugin]}
-            initialView="dayGridMonth"
-            events={events}
+        <>
+            <h3>{project.name}</h3>
+            <FullCalendar
+                plugins={[dayGridPlugin, interactionPlugin]}
+                initialView="dayGridMonth"
+                events={events}
 
-            /* Drag and drop config */
-            editable={!project.sprintsSaving} // We shouldn't allow sprints to be updated while we're still trying to save an earlier update, since this could lead to overlapping sprints.
-            eventResizableFromStart
-            eventStartEditable
-            eventDurationEditable
-            eventOverlap={false}
-            eventConstraint={projectRange}
-            eventChange={onSaveDatesCallback}
+                /* Drag and drop config */
+                editable={!project.sprintsSaving} // We shouldn't allow sprints to be updated while we're still trying to save an earlier update, since this could lead to overlapping sprints.
+                eventResizableFromStart
+                eventStartEditable
+                eventDurationEditable
+                eventOverlap={false}
+                eventConstraint={projectRange}
+                eventChange={onSaveDatesCallback}
 
-            /* Calendar config */
-            validRange={projectRange}
-            height='100vh'
-        />
+                /* Calendar config */
+                validRange={projectRange}
+                height='100vh'
+            />
+        </>
     )
 })
