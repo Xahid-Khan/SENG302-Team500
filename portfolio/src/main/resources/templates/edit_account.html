@@ -7,7 +7,7 @@
     <link rel="stylesheet" th:href="@{/styles/pages/account_details.css}"/>
     <link rel="stylesheet" th:href="@{/styles/pages/project_details.css}">
     <link rel="stylesheet" th:href="@{/styles/navbar.css}"/>
-
+    <link rel="stylesheet" th:href="@{/styles/pages/upload_popup.css}"/>
 
 </head>
 <body>
@@ -41,7 +41,26 @@
                 <form id='form' action="#" th:action="@{/edit_account}" th:object="${user}" method="post">
                     <h1 class="title">Edit Account</h1>
 
+                    <div class="popupForm", id="popupForm">
+                        <div class="raised-card card-padding">
+                            <h1>Upload profile Photo</h1>
+                            <form action="#" th:action="@{#}" method="post" enctype="multipart/form-data">
+                                <input type="file" accept="image/*">
+                                <button class="button" type="button" onclick="closePopupForm()">Upload Image</button>
+                            </form>
+
+                        </div>
+                    </div>
+
                     <!--    Submits a populated UserDTO to endpoint register -->
+                    <div class="form-row">
+                        <div class="image-container" style="padding:0">
+                            <button onclick="openPopupForm()" id="userPhotoButton" type="button" style="padding:0; width:150; height:150"}>
+                                <img src="https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png"
+                                     width="150" height="150" alt="Placeholder Profile Photo">
+                            </button>
+                        </div>
+                    </div>
 
                     <div class="form-row">
                         <label th:for="email">Email</label>
@@ -102,6 +121,7 @@
     </div>
 </div>
 
+<script type="text/javascript" th:src="@{/scripts/popup_form.js}"></script>
 </body>
 <style>
     input, textarea {

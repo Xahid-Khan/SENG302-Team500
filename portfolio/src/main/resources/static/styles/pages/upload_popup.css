@@ -1,0 +1,18 @@
+.popupForm {
+    width: 500;
+    border-radius: 6;
+    background: rgba(128, 128, 128, .3);
+    position: absolute;
+    top:0;
+    left:50%;
+    transform: translate(-50%, -50%) scale(0.1);
+    text-align: center;
+    visibility: hidden;
+    transition: transform 0.4s, top 0.4s;
+}
+
+.open-popupForm {
+    visibility: visible;
+    top:50%;
+    transform: translate(-50%, -50%) scale(1);
+}
