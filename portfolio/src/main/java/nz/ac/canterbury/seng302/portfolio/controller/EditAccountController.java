@@ -1,13 +1,15 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import com.google.common.primitives.Bytes;
+import com.google.protobuf.ByteString;
 import io.grpc.StatusRuntimeException;
 import nz.ac.canterbury.seng302.portfolio.DTO.EditedUserValidation;
 import nz.ac.canterbury.seng302.portfolio.DTO.User;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
+import nz.ac.canterbury.seng302.portfolio.service.UploadPhotoService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
-import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -26,6 +28,9 @@ public class EditAccountController {
     public void initBinder(WebDataBinder binder) {
         binder.registerCustomEditor(String.class, new StringTrimmerEditor(false));
     }
+
+    @Autowired
+    private UploadPhotoService uploadPhotoService;
 
     @Autowired
     private RegisterClientService registerClientService;
@@ -54,7 +59,8 @@ public class EditAccountController {
     }
 
     @PostMapping(value="/edit_account")
-    public String postPage(@ModelAttribute @Validated(EditedUserValidation.class) User user, BindingResult bindingResult, Model model, @AuthenticationPrincipal AuthState principal) {
+    public String postPage(@ModelAttribute @Validated(EditedUserValidation.class) User user, BindingResult bindingResult,
+                           Model model, @AuthenticationPrincipal AuthState principal, @RequestParam("image") MultipartFile file) {
 
         if (bindingResult.hasErrors()) {
             return "edit_account";
@@ -62,8 +68,16 @@ public class EditAccountController {
         try {
             var imageData = model.getAttribute("userImagePath");
 
-
             Integer userId = authStateService.getId(principal);
+            if (file.getSize() > 1000 && file.getSize() < 5000000) {
+                byte[] uploadImage = uploadPhotoService.imageProccessing(file, ""+userId);
+                String fileType = uploadPhotoService.getFileType();
+
+                registerClientService.uploadUserPhoto(userId, fileType, uploadImage);
+            } else {
+                model.addAttribute("imageError", "File size must be more than 500KB and less than 5MB.");
+                return "edit_account";
+            }
 
             registerClientService.updateDetails(user, userId);
 

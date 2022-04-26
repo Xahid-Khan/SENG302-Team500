@@ -14,6 +14,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -34,7 +35,7 @@ public class UploadPhotoService {
     private String errorInfo;
     private boolean success = false;
 
-    public String imageProccessing(MultipartFile file, String userFileName) throws NullPointerException {
+    public byte[] imageProccessing(MultipartFile file, String userFileName) throws NullPointerException {
         fileName = file.getOriginalFilename();
         fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1);
         imageWriter = ImageIO.getImageWritersByFormatName(fileExtension).next();; //An image writer is initialised for that specific type of image (file ext.)
@@ -52,9 +53,9 @@ public class UploadPhotoService {
         cropCenterSquare();
         saveUserImage(userFileName);
         if (success) {
-            return "successful";
+            return byteArrayOutputStream.toByteArray();
         } else {
-            return errorInfo;
+            return errorInfo.getBytes(StandardCharsets.UTF_8);
         }
     }
 
@@ -103,5 +104,9 @@ public class UploadPhotoService {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public String getFileType() {
+        return this.fileExtension;
     }
 }

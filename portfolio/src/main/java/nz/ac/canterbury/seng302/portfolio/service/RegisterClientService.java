@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
+import com.google.protobuf.ByteString;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import nz.ac.canterbury.seng302.portfolio.DTO.User;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
@@ -12,45 +13,57 @@ import org.springframework.stereotype.Service;
 @Service
 public class RegisterClientService {
 
-  @GrpcClient(value = "identity-provider-grpc-server")
-  private UserAccountServiceGrpc.UserAccountServiceBlockingStub registrationStub;
+    @GrpcClient(value = "identity-provider-grpc-server")
+    private UserAccountServiceGrpc.UserAccountServiceBlockingStub registrationStub;
 
-  /**
-   * Registers a new user.
-   *
-   * @param user The user to register
-   * @return a UserRegisterResponse for the status of the registration
-   */
-  public UserRegisterResponse register(User user) {
-    UserRegisterRequest regRequest =
-        UserRegisterRequest.newBuilder()
-            .setUsername(user.username())
-            .setPassword(user.password())
-            .setFirstName(user.firstName())
-            .setMiddleName(user.middleName())
-            .setLastName(user.lastName())
-            .setNickname(user.nickname())
-            .setBio(user.bio())
-            .setPersonalPronouns(user.personalPronouns())
-            .setEmail(user.email())
-            .build();
-    return registrationStub.register(regRequest);
-  }
+    /**
+     * Registers a new user.
+     *
+     * @param user The user to register
+     * @return a UserRegisterResponse for the status of the registration
+     */
+    public UserRegisterResponse register(User user) {
+        UserRegisterRequest regRequest =
+                UserRegisterRequest.newBuilder()
+                        .setUsername(user.username())
+                        .setPassword(user.password())
+                        .setFirstName(user.firstName())
+                        .setMiddleName(user.middleName())
+                        .setLastName(user.lastName())
+                        .setNickname(user.nickname())
+                        .setBio(user.bio())
+                        .setPersonalPronouns(user.personalPronouns())
+                        .setEmail(user.email())
+                        .build();
+        return registrationStub.register(regRequest);
+    }
 
-  public EditUserResponse updateDetails(User user, Integer userId) {
-    EditUserRequest editRequest =
-            EditUserRequest.newBuilder()
-                    .setUserId(userId)
-                    .setFirstName(user.firstName())
-                    .setMiddleName(user.middleName())
-                    .setLastName(user.lastName())
-                    .setNickname(user.nickname())
-                    .setBio(user.bio())
-                    .setPersonalPronouns(user.personalPronouns())
-                    .setEmail(user.email())
-                    .build();
-    return registrationStub.editUser(editRequest);
-  }
+    public EditUserResponse updateDetails(User user, Integer userId) {
+        EditUserRequest editRequest =
+                EditUserRequest.newBuilder()
+                        .setUserId(userId)
+                        .setFirstName(user.firstName())
+                        .setMiddleName(user.middleName())
+                        .setLastName(user.lastName())
+                        .setNickname(user.nickname())
+                        .setBio(user.bio())
+                        .setPersonalPronouns(user.personalPronouns())
+                        .setEmail(user.email())
+                        .build();
+        return registrationStub.editUser(editRequest);
+    }
+
+    public void uploadUserPhoto(Integer userId, String fileType, byte[] uploadImage) {
+        ProfilePhotoUploadMetadata metadata = ProfilePhotoUploadMetadata.newBuilder()
+                .setUserId(userId)
+                .setFileType(fileType).build();
+        UploadUserProfilePhotoRequest userUploadDataRequest = UploadUserProfilePhotoRequest.newBuilder()
+                .setMetaData(metadata)
+                .setFileContent(ByteString.copyFrom(uploadImage))
+                .build();
+
+//        registrationStub.uploadUserProfilePhoto(userUploadDataRequest);
+    }
 
 
 }
