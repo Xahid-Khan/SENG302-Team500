@@ -16,10 +16,8 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 public class EditAccountController {
@@ -49,6 +47,7 @@ public class EditAccountController {
         //Prefill the form with the user's details
         model.addAttribute("username", userDetails.getUsername());
         model.addAttribute("user", userDetails);
+//        model.addAttribute("userImagePath", userDetails.getProfileImagePath());
 
         return "edit_account";
 
@@ -61,13 +60,15 @@ public class EditAccountController {
             return "edit_account";
         }
         try {
+            var imageData = model.getAttribute("userImagePath");
+
 
             Integer userId = authStateService.getId(principal);
 
             registerClientService.updateDetails(user, userId);
 
         } catch (StatusRuntimeException e){
-            model.addAttribute("registerMessage", "Error connecting to Identity Provider..."); // TODO fix
+            model.addAttribute("registerMessage", "Error connecting to Identity Provider...");
             return "edit_account";
         }
         return "redirect:/my_account";
