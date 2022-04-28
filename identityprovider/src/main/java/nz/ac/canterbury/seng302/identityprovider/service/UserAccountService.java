@@ -1,12 +1,17 @@
 package nz.ac.canterbury.seng302.identityprovider.service;
 
+import com.google.protobuf.ByteString;
+import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
+
+import java.io.Console;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import net.devh.boot.grpc.server.service.GrpcService;
 import nz.ac.canterbury.seng302.identityprovider.exceptions.IrremovableRoleException;
 import nz.ac.canterbury.seng302.identityprovider.exceptions.UserDoesNotExistException;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
+import nz.ac.canterbury.seng302.shared.util.FileUploadStatus;
 import nz.ac.canterbury.seng302.shared.util.FileUploadStatusResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -150,22 +155,40 @@ public class UserAccountService extends UserAccountServiceGrpc.UserAccountServic
     }
 
 
-    public void UploadUserProfilePhoto(UploadUserProfilePhotoRequest uploadImageData) {
-        try {
-            editUserService.UploadUserPhoto(uploadImageData);
-        } catch (Exception e) {
-            e.printStackTrace();;
-        }
+    @Override
+    public StreamObserver<UploadUserProfilePhotoRequest> uploadUserProfilePhoto(StreamObserver<FileUploadStatusResponse> responseObserver) {
+        System.out.println("Streaming Server Side");
+        return new StreamObserver<UploadUserProfilePhotoRequest>() {
+            @Override
+            public void onNext(UploadUserProfilePhotoRequest request) {
+                int userId = request.getMetaData().getUserId();
+                ByteString rawImage = request.getFileContent();
+                FileUploadStatusResponse.Builder reply = FileUploadStatusResponse.newBuilder();
+                FileUploadStatusResponse uploadStatus = editUserService.UploadUserPhoto(userId, rawImage);
+                if (uploadStatus.getStatus() == FileUploadStatus.FAILED) {
+                    responseObserver.onError(
+                            new Throwable(String.valueOf(uploadStatus.getStatus()))
+                    );
+                    return;
+                }
+
+                reply.setStatus(uploadStatus.getStatus())
+                        .setMessage(uploadStatus.getMessage());
+
+                responseObserver.onNext(reply.build());
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                System.out.println(t.getMessage());
+            }
+
+            @Override
+            public void onCompleted() {
+                responseObserver.onCompleted();
+            }
+        };
     }
 
 
-//    public void UploadUserProfilePhoto (UploadUserProfilePhotoRequest uploadImageData,
-//                                        StreamObserver<FileUploadStatusResponse> fileUploadStatusResponseStreamObserver) {
-//        try {
-//            editUserService.UploadUserPhoto(uploadImageData);
-//        } catch (Exception e) {
-//            e.printStackTrace();;
-//
-//        }
-//    }
 }

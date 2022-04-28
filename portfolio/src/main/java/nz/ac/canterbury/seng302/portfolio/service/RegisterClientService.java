@@ -1,11 +1,14 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
 import com.google.protobuf.ByteString;
+import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import nz.ac.canterbury.seng302.portfolio.DTO.User;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import nz.ac.canterbury.seng302.shared.util.FileUploadStatusResponse;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.CountDownLatch;
 
 /**
  * Registers a new client by passing off the details to the RegisterServerService.
@@ -15,6 +18,9 @@ public class RegisterClientService {
 
     @GrpcClient(value = "identity-provider-grpc-server")
     private UserAccountServiceGrpc.UserAccountServiceBlockingStub registrationStub;
+
+    @GrpcClient(value = "identity-provider-grpc-server")
+    private UserAccountServiceGrpc.UserAccountServiceStub nonBlockingStub;
 
     /**
      * Registers a new user.
@@ -54,16 +60,36 @@ public class RegisterClientService {
     }
 
     public void uploadUserPhoto(Integer userId, String fileType, byte[] uploadImage) {
+        CountDownLatch latch = new CountDownLatch(1);
+        StreamObserver<UploadUserProfilePhotoRequest> requestStreamObserver = nonBlockingStub.uploadUserProfilePhoto (
+            new StreamObserver<>() {
+                @Override
+                public void onNext(FileUploadStatusResponse response) {
+                    response.getStatus();
+                    latch.countDown();
+                }
+
+                @Override
+                public void onError(Throwable t) {
+                    latch.countDown();
+                }
+
+                @Override
+                public void onCompleted() {
+                    latch.countDown();
+                }
+            }
+        );
+
         ProfilePhotoUploadMetadata metadata = ProfilePhotoUploadMetadata.newBuilder()
                 .setUserId(userId)
                 .setFileType(fileType).build();
+
         UploadUserProfilePhotoRequest userUploadDataRequest = UploadUserProfilePhotoRequest.newBuilder()
                 .setMetaData(metadata)
                 .setFileContent(ByteString.copyFrom(uploadImage))
                 .build();
-
-//        registrationStub.uploadUserProfilePhoto(userUploadDataRequest);
+        requestStreamObserver.onNext(userUploadDataRequest);
     }
-
 
 }

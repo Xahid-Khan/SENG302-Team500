@@ -39,9 +39,6 @@ public class UserModel {
     @Column(nullable = false)
     private String email;
 
-    @Column
-    private byte[] userPhoto;
-
     @ElementCollection(fetch = FetchType.EAGER)
     @Column(name = "roles", nullable = false)
     private List<UserRole> roles = new ArrayList<>();
@@ -53,8 +50,7 @@ public class UserModel {
     }
 
     public UserModel(String username, String passwordHash, String firstName, String middleName, String lastName,
-         String nickname, String bio, String personalPronouns, String email, List<UserRole> roles, Timestamp created,
-         ByteString image) {
+         String nickname, String bio, String personalPronouns, String email, List<UserRole> roles, Timestamp created) {
         this.username = username;
         this.passwordHash = passwordHash;
         this.firstName = firstName;
@@ -66,7 +62,6 @@ public class UserModel {
         this.email = email;
         this.roles = roles;
         this.created = created;
-        this.userPhoto = image.toByteArray();
     }
 
     public int getId() {
@@ -110,14 +105,6 @@ public class UserModel {
     }
 
     public void setId(int id) { this.id = id; }
-
-    public void setUserPhoto(byte[] image) {
-        this.userPhoto = image;
-    }
-
-    public byte[] getUserPhoto() {
-        return this.userPhoto;
-    }
 
     public List<UserRole> getRoles() { return roles; }
 
