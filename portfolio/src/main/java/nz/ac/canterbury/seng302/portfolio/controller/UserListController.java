@@ -87,20 +87,31 @@ public class UserListController {
         return "user_list";
     }
 
-    @PostMapping("/user-list/{id}/{roleNumber}")
+    @PostMapping("/user-list/{action}/{id}/{roleNumber}")
     public String updateRoles(@AuthenticationPrincipal AuthState principal,
+                              @PathVariable String action,
                               @PathVariable Integer id,
                               @PathVariable Integer roleNumber) {
 
-
-        UserRoleChangeResponse response = userAccountService.removeRole(id, UserRole.forNumber(roleNumber));
-        if (response.getIsSuccess()) {
-            return "redirect:/user-list";
+        if (action.equals("remove")) {
+            UserRoleChangeResponse response = userAccountService.removeRole(id, UserRole.forNumber(roleNumber));
+            if (response.getIsSuccess()) {
+                return "redirect:/user-list";
+            } else {
+                return "redirect:/greeting";
+            }
+        } else if (action.equals("add")) {
+            UserRoleChangeResponse response = userAccountService.addRole(id, UserRole.forNumber(roleNumber));
+            if (response.getIsSuccess()) {
+                return "redirect:/user-list";
+            } else {
+                return "redirect:/greeting";
+            }
         }
-        else {
-            return "redirect:/greeting";
-        }
+        return "redirect:/user-list";
     }
+
+
 
     public String formatUrl(int page, String sortBy, boolean sortDir) {
         return String.format("?page=%d&sortBy=%s&asc=%b", page, sortBy, sortDir);

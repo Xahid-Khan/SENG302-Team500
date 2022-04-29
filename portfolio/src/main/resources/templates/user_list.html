@@ -90,7 +90,7 @@
                     <div class="tableCell" th:text="${user.nickname}"/>
                     <div class="tableCell">
                         <span th:each="role: ${user.rolesList}">
-                            <form class="chip" th:action="@{/user-list/__${user.id}__/__${role.number}__}" th:method="post">
+                            <form class="chip" th:action="@{/user-list/remove/__${user.id}__/__${role.number}__}" th:method="post">
                                 <span th:text="${delegate.formatUserRole(role)}"/>
                                 <button class="closebtn" onclick="this.parentElement.style.display='none'" type="submit">&times;</button>
                             </form>
@@ -104,7 +104,9 @@
                             <div class="anything">
                                 <div class="dropdown-content role-list" >
                                     <div th:each="role:${delegate.getAvailableRoles(user)}">
-                                        <a class="dropdown-content-links" th:text="${delegate.formatUserRole(role)}"/>
+                                        <form th:action="@{/user-list/add/__${user.id}__/__${role.number}__}" th:method="post">
+                                            <button class="role-dropdown-content-links" th:text="${delegate.formatUserRole(role)}" type="submit"></button>
+                                        </form>
                                     </div>
                                 </div>
                             </div>

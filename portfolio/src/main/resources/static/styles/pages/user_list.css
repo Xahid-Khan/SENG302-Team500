@@ -76,6 +76,21 @@ a.buttonLink:hover {
     background-color: transparent;
 }
 
+.role-dropdown-content-links {
+    color: black;
+    cursor: pointer;
+    background-color: transparent;
+    border: none;
+    padding: 5px 10px;
+    width: 100%;
+    font-size: 14px;
+}
+
+.role-dropdown-content-links:hover {
+    cursor: pointer;
+    background-color: #cecece;
+}
+
 @media (max-width: 960px){
     .role-list{
         right: 78px;
