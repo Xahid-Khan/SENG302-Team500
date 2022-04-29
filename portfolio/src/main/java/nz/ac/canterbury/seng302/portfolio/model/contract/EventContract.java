@@ -14,9 +14,12 @@ import java.time.Instant;
 public record  EventContract (
     String projectId,
     String sprintId,
+
+    String eventId,
     String name,
     String description,
     Instant startDate,
     Instant endDate
+
 
 ) { }

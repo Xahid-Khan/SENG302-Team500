@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.model.contract;
 
 import java.time.Instant;
+import java.util.List;
 
 /**
  * A sprint contract is a contract that is a sprint.
@@ -20,6 +21,6 @@ public record SprintContract(
     String description,
     Instant startDate,
     Instant endDate,
-//    List<EventContract> events,
+    List<EventContract> events,
     Long orderNumber  // Should only be present in responses
 ) {}

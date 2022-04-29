@@ -6,6 +6,8 @@ import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The database representation of a Sprint.
@@ -38,6 +40,11 @@ public class SprintEntity {
 
     @Column(nullable = false)
     private Instant endDate;
+
+    @OneToMany(mappedBy = "sprint", fetch = FetchType.EAGER)
+    @OrderBy("startDate")
+    private List<EventEntity> events = new ArrayList<>();
+
 
     protected SprintEntity() {}
 
@@ -100,6 +107,14 @@ public class SprintEntity {
         this.endDate = endDate;
     }
 
+    public List<EventEntity> getEvents() {
+        return events;
+    }
+
+    public void setEvents(List<EventEntity> events) {
+        this.events = events;
+    }
+
     /**
      * Calculates the orderNumber of this sprint entity by searching through its project.
      *
@@ -115,4 +130,6 @@ public class SprintEntity {
 
         throw new IllegalStateException("this.project does not contain this sprint, so getOrderNumber is impossible.");
     }
+
+
 }

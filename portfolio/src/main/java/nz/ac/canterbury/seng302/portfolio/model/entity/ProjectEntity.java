@@ -41,6 +41,11 @@ public class ProjectEntity {
     @OrderBy("startDate")
     private List<SprintEntity> sprints = new ArrayList<>();
 
+    @OneToMany(mappedBy = "project", fetch = FetchType.EAGER)
+    @OrderBy("startDate")
+    private List<EventEntity> events = new ArrayList<>();
+
+
     protected ProjectEntity() {}
 
     public ProjectEntity(String name, String description, Instant startDate, Instant endDate) {
@@ -99,6 +104,8 @@ public class ProjectEntity {
         return sprints;
     }
 
+    public List<EventEntity> getEvents() {return events;}
+
     /**
      * Inserts the given sprint to the sprints list, retaining sorted order.
      *
@@ -119,5 +126,15 @@ public class ProjectEntity {
     public void removeSprint(SprintEntity sprint) {
         sprints.remove(sprint);
         sprint.setProject(null);
+    }
+
+   public void newEvent(EventEntity event) {
+        events.add(event);
+        event.setProject(this);
+    }
+
+    public void removeEvent(EventEntity event) {
+        events.remove(event);
+        event.setProject(null);
     }
 }

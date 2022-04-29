@@ -19,6 +19,6 @@ public record ProjectContract(
         String description,
         Instant startDate,
         Instant endDate,
-        List<SprintContract> sprints
-//        List<EventContract> events
+        List<SprintContract> sprints,
+        List<EventContract> events
 ) { }
