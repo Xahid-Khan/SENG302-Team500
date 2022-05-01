@@ -57,6 +57,12 @@ public class EditUserService {
     }
 
 
+    /**
+     * This method saves the raw image data into the database in ByteString format.
+     * @param userId Id (integer) of the user
+     * @param rawImageData Image that needs to be saved to DB
+     * @return a FileUploadStatusResponse
+     */
     public FileUploadStatusResponse UploadUserPhoto(int userId, ByteString rawImageData) {
         FileUploadStatusResponse.Builder reply = FileUploadStatusResponse.newBuilder();
         try {

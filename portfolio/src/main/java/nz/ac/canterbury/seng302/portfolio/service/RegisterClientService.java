@@ -59,6 +59,15 @@ public class RegisterClientService {
         return registrationStub.editUser(editRequest);
     }
 
+    /**
+     * This method uses a bidirectional gRPC service the upload the image data to the database and get the status response back.
+     * We Override gRPCs' UploadUserProfilePhotoRequest and pass it FileUploadStatusResponse that will provide us with
+     * Upload status (Success, Pending, etc.)
+     * @param userId Id (integer) of the user who is uploading the photo
+     * @param fileType extetion of the file (JPG, PNG, etc)
+     * @param uploadImage Raw image data in byte array
+     */
+
     public void uploadUserPhoto(Integer userId, String fileType, byte[] uploadImage) {
         CountDownLatch latch = new CountDownLatch(1);
         StreamObserver<UploadUserProfilePhotoRequest> requestStreamObserver = nonBlockingStub.uploadUserProfilePhoto (
@@ -91,5 +100,4 @@ public class RegisterClientService {
                 .build();
         requestStreamObserver.onNext(userUploadDataRequest);
     }
-
 }

@@ -11,17 +11,12 @@ import javax.imageio.stream.ImageOutputStream;
 import javax.imageio.stream.MemoryCacheImageOutputStream;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 @Service
 public class UploadPhotoService {
-    public static String UPLOADDIRECTORY = System.getProperty("user.dir") + "/uploads";
     private final float IMAGEQUALITY = 0.3f;
     private String fileName;
     private String fileExtension;
@@ -31,11 +26,10 @@ public class UploadPhotoService {
     private BufferedImage cropedImage = null;
     private BufferedImage originalImage = null;
     private ImageOutputStream imageOutputStream = null;
-    private Path fileNameAndPath;
-    private String errorInfo;
+    private String errorInfo = "";
     private boolean success = false;
 
-    public byte[] imageProccessing(MultipartFile file, String userFileName) throws NullPointerException {
+    public byte[] imageProccessing(MultipartFile file) throws NullPointerException {
         fileName = file.getOriginalFilename();
         fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1);
         imageWriter = ImageIO.getImageWritersByFormatName(fileExtension).next();; //An image writer is initialised for that specific type of image (file ext.)
@@ -51,7 +45,7 @@ public class UploadPhotoService {
             String info = String.format("compressImage - bufferedImage (file %s)- IOException - message: %s ", fileName, e.getMessage());
         }
         cropCenterSquare();
-        saveUserImage(userFileName);
+        saveUserImage();
         if (success) {
             return byteArrayOutputStream.toByteArray();
         } else {
@@ -69,15 +63,15 @@ public class UploadPhotoService {
         int width = originalImage.getWidth();
 
         if (height != width) {
-            int squaresize = height > width ? width : height;
+            int squareSize = height > width ? width : height;
             int xCoordinates = width / 2;
             int yCoordinates = height / 2;
 
             cropedImage = originalImage.getSubimage(
-                    xCoordinates - (squaresize/2),
-                    yCoordinates - (squaresize/2),
-                    squaresize,
-                    squaresize
+                    xCoordinates - (squareSize/2),
+                    yCoordinates - (squareSize/2),
+                    squareSize,
+                    squareSize
             );
         }
     }
@@ -86,7 +80,7 @@ public class UploadPhotoService {
      * This method saves the compressed and cropped image into the uploads folder. This method will check if the folder
      * exists. if not it will create a new one. if the file name exists in the folder than it will override the old file.
      */
-    private void saveUserImage(String userFileName) {
+    private void saveUserImage() {
         IIOImage image = new IIOImage(cropedImage, null, null);
         try {
             imageWriter.write(null, image, imageWriteParam);
@@ -94,15 +88,6 @@ public class UploadPhotoService {
             errorInfo = String.format("compressImage - imageWriter (file %s)- IOException - message: %s ", fileName, e.getMessage());
         } finally {
             imageWriter.dispose();
-        }
-
-        fileNameAndPath = Paths.get(UPLOADDIRECTORY, userFileName +"."+ fileExtension);
-        if (!new File(UPLOADDIRECTORY).exists()) new File(UPLOADDIRECTORY).mkdir();
-        try {
-            Files.write(fileNameAndPath, byteArrayOutputStream.toByteArray());
-            success = true;
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 

@@ -52,12 +52,21 @@ public class EditAccountController {
         //Prefill the form with the user's details
         model.addAttribute("username", userDetails.getUsername());
         model.addAttribute("user", userDetails);
-//        model.addAttribute("userImagePath", userDetails.getProfileImagePath());
 
         return "edit_account";
 
     }
 
+    /**
+     * This controller receives a profile photo (file) and crops it to 1:1 and compress it to make sure it's lower than 5mb.
+     * Then it used the gRPC protocols provided in registerClientService to save the file in the DataBase in bytes (ByteString) format.
+     * @param user A User of ty User.
+     * @param bindingResult An interface that extends errors
+     * @param model HTML model DTO
+     * @param principal An Authority State to verify user.
+     * @param file Image that user wants to save.
+     * @return
+     */
     @PostMapping(value="/edit_account")
     public String postPage(@ModelAttribute @Validated(EditedUserValidation.class) User user, BindingResult bindingResult,
                            Model model, @AuthenticationPrincipal AuthState principal, @RequestParam("image") MultipartFile file) {
@@ -67,13 +76,16 @@ public class EditAccountController {
         }
         try {
             var imageData = model.getAttribute("userImagePath");
+            System.out.println(imageData);
+            System.out.println(file);
 
             Integer userId = authStateService.getId(principal);
             if (file.getSize() > 1000 && file.getSize() < 5000000) {
-                byte[] uploadImage = uploadPhotoService.imageProccessing(file, ""+userId);
+                byte[] uploadImage = uploadPhotoService.imageProccessing(file);
                 String fileType = uploadPhotoService.getFileType();
 
                 registerClientService.uploadUserPhoto(userId, fileType, uploadImage);
+                model.addAttribute("userPhotoBytes", "data:image/"+fileType +";charset=utf-8;base64," +uploadImage);
             } else {
                 model.addAttribute("imageError", "File size must be more than 500KB and less than 5MB.");
                 return "edit_account";
@@ -85,6 +97,7 @@ public class EditAccountController {
             model.addAttribute("registerMessage", "Error connecting to Identity Provider...");
             return "edit_account";
         }
+
         return "redirect:/my_account";
     }
 

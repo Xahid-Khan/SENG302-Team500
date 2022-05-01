@@ -155,20 +155,25 @@ public class UserAccountService extends UserAccountServiceGrpc.UserAccountServic
     }
 
 
+    /**
+     * Uploads the stream of data from User and sends back the status response based on the upload status.
+     *
+     * @param responseObserver is of FileUploadStatusResponse
+     * @return a UploadUserProfilePhotoRequest
+     */
     @Override
     public StreamObserver<UploadUserProfilePhotoRequest> uploadUserProfilePhoto(StreamObserver<FileUploadStatusResponse> responseObserver) {
-        System.out.println("Streaming Server Side");
         return new StreamObserver<UploadUserProfilePhotoRequest>() {
             @Override
             public void onNext(UploadUserProfilePhotoRequest request) {
                 int userId = request.getMetaData().getUserId();
                 ByteString rawImage = request.getFileContent();
+
                 FileUploadStatusResponse.Builder reply = FileUploadStatusResponse.newBuilder();
                 FileUploadStatusResponse uploadStatus = editUserService.UploadUserPhoto(userId, rawImage);
+
                 if (uploadStatus.getStatus() == FileUploadStatus.FAILED) {
-                    responseObserver.onError(
-                            new Throwable(String.valueOf(uploadStatus.getStatus()))
-                    );
+                    responseObserver.onError(new Throwable(String.valueOf(uploadStatus.getStatus())));
                     return;
                 }
 
