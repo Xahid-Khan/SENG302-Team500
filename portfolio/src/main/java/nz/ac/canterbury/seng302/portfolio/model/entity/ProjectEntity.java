@@ -2,6 +2,8 @@ package nz.ac.canterbury.seng302.portfolio.model.entity;
 
 import java.util.Collections;
 import java.util.Comparator;
+
+import jdk.jfr.Event;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -40,6 +42,10 @@ public class ProjectEntity {
     @OneToMany(mappedBy = "project", fetch = FetchType.EAGER)
     @OrderBy("startDate")
     private List<SprintEntity> sprints = new ArrayList<>();
+
+    @OneToMany(mappedBy = "project", fetch = FetchType.EAGER)
+    @OrderBy("startDate")
+    private List<EventEntity> events = new ArrayList<>();
 
     protected ProjectEntity() {}
 
@@ -120,4 +126,28 @@ public class ProjectEntity {
         sprints.remove(sprint);
         sprint.setProject(null);
     }
+
+    /**
+     * Inserts the given event to the events list, retaining sorted order. May need to be looked into given different
+     * time types.
+     *
+     * <p>Adapted from: https://stackoverflow.com/a/51893026</p>
+     *
+     * @param event to insert
+     */
+    public void addEvent(EventEntity event) {
+        var index = Collections.binarySearch(events, event, Comparator.comparing(EventEntity::getStartDate));
+        if (index < 0) {
+            index = -index - 1;
+        }
+
+        events.add(index, event);
+        event.setProject(this);
+    }
+
+    public void removeEvent(EventEntity event) {
+        events.remove(event);
+        event.setProject(null);
+    }
+
 }
