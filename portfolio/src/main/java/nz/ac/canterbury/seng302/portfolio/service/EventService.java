@@ -7,9 +7,11 @@ import nz.ac.canterbury.seng302.portfolio.repository.EventRepository;
 import nz.ac.canterbury.seng302.portfolio.repository.ProjectRepository;
 import nz.ac.canterbury.seng302.portfolio.repository.SprintRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.NoSuchElementException;
 
+@Service
 public class EventService {
     @Autowired
     private SprintRepository sprintRepository;
