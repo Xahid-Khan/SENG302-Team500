@@ -3,12 +3,14 @@ package nz.ac.canterbury.seng302.portfolio.service;
 import nz.ac.canterbury.seng302.portfolio.mapping.EventMapper;
 import nz.ac.canterbury.seng302.portfolio.model.contract.BaseEventContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.EventContract;
+import nz.ac.canterbury.seng302.portfolio.model.entity.ProjectEntity;
 import nz.ac.canterbury.seng302.portfolio.repository.EventRepository;
 import nz.ac.canterbury.seng302.portfolio.repository.ProjectRepository;
 import nz.ac.canterbury.seng302.portfolio.repository.SprintRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.NoSuchElementException;
 
 @Service
@@ -68,5 +70,42 @@ public class EventService {
         project.removeEvent(event);
         eventRepository.delete(event);
         projectRepository.save(project);
+    }
+
+    /**
+     * Goes through all the sprints in the project that have overlapping dates with the event
+     * @param project Project to search
+     * @param event Event whose dates you are checking
+     * @return List of sprint IDs that overlap
+     */
+    public ArrayList<String> getSprintForEvent(ProjectEntity project, BaseEventContract event) {
+        var sprints = project.getSprints();
+        var eventEntity = eventMapper.toEntity(event);
+        var sprintIds = new ArrayList<String>();
+
+        //iterates through all the sprints in the project using i
+        for (var i = 0; i < sprints.size(); i++) {
+            //Gets sprint
+            var sprint = sprints.get(i);
+            var sprintEntity = sprintRepository.findById(sprint.getId()).orElseThrow(() -> new NoSuchElementException("Invalid sprint ID"));
+
+            //1 Checks if event start date is before or the same as the sprint start date and the event end date is after or the same as the sprint end date
+            if (eventEntity.getStartDate().isBefore(sprintEntity.getStartDate()) || eventEntity.getStartDate().equals(sprintEntity.getStartDate())
+                    && eventEntity.getEndDate().isAfter(sprintEntity.getEndDate()) || eventEntity.getEndDate().equals(sprintEntity.getEndDate())) {
+                sprintIds.add(sprint.getId());
+            }
+            //Checks if the event start date is within the sprint start and end date or if the event and sprint have same start date
+            else if (eventEntity.getStartDate().isAfter(sprintEntity.getStartDate()) && eventEntity.getStartDate().isBefore(sprintEntity.getEndDate())
+                    || eventEntity.getStartDate().equals(sprintEntity.getStartDate())) {
+                //2 checks if the event end date is after, within or the same as the sprint end date
+                if(eventEntity.getEndDate().isAfter(sprintEntity.getEndDate()) || eventEntity.getEndDate().equals(sprintEntity.getEndDate()) ||
+                        eventEntity.getEndDate().isAfter(sprintEntity.getStartDate()) && eventEntity.getEndDate().isBefore(sprintEntity.getEndDate())) {
+                    sprintIds.add(sprint.getId());
+                }
+
+            }
+
+        }
+        return sprintIds;
     }
 }

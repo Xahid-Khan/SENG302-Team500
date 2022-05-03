@@ -14,7 +14,7 @@ import java.time.Instant;
  * Entity class for events.
  */
 @Entity
-@Table(name = "event_entity")
+@Table(name = "event")
 public class EventEntity {
     @Id
     @GeneratedValue(generator = "UUID")
@@ -30,7 +30,7 @@ public class EventEntity {
     private SprintEntity sprint;
 
     // TODO Check validation in line with previous validation
-    @Pattern(message = "Please use letters or characters", regexp = "(?<=\\s|^)[a-zA-Z]*(?=[.,;:]?\\s|$)")
+    @Pattern(message = "Please use letters or characters", regexp = "(?<=\\s|^)[a-zA-Z\s]*(?=[.,;:]?\\s|$)")
     // Regex pattern from https://stackoverflow.com/questions/36851740/regex-for-just-alphabetic-characters-only-java
     @Length(message = "Name must be between 1 and 50 characters", min = 1, max = 50)
     @Column(name = "name", nullable = false)

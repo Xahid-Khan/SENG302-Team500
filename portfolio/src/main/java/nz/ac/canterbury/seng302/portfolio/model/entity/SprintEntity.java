@@ -115,6 +115,16 @@ public class SprintEntity {
         this.events = events;
     }
 
+    public void newEvent(EventEntity event) {
+        events.add(event);
+        event.setSprint(this);
+    }
+
+    public void removeEvent(EventEntity event) {
+        events.remove(event);
+        event.setSprint(null);
+    }
+
     /**
      * Calculates the orderNumber of this sprint entity by searching through its project.
      *
