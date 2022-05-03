@@ -54,6 +54,14 @@ public class EventService {
         project.newEvent(entity);
         projectRepository.save(project);
         eventRepository.save(entity);
+        ArrayList<String> sprintIds = getSprintForEvent(project, event);
+        for (String id : sprintIds) {
+            var sprint = sprintRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid sprint ID"));
+            sprint.newEvent(entity);
+            sprintRepository.save(sprint);
+        }
+
+        eventRepository.save(entity);
 
         return eventMapper.toContract(entity);
     }
