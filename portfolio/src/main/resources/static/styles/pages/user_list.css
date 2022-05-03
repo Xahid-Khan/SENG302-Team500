@@ -32,17 +32,19 @@ a.buttonLink:hover {
 }
 
 .add-button {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
     height: 25px;
+    width: 25px;
+    font-family: inherit;
+    font-weight: bold;
+    text-align: center;
     font-size: 25px;
     line-height: 25px;
-    border-radius: 13px;
-    font-family: inherit;
-    margin: 0;
-    display: flex;
-    font-weight: bold;
+    border-radius: 50%;
     color: #888;
     background-color: #cecece;
-    padding: 0px 6px;
     transition-duration: 0.4s;
 }
 

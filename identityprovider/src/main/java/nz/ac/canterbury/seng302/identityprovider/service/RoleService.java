@@ -58,8 +58,8 @@ public class RoleService {
     // Generate a response based on if modifyRoleOfUser was successful or not
     var response =
         modifyRoleOfUser(modificationRequest, true)
-            ? UserRoleChangeResponse.newBuilder().setIsSuccess(true).setMessage(true)
-            : UserRoleChangeResponse.newBuilder().setIsSuccess(false).setMessage(false);
+            ? UserRoleChangeResponse.newBuilder().setIsSuccess(true).setMessage("true")
+            : UserRoleChangeResponse.newBuilder().setIsSuccess(false).setMessage("false");
 
     return response.build();
   }
@@ -75,8 +75,8 @@ public class RoleService {
     // Generate a response based on if modifyRoleOfUser was successful or not
     var response =
         modifyRoleOfUser(modificationRequest, false)
-            ? UserRoleChangeResponse.newBuilder().setIsSuccess(true).setMessage(true)
-            : UserRoleChangeResponse.newBuilder().setIsSuccess(false).setMessage(false);
+            ? UserRoleChangeResponse.newBuilder().setIsSuccess(true).setMessage("true")
+            : UserRoleChangeResponse.newBuilder().setIsSuccess(false).setMessage("false");
 
     return response.build();
   }
