@@ -20,7 +20,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         security
             .addFilterBefore(new JwtAuthenticationFilter(), BasicAuthenticationFilter.class)
                 .authorizeRequests()
-                    .antMatchers(HttpMethod.GET, "/", "/login", "/register", "/styles/*", "/scripts/*", "/frontend/*", "/monthly-planner")
+                    .antMatchers(HttpMethod.GET, "/", "/login", "/register", "/styles/*", "/scripts/*", "/frontend/*")
                     .permitAll()
                     .and()
                 .authorizeRequests()
@@ -47,6 +47,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(WebSecurity web) throws Exception
     {
-        web.ignoring().antMatchers("/", "/login", "/register", "/styles/*", "/scripts/*", "/frontend/*", "/monthly-planner");
+        web.ignoring().antMatchers("/", "/login", "/register", "/styles/*", "/scripts/*", "/frontend/*");
     }
 }
