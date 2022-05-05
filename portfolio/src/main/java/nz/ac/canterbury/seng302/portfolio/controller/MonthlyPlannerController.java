@@ -31,7 +31,7 @@ public class MonthlyPlannerController {
         List<UserRole> roles = userDetails.getRolesList();
 
         model.addAttribute("canEdit", roles.contains(UserRole.TEACHER) || roles.contains(UserRole.COURSE_ADMINISTRATOR));
-
+        model.addAttribute("username", userDetails.getUsername());
 
         return "monthly_planner";
     }
