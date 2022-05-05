@@ -58,21 +58,25 @@
         <h1>Users</h1>
         <th:block th:if="${#lists.isEmpty(users)}">
             <p>No users to display on this page</p>
+            <a class="buttonLink" th:disabled="${currentPage==0}" th:href="${delegate.formatUrl(1, sortBy, sortDir)}">First Page</a>
         </th:block>
         <th:block th:if="${not #lists.isEmpty(users)}">
             <div class="container">
                 <span th:with="pageEndOffset=${pageOffset + users.size()}">
-                    Displaying users <span th:text="${pageOffset}"></span> - <span th:text="${pageEndOffset}"></span> of <span th:text="${totalUserCount}"></span>
+                    Displaying users <span th:text="${pageOffset + 1}"></span> - <span th:text="${pageEndOffset}"></span> of <span th:text="${totalUserCount}"></span> (Page <span th:text="${currentPage}"></span> of <span th:text="${maxPage}"></span>)
                 </span>
                 <div>
                     <span th:with="prevPage=${currentPage - 1}">
+                        <a class="buttonLink" th:disabled="${prevPage<=1}" th:href="${delegate.formatUrl(1, sortBy, sortDir)}">First Page</a>
                         <a class="buttonLink" id='previous' th:disabled="${prevPage==0}" th:href="${delegate.formatUrl(prevPage, sortBy, sortDir)}">Previous Page</a>
                     </span>
                     <span th:with="nextPage=${currentPage + 1}">
                         <th:block th:with="maxPage=${(totalUserCount/pageSize) + ((totalUserCount % pageSize == 0) ? 0 : 1)}">
                             <a class="buttonLink" id='next' th:disabled="${nextPage>maxPage}" th:href="${delegate.formatUrl(nextPage, sortBy, sortDir)}">Next Page</a>
+                            <a class="buttonLink" id='last' th:disabled="${nextPage>maxPage - 1}" th:href="${delegate.formatUrl(maxPage, sortBy, sortDir)}">Last Page</a>
                         </th:block>
                     </span>
+
                 </div>
             </div>
             </br>

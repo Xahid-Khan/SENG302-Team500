@@ -13,7 +13,7 @@
 }
 
 a.buttonLink[disabled='disabled'] {
-    display: none;
+    visibility: hidden;
 }
 
 a.buttonLink {
