@@ -27,12 +27,19 @@ const reloadWithLastStoredParameters = () => {
   }
 };
 
-const goToPage = () => {
+const goToPage = (maxPage) => {
   const lastParameters = JSON.parse(
       window.localStorage.getItem("user_list_last_parameters"));
   const page = Number(document.getElementById("pageNumber").value)
   if (!isNaN(page)) {
-    let baseUrl = `?page=${page}`;
+    let baseUrl;
+    if (!isNaN(Number(maxPage))) {
+      // If the page is too big, then just load the max page instead.
+      baseUrl = `?page=` + (page > maxPage ? maxPage : page)
+    } else {
+      baseUrl = `?page=${page}`;
+    }
+    console.log(baseUrl)
     // If we need to sort by or change ascension order, add them here
     if (lastParameters) {
       if (lastParameters.sortBy)
