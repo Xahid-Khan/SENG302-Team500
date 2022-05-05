@@ -30,3 +30,7 @@ a.buttonLink {
 a.buttonLink:hover {
     background-color: #0332D1;
 }
+
+#pageNumber {
+    text-align: center;
+}
