@@ -17,8 +17,8 @@ public record User(
     @Size(min = 3, max = 32, message = "Username must be between 3 and 32 characters", groups = RegisteredUserValidation.class)
     String username,
 
-    @NotBlank(message = "Password is required", groups = RegisteredUserValidation.class)
-    @Size(min = 8, message = "Password must be at least 8 characters long", groups = RegisteredUserValidation.class)
+    @NotBlank(message = "Password is required", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
+    @Size(min = 8, message = "Password must be at least 8 characters long", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
     String password,
 
     @NotBlank(message = "First name is required", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
