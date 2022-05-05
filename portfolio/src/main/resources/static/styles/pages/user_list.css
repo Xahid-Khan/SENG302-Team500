@@ -55,7 +55,7 @@ a.buttonLink:hover {
     justify-content: right;
 }
 
-.anything{
+.add-role-dropdown{
     display: flex;
 }
 
@@ -89,6 +89,10 @@ a.buttonLink:hover {
 .role-dropdown-content-links:hover {
     cursor: pointer;
     background-color: #cecece;
+}
+
+.role-item {
+    padding-right: 2px;
 }
 
 @media (max-width: 960px){

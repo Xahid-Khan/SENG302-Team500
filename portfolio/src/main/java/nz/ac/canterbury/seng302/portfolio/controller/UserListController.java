@@ -29,9 +29,6 @@ public class UserListController {
     private UserAccountService userAccountService;
 
     @Autowired
-    private RolesService rolesService;
-
-    @Autowired
     private AuthStateService authStateService;
 
     @GetMapping("/user-list")
@@ -44,8 +41,14 @@ public class UserListController {
     ) {
 
         Integer userId = authStateService.getId(principal);
+        model.addAttribute("userId", userId);
 
         UserResponse userDetails = userAccountService.getUserById(userId);
+        List<UserRole> roles = userDetails.getRolesList();
+
+        if ((roles.contains(UserRole.COURSE_ADMINISTRATOR) || roles.contains(UserRole.TEACHER))) {
+            model.addAttribute("isAdmin", true);
+        }
 
         model.addAttribute("username", userDetails.getUsername());
         // Supply defaults
@@ -87,28 +90,47 @@ public class UserListController {
         return "user_list";
     }
 
-    @PostMapping("/user-list/{action}/{id}/{roleNumber}")
+    @PostMapping("/user-list")
     public String updateRoles(@AuthenticationPrincipal AuthState principal,
-                              @PathVariable String action,
-                              @PathVariable Integer id,
-                              @PathVariable Integer roleNumber) {
+                              Model model,
+                              @RequestParam(name="action") String action,
+                              @RequestParam(name="id") Integer id,
+                              @RequestParam(name="roleNumber") Integer roleNumber) {
+        Integer userId = authStateService.getId(principal);
+        UserResponse userDetails = userAccountService.getUserById(userId);
+        List<UserRole> roles = userDetails.getRolesList();
 
-        if (action.equals("remove")) {
-            UserRoleChangeResponse response = userAccountService.removeRole(id, UserRole.forNumber(roleNumber));
-            if (response.getIsSuccess()) {
-                return "redirect:/user-list";
-            } else {
-                return "redirect:/greeting";
+        model.addAttribute("roleMessageTarget", id);
+
+        if (roles.contains(UserRole.TEACHER) || roles.contains(UserRole.COURSE_ADMINISTRATOR)) {
+
+            if (userId.equals(id)) {
+                model.addAttribute("roleMessage", "Cannot add roles for yourself");
             }
-        } else if (action.equals("add")) {
-            UserRoleChangeResponse response = userAccountService.addRole(id, UserRole.forNumber(roleNumber));
-            if (response.getIsSuccess()) {
-                return "redirect:/user-list";
-            } else {
-                return "redirect:/greeting";
+
+            if (action.equals("remove")) {
+                if (userId.equals(id)) {
+                    model.addAttribute("roleMessage", "Cannot remove roles for yourself");
+                }
+                try {
+                    UserRoleChangeResponse response = userAccountService.removeRole(id, UserRole.forNumber(roleNumber));
+                    if (!response.getIsSuccess()) {
+                        model.addAttribute("roleMessage", "Error adding role");
+                    }
+                } catch (Exception e) { // TODO: Fix this Exception to be IrremovableRoleException
+                    model.addAttribute("roleMessage", "User must have at least one role");
+                }
+            } else if (action.equals("add")) {
+                UserRoleChangeResponse response = userAccountService.addRole(id, UserRole.forNumber(roleNumber));
+                if (!response.getIsSuccess()) {
+                    model.addAttribute("roleMessage", "Error adding role");
+                }
             }
         }
-        return "redirect:/user-list";
+
+        return listUsers(principal, Optional.empty(), Optional.empty(), Optional.empty(), model);
+
+
     }
 
 
