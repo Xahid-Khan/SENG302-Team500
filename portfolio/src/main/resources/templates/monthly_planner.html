@@ -7,7 +7,13 @@
 
     <link rel="stylesheet" th:href="@{/styles/common.css}"/>
     <link rel="stylesheet" th:href="@{/frontend/monthly_planner.css}"/>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
 
+        window.userCanEdit = /*[[${canEdit}]]*/ 'default';
+
+        /*]]>*/
+    </script>
     <script type="text/javascript" th:src="@{/frontend/monthly_planner.js}" defer></script>
 </head>
 <body>
