@@ -63,9 +63,7 @@ public class EventEntity {
         this.project = project;
     }
 
-    public SprintEntity getSprint() {
-        return sprint;
-    }
+    public SprintEntity getSprint() {return sprint;}
 
     public void setSprint(SprintEntity sprint) {
         this.sprint = sprint;

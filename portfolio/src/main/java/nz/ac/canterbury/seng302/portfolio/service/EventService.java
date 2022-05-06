@@ -65,6 +65,8 @@ public class EventService {
 
         return eventMapper.toContract(entity);
     }
+
+
     /**
      * Deletes an event, including removing it from its parent project.
      *
@@ -98,20 +100,30 @@ public class EventService {
             var sprintEntity = sprintRepository.findById(sprint.getId()).orElseThrow(() -> new NoSuchElementException("Invalid sprint ID"));
 
             //1 Checks if event start date is before or the same as the sprint start date and the event end date is after or the same as the sprint end date
-            if (eventEntity.getStartDate().isBefore(sprintEntity.getStartDate()) || eventEntity.getStartDate().equals(sprintEntity.getStartDate())
-                    && eventEntity.getEndDate().isAfter(sprintEntity.getEndDate()) || eventEntity.getEndDate().equals(sprintEntity.getEndDate())) {
+//            if (eventEntity.getStartDate().isBefore(sprintEntity.getStartDate()) || eventEntity.getStartDate().equals(sprintEntity.getStartDate())
+//                    && eventEntity.getEndDate().isAfter(sprintEntity.getEndDate()) || eventEntity.getEndDate().equals(sprintEntity.getEndDate())) {
+//                sprintIds.add(sprint.getId());
+//            }
+            eventEntity.getStartDate().compareTo(sprintEntity.getStartDate());
+            // Adds if event starts before the sprint starts and the event doesn't end before the sprint starts
+            if (eventEntity.getStartDate().compareTo(sprintEntity.getStartDate())<=0 && eventEntity.getEndDate().compareTo(sprintEntity.getStartDate()) >= 0) {
+                sprintIds.add(sprint.getId());
+                System.out.println("Event starts before sprint starts");
+            }
+            // Adds if event starts after the sprint starts but before the sprint ends
+            else if (eventEntity.getStartDate().compareTo(sprintEntity.getStartDate()) >= 0 && eventEntity.getStartDate().compareTo(sprintEntity.getEndDate()) <= 0) {
                 sprintIds.add(sprint.getId());
             }
             //Checks if the event start date is within the sprint start and end date or if the event and sprint have same start date
-            else if (eventEntity.getStartDate().isAfter(sprintEntity.getStartDate()) && eventEntity.getStartDate().isBefore(sprintEntity.getEndDate())
-                    || eventEntity.getStartDate().equals(sprintEntity.getStartDate())) {
-                //2 checks if the event end date is after, within or the same as the sprint end date
-                if(eventEntity.getEndDate().isAfter(sprintEntity.getEndDate()) || eventEntity.getEndDate().equals(sprintEntity.getEndDate()) ||
-                        eventEntity.getEndDate().isAfter(sprintEntity.getStartDate()) && eventEntity.getEndDate().isBefore(sprintEntity.getEndDate())) {
-                    sprintIds.add(sprint.getId());
-                }
-
-            }
+//            else if (eventEntity.getStartDate().isAfter(sprintEntity.getStartDate()) && eventEntity.getStartDate().isBefore(sprintEntity.getEndDate())
+//                    || eventEntity.getStartDate().equals(sprintEntity.getStartDate())) {
+//                //2 checks if the event end date is after, within or the same as the sprint end date
+//                if (eventEntity.getEndDate().isAfter(sprintEntity.getEndDate()) || eventEntity.getEndDate().equals(sprintEntity.getEndDate()) ||
+//                        eventEntity.getEndDate().isAfter(sprintEntity.getStartDate()) && eventEntity.getEndDate().isBefore(sprintEntity.getEndDate())) {
+//                    sprintIds.add(sprint.getId());
+//                }
+//
+//            }
 
         }
         return sprintIds;
