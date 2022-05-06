@@ -326,7 +326,7 @@ class ProjectOrSprintEditor {
     this.endDateInput = document.getElementById(`edit-end-date-${this.entityId}`);
 
     this.colourInput = document.getElementById(`edit-colour-${this.entityId}`);
-    if (this.title === "New project details:") {
+    if (this.title === "New project details:" || this.title === "Edit project details:") {
       this.colourInput.outerHTML = "";
       document.getElementById(`color-label-${this.entityId}`).outerHTML = "";
     }
