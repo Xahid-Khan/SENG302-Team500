@@ -305,9 +305,9 @@ class ProjectOrSprintEditor {
               <label>Start Date*:</label>
               <input type="date" name="start-date" id="edit-start-date-${this.entityId}"> <span id="edit-start-date-hours-${this.entityId}"></span><br><br>
               <label>End Date*:</label>
-              <input type="date" name="end-date" id="edit-end-date-${this.entityId}"> <span id="edit-end-date-hours-${this.entityId}"></span><br><br>
-              <label>Colour*:</label>
-              <input type="" name="colour" id="edit-colour-${this.entityId}"><br>
+              <input type="date" name="end-date" id="edit-end-date-${this.entityId}"> <span id="edit-end-date-hours-${this.entityId}"></span><br>
+              <label id="color-label-${this.entityId}"><br>Colour*:</label>
+              <input type="color" name="colour" id="edit-colour-${this.entityId}"><br></input>
               <div id="edit-project-date-error-${this.entityId}" class="form-error" style="display: none;"></div><br>
               
               <p>* = Required field.</p>
@@ -324,7 +324,13 @@ class ProjectOrSprintEditor {
     this.descriptionInput = document.getElementById(`edit-description-${this.entityId}`);
     this.startDateInput = document.getElementById(`edit-start-date-${this.entityId}`);
     this.endDateInput = document.getElementById(`edit-end-date-${this.entityId}`);
+
     this.colourInput = document.getElementById(`edit-colour-${this.entityId}`);
+    if (this.title === "New project details:") {
+      this.colourInput.outerHTML = "";
+      document.getElementById(`color-label-${this.entityId}`).outerHTML = "";
+    }
+
     this.saveButton = document.getElementById(`edit-save-button-${this.entityId}`);
 
     this.startDateHoursField = document.getElementById(`edit-start-date-hours-${this.entityId}`);
