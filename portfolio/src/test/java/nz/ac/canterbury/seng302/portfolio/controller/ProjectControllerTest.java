@@ -57,7 +57,7 @@ public class ProjectControllerTest {
                 Instant.parse("2022-03-03T10:15:30.00Z")
         );
 
-        var sprint = new SprintEntity("New sprint", "My New Sprint Description", Instant.parse("2022-03-03T10:15:30.00Z"), Instant.parse("2023-03-03T10:15:30.00Z"));
+        var sprint = new SprintEntity("New sprint", "My New Sprint Description", Instant.parse("2022-03-03T10:15:30.00Z"), Instant.parse("2023-03-03T10:15:30.00Z"), "#fff");
         project1.addSprint(sprint);
 
         projectRepository.save(project1);

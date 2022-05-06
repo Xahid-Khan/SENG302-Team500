@@ -26,6 +26,7 @@ export class SprintStore {
     readonly name: string
     readonly id: string
     readonly description: string
+    readonly colour: string
 
     protected onOrderNumberUpdate: VoidFunction | undefined
 
@@ -41,12 +42,14 @@ export class SprintStore {
             orderNumber: observable,
             startDate: observable,
             endDate: observable,
+            colour: observable,
 
             setDates: action
         })
 
         this.id = sprint.sprintId
         this.name = sprint.name
+        this.colour = sprint.colour
 
         this.loadSelfFromJson(sprint)
     }
@@ -92,7 +95,8 @@ export class SprintStore {
             name: this.name,
             description: this.description,
             startDate: DatetimeUtils.localToNetworkString(startDate),
-            endDate: DatetimeUtils.localToNetworkString(endDate)
+            endDate: DatetimeUtils.localToNetworkString(endDate),
+            colour: this.colour
         }
 
         try {

@@ -62,7 +62,7 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
         id: sprint.id,
         start: sprint.startDate,
         end: sprint.endDate,
-        backgroundColor: "orange",
+        backgroundColor: sprint.colour,
         title: `Sprint ${sprint.orderNumber}: ${sprint.name}`,
         // This hides the time on the event and must be true for drag and drop resizing to be enabled
         allDay: !DatetimeUtils.hasTimeComponent(sprint.startDate) && !DatetimeUtils.hasTimeComponent(sprint.endDate),

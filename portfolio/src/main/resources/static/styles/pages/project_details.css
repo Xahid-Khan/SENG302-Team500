@@ -20,6 +20,26 @@ body {
     color: #666666;
 }
 
+.sprint-colour {
+    display: none;
+    overflow: hidden;
+    padding-left: 20px;
+    padding-bottom: 10px;
+    color: #666666;
+}
+
+.colour-block {
+    display: none;
+    outline: black double;
+    width: 30px;
+    height: 10px;
+    margin: 4px 10px;
+}
+
+.sprint-details {
+    display: flex;
+}
+
 .toggle-sprint-details {
     padding: 8px 12px;
 }

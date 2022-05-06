@@ -3,4 +3,5 @@ export interface BaseSprintContract {
     description: string
     startDate: string
     endDate: string
+    colour: string
 }

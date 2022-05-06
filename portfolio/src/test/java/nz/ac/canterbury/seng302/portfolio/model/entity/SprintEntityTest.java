@@ -33,13 +33,13 @@ public class SprintEntityTest {
         var project = new ProjectEntity("test project", null, Instant.EPOCH, Instant.parse("2007-12-03T10:15:30.00Z"));
         projectRepository.save(project);
 
-        var sprint = new SprintEntity("test sprint", "test description", Instant.ofEpochSecond(120), Instant.ofEpochSecond(360));
+        var sprint = new SprintEntity("test sprint", "test description", Instant.ofEpochSecond(120), Instant.ofEpochSecond(360), "#fff");
         project.addSprint(sprint);
         sprintRepository.save(sprint);
 
         assertEquals(1, sprint.getOrderNumber());
 
-        var sprint2 = new SprintEntity("test sprint", "test description", Instant.ofEpochSecond(420), Instant.ofEpochSecond(480));
+        var sprint2 = new SprintEntity("test sprint", "test description", Instant.ofEpochSecond(420), Instant.ofEpochSecond(480), "#fff");
         project.addSprint(sprint2);
         sprintRepository.save(sprint2);
 
@@ -52,13 +52,13 @@ public class SprintEntityTest {
         var project = new ProjectEntity("test project", null, Instant.EPOCH, Instant.parse("2007-12-03T10:15:30.00Z"));
         projectRepository.save(project);
 
-        var laterSprint = new SprintEntity("test sprint", "test description", Instant.ofEpochSecond(120), Instant.ofEpochSecond(360));
+        var laterSprint = new SprintEntity("test sprint", "test description", Instant.ofEpochSecond(120), Instant.ofEpochSecond(360), "#fff");
         project.addSprint(laterSprint);
         sprintRepository.save(laterSprint);
 
         assertEquals(1, laterSprint.getOrderNumber());
 
-        var earlierSprint = new SprintEntity("test sprint", "test description", Instant.ofEpochSecond(60), Instant.ofEpochSecond(120));
+        var earlierSprint = new SprintEntity("test sprint", "test description", Instant.ofEpochSecond(60), Instant.ofEpochSecond(120), "#fff");
         project.addSprint(earlierSprint);
         sprintRepository.save(earlierSprint);
 
@@ -71,10 +71,10 @@ public class SprintEntityTest {
         var project = new ProjectEntity("test project", null, Instant.EPOCH, Instant.parse("2007-12-03T10:15:30.00Z"));
         projectRepository.save(project);
 
-        var laterSprint = new SprintEntity("test sprint later", "test description", Instant.ofEpochSecond(120), Instant.ofEpochSecond(360));
+        var laterSprint = new SprintEntity("test sprint later", "test description", Instant.ofEpochSecond(120), Instant.ofEpochSecond(360), "#fff");
         project.addSprint(laterSprint);
         sprintRepository.save(laterSprint);
-        var earlierSprint = new SprintEntity("test sprint earlier", "test description", Instant.ofEpochSecond(60), Instant.ofEpochSecond(120));
+        var earlierSprint = new SprintEntity("test sprint earlier", "test description", Instant.ofEpochSecond(60), Instant.ofEpochSecond(120), "#fff");
         project.addSprint(earlierSprint);
         sprintRepository.save(earlierSprint);
 
