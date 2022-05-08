@@ -35,9 +35,13 @@ public class LoginController {
      */
     @GetMapping(value = "/login")//Mapped to GET
     public String login(
+            @AuthenticationPrincipal AuthState principal,
             @RequestParam(name="error", required=false) String error,
             Model model
     ) {
+        if (principal != null && principal.getIsAuthenticated()) {
+            return "redirect:/my_account";
+        }
 
         model.addAttribute("login", new Login());//creates the DTO object which captures the inpuitd
         model.addAttribute("error", error);

@@ -5,21 +5,19 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title th:text="'Error ' + ${status} +  ': ' + ${message}"></title>
+    <title>Page not found</title>
 
     <link type="text/css" rel="stylesheet" th:href="@{/styles/common.css}"/>
     <link type="text/css" rel="stylesheet" th:href="@{/styles/pages/error.css}"/>
-
 </head>
-<body>
 
+<body>
 <div class="raised-card error-container">
-    <h1 th:text="'Error ' + ${status} + ' - ' + ${message}"></h1>
-    <p>Sorry about that!</p>
+    <h1>403 - Permission Denied</h1>
+    <p>Sorry, you don't have permission to load this page.</p>
     <div class="actions">
         <button onclick="window.location.href = '/login'">Go Home</button>
     </div>
 </div>
-
 </body>
 </html>
