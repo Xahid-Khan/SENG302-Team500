@@ -7,53 +7,6 @@ const LoadingStatus = {
   Error: "Error"
 };
 
-function leftPadNumber(number, places) {
-  const numberString = `${number}`
-
-  if (numberString.length >= places) {
-    return numberString;
-  }
-
-  return ('0'.repeat(places - numberString.length)) + number;
-}
-
-class DatetimeUtils {
-  static networkStringToLocalDate(utcString) {
-    return new Date(Date.parse(utcString))
-  }
-
-  static localToNetworkString(localDate) {
-    return localDate.toISOString();
-  }
-
-  static toLocalYMD(localDate) {
-    return `${leftPadNumber(localDate.getFullYear(), 4)}-${leftPadNumber(localDate.getMonth() + 1, 2)}-${leftPadNumber(localDate.getDate(), 2)}`
-  }
-
-  static fromLocalYMD(localString) {
-    // From: https://stackoverflow.com/a/64199706
-    const [year, month, day] = localString.split('-');
-    return new Date(year, month - 1, day);
-  }
-
-  static getTimeStringIfNonZeroLocally(date) {
-    if (date.getHours() !== 0 || date.getMinutes() !== 0 || date.getSeconds() !== 0) {
-      // There is an hours/minutes/seconds component to this date in the local timezone.
-      return `${date.getHours()}:${leftPadNumber(date.getMinutes(), 2)}${(date.getSeconds() !== 0) ? ':' + leftPadNumber(date.getSeconds(), 2) : ''}`;
-    }
-    return null;
-  }
-
-  static localToUserDMY(localDate) {
-    const hoursComponent = this.getTimeStringIfNonZeroLocally(localDate);
-    return `${localDate.getDate()} ${localDate.toLocaleString('default', {month: 'long'})} ${localDate.getFullYear()}${(hoursComponent !== null) ? ' ' + hoursComponent : ''}`;
-  }
-
-  static areEqual(date1, date2) {
-    return date1 <= date2 && date2 <= date1;
-  }
-}
-
 class PortfolioNetworkError extends Error {
   constructor(message, ...args) {
     super(message, ...args);
