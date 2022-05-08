@@ -11,11 +11,11 @@ public class PhotoModel {
 
     @Lob
     @Basic(fetch = FetchType.LAZY)
-    private ByteString userPhoto;
+    private byte[] userPhoto;
 
     protected PhotoModel () {};
 
-    public PhotoModel (int userId, ByteString rawImage) {
+    public PhotoModel (int userId, byte[] rawImage) {
         this.id = userId;
         this.userPhoto = rawImage;
     }
@@ -28,11 +28,11 @@ public class PhotoModel {
         this.id = id;
     }
 
-    public ByteString getUserPhoto() {
+    public byte[] getUserPhoto() {
         return userPhoto;
     }
 
-    public void setUserPhoto(ByteString userPhoto) {
+    public void setUserPhoto(byte[] userPhoto) {
         this.userPhoto = userPhoto;
     }
 }

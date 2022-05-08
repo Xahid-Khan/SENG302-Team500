@@ -74,6 +74,9 @@ public class UploadPhotoService {
                     squareSize
             );
         }
+        else {
+            cropedImage = originalImage;
+        }
     }
 
     /**
@@ -84,6 +87,7 @@ public class UploadPhotoService {
         IIOImage image = new IIOImage(cropedImage, null, null);
         try {
             imageWriter.write(null, image, imageWriteParam);
+            success = true;
         } catch (IOException e) {
             errorInfo = String.format("compressImage - imageWriter (file %s)- IOException - message: %s ", fileName, e.getMessage());
         } finally {

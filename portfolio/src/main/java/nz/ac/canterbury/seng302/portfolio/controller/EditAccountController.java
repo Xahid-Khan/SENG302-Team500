@@ -75,10 +75,6 @@ public class EditAccountController {
             return "edit_account";
         }
         try {
-            var imageData = model.getAttribute("userImagePath");
-            System.out.println(imageData);
-            System.out.println(file);
-
             Integer userId = authStateService.getId(principal);
             if (file.getSize() > 1000 && file.getSize() < 5000000) {
                 byte[] uploadImage = uploadPhotoService.imageProccessing(file);

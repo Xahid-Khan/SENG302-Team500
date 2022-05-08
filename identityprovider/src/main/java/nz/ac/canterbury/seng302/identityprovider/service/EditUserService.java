@@ -69,7 +69,7 @@ public class EditUserService {
             PhotoModel newPhoto =
                     new PhotoModel(
                             userId,
-                            rawImageData);
+                            rawImageData.toByteArray());
             photoRepository.save(newPhoto);
             reply.setStatus(FileUploadStatus.SUCCESS);
         } catch (Exception e) {
