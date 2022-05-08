@@ -17,6 +17,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Optional;
 
 @Controller
 public class LoginController {
@@ -37,6 +38,7 @@ public class LoginController {
             @RequestParam(name="error", required=false) String error,
             Model model
     ) {
+
         model.addAttribute("login", new Login());//creates the DTO object which captures the inpuitd
         model.addAttribute("error", error);
         return "login_form"; //returns the view which renders the HTML content
@@ -118,15 +120,4 @@ public class LoginController {
         }
     }
 
-    /**
-     * Temporary mapping for account page.
-     */
-    @GetMapping("/account")
-    public String account(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            Model model
-    ) {
-        return "account_details";
-    }
 }

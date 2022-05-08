@@ -23,6 +23,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.time.temporal.ChronoUnit;
 
 
 @Controller
@@ -39,7 +40,6 @@ public class UserAccountController {
 
     @Autowired
     UserMapper mapper;
-
 
     /**
      * The register client service. Gives the user the edit account page
@@ -61,16 +61,21 @@ public class UserAccountController {
         model.addAttribute("user", userDetails);
         model.addAttribute("registration_date", dateString);
 
+
         return "account_details";
     }
 
     @GetMapping(value="/account/{id}")
-    public String getUserAccount(@PathVariable int id, Model model, UserResponse user){
-        var userById = userAccountService.getUserById(id);
+    public String getUserAccount(@PathVariable int id, Model model){
 
-        User currentDetails= mapper.UserResponseToUserDTO(userById);
-        model.addAttribute("user",currentDetails);
-        model.addAttribute("registration_date", currentDetails.created());
+        UserResponse userDetails = userAccountService.getUserById(id);
+
+        String dateString = getFormattedDate(userDetails.getCreated());
+
+        //Prefill the form with the user's details
+        model.addAttribute("delegate", this);
+        model.addAttribute("user", userDetails);
+        model.addAttribute("registration_date", dateString);
 
         return "account_details";
     }
@@ -85,9 +90,24 @@ public class UserAccountController {
 
         String dateString = date.format(DateTimeFormatter
                 .ofLocalizedDate(FormatStyle.LONG));
-        return dateString;
+
+        long years = ChronoUnit.YEARS.between(date, LocalDate.now());
+        long months = ChronoUnit.MONTHS.between(date, LocalDate.now()) % 12;
+
+        return dateString +
+                " (" +
+                ((years == 0) ? "" : years + " years ") +
+                ((years != 0 && months == 0) ? "" : months + " months") +
+                ")";
     }
 
+    /**
+     * This function is used by Thymeleaf whenever a list of roles must be displayed to the user.
+     * It converts the roles into a human readable list, seperated by commas if need be.
+     *
+     * @param roles a list of roles of the user
+     * @return      the human friendly readable output of the roles
+     */
     public String formatUserRoles(List<UserRole> roles) {
         return roles.stream().map(role -> switch (role) {
             case STUDENT -> "Student";
@@ -96,5 +116,4 @@ public class UserAccountController {
             default -> "Student";
         }).collect(Collectors.joining(", "));
     }
-
 }

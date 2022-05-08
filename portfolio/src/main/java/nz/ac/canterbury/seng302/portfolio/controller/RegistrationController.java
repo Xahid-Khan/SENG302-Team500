@@ -1,28 +1,39 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import com.google.protobuf.Timestamp;
 import io.grpc.StatusRuntimeException;
-import javax.validation.Valid;
-
-import nz.ac.canterbury.seng302.portfolio.DTO.EditedUserValidation;
 import nz.ac.canterbury.seng302.portfolio.DTO.RegisteredUserValidation;
 import nz.ac.canterbury.seng302.portfolio.DTO.User;
+import nz.ac.canterbury.seng302.portfolio.authentication.CookieUtil;
+import nz.ac.canterbury.seng302.portfolio.service.AuthenticateClientService;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
+import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticateResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Handles the /register endpoint for either GET requests or POST requests.
  */
 @Controller
 public class RegistrationController {
+
+  @InitBinder
+  public void initBinder(WebDataBinder binder) {
+    binder.registerCustomEditor(String.class, new StringTrimmerEditor(false));
+  }
 
   /**
    * Calling the /register endpoint with a GET request will return the user a form to fill out for
@@ -33,11 +44,17 @@ public class RegistrationController {
    */
   @GetMapping(value = "/register")
   public String registerForm(Model model) {
-    model.addAttribute("user", new User("", "", "", "", "", "", "", "", "", null));
+    if(!model.containsAttribute("user")) {
+      model.addAttribute("user", new User("", "", "", "", "", "", "", "", "", null));
+    }
     return "registration_form";
   }
 
   @Autowired private RegisterClientService registerClientService;
+
+  @Autowired
+  private AuthenticateClientService authenticateClientService;
+
 
   /**
    * Calling the /register endpoint with a POST request will validate the user, and send the user to
@@ -53,10 +70,19 @@ public class RegistrationController {
    */
   @PostMapping("/register")
   public String register(
-          @ModelAttribute @Validated(RegisteredUserValidation.class) User user, BindingResult bindingResult, Model model) {
-    // If there are errors in the validation of the user, display them
+          @ModelAttribute @Validated(RegisteredUserValidation.class) User user,
+          BindingResult bindingResult,
+          Model model,
+          HttpServletRequest request,
+          HttpServletResponse response,
+          RedirectAttributes redirectAttributes
+  ) {
+    // If there are errors in the validation of the user
     if (bindingResult.hasErrors()) {
-      return "registration_form";
+      //Allows the bindingResult (errors) and user fields to persist through the redirect
+      redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.user", bindingResult);
+      redirectAttributes.addFlashAttribute("user", user);
+      return "redirect:/register";
     }
 
     UserRegisterResponse registerReply;
@@ -71,7 +97,33 @@ public class RegistrationController {
       model.addAttribute("registerMessage", "Error connecting to Identity Provider...");
       return "registration_form";
     }
-    return "registered"; // return the template in templates folder
+
+
+    //Logs the user in
+    AuthenticateResponse loginReply;
+    try {
+      loginReply = authenticateClientService.authenticate(user.username(), user.password());
+    } catch (StatusRuntimeException e){
+      model.addAttribute("error", "Error connecting to Identity Provider...");
+      return "login_form";
+    }
+
+    if (loginReply.getSuccess()) {
+      var domain = request.getHeader("host");
+      CookieUtil.create(
+              response,
+              "lens-session-token",
+              loginReply.getToken(),
+              true,
+              5 * 60 * 60, // Expires in 5 hours
+              domain.startsWith("localhost") ? null : domain
+      );
+      // Redirect user if login succeeds
+      redirectAttributes.addFlashAttribute("message", "Successfully logged in.");
+      return "redirect:/my_account";
+    }
+
+    return "redirect:/login"; // return the template in templates folder
   }
 
 }
