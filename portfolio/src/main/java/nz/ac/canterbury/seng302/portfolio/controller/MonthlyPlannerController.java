@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
+
+
 @Controller
 public class MonthlyPlannerController {
 
@@ -23,8 +25,17 @@ public class MonthlyPlannerController {
     @Autowired
     private AuthStateService authStateService;
 
+    /**
+     * GET /monthly-planner/{projectId} fetches monthly planner view for a specific project projectId, this page
+     * shows a calendar view with all sprints showing from the related project
+     *
+     * @param principal Principal for the currently logged in user, used to get userId
+     * @param model Parameters sent to thymeleaf template to be rendered into HTML
+     * @return The monthly_planner html page
+     */
     @GetMapping("/monthly-planner/{projectId}")
-    public String getMonthlyPlanner(@AuthenticationPrincipal AuthState principal, Model model, @PathVariable String projectId) {
+    public String getMonthlyPlanner(@AuthenticationPrincipal AuthState principal, Model model) {
+
         Integer userId = authStateService.getId(principal);
 
         UserResponse userDetails = userAccountService.getUserById(userId);
