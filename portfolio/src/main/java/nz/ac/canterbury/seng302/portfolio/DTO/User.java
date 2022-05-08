@@ -2,7 +2,9 @@ package nz.ac.canterbury.seng302.portfolio.DTO;
 
 import com.google.protobuf.Timestamp;
 
+import javax.annotation.MatchesPattern;
 import javax.annotation.Nullable;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -13,31 +15,37 @@ import javax.validation.constraints.Size;
  *  sends them off to the IDP to put in the database.
  */
 public record User(
+    @Pattern(regexp = "[\\p{L}\\p{N}]*", message = "Username must only contain alphabetical characters or numbers, with no spaces",groups = RegisteredUserValidation.class)
     @NotBlank(message = "Username is required", groups = RegisteredUserValidation.class)
-    @Size(min = 3, max = 32, message = "Username must be between 3 and 32 characters", groups = RegisteredUserValidation.class)
+    @Size(min = 3, max = 32, message = "Username must be between 3 and 32 characters, and cannot contain any spaces", groups = RegisteredUserValidation.class)
     String username,
 
     @NotBlank(message = "Password is required", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
     @Size(min = 8, message = "Password must be at least 8 characters long", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
     String password,
 
+    @Pattern(regexp = "[\\p{L} /-]*", message = "Name must only contain alphabetical characters, or special characters '/' and '-'", groups = RegisteredUserValidation.class)
     @NotBlank(message = "First name is required", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
     @Size(max = 50, message = "First name cannot be longer than 50 characters", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
     String firstName,
 
+    @Pattern(regexp = "[\\p{L} /-]*", message = "Name must only contain alphabetical characters, or special characters '/' and '-'", groups = RegisteredUserValidation.class)
     @Size(max = 50, message = "Middle name(s) cannot be longer than 50 characters", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
     @Nullable String middleName,
 
+    @Pattern(regexp = "[\\p{L} /-]*", message = "Name must only contain alphabetical characters, or special characters '/' and '-'", groups = RegisteredUserValidation.class)
     @NotBlank(message = "Last name is required", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
     @Size(max = 50, message = "Last name cannot be longer than 50 characters", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
     String lastName,
 
+    @Pattern(regexp = "[\\p{L} /-]*", message = "Name must only contain alphabetical characters, or special characters '/' and '-'", groups = RegisteredUserValidation.class)
     @Size(max = 32, message = "Nickname cannot be longer than 32 characters", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
     @Nullable String nickname,
 
     @Size(max = 512, message = "Bio cannot be longer than 512 characters", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
     @Nullable String bio,
 
+    @Pattern(regexp = "[\\p{L} /-]*", message = "Name must only contain alphabetical characters, or special characters '/' and '-'", groups = RegisteredUserValidation.class)
     @Size(max = 50, message = "Personal pronouns cannot be longer than 50 characters", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
     @Nullable String personalPronouns,
 
