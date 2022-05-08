@@ -29,7 +29,7 @@ public class UploadPhotoService {
     private String errorInfo = "";
     private boolean success = false;
 
-    public byte[] imageProccessing(MultipartFile file) throws NullPointerException {
+    public byte[] imageProcessing(MultipartFile file) throws NullPointerException {
         fileName = file.getOriginalFilename();
         fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1);
         imageWriter = ImageIO.getImageWritersByFormatName(fileExtension).next();; //An image writer is initialised for that specific type of image (file ext.)
@@ -41,14 +41,15 @@ public class UploadPhotoService {
         imageWriter.setOutput(imageOutputStream); //Setting up the target type/file when writing file
         try (InputStream inputStream = file.getInputStream()) {
             originalImage = ImageIO.read(inputStream);
+
+            cropCenterSquare();
+            saveUserImage();
+
+            return byteArrayOutputStream.toByteArray();
+
         } catch (IOException e) {
             String info = String.format("compressImage - bufferedImage (file %s)- IOException - message: %s ", fileName, e.getMessage());
-        }
-        cropCenterSquare();
-        saveUserImage();
-        if (success) {
-            return byteArrayOutputStream.toByteArray();
-        } else {
+            System.out.println(info);
             return errorInfo.getBytes(StandardCharsets.UTF_8);
         }
     }
@@ -87,7 +88,6 @@ public class UploadPhotoService {
         IIOImage image = new IIOImage(cropedImage, null, null);
         try {
             imageWriter.write(null, image, imageWriteParam);
-            success = true;
         } catch (IOException e) {
             errorInfo = String.format("compressImage - imageWriter (file %s)- IOException - message: %s ", fileName, e.getMessage());
         } finally {

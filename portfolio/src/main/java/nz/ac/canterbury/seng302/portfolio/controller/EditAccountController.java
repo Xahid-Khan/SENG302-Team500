@@ -1,7 +1,5 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import com.google.common.primitives.Bytes;
-import com.google.protobuf.ByteString;
 import io.grpc.StatusRuntimeException;
 import nz.ac.canterbury.seng302.portfolio.DTO.EditedUserValidation;
 import nz.ac.canterbury.seng302.portfolio.DTO.User;
@@ -77,7 +75,7 @@ public class EditAccountController {
         try {
             Integer userId = authStateService.getId(principal);
             if (file.getSize() > 1000 && file.getSize() < 5000000) {
-                byte[] uploadImage = uploadPhotoService.imageProccessing(file);
+                byte[] uploadImage = uploadPhotoService.imageProcessing(file);
                 String fileType = uploadPhotoService.getFileType();
 
                 registerClientService.uploadUserPhoto(userId, fileType, uploadImage);
