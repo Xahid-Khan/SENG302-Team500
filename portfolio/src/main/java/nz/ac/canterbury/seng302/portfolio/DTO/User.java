@@ -21,7 +21,7 @@ public record User(
     String username,
 
     @NotBlank(message = "Password is required", groups = RegisteredUserValidation.class)
-    @Size(min = 8, message = "Password must be at least 8 characters long", groups = RegisteredUserValidation.class)
+    @Size(min = 8, max = 150, message = "Password must be at least 8 characters long and no longer than 150 characters", groups = RegisteredUserValidation.class)
     String password,
 
     @Pattern(regexp = "[\\p{L} /-]*", message = "Name must only contain alphabetical characters, or special characters '/' and '-'", groups = RegisteredUserValidation.class)
@@ -45,7 +45,7 @@ public record User(
     @Size(max = 512, message = "Bio cannot be longer than 512 characters", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
     @Nullable String bio,
 
-    @Pattern(regexp = "[\\p{L} /-]*", message = "Name must only contain alphabetical characters, or special characters '/' and '-'", groups = RegisteredUserValidation.class)
+    @Pattern(regexp = "[\\p{L}]+/[\\p{L}]+", message = "Personal pronouns must be two alphabetical pronouns, seperated by a forward slash (/) e.g. they/them", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
     @Size(max = 50, message = "Personal pronouns cannot be longer than 50 characters", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
     @Nullable String personalPronouns,
 
