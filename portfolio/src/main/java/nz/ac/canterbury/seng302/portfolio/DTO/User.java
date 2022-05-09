@@ -20,25 +20,26 @@ public record User(
     @Size(min = 3, max = 32, message = "Username must be between 3 and 32 characters, and cannot contain any spaces", groups = RegisteredUserValidation.class)
     String username,
 
+    @Pattern(regexp = "^(?!.*  )", message = "Password cannot contain more than one whitespace in a row", groups = RegisteredUserValidation.class)
     @NotBlank(message = "Password is required", groups = RegisteredUserValidation.class)
     @Size(min = 8, max = 150, message = "Password must be at least 8 characters long and no longer than 150 characters", groups = RegisteredUserValidation.class)
     String password,
 
-    @Pattern(regexp = "[\\p{L} /-]*", message = "Name must only contain alphabetical characters, or special characters '/' and '-'", groups = RegisteredUserValidation.class)
+    @Pattern(regexp = "^(?!.*  )([\\p{L} /-]*)", message = "Name must only contain alphabetical characters, or special characters '/' and '-'. It must also not contain more than one whitespace between characters", groups = RegisteredUserValidation.class)
     @NotBlank(message = "First name is required", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
     @Size(max = 50, message = "First name cannot be longer than 50 characters", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
     String firstName,
 
-    @Pattern(regexp = "[\\p{L} /-]*", message = "Name must only contain alphabetical characters, or special characters '/' and '-'", groups = RegisteredUserValidation.class)
+    @Pattern(regexp = "^(?!.*  )([\\p{L} /-]*)", message = "Name must only contain alphabetical characters, or special characters '/' and '-'. It must also not contain more than one whitespace between characters", groups = RegisteredUserValidation.class)
     @Size(max = 50, message = "Middle name(s) cannot be longer than 50 characters", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
     @Nullable String middleName,
 
-    @Pattern(regexp = "[\\p{L} /-]*", message = "Name must only contain alphabetical characters, or special characters '/' and '-'", groups = RegisteredUserValidation.class)
+    @Pattern(regexp = "^(?!.*  )([\\p{L} /-]*)", message = "Name must only contain alphabetical characters, or special characters '/' and '-'. It must also not contain more than one whitespace between characters", groups = RegisteredUserValidation.class)
     @NotBlank(message = "Last name is required", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
     @Size(max = 50, message = "Last name cannot be longer than 50 characters", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
     String lastName,
 
-    @Pattern(regexp = "[\\p{L} /-]*", message = "Name must only contain alphabetical characters, or special characters '/' and '-'", groups = RegisteredUserValidation.class)
+    @Pattern(regexp = "^(?!.*  )([\\p{L} /-]*)", message = "Name must only contain alphabetical characters, or special characters '/' and '-'. It must also not contain more than one whitespace between characters", groups = RegisteredUserValidation.class)
     @Size(max = 32, message = "Nickname cannot be longer than 32 characters", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
     @Nullable String nickname,
 
