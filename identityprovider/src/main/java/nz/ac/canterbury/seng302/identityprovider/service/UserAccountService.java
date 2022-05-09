@@ -4,7 +4,9 @@ import com.google.protobuf.ByteString;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 
+import java.io.ByteArrayOutputStream;
 import java.io.Console;
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import net.devh.boot.grpc.server.service.GrpcService;
@@ -164,21 +166,39 @@ public class UserAccountService extends UserAccountServiceGrpc.UserAccountServic
     @Override
     public StreamObserver<UploadUserProfilePhotoRequest> uploadUserProfilePhoto(StreamObserver<FileUploadStatusResponse> responseObserver) {
         return new StreamObserver<UploadUserProfilePhotoRequest>() {
+            Integer userId = null;
+            String fileType = null;
+            final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+
             @Override
             public void onNext(UploadUserProfilePhotoRequest request) {
-                int userId = request.getMetaData().getUserId();
-                ByteString rawImage = request.getFileContent();
-
                 FileUploadStatusResponse.Builder reply = FileUploadStatusResponse.newBuilder();
-                FileUploadStatusResponse uploadStatus = editUserService.UploadUserPhoto(userId, rawImage);
 
-                if (uploadStatus.getStatus() == FileUploadStatus.FAILED) {
-                    responseObserver.onError(new Throwable(String.valueOf(uploadStatus.getStatus())));
-                    return;
+                if (request.hasMetaData()) {
+                    userId = request.getMetaData().getUserId();
+                    fileType = request.getMetaData().getFileType();
+
+                    reply.setStatus(FileUploadStatus.PENDING);
+                    reply.setMessage("Pending");
                 }
+                else {
+                    if (userId == null) {
+                        responseObserver.onError(new Throwable("Image chunk must be sent after metadata."));
+                        return;
+                    }
 
-                reply.setStatus(uploadStatus.getStatus())
-                        .setMessage(uploadStatus.getMessage());
+                    ByteString chunk = request.getFileContent();
+                    try {
+                        buffer.write(chunk.toByteArray());
+                    }
+                    catch (IOException e) {
+                        responseObserver.onError(new Throwable("Exception occurred while loading image chunk."));
+                        return;
+                    }
+
+                    reply.setStatus(FileUploadStatus.IN_PROGRESS);
+                    reply.setMessage("Chunk received.");
+                }
 
                 responseObserver.onNext(reply.build());
             }
@@ -190,7 +210,22 @@ public class UserAccountService extends UserAccountServiceGrpc.UserAccountServic
 
             @Override
             public void onCompleted() {
-                responseObserver.onCompleted();
+                if (buffer.size() == 0) {
+                    responseObserver.onError(new Throwable("Image data must be transferred."));
+                    return;
+                }
+
+                FileUploadStatusResponse uploadStatus = editUserService.UploadUserPhoto(userId, buffer.toByteArray());
+
+                if (uploadStatus.getStatus() == FileUploadStatus.FAILED) {
+                    responseObserver.onError(new Throwable(String.valueOf(uploadStatus.getStatus())));
+                    return;
+                }
+
+                FileUploadStatusResponse.Builder reply = FileUploadStatusResponse.newBuilder();
+                reply.setStatus(uploadStatus.getStatus())
+                        .setMessage(uploadStatus.getMessage());
+                responseObserver.onNext(reply.build());
             }
         };
     }

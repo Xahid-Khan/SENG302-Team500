@@ -63,13 +63,13 @@ public class EditUserService {
      * @param rawImageData Image that needs to be saved to DB
      * @return a FileUploadStatusResponse
      */
-    public FileUploadStatusResponse UploadUserPhoto(int userId, ByteString rawImageData) {
+    public FileUploadStatusResponse UploadUserPhoto(int userId, byte[] rawImageData) {
         FileUploadStatusResponse.Builder reply = FileUploadStatusResponse.newBuilder();
         try {
             PhotoModel newPhoto =
                     new PhotoModel(
                             userId,
-                            rawImageData.toByteArray());
+                            rawImageData);
             photoRepository.save(newPhoto);
             reply.setStatus(FileUploadStatus.SUCCESS);
         } catch (Exception e) {

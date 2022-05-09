@@ -5,6 +5,7 @@ import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import nz.ac.canterbury.seng302.portfolio.DTO.User;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
+import nz.ac.canterbury.seng302.shared.util.FileUploadStatus;
 import nz.ac.canterbury.seng302.shared.util.FileUploadStatusResponse;
 import org.springframework.stereotype.Service;
 
@@ -70,34 +71,59 @@ public class RegisterClientService {
 
     public void uploadUserPhoto(Integer userId, String fileType, byte[] uploadImage) {
         CountDownLatch latch = new CountDownLatch(1);
-        StreamObserver<UploadUserProfilePhotoRequest> requestStreamObserver = nonBlockingStub.uploadUserProfilePhoto (
-            new StreamObserver<>() {
-                @Override
-                public void onNext(FileUploadStatusResponse response) {
-                    response.getStatus();
-                    latch.countDown();
-                }
 
-                @Override
-                public void onError(Throwable t) {
-                    latch.countDown();
-                }
+        ByteString imageBuffer = ByteString.copyFrom(uploadImage);
+        var requestStreamObserverContainer = new Object() {
+            StreamObserver<UploadUserProfilePhotoRequest> observer;
+        };
 
-                @Override
-                public void onCompleted() {
+        var responseStreamObserver = new StreamObserver<FileUploadStatusResponse>() {
+            int nextStartIndex = 0;
+
+            @Override
+            public void onNext(FileUploadStatusResponse response) {
+                if (response.getStatus().equals(FileUploadStatus.PENDING) || response.getStatus().equals(FileUploadStatus.IN_PROGRESS)) {
+                    var endIndex = Math.min(imageBuffer.size() - 1, nextStartIndex + (1024*1024));
+
+                    if (endIndex == nextStartIndex) {
+                        requestStreamObserverContainer.observer.onCompleted();
+                        return;
+                    }
+
+                    var chunk = imageBuffer.substring(nextStartIndex, endIndex);
+                    nextStartIndex = endIndex;
+
+                    UploadUserProfilePhotoRequest imageDataRequest = UploadUserProfilePhotoRequest.newBuilder()
+                            .setFileContent(chunk)
+                            .build();
+                    requestStreamObserverContainer.observer.onNext(imageDataRequest);
+                }
+                else if (response.getStatus().equals(FileUploadStatus.SUCCESS)) {
                     latch.countDown();
                 }
             }
-        );
 
-        ProfilePhotoUploadMetadata metadata = ProfilePhotoUploadMetadata.newBuilder()
-                .setUserId(userId)
-                .setFileType(fileType).build();
+            @Override
+            public void onError(Throwable t) {
+                latch.countDown();
+            }
 
-        UploadUserProfilePhotoRequest userUploadDataRequest = UploadUserProfilePhotoRequest.newBuilder()
-                .setMetaData(metadata)
-                .setFileContent(ByteString.copyFrom(uploadImage))
+            @Override
+            public void onCompleted() {
+                latch.countDown();
+            }
+        };
+
+        requestStreamObserverContainer.observer = nonBlockingStub.uploadUserProfilePhoto(responseStreamObserver);
+
+        var metadataRequest = UploadUserProfilePhotoRequest.newBuilder()
+                .setMetaData(
+                    ProfilePhotoUploadMetadata.newBuilder()
+                            .setUserId(userId)
+                            .setFileType(fileType)
+                )
                 .build();
-        requestStreamObserver.onNext(userUploadDataRequest);
+
+        requestStreamObserverContainer.observer.onNext(metadataRequest);
     }
 }
