@@ -235,11 +235,74 @@ public class EventControllerTest {
          }
      }
 
-     public void testEventNotInProject() throws Exception {
-         //Sets up sprints and project
-         ProjectEntity project = setupThreeSprints();
-         //Creates event
-     }
+    @Test
+    public void testUpdateEventToNewSprint() {
+        //Sets up sprints and project
+        ProjectEntity project = setupThreeSprints();
+        //Creates event
+        BaseEventContract event = new BaseEventContract("January", "test", Instant.parse("2023-01-01T10:15:30.00Z"), Instant.parse("2023-01-30T10:15:30.00Z"));
+        EventContract eventContract = eventService.createEvent(project.getId(), event);
+
+        // Tests that event is in january sprint
+        var sprints = sprintRepository.findAll();
+        for (SprintEntity sprint : sprints) {
+            if(sprint.getName().equals("January")) {
+                // Check that the event was added to the january sprint
+                assertEquals(eventContract.sprintId(), sprint.getId());
+                assertEquals(eventContract.eventId(), sprint.getEvents().get(0).getId());
+            }else{
+                // Check that it was not added to the other sprints
+                assertEquals(0, sprint.getEvents().size());
+            }
+        }
+
+        // Updates event to new sprint
+        BaseEventContract newEvent = new BaseEventContract("March", "test sprint", Instant.parse("2023-03-01T10:15:30.00Z"), Instant.parse("2023-03-30T10:15:30.00Z"));
+        eventService.update(eventContract.eventId(), newEvent);
+
+        // Tests that event is in March sprint
+         for (SprintEntity sprint : sprints) {
+            if(sprint.getName().equals("March")) {
+                // Check that the event was added to the january sprint
+                assertEquals(eventContract.sprintId(), sprint.getId());
+                assertEquals(eventContract.eventId(), sprint.getEvents().get(0).getId());
+            }else{
+                // Check that it was not added to the other sprints
+                System.out.println(sprint.getName());
+                System.out.println(sprint.getEvents().size());
+                assertEquals(0, sprint.getEvents().size());
+            }
+        }
+
+    }
+    @Test
+    public void testDeleteEvent() {
+        //Sets up sprints and project
+        ProjectEntity project = setupThreeSprints();
+        //Creates event
+        BaseEventContract event = new BaseEventContract("January", "test", Instant.parse("2023-01-01T10:15:30.00Z"), Instant.parse("2023-01-30T10:15:30.00Z"));
+        EventContract eventContract = eventService.createEvent(project.getId(), event);
+
+        // Get all the sprints
+        var sprints = sprintRepository.findAll();
+        for (SprintEntity sprint : sprints) {
+            if(sprint.getName().equals("January")) {
+                // Check that the event was added to the january sprint
+                assertEquals(eventContract.sprintId(), sprint.getId());
+                assertEquals(eventContract.eventId(), sprint.getEvents().get(0).getId());
+            }else{
+                // Check that it was not added to the other sprints
+                assertEquals(0, sprint.getEvents().size());
+            }
+        }
+
+        // Delete the event
+        eventService.delete(project.getEvents().get(0).getId());
+        for (SprintEntity sprint : sprints) {
+            assertEquals(0, sprint.getEvents().size());
+        }
+
+    }
 
      //TODO TEST NO SPINTS
 

@@ -29,6 +29,7 @@ public class EventEntity {
     @OnDelete(action=OnDeleteAction.NO_ACTION)
     private SprintEntity sprint;
 
+
     // TODO Check validation in line with previous validation
     @Pattern(message = "Please use letters or characters", regexp = "(?<=\\s|^)[a-zA-Z\s]*(?=[.,;:]?\\s|$)")
     // Regex pattern from https://stackoverflow.com/questions/36851740/regex-for-just-alphabetic-characters-only-java

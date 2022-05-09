@@ -4,6 +4,7 @@ import nz.ac.canterbury.seng302.portfolio.mapping.EventMapper;
 import nz.ac.canterbury.seng302.portfolio.model.contract.BaseEventContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.EventContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.ProjectEntity;
+import nz.ac.canterbury.seng302.portfolio.model.entity.SprintEntity;
 import nz.ac.canterbury.seng302.portfolio.repository.EventRepository;
 import nz.ac.canterbury.seng302.portfolio.repository.ProjectRepository;
 import nz.ac.canterbury.seng302.portfolio.repository.SprintRepository;
@@ -77,9 +78,50 @@ public class EventService {
         var event = eventRepository.findById(eventId).orElseThrow(() -> new NoSuchElementException("Invalid event ID"));
         var project = event.getProject();
 
+        //Remove event from project and sprint
         project.removeEvent(event);
         eventRepository.delete(event);
+
+        for(SprintEntity sprint : project.getSprints()) {
+            if(sprint.getEvents().contains(event)) {
+                sprint.removeEvent(event);
+            }
+
+        }
         projectRepository.save(project);
+    }
+
+    /**
+     * Updates an event using the EventContract provided
+     * @param eventId to update
+     * @param event to update, with the new values
+     */
+    public void update(String eventId, BaseEventContract event) {
+        var eventEntity = eventRepository.findById(eventId).orElseThrow(() -> new NoSuchElementException("Invalid event ID"));
+        var project = eventEntity.getProject();
+        eventEntity.setName((event.name()));
+        eventEntity.setDescription(event.description());
+
+        // Recalculates the sprints that the event is in and adds them accordingly
+        if(eventEntity.getStartDate() != event.startDate() || eventEntity.getEndDate() != event.endDate()) {
+            eventEntity.setStartDate(event.startDate());
+            eventEntity.setEndDate(event.endDate());
+            ArrayList<String> sprintIds = getSprintForEvent(project, event);
+
+            for (SprintEntity sprint : project.getSprints()) {
+                if(sprintIds.contains(sprint.getId())) {
+                    sprint.newEvent(eventEntity);
+                    sprintRepository.save(sprint);
+                }else{
+                    // If sprint contains event, remove it
+                    if(sprint.getEvents().contains(eventEntity)) {
+                        sprint.removeEvent(eventEntity);
+                        sprintRepository.save(sprint);
+                    }
+                }
+            }
+        }
+        eventRepository.save(eventEntity);
     }
 
     /**
