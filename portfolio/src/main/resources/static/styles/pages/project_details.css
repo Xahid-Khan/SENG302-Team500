@@ -124,6 +124,11 @@ body {
     float: right;
 }
 
+.monthly-planner-redirect {
+    float: right;
+    padding-left: 12px;
+}
+
 .edit-project-section {}
 
 .edit-section-title {
