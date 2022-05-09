@@ -1,22 +1,33 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <link rel="stylesheet" th:href="@{/styles/common.css}" />
-    <link rel="stylesheet" th:href="@{/styles/pages/project_details.css}">
-    <link rel="stylesheet" th:href="@{/styles/navbar.css}"/>
-
-    <title>SENG302 Homepage</title>
+    <title>Calendar</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" th:href="@{/styles/common.css}"/>
+    <link rel="stylesheet" th:href="@{/frontend/monthly_planner.css}"/>
+    <link rel="stylesheet" th:href="@{/frontend/src/entry/monthly_planner.css}"/>
+    <link rel="stylesheet" th:href="@{/styles/pages/project_details.css}">
+    <link rel="stylesheet" th:href="@{/styles/navbar.css}"/>
+    <!--  Taken from https://stackoverflow.com/a/25688291  -->
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+
+        window.userCanEdit = /*[[${canEdit}]]*/ 'default';
+
+        /*]]>*/
+    </script>
+    <script type="text/javascript" th:src="@{/frontend/monthly_planner.js}" defer></script>
 </head>
-<body class="fullscreen" th:classappend="${(isStudent) ? 'studentMode' : ''}">
+<body>
     <div class="navbar">
         <div class="navbar-items">
             <div>
                 <p class="title">SENG 302</p>
             </div>
             <div>
-                <a href="project-details" id="home-page">Projects</a>
+                <a href="../project-details" id="home-page">Projects</a>
             </div>
         </div>
         <div class="account">
@@ -33,25 +44,6 @@
             </div>
         </div>
     </div>
-    <div class="add-project">
-
-        <div>
-            <button class="button add-project-button" id="add-project" data-privilege="teacher"> Add Project</button>
-
-        </div>
-    </div>
-
-    <div class="projects" id="project-list"></div>
-
-
-
+    <div id="react-root"></div>
 </body>
-
-<script type="text/javascript" th:src="@{/frontend/project_details.js}"></script>
-<script type="text/javascript" th:src="@{/scripts/index.js}"></script>
-
-<script>
-
-</script>
-
 </html>
