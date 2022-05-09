@@ -45,12 +45,12 @@ public record User(
     @Size(max = 512, message = "Bio cannot be longer than 512 characters", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
     @Nullable String bio,
 
-    @Pattern(regexp = "[\\p{L}]+/[\\p{L}]+", message = "Personal pronouns must be two alphabetical pronouns, seperated by a forward slash (/) e.g. they/them", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
+    @Pattern(regexp = "\\p{L}+/\\p{L}+|", message = "Personal pronouns must be two alphabetical pronouns, seperated by a forward slash (/) e.g. they/them", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
     @Size(max = 50, message = "Personal pronouns cannot be longer than 50 characters", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
     @Nullable String personalPronouns,
 
     // Emails are stupidly complicated. This basic Regex should suffice for most use cases however.
-    @Email(message = "Email must be valid", regexp = "[^@]+@[^@]+\\.[^@.]+", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
+    @Email(message = "Email cannot contain any special characters, be of the format recipient@domain.suffix, and must have a valid domain name ", regexp = "[0-9A-Za-z-_.]+@[0-9A-Za-z-_.]+.[A-Za-z]+", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
     String email,
 
     Timestamp created
