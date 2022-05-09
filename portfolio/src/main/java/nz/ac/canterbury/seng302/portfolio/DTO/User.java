@@ -20,7 +20,7 @@ public record User(
     String username,
 
     @NotBlank(message = "Password is required", groups = {RegisteredUserValidation.class})
-    @Size(min = 8, message = "Password must be at least 8 characters long", groups = {RegisteredUserValidation.class})
+    @Size(min = 8, max = 512, message = "Password must be between 8 and 512 characters", groups = {RegisteredUserValidation.class})
     String password,
 
     @Pattern(regexp = "[\\p{L} /-]*", message = "Name must only contain alphabetical characters, or special characters '/' and '-'", groups = {EditedUserValidation.class, RegisteredUserValidation.class})

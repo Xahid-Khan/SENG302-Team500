@@ -58,8 +58,8 @@ public class EditPasswordController {
                            @RequestParam(value = "newPassword") String newPassword,
                            @RequestParam(value = "confirmPassword") String confirmPassword) {
 
-        if (newPassword.length() < 8 || newPassword.length() > 500) {
-            model.addAttribute("error", "New password must contain at least 8 and be no more than 500 characters");
+        if (newPassword.length() < 8 || newPassword.length() > 512) {
+            model.addAttribute("error", "New password must contain at least 8 and be no more than 512 characters");
             return "edit_password";
         }
 

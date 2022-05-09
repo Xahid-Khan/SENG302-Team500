@@ -29,13 +29,13 @@
 
     <div class="form-row">
         <label th:for="password">Password *</label>
-        <input id="password" type="password" name="password" th:required="required"/>
+        <input id="password" type="password" name="password" th:required="required" oninput="enableConfirmPassword()"/>
         <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="form-error">Password Error</div>
     </div>
 
     <div class="form-row">
         <label th:for="confirmPassword">Confirm password *</label>
-        <input id="confirmPassword" type="password" th:required="required"/>
+        <input id="confirmPassword" type="password" th:required="required" disabled/>
     </div>
 
     <div class="form-row">
@@ -81,9 +81,6 @@
     <button id='submit' name="register" type="Submit" value="0">Register</button>
     <a href="/login">Have an account? Login</a>
 </form>
-
 </body>
-
 <script type="text/javascript" th:src="@{/scripts/password_validator.js}"></script>
-
 </html>
