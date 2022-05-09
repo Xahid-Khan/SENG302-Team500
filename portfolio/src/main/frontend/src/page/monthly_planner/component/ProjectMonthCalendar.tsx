@@ -77,6 +77,7 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
                 events={events}
 
                 /* Drag and drop config */
+                //The origin of window comes from the Thymeleaf template of "monthly_planner.html".
                 editable={!project.sprintsSaving && (window as any) != null ? (window as any).userCanEdit : false} // We shouldn't allow sprints to be updated while we're still trying to save an earlier update, since this could lead to overlapping sprints.
                 eventResizableFromStart
                 eventOverlap={false}
