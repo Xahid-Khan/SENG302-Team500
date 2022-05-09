@@ -170,6 +170,7 @@ public class UserAccountService extends UserAccountServiceGrpc.UserAccountServic
                 ByteString rawImage = request.getFileContent();
 
                 FileUploadStatusResponse.Builder reply = FileUploadStatusResponse.newBuilder();
+
                 FileUploadStatusResponse uploadStatus = editUserService.UploadUserPhoto(userId, rawImage);
 
                 if (uploadStatus.getStatus() == FileUploadStatus.FAILED) {
@@ -195,5 +196,23 @@ public class UserAccountService extends UserAccountServiceGrpc.UserAccountServic
         };
     }
 
+
+    /**
+     * Overriding a gRPC service to delete a photo from the DB and generate a response stream to send back to user
+     * @param request DeleteUserProfilePhotoRequest form user with the user Id as an element
+     * @param responseObserver returns a response observer stream with status.
+     */
+    @Override
+    public void deleteUserProfilePhoto(DeleteUserProfilePhotoRequest request,
+                                       StreamObserver<DeleteUserProfilePhotoResponse> responseObserver) {
+        try {
+            DeleteUserProfilePhotoResponse response = editUserService.deletePhoto(request);
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
+        } catch (Exception e) {
+            responseObserver.onError(e);
+        }
+
+    }
 
 }

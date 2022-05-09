@@ -90,14 +90,23 @@ public class RegisterClientService {
             }
         );
 
-        ProfilePhotoUploadMetadata metadata = ProfilePhotoUploadMetadata.newBuilder()
-                .setUserId(userId)
-                .setFileType(fileType).build();
+        ProfilePhotoUploadMetadata.Builder imageMetadata = ProfilePhotoUploadMetadata.newBuilder();
+                imageMetadata.setUserId(userId);
+                imageMetadata.setFileType(fileType);
 
-        UploadUserProfilePhotoRequest userUploadDataRequest = UploadUserProfilePhotoRequest.newBuilder()
-                .setMetaData(metadata)
-                .setFileContent(ByteString.copyFrom(uploadImage))
-                .build();
-        requestStreamObserver.onNext(userUploadDataRequest);
+        UploadUserProfilePhotoRequest.Builder userUploadDataRequest = UploadUserProfilePhotoRequest.newBuilder();
+                userUploadDataRequest.setMetaData(imageMetadata.build());
+                userUploadDataRequest.setFileContent(ByteString.copyFrom(uploadImage));
+
+        requestStreamObserver.onNext(userUploadDataRequest.build());
+    }
+
+
+
+    public void deleteUserPhoto(int userId) {
+        DeleteUserProfilePhotoRequest.Builder request = DeleteUserProfilePhotoRequest.newBuilder();
+        request.setUserId(userId);
+
+        registrationStub.deleteUserProfilePhoto(request.build());
     }
 }

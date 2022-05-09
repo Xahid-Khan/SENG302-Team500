@@ -73,7 +73,8 @@ public class EditAccountController {
             return "edit_account";
         }
         try {
-            Integer userId = authStateService.getId(principal);
+            int userId = authStateService.getId(principal);
+
             if (file.getSize() > 1000 && file.getSize() < 5000000) {
                 byte[] uploadImage = uploadPhotoService.imageProcessing(file);
                 String fileType = uploadPhotoService.getFileType();
@@ -93,6 +94,24 @@ public class EditAccountController {
         }
 
         return "redirect:/my_account";
+    }
+
+    /**
+     * A controller (endpoint) for deleting a user photo.
+     * @param principal An Authority State to verify user.
+     * @param user A user of type User.
+     * @param model HTML model DTO
+     * @return a String to redirect the page to.
+     */
+    @PostMapping(value = "/edit_account/imageDelete")
+    public String deleteUserPhoto(@AuthenticationPrincipal AuthState principal, @ModelAttribute User user, Model model) {
+
+        int userId = authStateService.getId(principal);
+        System.out.println("Delete");
+        System.out.println(userId);
+        registerClientService.deleteUserPhoto(userId);
+        model.addAttribute("user", user);
+        return "redirect:/edit_account";
     }
 
 }

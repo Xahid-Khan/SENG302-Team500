@@ -5,9 +5,7 @@ import nz.ac.canterbury.seng302.identityprovider.database.PhotoModel;
 import nz.ac.canterbury.seng302.identityprovider.database.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.database.UserPhotoRepository;
 import nz.ac.canterbury.seng302.identityprovider.database.UserRepository;
-import nz.ac.canterbury.seng302.shared.identityprovider.EditUserRequest;
-import nz.ac.canterbury.seng302.shared.identityprovider.EditUserResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.UploadUserProfilePhotoRequest;
+import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import nz.ac.canterbury.seng302.shared.util.FileUploadStatus;
 import nz.ac.canterbury.seng302.shared.util.FileUploadStatusResponse;
 import nz.ac.canterbury.seng302.shared.util.ValidationError;
@@ -76,6 +74,29 @@ public class EditUserService {
             reply
                     .setStatus(FileUploadStatus.FAILED)
                     .setMessage(e.getMessage());
+        }
+        return reply.build();
+    }
+
+    /**
+     * this method overrides the current profile photo in the database for the given user ID with null
+     * @param request Id (integer) of the user.
+     * @return a updated DeleteUserProfilePhotoResponse
+     */
+    public DeleteUserProfilePhotoResponse deletePhoto(DeleteUserProfilePhotoRequest request) {
+        DeleteUserProfilePhotoResponse.Builder reply = DeleteUserProfilePhotoResponse.newBuilder();
+        try {
+            PhotoModel deletePhoto = new PhotoModel(
+                    request.getUserId(),
+                    null
+            );
+
+            photoRepository.save(deletePhoto);
+            reply.setIsSuccess(true);
+            reply.setMessage(true);
+        } catch (Exception e) {
+            reply.setIsSuccess(false);
+            reply.setMessage(false);
         }
         return reply.build();
     }

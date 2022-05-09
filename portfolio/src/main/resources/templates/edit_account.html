@@ -38,6 +38,13 @@
     <div class="container">
         <div class="name-container">
             <div class="left-padding">
+                <form id="deletePhotoForm" action="#" th:action="@{/edit_account/imageDelete}" th:object="${user}" method="post"
+                      style="position: absolute; margin: 150px 0 0 200px">
+                    <button>
+                        Delete Photo
+                    </button>
+                </form>
+
                 <form id='form' action="#" th:action="@{/edit_account}" th:object="${user}" method="post" enctype="multipart/form-data">
                     <h1 class="title">Edit Account</h1>
 
@@ -55,7 +62,7 @@
 
                         <!--    Submits a populated UserDTO to endpoint register -->
                         <div class="image-container" style="padding-left:15%">
-                            <button onclick="openPopupForm()" id="userPhotoButton" type="button" style="padding:0; width:150; height:150"}>
+                            <button onclick="openPopupForm()" id="userPhotoButton" type="button" style="padding:0; width:150px; height:150px"}>
                                 <img src="https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png"
                                      width="150" height="150" alt="No Photo">
                             </button>
