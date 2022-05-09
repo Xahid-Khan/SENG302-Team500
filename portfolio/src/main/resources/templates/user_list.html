@@ -9,9 +9,9 @@
     <link rel="stylesheet" th:href="@{/styles/table.css}" />
     <link rel="stylesheet" th:href="@{/styles/pages/project_details.css}"/>
     <link rel="stylesheet" th:href="@{/styles/navbar.css}"/>
-    <link rel="stylesheet" th:href="@{/styles/chip.css}"/>
-    <link rel="stylesheet" th:href="@{/styles/pages/user_list.css}" />
     <link rel="stylesheet" th:href="@{/styles/dropdown.css}" />
+    <link rel="stylesheet" th:href="@{/styles/pages/user_list.css}" />
+    <link rel="stylesheet" th:href="@{/styles/chip.css}"/>
 
     <script type="text/javascript" th:src="@{/scripts/user_list.js}"></script>
 </head>
@@ -91,7 +91,7 @@
                     <div class="tableCell" th:text="${user.nickname}"/>
                     <div class="tableCell">
                         <span th:each="role: ${user.rolesList}">
-                            <form class="chip" th:action="@{/user-list/__${user.username}__/__${role.getNumber()}__}" th:method="post">
+                            <form class="chip">
                                 <span class="label" th:text="${delegate.formatUserRole(role)}"/>
                                 <button class="remove-button" onclick="this.parentElement.style.display='none'" type="submit">&times;</button>
                             </form>
