@@ -82,30 +82,9 @@ public class UserListController {
         return "user_list";
     }
 
-    @PostMapping("/user-list/{username}/{role}")
-    public String updateRoles(@AuthenticationPrincipal AuthState principal,
-                              @PathVariable String username,
-                              @PathVariable Integer role) {
-
-
-
-        return "redirect:/user-list";
-    }
-
     public String formatUrl(int page, String sortBy, boolean sortDir) {
         return String.format("?page=%d&sortBy=%s&asc=%b", page, sortBy, sortDir);
     }
-
-    public String formatUserRoles(List<UserRole> roles) {
-        return roles.stream().map(role -> switch (role) {
-            case STUDENT -> "Student";
-            case TEACHER -> "Teacher";
-            case COURSE_ADMINISTRATOR -> "Course Administrator";
-            default -> "Student";
-        }).collect(Collectors.joining(", "));
-    }
-
-    public UserRole role;
 
     public String formatUserRole(UserRole role) {
         switch (role) {
