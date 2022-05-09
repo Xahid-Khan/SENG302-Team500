@@ -1,7 +1,6 @@
 /* The dropdown wrapper */
 .dropdown-box {
     float: right;
-    /*overflow: hidden;*/
     position: relative;
 }
 
