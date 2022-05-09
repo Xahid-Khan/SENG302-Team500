@@ -5,6 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <link rel="stylesheet" th:href="@{/styles/common.css}"/>
     <link rel="stylesheet" th:href="@{/styles/pages/account_details.css}"/>
+    <link rel="stylesheet" th:href="@{/styles/pages/editing_account.css}"/>
     <link rel="stylesheet" th:href="@{/styles/pages/project_details.css}">
     <link rel="stylesheet" th:href="@{/styles/navbar.css}"/>
 
@@ -39,7 +40,7 @@
         <div class="name-container">
             <div class="left-padding">
                 <form id='form' action="#" th:action="@{/edit_account}" th:object="${user}" method="post">
-                    <h1 class="title">Edit Account</h1>
+                    <h1 class="edit-title">Edit Account Details</h1>
 
                     <!--    Submits a populated UserDTO to endpoint register -->
 
@@ -48,8 +49,6 @@
                         <input type="email" th:field="*{email}" th:required="required"/>
                         <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="form-error">Email Error</div>
                     </div>
-
-                    <!-- TODO: Link to changing password -->
 
                     <div class="form-row">
                         <label th:for="firstName">First Name *</label>

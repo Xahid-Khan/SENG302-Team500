@@ -8,6 +8,7 @@ import nz.ac.canterbury.seng302.identityprovider.exceptions.IrremovableRoleExcep
 import nz.ac.canterbury.seng302.identityprovider.exceptions.UserDoesNotExistException;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import nz.ac.canterbury.seng302.shared.util.ValidationError;
 
 /**
  * This base service contains multiple other services, and is used as a hub so GRPC does not
@@ -22,6 +23,8 @@ public class UserAccountService extends UserAccountServiceGrpc.UserAccountServic
   @Autowired private RoleService roleService;
 
   @Autowired private EditUserService editUserService;
+
+  @Autowired private ChangePasswordService changePasswordService;
 
   /**
    * This is a GRPC user service method that is being over-ridden to register a user and return
@@ -145,6 +148,22 @@ public class UserAccountService extends UserAccountServiceGrpc.UserAccountServic
     } catch (UserDoesNotExistException | IrremovableRoleException e) {
       e.printStackTrace();
       responseObserver.onError(e);
+    }
+  }
+
+  @Override
+  public void changeUserPassword(ChangePasswordRequest request, StreamObserver<ChangePasswordResponse> responseObserver) {
+    try {
+      var response = changePasswordService.changePassword(request);
+
+      responseObserver.onNext(response);
+      responseObserver.onCompleted();
+
+    } catch (UserDoesNotExistException e) {
+        e.printStackTrace();
+        responseObserver.onError(e);
+    } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+      e.printStackTrace();
     }
   }
 }
