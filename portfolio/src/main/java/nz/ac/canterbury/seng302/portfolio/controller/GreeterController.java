@@ -57,6 +57,6 @@ public class GreeterController {
             @RequestParam(value="favouriteColour") String favouriteColour,
             Model model
     ) {
-        return "redirect:/greeting?name=" + favouriteColour;
+        return "redirect:greeting?name=" + favouriteColour;
     }
 }

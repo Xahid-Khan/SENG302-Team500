@@ -70,7 +70,7 @@ public class EditAccountController {
             model.addAttribute("registerMessage", "Error connecting to Identity Provider..."); // TODO fix
             return "edit_account";
         }
-        return "redirect:/my_account";
+        return "redirect:my_account";
     }
 
 }

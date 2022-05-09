@@ -3,10 +3,10 @@
 <head>
     <title>My Account</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <link rel="stylesheet" th:href="@{/styles/common.css}"/>
-    <link rel="stylesheet" th:href="@{/styles/pages/account_details.css}"/>
-    <link rel="stylesheet" th:href="@{/styles/pages/project_details.css}">
-    <link rel="stylesheet" th:href="@{/styles/navbar.css}"/>
+    <link rel="stylesheet" th:href="@{styles/common.css}"/>
+    <link rel="stylesheet" th:href="@{styles/pages/account_details.css}"/>
+    <link rel="stylesheet" th:href="@{styles/pages/project_details.css}">
+    <link rel="stylesheet" th:href="@{styles/navbar.css}"/>
 
 
 </head>
@@ -38,7 +38,7 @@
     <div class="container">
         <div class="name-container">
             <div class="left-padding">
-                <form id='form' action="#" th:action="@{/edit_account}" th:object="${user}" method="post">
+                <form id='form' action="#" th:action="@{edit_account}" th:object="${user}" method="post">
                     <h1 class="title">Edit Account</h1>
 
                     <!--    Submits a populated UserDTO to endpoint register -->
