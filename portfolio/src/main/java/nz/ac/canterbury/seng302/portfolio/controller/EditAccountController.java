@@ -17,6 +17,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
 
 @Controller
@@ -72,14 +73,15 @@ public class EditAccountController {
         if (bindingResult.hasErrors()) {
             return "edit_account";
         }
+        model.addAttribute("user", user);
         try {
             Integer userId = authStateService.getId(principal);
-            if (file.getSize() > 1000 && file.getSize() < 5000000) {
+            if (file.getSize() > 10000 && file.getSize() < 5242000) {
                 byte[] uploadImage = uploadPhotoService.imageProcessing(file);
                 String fileType = uploadPhotoService.getFileType();
 
                 registerClientService.uploadUserPhoto(userId, fileType, uploadImage);
-                model.addAttribute("userPhotoBytes", "data:image/"+fileType +";charset=utf-8;base64," +uploadImage);
+
             } else {
                 model.addAttribute("imageError", "File size must be more than 500KB and less than 5MB.");
                 return "edit_account";

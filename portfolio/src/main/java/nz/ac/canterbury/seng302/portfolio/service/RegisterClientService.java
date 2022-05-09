@@ -82,30 +82,35 @@ public class RegisterClientService {
 
             @Override
             public void onNext(FileUploadStatusResponse response) {
-                if (response.getStatus().equals(FileUploadStatus.PENDING) || response.getStatus().equals(FileUploadStatus.IN_PROGRESS)) {
-                    var endIndex = Math.min(imageBuffer.size() - 1, nextStartIndex + (1024*1024));
+                try {
+                    if (response.getStatus().equals(FileUploadStatus.PENDING) || response.getStatus().equals(FileUploadStatus.IN_PROGRESS)) {
+                        var endIndex = Math.min(imageBuffer.size() - 1, nextStartIndex + (1024 * 1024));
 
-                    if (endIndex == nextStartIndex) {
-                        requestStreamObserverContainer.observer.onCompleted();
-                        return;
+                        if (endIndex == nextStartIndex) {
+                            requestStreamObserverContainer.observer.onCompleted();
+                            return;
+                        }
+
+                        var chunk = imageBuffer.substring(nextStartIndex, endIndex);
+                        nextStartIndex = endIndex;
+
+                        UploadUserProfilePhotoRequest imageDataRequest = UploadUserProfilePhotoRequest.newBuilder()
+                                .setFileContent(chunk)
+                                .build();
+                        requestStreamObserverContainer.observer.onNext(imageDataRequest);
+                    } else if (response.getStatus().equals(FileUploadStatus.SUCCESS)) {
+                        latch.countDown();
+                        onCompleted();
                     }
-
-                    var chunk = imageBuffer.substring(nextStartIndex, endIndex);
-                    nextStartIndex = endIndex;
-
-                    UploadUserProfilePhotoRequest imageDataRequest = UploadUserProfilePhotoRequest.newBuilder()
-                            .setFileContent(chunk)
-                            .build();
-                    requestStreamObserverContainer.observer.onNext(imageDataRequest);
-                }
-                else if (response.getStatus().equals(FileUploadStatus.SUCCESS)) {
-                    latch.countDown();
+                } catch (Exception e) {
+                    onError(e);
                 }
             }
 
             @Override
             public void onError(Throwable t) {
                 latch.countDown();
+                t.printStackTrace();
             }
 
             @Override

@@ -34,12 +34,12 @@
             </div>
         </div>
     </div>
-<div class="raised-card card-padding">
+<div class="raised-card card-padding" style="display: flex;justify-content: center;">
     <div class="container">
         <div class="name-container">
             <div class="left-padding">
                 <form id='form' action="#" th:action="@{/edit_account}" th:object="${user}" method="post" enctype="multipart/form-data">
-                    <h1 class="title">Edit Account</h1>
+                    <h1 class="title" style="color:black; display:flex; justify-content:center;">Edit Account</h1>
 
                     <!--    Submits a populated UserDTO to endpoint register -->
 
@@ -55,14 +55,16 @@
 
                         <!--    Submits a populated UserDTO to endpoint register -->
                         <div class="image-container" style="padding-left:15%">
-                            <button onclick="openPopupForm()" id="userPhotoButton" type="button" style="padding:0; width:150; height:150"}>
+                            <button onclick="openPopupForm()" id="userPhotoButton" type="button" style="padding:0; width:150px; height:150px"}>
                                 <img src="https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png"
                                      width="150" height="150" alt="No Photo">
                             </button>
                         </div>
                         <th:block th:if="${#imageError}">
-                            <div class="form-error"><span th:text="${imageError}"></span></div>
+                            <div class="form-error" id="errorMessageImage"><span th:text="${imageError}" aria-valuenow="test"></span></div>
                         </th:block>
+<!--                        <div id="errorMessageImage" value="">-->
+<!--                        </div>-->
                     </div>
 
 
