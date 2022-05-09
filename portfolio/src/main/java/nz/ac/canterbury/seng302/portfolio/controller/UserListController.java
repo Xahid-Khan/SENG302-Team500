@@ -53,16 +53,13 @@ public class UserListController {
             SortingParameterEntity sortingParams = sortingParametersService.getSortingParams(userId);
             sortAttributeString = sortingParams.getSortAttribute();
             ascending = sortingParams.isSortOrder();
-            System.out.println("333333");
-            System.out.println(sortingParams.getSortAttribute());
+
         } else if (!sortAttributeMaybe.isEmpty()) {
-            System.out.println("00000");
             sortAttributeString = sortAttributeMaybe.get();
-            System.out.println(sortAttributeString);
+
             sortingParametersService.saveSortingParams(userId, sortAttributeString, ascending);
         } else {
             sortAttributeString = "name";
-            System.out.println("22222");
         }
 
         model.addAttribute("username", userDetails.getUsername());
