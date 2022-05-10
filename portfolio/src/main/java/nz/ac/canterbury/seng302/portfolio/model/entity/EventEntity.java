@@ -44,6 +44,11 @@ public class EventEntity {
     @Column(name = "end_date")
     private Instant endDate;
 
+    @NotNull
+    @Column(name = "type")
+    @Enumerated(EnumType.STRING)
+    private EventType type;
+
     public String getId() {
         return id;
     }
@@ -92,12 +97,24 @@ public class EventEntity {
         this.name = title;
     }
 
+    public EventType getType() { return type; }
+
+    public void setType(EventType type) { this.type = type; }
+
     protected EventEntity() {}
 
-    public EventEntity(String name, String description, @NotNull Instant startDate, @NotNull Instant endDate) {
+    public EventEntity(String name, String description, @NotNull Instant startDate, @NotNull Instant endDate, EventType type) {
         this.name = name;
         this.description = description;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.type = type;
+    }
+
+    public enum EventType {
+        EVENT,
+        DEADLINE,
+        MILESTONE
     }
 }
+
