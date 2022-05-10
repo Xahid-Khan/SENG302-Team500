@@ -99,7 +99,7 @@ public class LoginController {
             );
             // Redirect user if login succeeds
             redirectAttributes.addFlashAttribute("message", "Successfully logged in.");
-            return "redirect:/my_account";
+            return "redirect:my_account";
         }
 
         model.addAttribute("error", loginReply.getMessage());
@@ -117,10 +117,10 @@ public class LoginController {
         Model model
     ) {
         if (principal != null) {
-            return "redirect:/my_account";
+            return "redirect:my_account";
         }
         else {
-            return "redirect:/login";
+            return "redirect:login";
         }
     }
 
