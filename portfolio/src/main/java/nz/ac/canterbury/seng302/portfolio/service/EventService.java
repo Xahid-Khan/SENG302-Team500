@@ -49,8 +49,6 @@ public class EventService {
     /**
      * Creates an event within a project and puts it in a sprint
      * if it falls within the sprint's start and end dates
-     * TODO: When sprint date changes, event should be checked again.
-     * TODO Implement putting into sprint by date
      *
      * @return
      */
