@@ -5,7 +5,6 @@ import java.time.Instant;
 /**
  * A contract for an event. Used for sending and retrieving sprints from the database
  * @param projectId The id of the project this event is associated with.
- * @param sprintId The id of the sprint this event is associated with.
  * @param name The name of the event.
  * @param description The description of the event.
  * @param startDate The start date of the event.
@@ -13,8 +12,6 @@ import java.time.Instant;
  */
 public record  EventContract (
     String projectId,
-    String sprintId,
-
     String eventId,
     String name,
     String description,

@@ -294,7 +294,6 @@ public class ValidationServiceTest {
                 "test desc",
                 Instant.parse("2021-12-03T10:15:30.00Z"),
                 Instant.parse("2021-12-04T10:15:30.00Z"),
-                new ArrayList<EventContract>(),
                 1L);
         List<SprintContract> sprints = new ArrayList<SprintContract>();
         sprints.add(sprint);

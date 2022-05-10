@@ -25,10 +25,6 @@ public class EventEntity {
     @OnDelete(action= OnDeleteAction.CASCADE)
     private ProjectEntity project;
 
-    @ManyToOne(optional = true)
-    @OnDelete(action=OnDeleteAction.NO_ACTION)
-    private SprintEntity sprint;
-
 
     // TODO Check validation in line with previous validation
     @Pattern(message = "Please use letters or characters", regexp = "(?<=\\s|^)[a-zA-Z\s]*(?=[.,;:]?\\s|$)")
@@ -62,12 +58,6 @@ public class EventEntity {
 
     public void setProject(ProjectEntity project) {
         this.project = project;
-    }
-
-    public SprintEntity getSprint() {return sprint;}
-
-    public void setSprint(SprintEntity sprint) {
-        this.sprint = sprint;
     }
 
     public @NotNull Instant getEndDate() {

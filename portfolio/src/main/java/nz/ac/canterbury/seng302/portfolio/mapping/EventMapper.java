@@ -30,10 +30,8 @@ public class EventMapper {
      * @return      returns a event and related events in JSON data type.
      */
     public EventContract toContract(EventEntity entity) {
-        if(entity.getSprint() == null) {
             return new EventContract(
                     entity.getProject().getId(),
-                    "NONE",
                     entity.getId(),
                     entity.getName(),
                     entity.getDescription(),
@@ -41,14 +39,4 @@ public class EventMapper {
                     entity.getEndDate()
             );
         }
-        return new EventContract(
-                entity.getProject().getId(),
-                entity.getSprint().getId(),
-                entity.getId(),
-                entity.getName(),
-                entity.getDescription(),
-                entity.getStartDate(),
-                entity.getEndDate()
-        );
-    }
 }

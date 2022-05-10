@@ -55,14 +55,6 @@ public class EventService {
         project.newEvent(entity);
         projectRepository.save(project);
         eventRepository.save(entity);
-        ArrayList<String> sprintIds = getSprintForEvent(project, event);
-        for (String id : sprintIds) {
-            var sprint = sprintRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid sprint ID"));
-            sprint.newEvent(entity);
-            sprintRepository.save(sprint);
-        }
-
-        eventRepository.save(entity);
 
         return eventMapper.toContract(entity);
     }
@@ -78,16 +70,9 @@ public class EventService {
         var event = eventRepository.findById(eventId).orElseThrow(() -> new NoSuchElementException("Invalid event ID"));
         var project = event.getProject();
 
-        //Remove event from project and sprint
+
         project.removeEvent(event);
         eventRepository.delete(event);
-
-        for(SprintEntity sprint : project.getSprints()) {
-            if(sprint.getEvents().contains(event)) {
-                sprint.removeEvent(event);
-            }
-
-        }
         projectRepository.save(project);
     }
 
@@ -102,72 +87,44 @@ public class EventService {
         eventEntity.setName((event.name()));
         eventEntity.setDescription(event.description());
 
-        // Recalculates the sprints that the event is in and adds them accordingly
-        if(eventEntity.getStartDate() != event.startDate() || eventEntity.getEndDate() != event.endDate()) {
-            eventEntity.setStartDate(event.startDate());
-            eventEntity.setEndDate(event.endDate());
-            ArrayList<String> sprintIds = getSprintForEvent(project, event);
 
-            for (SprintEntity sprint : project.getSprints()) {
-                if(sprintIds.contains(sprint.getId())) {
-                    sprint.newEvent(eventEntity);
-                    sprintRepository.save(sprint);
-                }else{
-                    // If sprint contains event, remove it
-                    if(sprint.getEvents().contains(eventEntity)) {
-                        sprint.removeEvent(eventEntity);
-                        sprintRepository.save(sprint);
-                    }
-                }
-            }
-        }
         eventRepository.save(eventEntity);
     }
 
-    /**
-     * Goes through all the sprints in the project that have overlapping dates with the event
-     * @param project Project to search
-     * @param event Event whose dates you are checking
-     * @return List of sprint IDs that overlap
-     */
-    public ArrayList<String> getSprintForEvent(ProjectEntity project, BaseEventContract event) {
-        var sprints = project.getSprints();
-        var eventEntity = eventMapper.toEntity(event);
-        var sprintIds = new ArrayList<String>();
-
-        //iterates through all the sprints in the project using i
-        for (var i = 0; i < sprints.size(); i++) {
-            //Gets sprint
-            var sprint = sprints.get(i);
-            var sprintEntity = sprintRepository.findById(sprint.getId()).orElseThrow(() -> new NoSuchElementException("Invalid sprint ID"));
-
-            //1 Checks if event start date is before or the same as the sprint start date and the event end date is after or the same as the sprint end date
-//            if (eventEntity.getStartDate().isBefore(sprintEntity.getStartDate()) || eventEntity.getStartDate().equals(sprintEntity.getStartDate())
-//                    && eventEntity.getEndDate().isAfter(sprintEntity.getEndDate()) || eventEntity.getEndDate().equals(sprintEntity.getEndDate())) {
+//    /**
+//     * Goes through all the sprints in the project that have overlapping dates with the event
+//     * @param project Project to search
+//     * @param event Event whose dates you are checking
+//     * @return List of sprint IDs that overlap
+//     */
+//    public ArrayList<String> getSprintForEvent(ProjectEntity project, BaseEventContract event) {
+//        var sprints = project.getSprints();
+//        var eventEntity = eventMapper.toEntity(event);
+//        var sprintIds = new ArrayList<String>();
+//
+//        //iterates through all the sprints in the project using i
+//        for (var i = 0; i < sprints.size(); i++) {
+//            //Gets sprint
+//            var sprint = sprints.get(i);
+//            var sprintEntity = sprintRepository.findById(sprint.getId()).orElseThrow(() -> new NoSuchElementException("Invalid sprint ID"));
+//
+//            //1 Checks if event start date is before or the same as the sprint start date and the event end date is after or the same as the sprint end date
+////            if (eventEntity.getStartDate().isBefore(sprintEntity.getStartDate()) || eventEntity.getStartDate().equals(sprintEntity.getStartDate())
+////                    && eventEntity.getEndDate().isAfter(sprintEntity.getEndDate()) || eventEntity.getEndDate().equals(sprintEntity.getEndDate())) {
+////                sprintIds.add(sprint.getId());
+////            }
+//            eventEntity.getStartDate().compareTo(sprintEntity.getStartDate());
+//            // Adds if event starts before the sprint starts and the event doesn't end before the sprint starts
+//            if (eventEntity.getStartDate().compareTo(sprintEntity.getStartDate())<=0 && eventEntity.getEndDate().compareTo(sprintEntity.getStartDate()) >= 0) {
+//                sprintIds.add(sprint.getId());
+//                System.out.println("Event starts before sprint starts");
+//            }
+//            // Adds if event starts after the sprint starts but before the sprint ends
+//            else if (eventEntity.getStartDate().compareTo(sprintEntity.getStartDate()) >= 0 && eventEntity.getStartDate().compareTo(sprintEntity.getEndDate()) <= 0) {
 //                sprintIds.add(sprint.getId());
 //            }
-            eventEntity.getStartDate().compareTo(sprintEntity.getStartDate());
-            // Adds if event starts before the sprint starts and the event doesn't end before the sprint starts
-            if (eventEntity.getStartDate().compareTo(sprintEntity.getStartDate())<=0 && eventEntity.getEndDate().compareTo(sprintEntity.getStartDate()) >= 0) {
-                sprintIds.add(sprint.getId());
-                System.out.println("Event starts before sprint starts");
-            }
-            // Adds if event starts after the sprint starts but before the sprint ends
-            else if (eventEntity.getStartDate().compareTo(sprintEntity.getStartDate()) >= 0 && eventEntity.getStartDate().compareTo(sprintEntity.getEndDate()) <= 0) {
-                sprintIds.add(sprint.getId());
-            }
-            //Checks if the event start date is within the sprint start and end date or if the event and sprint have same start date
-//            else if (eventEntity.getStartDate().isAfter(sprintEntity.getStartDate()) && eventEntity.getStartDate().isBefore(sprintEntity.getEndDate())
-//                    || eventEntity.getStartDate().equals(sprintEntity.getStartDate())) {
-//                //2 checks if the event end date is after, within or the same as the sprint end date
-//                if (eventEntity.getEndDate().isAfter(sprintEntity.getEndDate()) || eventEntity.getEndDate().equals(sprintEntity.getEndDate()) ||
-//                        eventEntity.getEndDate().isAfter(sprintEntity.getStartDate()) && eventEntity.getEndDate().isBefore(sprintEntity.getEndDate())) {
-//                    sprintIds.add(sprint.getId());
-//                }
 //
-//            }
-
-        }
-        return sprintIds;
-    }
+//        }
+//        return sprintIds;
+//    }
 }

@@ -38,14 +38,6 @@ public class SprintMapper {
      * @return      returns a sprint and related sprints in JSON data type.
      */
     public SprintContract toContract(SprintEntity entity, long orderNumber) {
-        var eventEntities = entity.getEvents();
-        var eventContracts = new ArrayList<EventContract>();
-
-        for (int i=0; i < eventEntities.size(); i++) {
-            eventContracts.add(eventMapper.toContract(
-                    eventEntities.get(i)
-            ));
-        }
         return new SprintContract(
             entity.getProject().getId(),
             entity.getId(),
@@ -53,7 +45,6 @@ public class SprintMapper {
             entity.getDescription(),
             entity.getStartDate(),
             entity.getEndDate(),
-            eventContracts,
             orderNumber
         );
     }

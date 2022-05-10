@@ -11,7 +11,6 @@ import java.util.List;
  * @param description The description of the sprint
  * @param startDate The start date of the sprint
  * @param endDate The end date of the sprint
- * @param events The events in the sprint
  * @param orderNumber The order number of the sprint
  */
 public record SprintContract(
@@ -21,6 +20,5 @@ public record SprintContract(
     String description,
     Instant startDate,
     Instant endDate,
-    List<EventContract> events,
     Long orderNumber  // Should only be present in responses
 ) {}

@@ -41,10 +41,6 @@ public class SprintEntity {
     @Column(nullable = false)
     private Instant endDate;
 
-    @OneToMany(mappedBy = "sprint", fetch = FetchType.EAGER)
-    @OrderBy("startDate")
-    private List<EventEntity> events = new ArrayList<>();
-
 
     protected SprintEntity() {}
 
@@ -107,23 +103,6 @@ public class SprintEntity {
         this.endDate = endDate;
     }
 
-    public List<EventEntity> getEvents() {
-        return events;
-    }
-
-    public void setEvents(List<EventEntity> events) {
-        this.events = events;
-    }
-
-    public void newEvent(EventEntity event) {
-        events.add(event);
-        event.setSprint(this);
-    }
-
-    public void removeEvent(EventEntity event) {
-        events.remove(event);
-        event.setSprint(null);
-    }
 
     /**
      * Calculates the orderNumber of this sprint entity by searching through its project.
