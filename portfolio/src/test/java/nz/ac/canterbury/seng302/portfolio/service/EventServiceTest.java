@@ -1,7 +1,8 @@
-package nz.ac.canterbury.seng302.portfolio.controller;
+package nz.ac.canterbury.seng302.portfolio.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import nz.ac.canterbury.seng302.portfolio.AuthorisationParamsHelper;
+import nz.ac.canterbury.seng302.portfolio.mapping.SprintMapper;
 import nz.ac.canterbury.seng302.portfolio.model.contract.BaseEventContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.BaseSprintContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.EventContract;
@@ -10,8 +11,6 @@ import nz.ac.canterbury.seng302.portfolio.model.entity.SprintEntity;
 import nz.ac.canterbury.seng302.portfolio.repository.EventRepository;
 import nz.ac.canterbury.seng302.portfolio.repository.ProjectRepository;
 import nz.ac.canterbury.seng302.portfolio.repository.SprintRepository;
-import nz.ac.canterbury.seng302.portfolio.service.EventService;
-import nz.ac.canterbury.seng302.portfolio.service.SprintService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
-public class EventControllerTest {
+public class EventServiceTest {
     @Autowired
     private MockMvc mockMvc;
 
@@ -43,6 +42,9 @@ public class EventControllerTest {
 
     @Autowired
     private SprintService sprintService;
+
+    @Autowired
+    private SprintMapper sprintMapper;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -84,6 +86,49 @@ public class EventControllerTest {
         assertEquals(event1.getId(),project1.getEvents().get(0).getId());
     }
 
+    @Test
+    public void testDeleteEvent() throws Exception {
+        // Create a project
+        var project = new ProjectEntity("testproject", null, Instant.parse("2022-12-01T10:15:30.00Z"), Instant.parse("2023-01-20T10:15:30.00Z"));
+        projectRepository.save(project);
+        // Create an event
+        BaseEventContract event = new BaseEventContract("test event", "testdescription", Instant.parse("2022-12-01T10:15:30.00Z"), Instant.parse("2022-12-02T10:15:30.00Z"));
+        EventContract eventContract = eventService.createEvent(project.getId(), event);
+
+        // Check that the event was created
+        var events = eventRepository.findAll();
+        assert events.iterator().hasNext();
+
+        //Checks the event name
+        var event1 = events.iterator().next();
+        assertEquals("test event", event1.getName());
+
+        //Tests event was added to project
+        var projects = projectRepository.findAll();
+        var project1 = projects.iterator().next();
+        assertEquals(event1.getId(),project1.getEvents().get(0).getId());
+
+        //Runes the delete function on all events
+        var eventToDelete = eventRepository.findAll().iterator().next();
+
+//        eventService.delete(project1.getEvents().get(0).getId());
+
+        //Prints all the ids of events
+        var events2 = eventRepository.findAll();
+        var idToDelete = events2.iterator().next().getId();
+        eventService.delete(idToDelete);
+
+        //Prints all the ids of events in project
+        var projects2 = projectRepository.findAll();
+        var project2 = projects2.iterator().next();
+        System.out.println(project2.getEvents().get(0).getId());
+
+        projects = projectRepository.findAll();
+        project1 = projects.iterator().next();
+        assertEquals(0,project1.getEvents().size());
+    }
+
+
     public ProjectEntity setupThreeSprints() {
         //Create 3 sprint entities with the same project id
         BaseSprintContract sprint1 = new BaseSprintContract("January", "test sprint", Instant.parse("2023-01-01T10:15:30.00Z"), Instant.parse("2023-01-30T10:15:30.00Z"));
@@ -117,35 +162,36 @@ public class EventControllerTest {
 
     }
 
-//    /**
-//     * Creates an event that starts after the sprint starts and ends before the sprint ends
-//     * @throws Exception
-//     *
-//     */
-//    @Test
-//    public void testCreateEventStartAfterSprintStartAndEventEndBeforeSprintEnd() throws Exception {
-//        //Sets up sprints and project
-//        ProjectEntity project = setupThreeSprints();
-//        //Creates event
-//        BaseEventContract event = new BaseEventContract("January", "test", Instant.parse("2023-01-03T10:15:30.00Z"), Instant.parse("2023-01-05T10:15:30.00Z"));
-//        EventContract eventContract = eventService.createEvent(project.getId(), event);
-//
-//        // Get all the sprints
-//        var sprints = sprintRepository.findAll();
-//
-//
-//
-//        for (SprintEntity sprint : sprints) {
-//            if(sprint.getName().equals("January")) {
-//                // Check that the event was added to the january sprint
-//                assertEquals(eventContract.sprintId(), sprint.getId());
-//                assertEquals(eventContract.eventId(), sprint.getEvents().get(0).getId());
-//            }else{
-//                // Check that it was not added to the other sprints
+    /**
+     * Creates an event that starts after the sprint starts and ends before the sprint ends
+     * @throws Exception
+     *
+     */
+    @Test
+    public void testCreateEventStartAfterSprintStartAndEventEndBeforeSprintEnd() throws Exception {
+        //Sets up sprints and project
+        ProjectEntity project = setupThreeSprints();
+        //Creates event
+        BaseEventContract event = new BaseEventContract("January", "test", Instant.parse("2023-01-03T10:15:30.00Z"), Instant.parse("2023-01-05T10:15:30.00Z"));
+        EventContract eventContract = eventService.createEvent(project.getId(), event);
+
+        // Get all the sprints
+        var sprints = sprintRepository.findAll();
+
+
+
+        for (SprintEntity sprint : sprints) {
+            if(sprint.getName().equals("January")) {
+                // Check that the event was added to the january sprint
+                BaseSprintContract sprint1 = new BaseSprintContract("January", "test sprint", Instant.parse("2023-01-01T10:15:30.00Z"), Instant.parse("2023-01-30T10:15:30.00Z"));
+
+                assertEquals(1,eventService.getEventsInSprint(project,sprint1).size());
+            }else{
+                // Check that it was not added to the other sprints
 //                assertEquals(0, sprint.getEvents().size());
-//            }
-//        }
-//    }
+            }
+        }
+    }
 //    /**
 //     * Tests creating an event that starts before the sprint starts and ends after the sprint ends
 //     */
