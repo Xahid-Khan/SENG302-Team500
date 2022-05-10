@@ -70,7 +70,7 @@ public class EditAccountController {
     @PostMapping(value="/edit_account")
     public String postPage(@ModelAttribute @Validated(EditedUserValidation.class) User user, BindingResult bindingResult,
                            Model model, @AuthenticationPrincipal AuthState principal, @RequestParam("image") MultipartFile file) {
-        int userId = -1;
+        int userId;
         if (bindingResult.hasErrors()) {
             return "edit_account";
         }
@@ -86,8 +86,7 @@ public class EditAccountController {
 
             } else {
                 model.addAttribute("imageError", "File size must be more than 500KB and less than 5MB.");
-                model.addAttribute("userId", userId);
-                return "edit_account";
+                return "redirect:/edit_account";
             }
 
             registerClientService.updateDetails(user, userId);

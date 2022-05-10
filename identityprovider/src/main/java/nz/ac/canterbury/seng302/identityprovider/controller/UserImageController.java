@@ -33,6 +33,7 @@ public class UserImageController {
             response.getOutputStream().write(userPhoto.get().getUserPhoto());
             response.getOutputStream().close();
         } catch (Exception e) {
+            response.getOutputStream().close();
             e.printStackTrace();
         }
     }
