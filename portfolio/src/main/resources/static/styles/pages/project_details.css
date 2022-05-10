@@ -6,6 +6,21 @@ body {
     min-height: 100vh;
 }
 
+.events {
+    padding: 20px;
+    margin-top: 10px;
+}
+
+.sprints {
+    margin-top: 10px;
+    padding: 20px;
+}
+
+.event-section-title {
+    font-size: 20px;
+    font-weight: bold;
+}
+
 .project-view {
     width: 100%;
     margin-bottom: 40px;
@@ -74,14 +89,13 @@ body {
     margin-right: 5px;
 }
 
-.sprint-view-controls {
+.add-view-controls {
     display: flex;
     justify-content: right;
     margin-right: 5px;
 }
 
-.event-view-controls {
-    margin-top: 10px;
+.toggle-view-controls {
     display: flex;
     justify-content: right;
     margin-right: 5px;
@@ -96,7 +110,18 @@ body {
     margin-top: 15px
 }
 
+.event-view {
+    padding: 20px;
+    margin-top: 15px
+}
+
 .sprint-title {
+    font-size: 18px;
+    font-weight: bold;
+    padding-bottom: 20px;
+}
+
+.event-title {
     font-size: 18px;
     font-weight: bold;
     padding-bottom: 20px;
@@ -123,7 +148,7 @@ body {
     display: none;
 }
 
-.add-sprint {
+.events {
     display: none;
 }
 
@@ -207,6 +232,11 @@ body {
         padding: 15px;
     }
 
+    .event-view {
+        margin-bottom: 10px;
+        padding: 15px;
+    }
+
     button {
         margin: 3px;
         font-size: 12px;
@@ -217,6 +247,10 @@ body {
     }
 
     .sprint-title {
+        padding-bottom: 10px;
+    }
+
+    .event-title {
         padding-bottom: 10px;
     }
 
@@ -259,6 +293,11 @@ body {
         padding: 10px;
     }
 
+    .event-view {
+        margin-bottom: 10px;
+        padding: 10px;
+    }
+
     button {
         padding: 4px 6px;
         font-size: 10px;
@@ -276,6 +315,11 @@ body {
 
 
     .sprint-title {
+        font-size: 13px;
+        padding-bottom: 5px;
+    }
+
+    .event-title {
         font-size: 13px;
         padding-bottom: 5px;
     }
@@ -330,7 +374,15 @@ body {
         font-size: 10px;
     }
 
+    .event-title {
+        font-size: 10px;
+    }
+
     .sprint-view {
+        padding: 8px;
+    }
+
+    .event-view {
         padding: 8px;
     }
 
@@ -372,6 +424,10 @@ body {
     }
 
     .sprint-title {
+        font-size: 7px;
+    }
+
+    .event-title {
         font-size: 7px;
     }
     

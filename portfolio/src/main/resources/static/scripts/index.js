@@ -95,6 +95,8 @@ class ProjectView {
     console.log("Binding event");
 
     this.events.set(eventData.eventId, new Event(eventElement, eventData, this.project, this.eventDeleteCallback, this.eventUpdateCallback));
+
+    console.log("Event bound");
   }
 
   /**
@@ -116,17 +118,21 @@ class ProjectView {
       </div>
       <div>
           <div class="project-description" id="project-description-${this.project.id}"></div>
-          <div class="sprint-view-controls">
+          <div class="add-view-controls">
               <button class="button add-sprint" id="add-sprint-button-${this.project.id}" data-privilege="teacher"> Add Sprint</button>
-              <button class="button toggle-sprints" id="toggle-sprint-button-${this.project.id}"> Show Sprints</button>
-          </div>
-          <div class="event-view-controls">
               <button class="button add-event" id="add-event-button-${this.project.id}" data-privilege="teacher"> Add Event</button>
+          </div>
+          <div class="toggle-view-controls">
+              <button class="button toggle-sprints" id="toggle-sprint-button-${this.project.id}"> Show Sprints</button>
               <button class="button toggle-events" id="toggle-event-button-${this.project.id}"> Show Events</button>
           </div>    
       </div>
-      <div class="sprints" id="sprints-container-${this.project.id}"></div>
-      <div class="events" id="events-container-${this.project.id}"></div>
+      <div class="events raised-card" id="events-container-${this.project.id}">
+        <h1 class="event-section-title">Events:</h1>
+      </div>
+      <div class="sprints raised-card" id="sprints-container-${this.project.id}">
+        <h1 class="event-section-title">Sprints:</h1>
+      </div>
     `;
 
     document.getElementById(`project-title-text-${this.project.id}`).innerText = this.project.name;
@@ -161,13 +167,11 @@ class ProjectView {
   toggleSprints() {
     if (this.showingSprints) {
       // Hide the sprints
-      this.addSprintButton.style.display = "none";
       this.toggleSprintsButton.innerText = "Show Sprints";
       this.sprintsContainer.style.display = "none";
     }
     else {
       // Show the sprints
-      this.addSprintButton.style.display = "inline";
       this.toggleSprintsButton.innerText = "Hide Sprints";
       this.sprintsContainer.style.display = "block";
     }
@@ -178,13 +182,11 @@ class ProjectView {
   toggleEvents() {
     if (this.showingEvents) {
       // Hide the sprints
-      this.addEventButton.style.display = "none";
       this.toggleEventsButton.innerText = "Show Events";
       this.eventsContainer.style.display = "none";
     }
     else {
-      // Show the sprints
-      this.addEventButton.style.display = "inline";
+      // Show the events
       this.toggleEventsButton.innerText = "Hide Events";
       this.eventContainer.style.display = "block";
     }
@@ -203,7 +205,7 @@ class ProjectView {
     const formContainerElement = document.createElement("div");
     formContainerElement.classList.add("sprint-view", "raised-card");
     formContainerElement.id = `create-sprint-form-container-${this.project.id}`;
-    this.sprintsContainer.insertBefore(formContainerElement, this.sprintsContainer.firstChild);
+    this.sprintsContainer.append(this.sprintsContainer.firstChild, formContainerElement);
 
     let defaultName = 1;
     let defaultStartDate = new Date(this.project.startDate.valueOf());
@@ -235,6 +237,11 @@ class ProjectView {
           ProjectOrSprintEditor.makeProjectSprintDatesValidator(this.project, null)
       )
     };
+
+    if (!this.showingSprints) {
+      this.toggleSprints();
+    }
+
   }
 
   /**
@@ -299,25 +306,14 @@ class ProjectView {
     const formContainerElement = document.createElement("div");
     formContainerElement.classList.add("event-view", "raised-card");
     formContainerElement.id = `create-event-form-container-${this.project.id}`;
-    this.eventsContainer.insertBefore(formContainerElement, this.eventsContainer.firstChild);
-
-    let defaultName = 1;
-    let defaultStartDate = new Date(this.project.startDate.valueOf());
-
-    if (this.project.events.length !== 0) {
-      defaultName = this.project.events[(this.project.events.length - 1)].orderNumber + 1;
-      defaultStartDate = new Date(this.project.events[(this.project.events.length - 1)].endDate.valueOf());
-    }
-
-    const defaultEndDate = new Date(defaultStartDate.valueOf());
-    defaultEndDate.setDate(defaultEndDate.getDate() + 22);
+    this.eventContainer.append(this.eventsContainer.firstChild, formContainerElement)
 
     const defaultEvent = {
       id: `__NEW_EVENT_FORM_${this.project.id}`,
-      name: `Event ${defaultName}`,
+      name: null,
       description: null,
-      startDate: defaultStartDate,
-      endDate: defaultEndDate
+      startDate: null,
+      endDate: null
     };
 
     this.addEventForm = {
@@ -328,9 +324,13 @@ class ProjectView {
           defaultEvent,
           this.closeAddEventForm.bind(this),
           this.submitAddEventForm.bind(this),
-          ProjectOrSprintEditor.makeProjectSprintDatesValidator(this.project, null)
+          ProjectOrSprintEditor.makeProjectEventDatesValidator(this.project)
       )
     };
+
+    if (!this.showingEvents) {
+      this.toggleEvents();
+    }
   }
 
   /**
@@ -719,6 +719,16 @@ class ProjectOrSprintEditor {
       return null;
     }
   }
+
+  static makeProjectEventDatesValidator(project) {
+    return (startDate, endDate) => {
+      if (startDate < project.startDate || project.endDate < endDate) {
+        return "Event must fit within the project dates.";
+      }
+
+      return null;
+    }
+  }
 }
 
 /**
@@ -796,6 +806,76 @@ class SprintView {
   }
 }
 
+class EventView {
+  expandedView = false;
+
+  constructor(containerElement, event, deleteCallback, editCallback) {
+    this.containerElement = containerElement;
+    this.event = event;
+    this.editCallback = editCallback;
+    this.deleteCallback = deleteCallback;
+
+    this.constructView();
+    this.wireView();
+  }
+
+  /**
+   * Adds populated HTML to EventView.
+   */
+  constructView() {
+    this.containerElement.innerHTML = `
+    <div class="event-title">
+        <span id="event-title-text-${this.event.eventId}" style="font-style: italic;"></span> | <span id="start-date-${this.event.eventId}"></span> - <span id="end-date-${this.event.eventId}"></span>
+
+        <span class="crud">
+            <button class="button event-controls" id="event-button-edit-${this.event.eventId}" data-privilege="teacher">Edit</button>
+            <button class="button event-controls" id="event-button-delete-${this.event.eventId}" data-privilege="teacher">Delete</button>
+            <button class="button toggle-event-details" id="toggle-event-details-${this.event.eventId}">+</button>
+        </span>
+    </div>
+    <div class="event-description" id="event-description-${this.event.eventId}"></div>
+    `;
+
+    this.toggleButton = document.getElementById(`toggle-event-details-${this.event.eventId}`);
+    this.description = document.getElementById(`event-description-${this.event.eventId}`);
+
+    document.getElementById(`event-title-text-${this.event.eventId}`).innerText = this.event.name;
+    this.description.innerText = this.event.description;
+    document.getElementById(`start-date-${this.event.eventId}`).innerText = DatetimeUtils.localToUserDMY(this.event.startDate);
+    const displayedDate = new Date(this.event.endDate.valueOf());
+    displayedDate.setDate(displayedDate.getDate() - 1);
+    document.getElementById(`end-date-${this.event.eventId}`).innerText = DatetimeUtils.localToUserDMY(displayedDate);
+  }
+
+  /**
+   * Toggles expanded view and button for events.
+   */
+  toggleExpandedView() {
+    if (this.expandedView) {
+      this.description.style.display = "none";
+      this.toggleButton.innerText = "+";
+    }
+    else {
+      this.description.style.display = "block";
+      this.toggleButton.innerText = "-";
+    }
+
+    this.expandedView = !this.expandedView;
+  }
+
+  wireView() {
+    document.getElementById(`event-button-edit-${this.event.eventId}`).addEventListener('click', () => this.editCallback());
+    document.getElementById(`event-button-delete-${this.event.eventId}`).addEventListener("click", () => this.deleteCallback());
+
+    this.toggleButton.addEventListener('click', this.toggleExpandedView.bind(this));
+  }
+
+
+  dispose() {
+
+  }
+}
+
 
 /**
  * Handles switching between the editor and view screens.
@@ -842,10 +922,48 @@ class Project {
       this.project.sprints[i].orderNumber ++;
     }
 
+    const showingEvents = this.currentView.showingEvents;
+
     // Refresh the view
     this.showViewer();
+
+    if (showingEvents) {
+      this.currentView.toggleEvents();
+    }
     this.currentView.toggleSprints();
-  }/**
+  }
+
+  onEventUpdate(event) {
+    console.log(`Project notified of update to event: `, event);
+
+    // Delete the outdated event from the events array.
+    // NB: Since this method is sometimes called with new events, a deletion is not guaranteed to occur here.
+    for (let j=0; j < this.project.events.length; j++) {
+      if (this.project.events[j].eventId === event.eventId) {
+        this.project.events.splice(j, 1);
+        break;
+      }
+    }
+
+    // Insert the updated event.
+    this.project.events.splice(event.orderNumber - 1, 0, event);
+
+    // Update the orderNumbers of events after this one in the list.
+    for (let j=event.orderNumber; j < this.project.events.length; j++) {
+      this.project.events[j].orderNumber ++;
+    }
+
+    const showingSprints = this.currentView.showingSprints;
+
+    // Refresh the view
+    this.showViewer();
+    if (showingSprints) {
+      this.currentView.toggleSprints();
+    }
+    this.currentView.toggleEvents();
+  }
+
+  /**
    * Gets the project to explicitly destroy itself .
    */
   dispose() {
@@ -870,7 +988,7 @@ class Project {
    */
   showViewer() {
     this.currentView?.dispose();
-    this.currentView = new ProjectView(this.containerElement, this.project, this.showEditor.bind(this), this.deleteProject.bind(this), this.deleteSprint.bind(this), this.onSprintUpdate.bind(this));
+    this.currentView = new ProjectView(this.containerElement, this.project, this.showEditor.bind(this), this.deleteProject.bind(this), this.deleteSprint.bind(this), this.onSprintUpdate.bind(this), this.deleteEvent.bind(this), this.onEventUpdate.bind(this));
   }
 
   /**
@@ -980,10 +1098,36 @@ class Project {
       this.project.sprints[i].orderNumber = i + 1;
     }
 
+    const showingEvents = this.currentView.showingEvents;
     this.showViewer();
     this.currentView.toggleSprints();
+    if (showingEvents) {
+      this.currentView.toggleEvents();
+    }
   }
 
+  deleteEvent(eventId) {
+    for (let j=0; j < this.project.events.length; j++) {
+      if (this.project.events[j].eventId === eventId) {
+        this.project.events.splice(j, 1);
+      }
+
+    }
+
+    for (let i=0; i < this.project.events.length; i++) {
+      this.project.events[i].orderNumber = i + 1;
+    }
+
+    const showingSprints = this.currentView.showingSprints;
+
+    this.showViewer();
+    this.currentView.toggleEvents();
+
+    if (showingSprints) {
+      this.currentView.toggleSprints();
+    }
+
+  }
 
 }
 
@@ -1018,7 +1162,13 @@ class Sprint {
         && DatetimeUtils.areEqual(newValue.endDate, this.sprint.endDate)
     ) {
       // Nothing has changed
+      const showingEvents = this.currentView.showingEvents;
+
       this.showViewer();
+
+      if (showingEvents) {
+        this.currentView.toggleEvents();
+      }
       return;
     }
 
@@ -1092,7 +1242,7 @@ class Sprint {
     if (this.deleteLoadingStatus === LoadingStatus.Pending) {
       return;
     }
-
+    console.log("here")
     this.deleteLoadingStatus = LoadingStatus.Pending;
 
     try {
@@ -1146,7 +1296,15 @@ class Event {
         && DatetimeUtils.areEqual(newValue.endDate, this.event.endDate)
     ) {
       // Nothing has changed
+
+      const showingSprints = this.currentView.showingSprints;
+
       this.showViewer();
+
+      if (showingSprints) {
+        this.currentView.toggleSprints();
+      }
+
       return;
     }
 
@@ -1194,7 +1352,7 @@ class Event {
         this.event,
         this.showViewer.bind(this),
         this.updateEvent().bind(this),
-        ProjectOrSprintEditor.makeProjectSprintDatesValidator(this.project, this.event.eventId)
+        ProjectOrSprintEditor.makeProjectEventDatesValidator(this.project)
     );
   }
 
@@ -1203,7 +1361,7 @@ class Event {
    */
   showViewer() {
     this.currentView?.dispose();
-    this.currentView = new EventView(this.containerElement, this.sprint, this.deleteEvent.bind(this), this.showEditor.bind(this));
+    this.currentView = new EventView(this.containerElement, this.event, this.deleteEvent.bind(this), this.showEditor.bind(this));
   }
 
   /**
@@ -1224,7 +1382,7 @@ class Event {
     this.deleteLoadingStatus = LoadingStatus.Pending;
 
     try {
-      const response = await fetch(`api/v1/events/${this.event.sprintId}`, {
+      const response = await fetch(`api/v1/events/${this.event.eventId}`, {
         method: 'DELETE'
       })
       if (!response.ok) {
@@ -1436,7 +1594,8 @@ class Application {
             project.currentView.toggleEvents();
           }
         })
-      }      this.projectsLoadingState = LoadingStatus.Done;
+      }
+      this.projectsLoadingState = LoadingStatus.Done;
     } catch (ex) {
       this.projectsLoadingState = LoadingStatus.Error;
 
