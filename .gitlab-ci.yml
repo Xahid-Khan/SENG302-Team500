@@ -2,10 +2,10 @@ stages:
   - tagChecking
   - publishProtosToLocalMavenRepo
   - build
-  - predeploy
-  - deploy
   - test
   - sonarqube
+  - predeploy
+  - deploy
 
 tag-checker:
   stage: tagChecking
@@ -49,7 +49,6 @@ branch-build:
     - tags
     - master
     - dev
-    - U26_T75/configure_mariadb
 
 predeploy-copy-environment-variables:
   stage: predeploy
@@ -60,7 +59,6 @@ predeploy-copy-environment-variables:
     - dev
     - tags
     - master
-    - U26_T75/configure_mariadb
 
 deploy-staging-identityprovider:
   stage: deploy
@@ -78,7 +76,6 @@ deploy-staging-identityprovider:
       - identityprovider/build/libs
   only:
     - dev
-    - U26_T75/configure_mariadb
 
 deploy-staging-portfolio:
   stage: deploy
@@ -96,7 +93,6 @@ deploy-staging-portfolio:
       - portfolio/build/libs
   only:
     - dev
-    - U26_T75/configure_mariadb
 
 deploy-production-identityprovider:
   stage: deploy
@@ -115,7 +111,6 @@ deploy-production-identityprovider:
   only:
     - tags
     - master
-    - U26_T75/configure_mariadb
 
 deploy-production-portfolio:
   stage: deploy
@@ -134,4 +129,3 @@ deploy-production-portfolio:
   only:
     - tags
     - master
-    - U26_T75/configure_mariadb
