@@ -614,7 +614,6 @@ class SprintView {
    */
   constructView() {
     this.containerElement.innerHTML = `
-    <div class="colour-block" id="sprint-colour-block-${this.sprint.sprintId}"></div>
     <div class="sprints" id="sprints-container-${this.sprint.sprintId}"></div>
     <div class="sprint-title">
         <span id="sprint-order-text-${this.sprint.sprintId}"></span>: <span id="sprint-title-text-${this.sprint.sprintId}" style="font-style: italic;"></span> | <span id="start-date-${this.sprint.sprintId}"></span> - <span id="end-date-${this.sprint.sprintId}"></span>
@@ -627,6 +626,7 @@ class SprintView {
     </div>
 
     <div class="sprint-description" id="sprint-description-${this.sprint.sprintId}"></div>
+    <div class="colour-block" id="sprint-colour-block-${this.sprint.sprintId}"></div>
     `;
 
     this.toggleButton = document.getElementById(`toggle-sprint-details-${this.sprint.sprintId}`);
