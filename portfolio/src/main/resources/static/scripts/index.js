@@ -41,6 +41,7 @@ class ErrorHandlerUtils {
 class ProjectView {
   showingSprints = false;
   showingEvents = false;
+  showingDeadlines = false;
 
   addEventForm = null;
   addEventLoadingStatus = LoadingStatus.NotYetAttempted
@@ -48,7 +49,10 @@ class ProjectView {
   addSprintForm = null;
   addSprintLoadingStatus = LoadingStatus.NotYetAttempted;
 
-  constructor(containerElement, project, editCallback, deleteCallback, sprintDeleteCallback, sprintUpdateCallback, eventDeleteCallback, eventUpdateCallback) {
+  addDeadlineForm = null
+  addDeadlineLoadingStatus = LoadingStatus.NotYetAttempted;
+
+  constructor(containerElement, project, editCallback, deleteCallback, sprintDeleteCallback, sprintUpdateCallback, eventDeleteCallback, eventUpdateCallback, deadlineDeleteCallback, deadlineUpdateCallback) {
     console.log("project", project)
     this.containerElement = containerElement;
     this.project = project;
@@ -56,12 +60,16 @@ class ProjectView {
     this.sprints = new Map();
     this.eventContainer = null;
     this.events = new Map();
+    this.deadlineContainer = null;
+    this.deadlines = new Map();
     this.editCallback = editCallback;
     this.deleteCallback = deleteCallback;
     this.sprintDeleteCallback = sprintDeleteCallback;
     this.sprintUpdateCallback = sprintUpdateCallback;
     this.eventDeleteCallback = eventDeleteCallback;
     this.eventUpdateCallback = eventUpdateCallback;
+    this.deadlineDeleteCallback = deadlineDeleteCallback;
+    this.deadlineUpdateCallback = deadlineUpdateCallback
 
     this.constructAndPopulateView();
     this.wireView();
@@ -99,6 +107,19 @@ class ProjectView {
     console.log("Event bound");
   }
 
+  appendDeadline(deadlineData) {
+    const deadlineElement = document.createElement("div")
+    deadlineElement.classList.add("event-view", "raised-card");
+    deadlineElement.id = `event-view-${deadlineElement.id}`;
+    this.eventContainer.appendChild(deadlineElement);
+
+    console.log("Binding deadline");
+
+    this.deadlines.set(deadlineData.eventId, new Deadline(deadlineElement, deadlineData, this.project, this.deadlineDeleteCallback, this.deadlineUpdateCallback));
+
+    console.log("Deadline bound");
+  }
+
   /**
    * Adds HTML in to the project container, with the main attributes of projects and sprints.
    */
@@ -121,14 +142,19 @@ class ProjectView {
           <div class="add-view-controls">
               <button class="button add-sprint" id="add-sprint-button-${this.project.id}" data-privilege="teacher"> Add Sprint</button>
               <button class="button add-event" id="add-event-button-${this.project.id}" data-privilege="teacher"> Add Event</button>
+              <button class="button add-deadline" id="add-deadline-button-${this.project.id}" data-privilege="teacher"> Add Deadline</button>
           </div>
           <div class="toggle-view-controls">
               <button class="button toggle-sprints" id="toggle-sprint-button-${this.project.id}"> Show Sprints</button>
               <button class="button toggle-events" id="toggle-event-button-${this.project.id}"> Show Events</button>
+              <button class="button toggle-deadlines" id="toggle-deadline-button-${this.project.id}"> Show Deadlines</button>
           </div>    
       </div>
       <div class="events raised-card" id="events-container-${this.project.id}">
         <h1 class="event-section-title">Events:</h1>
+      </div>
+      <div class="deadlines raised-card" id="deadlines-container-${this.project.id}">
+        <h1 class="deadline-section-title">Deadlines:</h1>
       </div>
       <div class="sprints raised-card" id="sprints-container-${this.project.id}">
         <h1 class="event-section-title">Sprints:</h1>
@@ -152,12 +178,21 @@ class ProjectView {
     this.eventsContainer = document.getElementById(`events-container-${this.project.id}`);
     this.eventContainer = document.getElementById(`events-container-${this.project.id}`);
 
+    this.addDeadlineButton = document.getElementById(`add-deadline-button-${this.project.id}`);
+    this.toggleDeadlinesButton = document.getElementById(`toggle-deadline-button-${this.project.id}`);
+    this.deadlinesContainer = document.getElementById(`deadlines-container-${this.project.id}`);
+    this.deadlineContainer = document.getElementById(`deadlines-container-${this.project.id}`);
+
     for (let i = 0; i < this.project.sprints.length; i++) {
       this.appendSprint(this.project.sprints[i]);
     }
 
     for (let j = 0; j < this.project.events.length; j++) {
       this.appendEvent(this.project.events[j]);
+    }
+
+    for (let k = 0; k < this.project.deadlines.length; k++) {
+      this.appendEvent(this.project.deadlines[k]);
     }
   }
 
@@ -192,6 +227,21 @@ class ProjectView {
     }
 
     this.showingEvents = !this.showingEvents;
+  }
+
+  toggleDeadlines() {
+    if (this.showingDeadlines) {
+      // Hide the sprints
+      this.toggleDeadlinesButton.innerText = "Show Deadlines";
+      this.deadlinesContainer.style.display = "none";
+    }
+    else {
+      // Show the events
+      this.toggleDeadlinesButton.innerText = "Hide Deadlines";
+      this.deadlines.style.display = "block";
+    }
+
+    this.showingDeadlines = !this.showingDeadlines;
   }
 
   /**
@@ -392,6 +442,95 @@ class ProjectView {
     }
   }
 
+  openAddDeadlineForm() {
+    if (this.addDeadlineForm !== null) {
+      return;
+    }
+
+    const formContainerElement = document.createElement("div");
+    formContainerElement.classList.add("deadline-view", "raised-card");
+    formContainerElement.id = `create-deadline-form-container-${this.project.id}`;
+    this.deadlineContainer.append(this.deadlinesContainer.firstChild, formContainerElement)
+
+    const defaultDeadline = {
+      id: `__NEW_MILESTONE_FORM_${this.project.id}`,
+      name: null,
+      description: null,
+      startDate: null,
+      endDate: null
+    };
+
+    this.addDeadlineForm = {
+      container: formContainerElement,
+      controller: new ProjectOrSprintEditor(
+          formContainerElement,
+          "New deadline details:",
+          defaultDeadline,
+          this.closeAddDeadlineForm.bind(this),
+          this.submitAddDeadlineForm.bind(this),
+          ProjectOrSprintEditor.makeProjectEventDatesValidator(this.project)
+      )
+    };
+
+    if (!this.showingDeadlines) {
+      this.toggleDeadlines();
+    }
+  }
+
+  /**
+   * Closes the add deadline form.
+   */
+  closeAddDeadlineForm() {
+    if (this.addDeadlineForm === null) {
+      return;
+    }
+
+    this.addDeadlineForm.controller.dispose();
+    this.deadlinesContainer.removeChild(this.addDeadlineForm.container);
+    this.addDeadlineForm = null;
+  }
+
+  /**
+   * Submits the add deadline form, checking if this task is not being done currently (loading status).
+   * @param deadline
+   * @returns {Promise<void>}
+   */
+  async submitAddDeadlineForm(deadline) {
+    if (this.addDeadlineLoadingStatus === LoadingStatus.Pending) {
+      return;
+    }
+
+    this.addDeadlineLoadingStatus = LoadingStatus.Pending;
+
+    try {
+      const res = await fetch(`api/v1/projects/${this.project.id}/deadlines`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(deadline)
+      });
+
+      if (!res.ok) {
+        await ErrorHandlerUtils.handleNetworkError(res, "creating project");
+      }
+
+      const newDeadline = await res.json();
+      this.deadlineUpdateCallback({
+        ...newDeadline,
+        startDate: DatetimeUtils.networkStringToLocalDate(newDeadline.startDate),
+        endDate: DatetimeUtils.networkStringToLocalDate(newDeadline.endDate)
+      });
+    }
+    catch (ex) {
+      this.addDeadlineLoadingStatus = LoadingStatus.Error;
+      if (ex instanceof PortfolioNetworkError) {
+        throw ex;
+      }
+      ErrorHandlerUtils.handleUnknownNetworkError(ex, "creating project");
+    }
+  }
+
   monthlyPlannerRedirect(projectId) {
     window.location.href = `/monthly-planner/${projectId}`
   }
@@ -402,8 +541,8 @@ class ProjectView {
     document.getElementById(`monthly-planner-redirect-button-${this.project.id}`).addEventListener("click", () => this.monthlyPlannerRedirect(this.project.id));
     this.toggleSprintsButton.addEventListener('click', this.toggleSprints.bind(this));
     this.addSprintButton.addEventListener('click', this.openAddSprintForm.bind(this));
-    this.toggleEventsButton.addEventListener('click', this.toggleEvents.bind(this));
-    this.addEventButton.addEventListener('click', this.openAddEventForm.bind(this));
+    this.toggleDeadlinesButton.addEventListener('click', this.toggleDeadlines.bind(this));
+    this.addDeadlineButton.addEventListener('click', this.openAddDeadlineForm.bind(this));
   }
 
   dispose() {
@@ -971,6 +1110,95 @@ class EventView {
   }
 }
 
+class DeadlineView {
+  expandedView = false;
+
+  constructor(containerElement, sprints, deadline, deleteCallback, editCallback) {
+    this.containerElement = containerElement;
+    this.deadline = deadline;
+    this.editCallback = editCallback;
+    this.deleteCallback = deleteCallback;
+    this.sprints = sprints;
+
+    this.constructView();
+    this.wireView();
+  }
+
+  /**
+   * Adds populated HTML to deadlineView.
+   */
+  constructView() {
+    this.containerElement.innerHTML = `
+    <div class="deadline-title">
+        <span id="deadline-title-text-${this.deadline.deadlineId}" style="font-style: italic;"></span> | <span id="start-date-${this.deadline.deadlineId}"></span> - <span id="end-date-${this.deadline.deadlineId}"></span>
+
+        <span class="crud">
+            <button class="button deadline-controls" id="deadline-button-edit-${this.deadline.deadlineId}" data-privilege="teacher">Edit</button>
+            <button class="button deadline-controls" id="deadline-button-delete-${this.deadline.deadlineId}" data-privilege="teacher">Delete</button>
+            <button class="button toggle-deadline-details" id="toggle-deadline-details-${this.deadline.deadlineId}">+</button>
+        </span>
+    </div>
+    <div class="deadline-details" id="deadline-details-${this.deadline.deadlineId}">
+        <div class="deadline-description" id="deadline-description-${this.deadline.deadlineId}"></div>
+        <div class="deadline-sprints" id="deadline-sprints-${this.deadline.deadlineId}"></div>
+    </div>
+    
+    `;
+
+    this.toggleButton = document.getElementById(`toggle-deadline-details-${this.deadline.deadlineId}`);
+    this.description = document.getElementById(`deadline-description-${this.deadline.deadlineId}`);
+    this.details = document.getElementById(`deadline-details-${this.deadline.deadlineId}`);
+    this.deadlineSprints = document.getElementById(`deadline-sprints-${this.deadline.deadlineId}`);
+
+    document.getElementById(`deadline-title-text-${this.deadline.deadlineId}`).innerText = this.deadline.name;
+    this.description.innerText = "Description: " + this.deadline.description;
+    this.deadlineSprints.innerHTML = this.getSprints();
+    document.getElementById(`start-date-${this.deadline.deadlineId}`).innerText = DatetimeUtils.localToUserDMY(this.deadline.startDate);
+    const displayedDate = new Date(this.deadline.endDate.valueOf());
+    displayedDate.setDate(displayedDate.getDate() - 1);
+    document.getElementById(`end-date-${this.deadline.deadlineId}`).innerText = DatetimeUtils.localToUserDMY(displayedDate);
+  }
+
+  /**
+   * Toggles expanded view and button for deadlines.
+   */
+  toggleExpandedView() {
+    if (this.expandedView) {
+      this.details.style.display = "none";
+      this.toggleButton.innerText = "+";
+    }
+    else {
+      this.details.style.display = "block";
+      this.toggleButton.innerText = "-";
+    }
+
+    this.expandedView = !this.expandedView;
+  }
+
+  wireView() {
+    document.getElementById(`deadline-button-edit-${this.deadline.deadlineId}`).addEventListener('click', () => this.editCallback());
+    document.getElementById(`deadline-button-delete-${this.deadline.deadlineId}`).addEventListener("click", () => this.deleteCallback());
+
+    this.toggleButton.addEventListener('click', this.toggleExpandedView.bind(this));
+  }
+
+  getSprints() {
+    let html = "<label>Sprints in progress during this deadline: </label>";
+    this.sprints.forEach(sprint => {
+      if (this.deadline.startDate >= sprint.startDate && this.deadline.startDate <= sprint.endDate || this.deadline.endDate >= sprint.startDate && this.deadline.endDate <= sprint.endDate) {
+        html += `<div class="deadline-sprint-details">   - <span>${sprint.name}: </span><span>${DatetimeUtils.localToUserDMY(sprint.startDate)}</span> - <span>${DatetimeUtils.localToUserDMY(sprint.endDate)}</span>`;
+      }
+    });
+    if (html === "<label>Sprints in progress during this deadline: </label>") {
+      html += "<span>No sprints are overlapping with this deadline</span>"
+    }
+    return html;
+  }
+
+  dispose() {
+
+  }
+}
 
 /**
  * Handles switching between the editor and view screens.
@@ -1130,7 +1358,8 @@ class Project {
         ...newProject,
         id: this.project.id,
         sprints: this.project.sprints,
-        events: this.project.events
+        events: this.project.events,
+        deadlines: this.project.deadlines
       };
       this.showViewer();
     } catch (ex) {
@@ -1500,6 +1729,141 @@ class Event {
   }
 }
 
+class Deadline {
+  constructor(containerElement, data, project, deleteCallback, deadlineUpdateSavedCallback) {
+    this.containerElement = containerElement;
+    this.project = project;
+    this.deadline = data;
+    this.deadlineUpdateSavedCallback = deadlineUpdateSavedCallback;
+    this.deleteCallback = deleteCallback;
+    this.updatedeadlineLoadingStatus = LoadingStatus.NotYetAttempted;
+
+    this.currentView = null;
+    this.showViewer();
+  }
+
+  /**
+   * Updates deadline according to newValue attributes.
+   * @param newValue
+   */
+  async updateDeadline(newValue) {
+    if (this.updatedeadlineLoadingStatus === LoadingStatus.Pending) {
+      return;
+    }
+    else if (
+        newValue.name === this.deadline.name
+        && newValue.description === this.deadline.description
+        && DatetimeUtils.areEqual(newValue.startDate, this.deadline.startDate)
+        && DatetimeUtils.areEqual(newValue.endDate, this.deadline.endDate)
+    ) {
+      // Nothing has changed
+
+      const showingSprints = this.currentView.showingSprints;
+
+      this.showViewer();
+
+      if (showingSprints) {
+        this.currentView.toggleSprints();
+      }
+
+      return;
+    }
+
+    this.updatedeadlineLoadingStatus = LoadingStatus.Pending;
+
+    try {
+      const response = await fetch(`api/v1/deadlines/${this.deadline.deadlineId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(newValue)
+      })
+
+      if (!response.ok) {
+        await ErrorHandlerUtils.handleNetworkError(response, "update deadline");
+      }
+
+      const newDeadline = await response.json();
+      this.deadlineUpdateSavedCallback({
+        ...newDeadline,
+        startDate: DatetimeUtils.networkStringToLocalDate(newDeadline.startDate),
+        endDate: DatetimeUtils.networkStringToLocalDate(newDeadline.endDate)
+      });
+    }
+    catch (ex) {
+      this.updatedeadlineLoadingStatus = LoadingStatus.Error;
+
+      if (ex instanceof PortfolioNetworkError) {
+        throw ex;
+      }
+
+      ErrorHandlerUtils.handleUnknownNetworkError(ex, "update deadline");
+    }
+  }
+
+  /**
+   * Shows deadline editing view.
+   */
+  showEditor() {
+    this.currentView?.dispose();
+    this.currentView = new ProjectOrSprintEditor(
+        this.containerElement,
+        "Edit deadline details:",
+        this.deadline,
+        this.showViewer.bind(this),
+        this.updateDeadline().bind(this),
+        ProjectOrSprintEditor.makeProjectEventDatesValidator(this.project)
+    );
+  }
+
+  /**
+   * Refreshes view, disposing of the previous view and reloading it.
+   */
+  showViewer() {
+    this.currentView?.dispose();
+    this.currentView = new DeadlineView(this.containerElement, this.project.sprints, this.deadline, this.deletedeadline.bind(this), this.showEditor.bind(this));
+  }
+
+  /**
+   * Gets the sprint to explicitly destroy itself prior
+   */
+  dispose() {
+    this.currentView.dispose();
+  }
+
+  /**
+   * Handles deletion of sprint when making DELETE request.
+   */
+  async deleteDeadline() {
+    if (this.deleteLoadingStatus === LoadingStatus.Pending) {
+      return;
+    }
+
+    this.deleteLoadingStatus = LoadingStatus.Pending;
+
+    try {
+      const response = await fetch(`api/v1/deadlines/${this.deadline.deadlineId}`, {
+        method: 'DELETE'
+      })
+      if (!response.ok) {
+        await ErrorHandlerUtils.handleNetworkError(response, "delete deadline");
+      }
+
+      this.deleteLoadingStatus = LoadingStatus.Done;
+      this.deleteCallback(this.deadline.deadlineId);
+    } catch (ex) {
+      this.deleteLoadingStatus = LoadingStatus.Error;
+
+      if (ex instanceof PortfolioNetworkError) {
+        throw ex;
+      }
+
+      ErrorHandlerUtils.handleUnknownNetworkError(ex, "delete deadline");
+    }
+  }
+}
+
 /**
  * Manage the projects (creation and deletion and loading)
  */
@@ -1633,6 +1997,11 @@ class Application {
       startDate: DatetimeUtils.networkStringToLocalDate(event.startDate),
       endDate: DatetimeUtils.networkStringToLocalDate(event.endDate)
     }));
+    projectData.deadlines = projectData.deadlines.map(deadline => ({
+      ...deadline,
+      startDate: DatetimeUtils.networkStringToLocalDate(deadline.startDate),
+      endDate: DatetimeUtils.networkStringToLocalDate(deadline.endDate)
+    }));
 
     // Construct base HTML
     const projectElement = document.createElement("div");
@@ -1689,6 +2058,9 @@ class Application {
           }
           if (project.currentView.toggleEvents) {
             project.currentView.toggleEvents();
+          }
+          if (project.currentView.toggleDeadlines) {
+            project.currentView.toggleDeadlines();
           }
         })
       }
