@@ -10,7 +10,7 @@
 }
 
 a.buttonLink[disabled='disabled'] {
-    display: none;
+    visibility: hidden;
 }
 
 a.buttonLink {
@@ -26,6 +26,10 @@ a.buttonLink {
 
 a.buttonLink:hover {
     background-color: #0332D1;
+}
+
+#pageNumber {
+    text-align: center;
 }
 
 .add-button {
