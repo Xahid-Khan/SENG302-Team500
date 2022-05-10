@@ -42,7 +42,8 @@
         <div class="account">
             <div class="dropdown">
                 <button class="dropbutton"><div class="username" th:text="${username}"></div><img
-                        src="https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png"
+                        th:src="'http://localhost:8080/userImage/'+${userId}"
+                        onerror="this.onerror=null;this.src='https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png'"
                         width="46" height="46" alt="Placeholder Profile Photo">
                 </button>
                 <div class="dropdown-content">

@@ -72,7 +72,7 @@ public class UploadPhotoService {
                     xCoordinates - (squareSize/2),
                     yCoordinates - (squareSize/2),
                     squareSize,
-                    squareSize
+                    squareSize - (squareSize/4)
             );
         }
         else {

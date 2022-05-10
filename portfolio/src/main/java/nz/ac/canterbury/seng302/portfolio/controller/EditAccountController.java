@@ -51,6 +51,7 @@ public class EditAccountController {
         //Prefill the form with the user's details
         model.addAttribute("username", userDetails.getUsername());
         model.addAttribute("user", userDetails);
+        model.addAttribute("userId", userId);
 
         return "edit_account";
 
@@ -69,14 +70,15 @@ public class EditAccountController {
     @PostMapping(value="/edit_account")
     public String postPage(@ModelAttribute @Validated(EditedUserValidation.class) User user, BindingResult bindingResult,
                            Model model, @AuthenticationPrincipal AuthState principal, @RequestParam("image") MultipartFile file) {
-
+        int userId = -1;
         if (bindingResult.hasErrors()) {
             return "edit_account";
         }
         model.addAttribute("user", user);
         try {
-            Integer userId = authStateService.getId(principal);
-            if (file.getSize() > 10000 && file.getSize() < 5242000) {
+            userId = authStateService.getId(principal);
+            model.addAttribute("userId", userId);
+            if (file.getSize() > 1000 && file.getSize() < 5242000) {
                 byte[] uploadImage = uploadPhotoService.imageProcessing(file);
                 String fileType = uploadPhotoService.getFileType();
 
@@ -84,6 +86,7 @@ public class EditAccountController {
 
             } else {
                 model.addAttribute("imageError", "File size must be more than 500KB and less than 5MB.");
+                model.addAttribute("userId", userId);
                 return "edit_account";
             }
 
@@ -93,7 +96,7 @@ public class EditAccountController {
             model.addAttribute("registerMessage", "Error connecting to Identity Provider...");
             return "edit_account";
         }
-
+        model.addAttribute("user", user);
         return "redirect:/my_account";
     }
 

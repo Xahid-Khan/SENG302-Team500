@@ -23,7 +23,8 @@
         <div class="account">
             <div class="dropdown">
                 <button class="dropbutton"><div class="username" th:text="${username}"></div><img
-                        src="https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png"
+                        th:src="'http://localhost:8080/userImage/'+${userId}"
+                        onerror="this.onerror=null;this.src='https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png'"
                         width="46" height="46" alt="Placeholder Profile Photo">
                 </button>
                 <div class="dropdown-content">
@@ -56,7 +57,8 @@
                         <!--    Submits a populated UserDTO to endpoint register -->
                         <div class="image-container" style="padding-left:15%">
                             <button onclick="openPopupForm()" id="userPhotoButton" type="button" style="padding:0; width:150px; height:150px"}>
-                                <img src="https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png"
+                                <img th:src="'http://localhost:8080/userImage/'+${userId}"
+                                     onerror="this.onerror=null;this.src='https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png'"
                                      width="150" height="150" alt="No Photo">
                             </button>
                         </div>
@@ -127,7 +129,7 @@
     </div>
 </div>
 
-<script type="text/javascript" th:src="@{/scripts/popup_form.js}"></script>
+<script type="text/javascript" th:src="@{scripts/popup_form.js}"></script>
 </body>
 <style>
     input, textarea {
