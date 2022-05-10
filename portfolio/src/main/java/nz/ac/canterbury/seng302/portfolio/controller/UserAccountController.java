@@ -8,6 +8,7 @@ import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -20,9 +21,9 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.time.temporal.ChronoUnit;
-
-import static java.time.temporal.ChronoUnit.DAYS;
 
 
 @Controller
@@ -40,7 +41,6 @@ public class UserAccountController {
     @Autowired
     UserMapper mapper;
 
-
     /**
      * The register client service. Gives the user the edit account page
      * with their current information prefilled.
@@ -57,7 +57,7 @@ public class UserAccountController {
         String dateString = getFormattedDate(userDetails.getCreated());
 
         //Prefill the form with the user's details
-        model.addAttribute("username", userDetails.getUsername());
+        model.addAttribute("delegate", this);
         model.addAttribute("user", userDetails);
         model.addAttribute("registration_date", dateString);
 
@@ -66,12 +66,16 @@ public class UserAccountController {
     }
 
     @GetMapping(value="/account/{id}")
-    public String getUserAccount(@PathVariable int id, Model model, UserResponse user){
-        var userById = userAccountService.getUserById(id);
+    public String getUserAccount(@PathVariable int id, Model model){
 
-        User currentDetails= mapper.UserResponseToUserDTO(userById);
-        model.addAttribute("user",currentDetails);
-        model.addAttribute("registration_date", currentDetails.created());
+        UserResponse userDetails = userAccountService.getUserById(id);
+
+        String dateString = getFormattedDate(userDetails.getCreated());
+
+        //Prefill the form with the user's details
+        model.addAttribute("delegate", this);
+        model.addAttribute("user", userDetails);
+        model.addAttribute("registration_date", dateString);
 
         return "account_details";
     }
@@ -97,4 +101,19 @@ public class UserAccountController {
                 ")";
     }
 
+    /**
+     * This function is used by Thymeleaf whenever a list of roles must be displayed to the user.
+     * It converts the roles into a human readable list, seperated by commas if need be.
+     *
+     * @param roles a list of roles of the user
+     * @return      the human friendly readable output of the roles
+     */
+    public String formatUserRoles(List<UserRole> roles) {
+        return roles.stream().map(role -> switch (role) {
+            case STUDENT -> "Student";
+            case TEACHER -> "Teacher";
+            case COURSE_ADMINISTRATOR -> "Course Administrator";
+            default -> "Student";
+        }).collect(Collectors.joining(", "));
+    }
 }

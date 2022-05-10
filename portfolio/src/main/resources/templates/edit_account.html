@@ -3,11 +3,11 @@
 <head>
     <title>My Account</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <link rel="stylesheet" th:href="@{/styles/common.css}"/>
-    <link rel="stylesheet" th:href="@{/styles/pages/account_details.css}"/>
-    <link rel="stylesheet" th:href="@{/styles/pages/project_details.css}">
-    <link rel="stylesheet" th:href="@{/styles/navbar.css}"/>
-
+    <link rel="stylesheet" th:href="@{styles/common.css}"/>
+    <link rel="stylesheet" th:href="@{styles/pages/account_details.css}"/>
+    <link rel="stylesheet" th:href="@{styles/pages/project_details.css}">
+    <link rel="stylesheet" th:href="@{styles/navbar.css}"/>
+    <link rel="stylesheet" th:href="@{styles/pages/upload_popup.css}"/>
 
 </head>
 <body>
@@ -34,14 +34,39 @@
             </div>
         </div>
     </div>
-<div class="raised-card card-padding">
+<div class="raised-card card-padding" style="display: flex;justify-content: center;">
     <div class="container">
         <div class="name-container">
             <div class="left-padding">
-                <form id='form' action="#" th:action="@{/edit_account}" th:object="${user}" method="post">
-                    <h1 class="title">Edit Account</h1>
+                <form id='form' action="#" th:action="@{edit_account}" th:object="${user}" method="post" enctype="multipart/form-data">
+                    <h1 class="title" style="color:black; display:flex; justify-content:center;">Edit Account</h1>
 
                     <!--    Submits a populated UserDTO to endpoint register -->
+
+                    <div class="container">
+                        <div class="popupForm", id="popupForm">
+                            <div class="raised-card card-padding">
+                                <h1>Upload profile Photo</h1>
+                                <input id="newUploadedImage" type="file" name="image" accept="image/*">
+                                <button class="button" type="button" onclick="closePopupForm()" style="float:left; margin-top:20px">Upload Image</button>
+                                <button class="button" type="button" onclick="closePopupForm()" style="float:right; margin-top:20px">Close</button>
+                            </div>
+                        </div>
+
+                        <!--    Submits a populated UserDTO to endpoint register -->
+                        <div class="image-container" style="padding-left:15%">
+                            <button onclick="openPopupForm()" id="userPhotoButton" type="button" style="padding:0; width:150px; height:150px"}>
+                                <img src="https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png"
+                                     width="150" height="150" alt="No Photo">
+                            </button>
+                        </div>
+                        <th:block th:if="${#imageError}">
+                            <div class="form-error" id="errorMessageImage"><span th:text="${imageError}" aria-valuenow="test"></span></div>
+                        </th:block>
+<!--                        <div id="errorMessageImage" value="">-->
+<!--                        </div>-->
+                    </div>
+
 
                     <div class="form-row">
                         <label th:for="email">Email</label>
@@ -102,6 +127,7 @@
     </div>
 </div>
 
+<script type="text/javascript" th:src="@{/scripts/popup_form.js}"></script>
 </body>
 <style>
     input, textarea {
