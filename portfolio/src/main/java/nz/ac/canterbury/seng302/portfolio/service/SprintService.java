@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.NoSuchElementException;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import nz.ac.canterbury.seng302.portfolio.mapping.SprintMapper;
 import nz.ac.canterbury.seng302.portfolio.model.contract.BaseSprintContract;
@@ -25,6 +27,9 @@ public class SprintService {
 
     @Autowired
     private SprintMapper sprintMapper;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     /**
      * Retrieve the sprint with the given ID.
@@ -88,5 +93,10 @@ public class SprintService {
         sprintEntity.setEndDate(sprint.endDate());
 
         sprintRepository.save(sprintEntity);
+
+        // Flush and then detach the sprint to force orderNumber to be recalculated.
+        // Thanks to: https://stackoverflow.com/a/26796980
+        entityManager.flush();
+        entityManager.clear();  // TODO: This clears *everything* from the cache. Look at options to only clear this sprint.
     }
 }
