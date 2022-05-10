@@ -22,7 +22,7 @@ public record User(
 
     @Pattern(regexp = "^(?!.*  )(.*)", message = "Password cannot contain more than one whitespace in a row", groups = RegisteredUserValidation.class)
     @NotBlank(message = "Password is required", groups = RegisteredUserValidation.class)
-    @Size(min = 8, max = 150, message = "Password must be at least 8 characters long and no longer than 150 characters", groups = RegisteredUserValidation.class)
+    @Size(min = 8, max = 512, message = "Password must be at least 8 characters long and no longer than 512 characters", groups = RegisteredUserValidation.class)
     String password,
 
     @Pattern(regexp = "^(?!.*  )([\\p{L} /-]*)", message = "Name must only contain alphabetical characters, or special characters '/' and '-'. It must also not contain more than one whitespace between characters", groups = RegisteredUserValidation.class)
