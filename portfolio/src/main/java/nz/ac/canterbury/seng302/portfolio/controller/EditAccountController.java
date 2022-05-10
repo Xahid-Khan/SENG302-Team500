@@ -90,11 +90,10 @@ public class EditAccountController {
             registerClientService.updateDetails(user, userId);
 
         } catch (StatusRuntimeException e){
-            model.addAttribute("registerMessage", "Error connecting to Identity Provider...");
+            model.addAttribute("error", "Error connecting to Identity Provider...");
             return "edit_account";
         }
-
-        return "redirect:my_account";
+        return "redirect:my_account?edited=details";
     }
 
 }
