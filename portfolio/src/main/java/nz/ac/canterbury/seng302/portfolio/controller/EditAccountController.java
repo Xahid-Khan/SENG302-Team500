@@ -72,7 +72,7 @@ public class EditAccountController {
                            Model model, @AuthenticationPrincipal AuthState principal, @RequestParam("image") MultipartFile file) {
         int userId;
         if (bindingResult.hasErrors()) {
-            return "edit_account";
+            return "redirect:'edit_account";
         }
         model.addAttribute("user", user);
         try {
@@ -86,14 +86,14 @@ public class EditAccountController {
 
             } else {
                 model.addAttribute("imageError", "File size must be more than 500KB and less than 5MB.");
-                return "redirect:/edit_account";
+                return "redirect:edit_account";
             }
 
             registerClientService.updateDetails(user, userId);
 
         } catch (StatusRuntimeException e){
             model.addAttribute("registerMessage", "Error connecting to Identity Provider...");
-            return "edit_account";
+            return "redirect:edit_account";
         }
         model.addAttribute("user", user);
         return "redirect:/my_account";
