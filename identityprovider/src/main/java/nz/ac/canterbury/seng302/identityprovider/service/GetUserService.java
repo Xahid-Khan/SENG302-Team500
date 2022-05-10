@@ -78,7 +78,7 @@ public class GetUserService {
       List<UserModel> resultList;
       if (orderByField.equals("roles")) {
         // Receive IDs in order by roles
-        var query = session.createQuery("SELECT u.id FROM UserModel u JOIN u.roles r GROUP BY u.id ORDER BY string_agg((case when r = ?1 then 'student' else (case when r=?2 then 'teacher' else 'course_administrator' end) end), ',') " + ((ascending) ? "ASC" : "DESC"), Integer.class)
+        var query = session.createQuery("SELECT u.id FROM UserModel u JOIN u.roles r GROUP BY u.id ORDER BY group_concat((case when r = ?1 then 'student' else (case when r=?2 then 'teacher' else 'course_administrator' end) end), ',') " + ((ascending) ? "ASC" : "DESC"), Integer.class)
             .setParameter(1, UserRole.STUDENT)
             .setParameter(2, UserRole.TEACHER)
             .setFirstResult(offset)
