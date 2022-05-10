@@ -40,20 +40,28 @@ class ErrorHandlerUtils {
  */
 class ProjectView {
   showingSprints = false;
+  showingEvents = false;
+
+  addEventForm = null;
+  addEventLoadingStatus = LoadingStatus.NotYetAttempted
 
   addSprintForm = null;
   addSprintLoadingStatus = LoadingStatus.NotYetAttempted;
 
-  constructor(containerElement, project, editCallback, deleteCallback, sprintDeleteCallback, sprintUpdateCallback) {
+  constructor(containerElement, project, editCallback, deleteCallback, sprintDeleteCallback, sprintUpdateCallback, eventDeleteCallback, eventUpdateCallback) {
     console.log("project", project)
     this.containerElement = containerElement;
     this.project = project;
     this.sprintContainer = null;
     this.sprints = new Map();
+    this.eventContainer = null;
+    this.events = new Map();
     this.editCallback = editCallback;
     this.deleteCallback = deleteCallback;
     this.sprintDeleteCallback = sprintDeleteCallback;
     this.sprintUpdateCallback = sprintUpdateCallback;
+    this.eventDeleteCallback = eventDeleteCallback;
+    this.eventUpdateCallback = eventUpdateCallback;
 
     this.constructAndPopulateView();
     this.wireView();
@@ -76,7 +84,17 @@ class ProjectView {
 
     console.log("Sprint bound");
 
+  }
 
+  appendEvent(eventData) {
+    const eventElement = document.createElement("div")
+    eventElement.classList.add("event-view", "raised-card");
+    eventElement.id = `event-view-${eventElement.id}`;
+    this.eventContainer.appendChild(eventElement);
+
+    console.log("Binding event");
+
+    this.events.set(eventData.eventId, new Event(eventElement, eventData, this.project, this.eventDeleteCallback, this.eventUpdateCallback));
   }
 
   /**
@@ -102,8 +120,13 @@ class ProjectView {
               <button class="button add-sprint" id="add-sprint-button-${this.project.id}" data-privilege="teacher"> Add Sprint</button>
               <button class="button toggle-sprints" id="toggle-sprint-button-${this.project.id}"> Show Sprints</button>
           </div>
+          <div class="event-view-controls">
+              <button class="button add-event" id="add-event-button-${this.project.id}" data-privilege="teacher"> Add Event</button>
+              <button class="button toggle-events" id="toggle-event-button-${this.project.id}"> Show Events</button>
+          </div>    
       </div>
       <div class="sprints" id="sprints-container-${this.project.id}"></div>
+      <div class="events" id="events-container-${this.project.id}"></div>
     `;
 
     document.getElementById(`project-title-text-${this.project.id}`).innerText = this.project.name;
@@ -118,8 +141,17 @@ class ProjectView {
     this.sprintsContainer = document.getElementById(`sprints-container-${this.project.id}`);
     this.sprintContainer = document.getElementById(`sprints-container-${this.project.id}`);
 
+    this.addEventButton = document.getElementById(`add-event-button-${this.project.id}`);
+    this.toggleEventsButton = document.getElementById(`toggle-event-button-${this.project.id}`);
+    this.eventsContainer = document.getElementById(`events-container-${this.project.id}`);
+    this.eventContainer = document.getElementById(`events-container-${this.project.id}`);
+
     for (let i = 0; i < this.project.sprints.length; i++) {
       this.appendSprint(this.project.sprints[i]);
+    }
+
+    for (let j = 0; j < this.project.events.length; j++) {
+      this.appendEvent(this.project.events[j]);
     }
   }
 
@@ -141,6 +173,23 @@ class ProjectView {
     }
 
     this.showingSprints = !this.showingSprints;
+  }
+
+  toggleEvents() {
+    if (this.showingEvents) {
+      // Hide the sprints
+      this.addEventButton.style.display = "none";
+      this.toggleEventsButton.innerText = "Show Events";
+      this.eventsContainer.style.display = "none";
+    }
+    else {
+      // Show the sprints
+      this.addEventButton.style.display = "inline";
+      this.toggleEventsButton.innerText = "Hide Events";
+      this.eventContainer.style.display = "block";
+    }
+
+    this.showingEvents = !this.showingEvents;
   }
 
   /**
@@ -242,6 +291,102 @@ class ProjectView {
     }
   }
 
+  openAddEventForm() {
+    if (this.addEventForm !== null) {
+      return;
+    }
+
+    const formContainerElement = document.createElement("div");
+    formContainerElement.classList.add("event-view", "raised-card");
+    formContainerElement.id = `create-event-form-container-${this.project.id}`;
+    this.eventsContainer.insertBefore(formContainerElement, this.eventsContainer.firstChild);
+
+    let defaultName = 1;
+    let defaultStartDate = new Date(this.project.startDate.valueOf());
+
+    if (this.project.events.length !== 0) {
+      defaultName = this.project.events[(this.project.events.length - 1)].orderNumber + 1;
+      defaultStartDate = new Date(this.project.events[(this.project.events.length - 1)].endDate.valueOf());
+    }
+
+    const defaultEndDate = new Date(defaultStartDate.valueOf());
+    defaultEndDate.setDate(defaultEndDate.getDate() + 22);
+
+    const defaultEvent = {
+      id: `__NEW_EVENT_FORM_${this.project.id}`,
+      name: `Event ${defaultName}`,
+      description: null,
+      startDate: defaultStartDate,
+      endDate: defaultEndDate
+    };
+
+    this.addEventForm = {
+      container: formContainerElement,
+      controller: new ProjectOrSprintEditor(
+          formContainerElement,
+          "New event details:",
+          defaultEvent,
+          this.closeAddEventForm.bind(this),
+          this.submitAddEventForm.bind(this),
+          ProjectOrSprintEditor.makeProjectSprintDatesValidator(this.project, null)
+      )
+    };
+  }
+
+  /**
+   * Closes the add event form.
+   */
+  closeAddEventForm() {
+    if (this.addEventForm === null) {
+      return;
+    }
+
+    this.addEventForm.controller.dispose();
+    this.eventsContainer.removeChild(this.addEventForm.container);
+    this.addEventForm = null;
+  }
+
+  /**
+   * Submits the add event form, checking if this task is not being done currently (loading status).
+   * @param event
+   * @returns {Promise<void>}
+   */
+  async submitAddEventForm(event) {
+    if (this.addEventLoadingStatus === LoadingStatus.Pending) {
+      return;
+    }
+
+    this.addEventLoadingStatus = LoadingStatus.Pending;
+
+    try {
+      const res = await fetch(`api/v1/projects/${this.project.id}/events`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(event)
+      });
+
+      if (!res.ok) {
+        await ErrorHandlerUtils.handleNetworkError(res, "creating project");
+      }
+
+      const newEvent = await res.json();
+      this.eventUpdateCallback({
+        ...newEvent,
+        startDate: DatetimeUtils.networkStringToLocalDate(newEvent.startDate),
+        endDate: DatetimeUtils.networkStringToLocalDate(newEvent.endDate)
+      });
+    }
+    catch (ex) {
+      this.addEventLoadingStatus = LoadingStatus.Error;
+      if (ex instanceof PortfolioNetworkError) {
+        throw ex;
+      }
+      ErrorHandlerUtils.handleUnknownNetworkError(ex, "creating project");
+    }
+  }
+
   monthlyPlannerRedirect(projectId) {
     window.location.href = `/monthly-planner/${projectId}`
   }
@@ -252,6 +397,8 @@ class ProjectView {
     document.getElementById(`monthly-planner-redirect-button-${this.project.id}`).addEventListener("click", () => this.monthlyPlannerRedirect(this.project.id));
     this.toggleSprintsButton.addEventListener('click', this.toggleSprints.bind(this));
     this.addSprintButton.addEventListener('click', this.openAddSprintForm.bind(this));
+    this.toggleEventsButton.addEventListener('click', this.toggleEvents.bind(this));
+    this.addEventButton.addEventListener('click', this.openAddEventForm.bind(this));
   }
 
   dispose() {
@@ -769,7 +916,8 @@ class Project {
       this.project = {
         ...newProject,
         id: this.project.id,
-        sprints: this.project.sprints
+        sprints: this.project.sprints,
+        events: this.project.events
       };
       this.showViewer();
     } catch (ex) {
@@ -967,10 +1115,135 @@ class Sprint {
       ErrorHandlerUtils.handleUnknownNetworkError(ex, "delete sprint");
     }
   }
-
-
 }
 
+
+class Event {
+  constructor(containerElement, data, project, deleteCallback, eventUpdateSavedCallback) {
+    this.containerElement = containerElement;
+    this.project = project;
+    this.event = data;
+    this.eventUpdateSavedCallback = eventUpdateSavedCallback;
+    this.deleteCallback = deleteCallback;
+    this.updateEventLoadingStatus = LoadingStatus.NotYetAttempted;
+
+    this.currentView = null;
+    this.showViewer();
+  }
+
+  /**
+   * Updates event according to newValue attributes.
+   * @param newValue
+   */
+  async updateEvent(newValue) {
+    if (this.updateEventLoadingStatus === LoadingStatus.Pending) {
+      return;
+    }
+    else if (
+        newValue.name === this.event.name
+        && newValue.description === this.event.description
+        && DatetimeUtils.areEqual(newValue.startDate, this.event.startDate)
+        && DatetimeUtils.areEqual(newValue.endDate, this.event.endDate)
+    ) {
+      // Nothing has changed
+      this.showViewer();
+      return;
+    }
+
+    this.updateEventLoadingStatus = LoadingStatus.Pending;
+
+    try {
+      const response = await fetch(`api/v1/events/${this.event.eventId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(newValue)
+      })
+
+      if (!response.ok) {
+        await ErrorHandlerUtils.handleNetworkError(response, "update event");
+      }
+
+      const newEvent = await response.json();
+      this.eventUpdateSavedCallback({
+        ...newEvent,
+        startDate: DatetimeUtils.networkStringToLocalDate(newEvent.startDate),
+        endDate: DatetimeUtils.networkStringToLocalDate(newEvent.endDate)
+      });
+    }
+    catch (ex) {
+      this.updateEventLoadingStatus = LoadingStatus.Error;
+
+      if (ex instanceof PortfolioNetworkError) {
+        throw ex;
+      }
+
+      ErrorHandlerUtils.handleUnknownNetworkError(ex, "update event");
+    }
+  }
+
+  /**
+   * Shows event editing view.
+   */
+  showEditor() {
+    this.currentView?.dispose();
+    this.currentView = new ProjectOrSprintEditor(
+        this.containerElement,
+        "Edit event details:",
+        this.event,
+        this.showViewer.bind(this),
+        this.updateEvent().bind(this),
+        ProjectOrSprintEditor.makeProjectSprintDatesValidator(this.project, this.event.eventId)
+    );
+  }
+
+  /**
+   * Refreshes view, disposing of the previous view and reloading it.
+   */
+  showViewer() {
+    this.currentView?.dispose();
+    this.currentView = new EventView(this.containerElement, this.sprint, this.deleteEvent.bind(this), this.showEditor.bind(this));
+  }
+
+  /**
+   * Gets the sprint to explicitly destroy itself prior
+   */
+  dispose() {
+    this.currentView.dispose();
+  }
+
+  /**
+   * Handles deletion of sprint when making DELETE request.
+   */
+  async deleteEvent() {
+    if (this.deleteLoadingStatus === LoadingStatus.Pending) {
+      return;
+    }
+
+    this.deleteLoadingStatus = LoadingStatus.Pending;
+
+    try {
+      const response = await fetch(`api/v1/events/${this.event.sprintId}`, {
+        method: 'DELETE'
+      })
+      if (!response.ok) {
+        await ErrorHandlerUtils.handleNetworkError(response, "delete event");
+      }
+
+      this.deleteLoadingStatus = LoadingStatus.Done;
+      this.deleteCallback(this.event.eventId);
+    } catch (ex) {
+      this.deleteLoadingStatus = LoadingStatus.Error;
+
+      if (ex instanceof PortfolioNetworkError) {
+        throw ex;
+      }
+
+      ErrorHandlerUtils.handleUnknownNetworkError(ex, "delete event");
+    }
+  }
+}
 
 /**
  * Manage the projects (creation and deletion and loading)
@@ -1100,6 +1373,11 @@ class Application {
       startDate: DatetimeUtils.networkStringToLocalDate(sprint.startDate),
       endDate: DatetimeUtils.networkStringToLocalDate(sprint.endDate)
     }));
+    projectData.events = projectData.events.map(event => ({
+      ...event,
+      startDate: DatetimeUtils.networkStringToLocalDate(event.startDate),
+      endDate: DatetimeUtils.networkStringToLocalDate(event.endDate)
+    }));
 
     // Construct base HTML
     const projectElement = document.createElement("div");
@@ -1153,6 +1431,9 @@ class Application {
         this.projects.forEach((project) => {
           if (project.currentView.toggleSprints) {
             project.currentView.toggleSprints();
+          }
+          if (project.currentView.toggleEvents) {
+            project.currentView.toggleEvents();
           }
         })
       }      this.projectsLoadingState = LoadingStatus.Done;

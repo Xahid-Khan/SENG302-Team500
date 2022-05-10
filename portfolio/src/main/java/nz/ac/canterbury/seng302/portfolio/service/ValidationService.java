@@ -1,9 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
-import nz.ac.canterbury.seng302.portfolio.model.contract.BaseProjectContract;
-import nz.ac.canterbury.seng302.portfolio.model.contract.BaseSprintContract;
-import nz.ac.canterbury.seng302.portfolio.model.contract.ProjectContract;
-import nz.ac.canterbury.seng302.portfolio.model.contract.SprintContract;
+import nz.ac.canterbury.seng302.portfolio.model.contract.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +19,9 @@ public class ValidationService {
 
     @Autowired
     private SprintService sprintService;
+
+    @Autowired
+    private EventService eventService;
 
     public String checkAddProject(BaseProjectContract projectContract) {
 
@@ -97,6 +97,25 @@ public class ValidationService {
     }
 
     /**
+     * Checks sprint inputs when a event is added.
+     */
+    public String checkAddEvent(String projectId, BaseEventContract eventContract) {
+        try {
+            ProjectContract project = projectService.getById(projectId);
+            String response = checkEventDetails(project, eventContract.startDate(), eventContract.endDate());
+            if (!response.equals("Okay")) {
+                return response;
+            }
+        } catch (NoSuchElementException error) {
+            return "Project ID does not exist";
+        }
+        return checkBaseFields("Event",
+                eventContract.name(),
+                eventContract.startDate(),
+                eventContract.endDate());
+    }
+
+    /**
      * Checks when a sprint has been updated.
      */
     public String checkUpdateSprint(String sprintId, BaseSprintContract sprintContract) {
@@ -132,6 +151,41 @@ public class ValidationService {
     }
 
     /**
+     * Checks when a event has been updated.
+     */
+    public String checkUpdateEvent(String eventId, BaseEventContract eventContract) {
+
+        try {
+            EventContract event = eventService.getEvent(eventId);
+            try {
+                ProjectContract project = projectService.getById(event.projectId());
+                String response = checkSprintDetails(project, event.eventId(), eventContract.startDate(), eventContract.endDate());
+                if (!response.equals("Okay")) {
+                    return response;
+                }
+                response = checkBaseFields("Sprint", eventContract.name(), eventContract.startDate(), eventContract.endDate());
+                if (!response.equals("Okay")) {
+                    return response;
+                }
+
+            } catch (NoSuchElementException error) {
+                return "Project ID does not exist";
+            }
+
+
+        } catch (NoSuchElementException error) {
+
+            return "Sprint ID does not exist";
+        }
+
+
+        return checkBaseFields("Sprint",
+                eventContract.name(),
+                eventContract.startDate(),
+                eventContract.endDate());
+    }
+
+    /**
      * Checks sprint date details and returns respective messages.
      */
     public String checkSprintDetails(ProjectContract project, String sprintId, Instant start, Instant end) {
@@ -148,6 +202,23 @@ public class ValidationService {
                 return "Sprint cannot begin while another sprint is still in progress";
             }
         }
+        return "Okay";
+
+    }
+
+    /**
+     * Checks sprint date details and returns respective messages.
+     */
+    public String checkEventDetails(ProjectContract project, Instant start, Instant end) {
+
+
+        if (start.isBefore(project.startDate())) {
+            return "Event cannot start before project start date";
+        }
+        if (end.isAfter(project.endDate())) {
+            return "Event cannot end after project end date";
+        }
+
         return "Okay";
 
     }

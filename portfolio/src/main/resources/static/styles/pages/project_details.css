@@ -80,6 +80,13 @@ body {
     margin-right: 5px;
 }
 
+.event-view-controls {
+    margin-top: 10px;
+    display: flex;
+    justify-content: right;
+    margin-right: 5px;
+}
+
 .sprint-controls {
     margin-right: 5px;
 }
