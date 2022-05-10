@@ -41,14 +41,17 @@ public class SprintEntity {
     @Column(nullable = false)
     private Instant endDate;
 
+    @Column(nullable = false)
+    private String colour;
 
     protected SprintEntity() {}
 
-    public SprintEntity(String name, String description, Instant startDate, Instant endDate) {
+    public SprintEntity(String name, String description, Instant startDate, Instant endDate, String colour) {
         this.name = name;
         this.description = description;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.colour = colour;
     }
 
     @Override
@@ -103,6 +106,9 @@ public class SprintEntity {
         this.endDate = endDate;
     }
 
+    public String getColour() {return colour;}
+
+    public void setColour(String colour) {this.colour = colour;}
 
     /**
      * Calculates the orderNumber of this sprint entity by searching through its project.

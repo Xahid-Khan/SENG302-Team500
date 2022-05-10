@@ -20,5 +20,6 @@ public record SprintContract(
     String description,
     Instant startDate,
     Instant endDate,
+    String colour,
     Long orderNumber  // Should only be present in responses
 ) {}

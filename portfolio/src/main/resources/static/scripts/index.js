@@ -218,12 +218,16 @@ class ProjectView {
     const defaultEndDate = new Date(defaultStartDate.valueOf());
     defaultEndDate.setDate(defaultEndDate.getDate() + 22);
 
+    const randomColor = Math.floor(Math.random() * 16777215).toString(16);
+    const defaultColour = "#" + randomColor;
+
     const defaultSprint = {
       id: `__NEW_SPRINT_FORM_${this.project.id}`,
       name: `Sprint ${defaultName}`,
       description: null,
       startDate: defaultStartDate,
-      endDate: defaultEndDate
+      endDate: defaultEndDate,
+      colour: defaultColour
     };
 
     this.addSprintForm = {
@@ -286,7 +290,8 @@ class ProjectView {
       this.sprintUpdateCallback({
         ...newSprint,
         startDate: DatetimeUtils.networkStringToLocalDate(newSprint.startDate),
-        endDate: DatetimeUtils.networkStringToLocalDate(newSprint.endDate)
+        endDate: DatetimeUtils.networkStringToLocalDate(newSprint.endDate),
+        colour: newSprint.colour
       });
     }
     catch (ex) {
@@ -449,6 +454,8 @@ class ProjectOrSprintEditor {
               <input type="date" name="start-date" id="edit-start-date-${this.entityId}"> <span id="edit-start-date-hours-${this.entityId}"></span><br><br>
               <label>End Date*:</label>
               <input type="date" name="end-date" id="edit-end-date-${this.entityId}"> <span id="edit-end-date-hours-${this.entityId}"></span><br>
+              <label id="color-label-${this.entityId}"><br>Colour*:</label>
+              <input type="color" name="colour" id="edit-colour-${this.entityId}"><br></input>
               <div id="edit-project-date-error-${this.entityId}" class="form-error" style="display: none;"></div><br>
               
               <p>* = Required field.</p>
@@ -465,6 +472,13 @@ class ProjectOrSprintEditor {
     this.descriptionInput = document.getElementById(`edit-description-${this.entityId}`);
     this.startDateInput = document.getElementById(`edit-start-date-${this.entityId}`);
     this.endDateInput = document.getElementById(`edit-end-date-${this.entityId}`);
+
+    this.colourInput = document.getElementById(`edit-colour-${this.entityId}`);
+    if (this.title === "New project details:" || this.title === "Edit project details:") {
+      this.colourInput.outerHTML = "";
+      document.getElementById(`color-label-${this.entityId}`).outerHTML = "";
+    }
+
     this.saveButton = document.getElementById(`edit-save-button-${this.entityId}`);
 
     this.startDateHoursField = document.getElementById(`edit-start-date-hours-${this.entityId}`);
@@ -508,6 +522,7 @@ class ProjectOrSprintEditor {
     this.nameInput.value = this.initialData.name ?? "";
     this.descriptionInput.value = this.initialData.description ?? "";
     this.startDateInput.value = (this.initialData.startDate) ? DatetimeUtils.toLocalYMD(this.initialData.startDate) : "";
+    this.colourInput.value = this.initialData.colour ?? "#000000";
     if (this.initialData.endDate) {
       const displayedDate = new Date(this.initialData.endDate.valueOf());
       displayedDate.setDate(displayedDate.getDate() - 1);
@@ -587,6 +602,10 @@ class ProjectOrSprintEditor {
     return null;
   }
 
+  getColour() {
+    return this.colourInput.value;
+  }
+
   /**
    * Checks that the date fields are valid and populates error fields if not.
    *
@@ -633,7 +652,8 @@ class ProjectOrSprintEditor {
           name: this.nameInput.value,
           description: this.descriptionInput.value,
           startDate: this.getStartDateInputValue(),
-          endDate: this.getEndDateInputValue()
+          endDate: this.getEndDateInputValue(),
+          colour: this.getColour()
         })
       } finally {
         this.saveButton.innerText = "Save";
@@ -762,15 +782,19 @@ class SprintView {
             <button class="button toggle-sprint-details" id="toggle-sprint-details-${this.sprint.sprintId}">+</button>
         </span>
     </div>
+
     <div class="sprint-description" id="sprint-description-${this.sprint.sprintId}"></div>
+    <div class="colour-block" id="sprint-colour-block-${this.sprint.sprintId}"></div>
     `;
 
     this.toggleButton = document.getElementById(`toggle-sprint-details-${this.sprint.sprintId}`);
+    this.sprintDetails = document.getElementById(`sprint-details-${this.sprint.sprintId}`);
     this.description = document.getElementById(`sprint-description-${this.sprint.sprintId}`);
-
+    this.colourBlock = document.getElementById(`sprint-colour-block-${this.sprint.sprintId}`);
     document.getElementById(`sprint-order-text-${this.sprint.sprintId}`).innerText = `Sprint ${this.sprint.orderNumber}`;
     document.getElementById(`sprint-title-text-${this.sprint.sprintId}`).innerText = this.sprint.name;
-    this.description.innerText = this.sprint.description;
+    this.description.innerText = "Description: " + this.sprint.description;
+    this.colourBlock.style.background = this.sprint.colour;
     document.getElementById(`start-date-${this.sprint.sprintId}`).innerText = DatetimeUtils.localToUserDMY(this.sprint.startDate);
     const displayedDate = new Date(this.sprint.endDate.valueOf());
     displayedDate.setDate(displayedDate.getDate() - 1);
@@ -1160,6 +1184,7 @@ class Sprint {
         && newValue.description === this.sprint.description
         && DatetimeUtils.areEqual(newValue.startDate, this.sprint.startDate)
         && DatetimeUtils.areEqual(newValue.endDate, this.sprint.endDate)
+        && newValue.colour === this.sprint.colour
     ) {
       // Nothing has changed
       const showingEvents = this.currentView.showingEvents;
@@ -1191,7 +1216,8 @@ class Sprint {
       this.sprintUpdateSavedCallback({
         ...newSprint,
         startDate: DatetimeUtils.networkStringToLocalDate(newSprint.startDate),
-        endDate: DatetimeUtils.networkStringToLocalDate(newSprint.endDate)
+        endDate: DatetimeUtils.networkStringToLocalDate(newSprint.endDate),
+        colour: newSprint.colour
       });
     }
     catch (ex) {
