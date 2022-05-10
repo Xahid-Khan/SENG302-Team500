@@ -98,7 +98,6 @@ public class RegistrationController {
       return "registration_form";
     }
 
-
     //Logs the user in
     AuthenticateResponse loginReply;
     try {

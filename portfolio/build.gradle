@@ -59,48 +59,20 @@ dependencies {
 
     implementation 'com.h2database:h2:2.1.210'
     implementation 'io.jsonwebtoken:jjwt-api:0.11.0'
-
+    implementation 'io.cucumber:cucumber-spring:7.2.3'
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     testImplementation 'org.springframework.security:spring-security-test:5.6.2'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'io.cucumber:cucumber-junit:7.2.3'
     testImplementation 'io.cucumber:cucumber-java:7.2.3'
     implementation 'org.mariadb.jdbc:mariadb-java-client:3.0.4'
 }
 
-configurations {
-    cucumberRuntime {
-        extendsFrom testImplementation
-    }
-}
-
-sourceSets {
-    test {
-        resources.srcDirs = ['src/test/resources']
-        java.srcDirs = ['src/test/java', 'src/main/java']
-        runtimeClasspath = project.sourceSets.main.compileClasspath +
-                project.sourceSets.test.compileClasspath +
-                fileTree("src/test/resources/test") +
-                project.sourceSets.test.output + project.sourceSets.main.output
-    }
-}
-
-task cucumber() {
-    dependsOn assemble, testClasses
-    doLast {
-        javaexec {
-            main = "io.cucumber.core.cli.Main"
-            classpath = configurations.cucumberRuntime + sourceSets.test.output
-            args = ['--plugin', 'pretty', '--glue', 'gradle.cucumber', 'src/test/resources']
-        }
-    }
-}
-
-
 tasks.named('test') {
     useJUnitPlatform()
-    finalizedBy cucumber
 }
+
 targetCompatibility = JavaVersion.VERSION_17
 
 processResources.dependsOn(assembleFrontend)
