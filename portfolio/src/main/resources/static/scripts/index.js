@@ -649,6 +649,72 @@ class SprintView {
   }
 }
 
+class EventView {
+  expandedView = false;
+  constructor(containerElement, event, deleteCallback, editCallback) {
+    this.containerElement = containerElement;
+    this.event = event;
+    this.deleteCallback = deleteCallback;
+    this.editCallback = editCallback;
+    this.constructView();
+    this.wireView();
+  }
+
+  constructView() {
+    this.containerElement.innerHTML = `
+    <div class="events" id="events-container-${this.event.eventId}"></div>
+    <div class="event-title">
+        <span id="event-order-text-${this.event.eventId}"></span>: <span id="event-title-text-${this.event.eventId}" style="font-style: italic;"></span> | <span id="start-date-${this.event.eventId}"></span> - <span id="end-date-${this.event.eventId}"></span>
+
+        <span class="crud">
+            <button class="button event-controls" id="event-button-edit-${this.event.eventId}" data-privilege="teacher">Edit</button>
+            <button class="button event-controls" id="event-button-delete-${this.event.eventId}" data-privilege="teacher">Delete</button>
+            <button class="button toggle-event-details" id="toggle-event-details-${this.event.eventId}">+</button>
+        </span>
+    </div>
+    <div class="event-description" id="event-description-${this.event.eventId}"></div>
+    `;
+
+    this.toggleButton = document.getElementById(`toggle-event-details-${this.event.eventId}`);
+    this.description = document.getElementById(`event-description-${this.event.eventId}`);
+
+    document.getElementById(`event-order-text-${this.event.eventId}`).innerText = `Event ${this.event.orderNumber}`;
+    document.getElementById(`event-title-text-${this.event.eventId}`).innerText = this.event.name;
+    this.description.innerText = this.event.description;
+    document.getElementById(`start-date-${this.event.eventId}`).innerText = DatetimeUtils.localToUserDMY(this.event.startDate);
+    const displayedDate = new Date(this.event.endDate.valueOf());
+    displayedDate.setDate(displayedDate.getDate() - 1);
+    document.getElementById(`end-date-${this.event.eventId}`).innerText = DatetimeUtils.localToUserDMY(displayedDate);
+  }
+
+  /**
+   * Toggles expanded view and button for events.
+   */
+  toggleExpandedView() {
+    if (this.expandedView) {
+      this.description.style.display = "none";
+      this.toggleButton.innerText = "+";
+    }
+    else {
+      this.description.style.display = "block";
+      this.toggleButton.innerText = "-";
+    }
+
+    this.expandedView = !this.expandedView;
+  }
+
+  wireView() {
+    document.getElementById(`event-button-edit-${this.event.eventId}`).addEventListener('click', () => this.editCallback());
+    document.getElementById(`event-button-delete-${this.event.eventId}`).addEventListener("click", () => this.deleteCallback());
+
+    this.toggleButton.addEventListener('click', this.toggleExpandedView.bind(this));
+  }
+
+
+  dispose() {
+
+  }
+}
 
 /**
  * Handles switching between the editor and view screens.
@@ -971,6 +1037,11 @@ class Sprint {
 
 }
 
+
+
+class Event {
+
+}
 
 /**
  * Manage the projects (creation and deletion and loading)
