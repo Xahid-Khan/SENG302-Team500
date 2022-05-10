@@ -2,6 +2,9 @@ package nz.ac.canterbury.seng302.portfolio.model.entity;
 
 import java.util.Collections;
 import java.util.Comparator;
+
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -39,7 +42,14 @@ public class ProjectEntity {
 
     @OneToMany(mappedBy = "project", fetch = FetchType.EAGER)
     @OrderBy("startDate")
+    @Fetch(value = FetchMode.SUBSELECT)
     private List<SprintEntity> sprints = new ArrayList<>();
+
+    @OneToMany(mappedBy = "project", fetch = FetchType.EAGER)
+    @OrderBy("startDate")
+    @Fetch(value = FetchMode.SUBSELECT)
+    private List<EventEntity> events = new ArrayList<>();
+
 
     protected ProjectEntity() {}
 
@@ -99,6 +109,8 @@ public class ProjectEntity {
         return sprints;
     }
 
+    public List<EventEntity> getEvents() {return events;}
+
     /**
      * Inserts the given sprint to the sprints list, retaining sorted order.
      *
@@ -119,5 +131,15 @@ public class ProjectEntity {
     public void removeSprint(SprintEntity sprint) {
         sprints.remove(sprint);
         sprint.setProject(null);
+    }
+
+   public void newEvent(EventEntity event) {
+        events.add(event);
+        event.setProject(this);
+    }
+
+    public void removeEvent(EventEntity event) {
+        events.remove(event);
+        event.setProject(null);
     }
 }
