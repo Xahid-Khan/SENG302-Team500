@@ -35,8 +35,10 @@
 
     <div class="form-row">
         <label th:for="confirmPassword">Confirm password *</label>
-        <input id="confirmPassword" type="password" th:required="required"  th:value="${user.password}" disabled/>
+        <input id="confirmPassword" type="password" th:required="required"  th:value="${user.password}" disabled oninput="passwordMatchValidator()"/>
     </div>
+
+    <div id="confirmPassError" class="form-error"></div>
 
     <div class="form-row">
         <label th:for="firstName">First Name *</label>

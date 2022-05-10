@@ -21,7 +21,7 @@
         </div>
         <div class="account">
             <div class="dropdown">
-                <button class="dropbutton"><div class="username" th:text="${username}"></div><img
+                <button class="dropbutton"><div class="username" th:text="${user.username}"></div><img
                         src="https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png"
                         width="46" height="46" alt="Placeholder Profile Photo">
                 </button>
@@ -52,6 +52,9 @@
             <div>
                 <button onclick="location.href='/edit_account'" type="button">Edit Details</button>
                 <button onclick="location.href='/edit_password'" type="button">Edit Password</button>
+            </div>
+            <div class="edit-message" th:if="${editMessage != null}" th:text="${editMessage}">
+
             </div>
         </div>
     </div>

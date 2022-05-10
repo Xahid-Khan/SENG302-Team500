@@ -60,16 +60,33 @@ public class EditPasswordController {
 
         if (newPassword.length() < 8 || newPassword.length() > 512) {
             model.addAttribute("error", "New password must contain at least 8 and be no more than 512 characters");
+            model.addAttribute("currentPass", currentPassword);
+            model.addAttribute("newPass", newPassword);
+            model.addAttribute("confirmPass", confirmPassword);
+            return "edit_password";
+        }
+
+        if (!newPassword.matches("^(?!.*  )(.*)")) {
+            model.addAttribute("error", "New password cannot contain more than one whitespace in a row");
+            model.addAttribute("currentPass", currentPassword);
+            model.addAttribute("newPass", newPassword);
+            model.addAttribute("confirmPass", confirmPassword);
             return "edit_password";
         }
 
         if (!newPassword.equals(confirmPassword)) {
             model.addAttribute("error", "New password does not match confirmed password");
+            model.addAttribute("currentPass", currentPassword);
+            model.addAttribute("newPass", newPassword);
+            model.addAttribute("confirmPass", confirmPassword);
             return "edit_password";
         }
 
         if (newPassword.equals(currentPassword)) {
             model.addAttribute("error", "New password cannot be the same as current password");
+            model.addAttribute("currentPass", currentPassword);
+            model.addAttribute("newPass", newPassword);
+            model.addAttribute("confirmPass", confirmPassword);
             return "edit_password";
         }
 
@@ -80,14 +97,20 @@ public class EditPasswordController {
 
             if (!response.getIsSuccess()) {
                 model.addAttribute("error", response.getMessage());
+                model.addAttribute("currentPass", currentPassword);
+                model.addAttribute("newPass", newPassword);
+                model.addAttribute("confirmPass", confirmPassword);
                 return "edit_password";
             }
 
         } catch (StatusRuntimeException e){
             model.addAttribute("error", "Error connecting to Identity Provider...");
+            model.addAttribute("currentPass", currentPassword);
+            model.addAttribute("newPass", newPassword);
+            model.addAttribute("confirmPass", confirmPassword);
             return "edit_password";
         }
-        return "redirect:/my_account";
+        return "redirect:/my_account?edited=password";
     }
 
 }

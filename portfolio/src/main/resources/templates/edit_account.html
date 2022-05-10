@@ -86,6 +86,11 @@
                         <div th:if="${#fields.hasErrors('bio')}" th:errors="*{bio}" class="form-error">Bio Error</div>
                     </div>
 
+                    <div th:if="${error != null}">
+                        <p id="field-error" class="form-error" th:text="${error}"></p>
+                    </div>
+
+                    <p>*: Required field</p>
 
                     <button id='submit' name="save" type="Submit" value="0">Save</button>
                     <button type="button" onclick="window.location.href='my_account'">Cancel</button>
