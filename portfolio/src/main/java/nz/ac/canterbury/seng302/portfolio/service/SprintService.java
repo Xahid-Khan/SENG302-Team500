@@ -91,6 +91,7 @@ public class SprintService {
         sprintEntity.setDescription(sprint.description());
         sprintEntity.setStartDate(sprint.startDate());
         sprintEntity.setEndDate(sprint.endDate());
+        sprintEntity.setColour(sprint.colour());
 
         sprintRepository.save(sprintEntity);
 
