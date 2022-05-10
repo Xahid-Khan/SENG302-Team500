@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.identityprovider.database;
 
 
+import com.google.protobuf.ByteString;
 import com.google.protobuf.Timestamp;
 
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
@@ -49,7 +50,7 @@ public class UserModel {
     }
 
     public UserModel(String username, String passwordHash, String firstName, String middleName, String lastName,
-        String nickname, String bio, String personalPronouns, String email, List<UserRole> roles, Timestamp created) {
+         String nickname, String bio, String personalPronouns, String email, List<UserRole> roles, Timestamp created) {
         this.username = username;
         this.passwordHash = passwordHash;
         this.firstName = firstName;

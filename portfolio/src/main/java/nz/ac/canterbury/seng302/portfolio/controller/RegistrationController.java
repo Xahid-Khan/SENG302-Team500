@@ -44,7 +44,9 @@ public class RegistrationController {
    */
   @GetMapping(value = "/register")
   public String registerForm(Model model) {
-    model.addAttribute("user", new User("", "", "", "", "", "", "", "", "", null));
+    if(!model.containsAttribute("user")) {
+      model.addAttribute("user", new User("", "", "", "", "", "", "", "", "", null));
+    }
     return "registration_form";
   }
 
@@ -75,9 +77,12 @@ public class RegistrationController {
           HttpServletResponse response,
           RedirectAttributes redirectAttributes
   ) {
-    // If there are errors in the validation of the user, display them
+    // If there are errors in the validation of the user
     if (bindingResult.hasErrors()) {
-      return "registration_form";
+      //Allows the bindingResult (errors) and user fields to persist through the redirect
+      redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.user", bindingResult);
+      redirectAttributes.addFlashAttribute("user", user);
+      return "redirect:register";
     }
 
     UserRegisterResponse registerReply;
@@ -114,11 +119,11 @@ public class RegistrationController {
               domain.startsWith("localhost") ? null : domain
       );
       // Redirect user if login succeeds
-      redirectAttributes.addFlashAttribute("message", "Successfully logged in.");
-      return "redirect:/my_account";
+      //redirectAttributes.addFlashAttribute("message", "Successfully logged in.");
+      return "redirect:my_account";
     }
 
-    return "redirect:/login"; // return the template in templates folder
+    return "redirect:login"; // return the template in templates folder
   }
 
 }
