@@ -88,6 +88,9 @@ class ProjectView {
           <span class="project-title-text">
             <span id="project-title-text-${this.project.id}"></span> | <span id="project-startDate-${this.project.id}"></span> - <span id="project-endDate-${this.project.id}"></span>
           </span>   
+          <span class="monthly-planner-redirect">
+                  <button class="button monthly-planner-redirect-button" id="monthly-planner-redirect-button-${this.project.id}">View Monthly Planner</button>
+          </span> 
           <span class="crud">
                   <button class="button edit-project" id="project-edit-button-${this.project.id}" data-privilege="teacher">Edit</button>
                   <button class="button" id="project-delete-button-${this.project.id}" data-privilege="teacher">Delete</button>
@@ -239,9 +242,14 @@ class ProjectView {
     }
   }
 
+  monthlyPlannerRedirect(projectId) {
+    window.location.href = `/monthly-planner/${projectId}`
+  }
+
   wireView() {
     document.getElementById(`project-edit-button-${this.project.id}`).addEventListener("click", () => this.editCallback());
     document.getElementById(`project-delete-button-${this.project.id}`).addEventListener("click", () => this.deleteCallback());
+    document.getElementById(`monthly-planner-redirect-button-${this.project.id}`).addEventListener("click", () => this.monthlyPlannerRedirect(this.project.id));
     this.toggleSprintsButton.addEventListener('click', this.toggleSprints.bind(this));
     this.addSprintButton.addEventListener('click', this.openAddSprintForm.bind(this));
   }
