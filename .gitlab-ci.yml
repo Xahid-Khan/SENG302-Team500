@@ -115,6 +115,7 @@ deploy-production-identityprovider:
   only:
     - tags
     - master
+    - U26_T75/configure_mariadb
 
 deploy-production-portfolio:
   stage: deploy
@@ -133,3 +134,4 @@ deploy-production-portfolio:
   only:
     - tags
     - master
+    - U26_T75/configure_mariadb
