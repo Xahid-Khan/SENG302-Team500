@@ -77,8 +77,8 @@ public class EventService {
 
 
         project.removeEvent(event);
-        eventRepository.delete(event);
         projectRepository.save(project);
+        eventRepository.deleteById(eventId);
     }
 
     /**

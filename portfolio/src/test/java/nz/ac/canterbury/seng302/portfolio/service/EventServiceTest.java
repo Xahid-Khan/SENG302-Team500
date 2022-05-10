@@ -21,6 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.Instant;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
@@ -89,43 +90,33 @@ public class EventServiceTest {
     @Test
     public void testDeleteEvent() throws Exception {
         // Create a project
-        var project = new ProjectEntity("testproject", null, Instant.parse("2022-12-01T10:15:30.00Z"), Instant.parse("2023-01-20T10:15:30.00Z"));
+        var project = new ProjectEntity("testproject", null,
+                Instant.parse("2022-12-01T10:15:30.00Z"), Instant.parse("2023-01-20T10:15:30.00Z"));
         projectRepository.save(project);
+
         // Create an event
-        BaseEventContract event = new BaseEventContract("test event", "testdescription", Instant.parse("2022-12-01T10:15:30.00Z"), Instant.parse("2022-12-02T10:15:30.00Z"));
-        EventContract eventContract = eventService.createEvent(project.getId(), event);
+        BaseEventContract event = new BaseEventContract("test event", "testdescription",
+                Instant.parse("2022-12-01T10:15:30.00Z"), Instant.parse("2022-12-02T10:15:30.00Z"));
+        eventService.createEvent(project.getId(), event);
 
         // Check that the event was created
         var events = eventRepository.findAll();
-        assert events.iterator().hasNext();
+        assertTrue(events.iterator().hasNext());
 
         //Checks the event name
         var event1 = events.iterator().next();
         assertEquals("test event", event1.getName());
 
         //Tests event was added to project
-        var projects = projectRepository.findAll();
-        var project1 = projects.iterator().next();
-        assertEquals(event1.getId(),project1.getEvents().get(0).getId());
+        var project1 = projectRepository.findAll().iterator().next();
+        assertEquals(event1.getId(), project1.getEvents().get(0).getId());
 
-        //Runes the delete function on all events
-        var eventToDelete = eventRepository.findAll().iterator().next();
-
-//        eventService.delete(project1.getEvents().get(0).getId());
-
-        //Prints all the ids of events
-        var events2 = eventRepository.findAll();
-        var idToDelete = events2.iterator().next().getId();
+        //deletes it
+        var idToDelete = eventRepository.findAll().iterator().next().getId();
         eventService.delete(idToDelete);
 
-        //Prints all the ids of events in project
-        var projects2 = projectRepository.findAll();
-        var project2 = projects2.iterator().next();
-        System.out.println(project2.getEvents().get(0).getId());
-
-        projects = projectRepository.findAll();
-        project1 = projects.iterator().next();
-        assertEquals(0,project1.getEvents().size());
+        //Check the event is deleted
+        assertEquals(0, projectRepository.findAll().iterator().next().getEvents().size());
     }
 
 
