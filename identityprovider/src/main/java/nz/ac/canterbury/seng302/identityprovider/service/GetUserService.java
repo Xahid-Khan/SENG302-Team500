@@ -19,6 +19,7 @@ import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -32,6 +33,8 @@ public class GetUserService {
 
   @Autowired private SessionFactory sessionFactory;
 
+  @Value("${spring.datasource.driverClassName}")
+  private String dbDriverClassName;
 
   /**
    * This is a GRPC user serivce method that is beign over-ridden to get the user details and encase
@@ -78,7 +81,26 @@ public class GetUserService {
       List<UserModel> resultList;
       if (orderByField.equals("roles")) {
         // Receive IDs in order by roles
-        var query = session.createQuery("SELECT u.id FROM UserModel u JOIN u.roles r GROUP BY u.id ORDER BY group_concat((case when r = ?1 then 'student' else (case when r=?2 then 'teacher' else 'course_administrator' end) end), ',') " + ((ascending) ? "ASC" : "DESC"), Integer.class)
+
+        String groupConcatFunctionName;
+        if (dbDriverClassName.contains("h2")) {
+          groupConcatFunctionName = "string_agg";
+        }
+        else if (dbDriverClassName.contains("mariadb")) {
+          groupConcatFunctionName = "group_concat";
+        }
+        else {
+          throw new RuntimeException("GetUserService running with unknown database vendor. Cannot determine group_concat - equivalent function for this vendor.");
+        }
+
+        // Strictly hard-coded values are used, so this isn't a SQL injection vector.
+        var queryString = String.format(
+          "SELECT u.id FROM UserModel u JOIN u.roles r GROUP BY u.id ORDER BY %s((case when r = ?1 then 'student' else (case when r=?2 then 'teacher' else 'course_administrator' end) end), ',') %s",
+          groupConcatFunctionName,
+          (ascending) ? "ASC" : "DESC"
+        );
+
+        var query = session.createQuery(queryString, Integer.class)
             .setParameter(1, UserRole.STUDENT)
             .setParameter(2, UserRole.TEACHER)
             .setFirstResult(offset)
