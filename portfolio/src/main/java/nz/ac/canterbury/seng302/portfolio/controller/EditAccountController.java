@@ -70,13 +70,13 @@ public class EditAccountController {
     @PostMapping(value="/edit_account")
     public String postPage(@ModelAttribute @Validated(EditedUserValidation.class) User user, BindingResult bindingResult,
                            Model model, @AuthenticationPrincipal AuthState principal, @RequestParam("image") MultipartFile file) {
-        int userId;
+
         if (bindingResult.hasErrors()) {
             return "redirect:'edit_account";
         }
         model.addAttribute("user", user);
         try {
-            userId = authStateService.getId(principal);
+            int userId = authStateService.getId(principal);
             model.addAttribute("userId", userId);
             if (file.getSize() > 1000 && file.getSize() < 5242000) {
                 byte[] uploadImage = uploadPhotoService.imageProcessing(file);

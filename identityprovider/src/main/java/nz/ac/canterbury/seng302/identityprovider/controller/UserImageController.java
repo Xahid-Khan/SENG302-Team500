@@ -26,15 +26,16 @@ public class UserImageController {
      * @throws IOException
      */
     @GetMapping(value = "/userImage/{id}")
-    void showUserImage(@PathVariable("id") int userId, HttpServletResponse response){
+    void showUserImage(@PathVariable("id") int userId, HttpServletResponse response) throws IOException {
         try {
             Optional<PhotoModel> userPhoto = photoRepository.findById(userId);
             response.setContentType("image/*");
             response.getOutputStream().write(userPhoto.get().getUserPhoto());
             response.getOutputStream().close();
         } catch (Exception e) {
-            response.getOutputStream().close();
             e.printStackTrace();
+        } finally {
+            response.getOutputStream().close();
         }
     }
 
