@@ -5,10 +5,11 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="stylesheet" th:href="@{/styles/common.css}"/>
-    <link rel="stylesheet" th:href="@{/frontend/monthly_planner.css}"/>
-    <link rel="stylesheet" th:href="@{/styles/pages/project_details.css}">
-    <link rel="stylesheet" th:href="@{/styles/navbar.css}"/>
+    <link rel="stylesheet" th:href="@{../styles/common.css}"/>
+    <link rel="stylesheet" th:href="@{../frontend/monthly_planner.css}"/>
+    <link rel="stylesheet" th:href="@{../frontend/src/entry/monthly_planner.css}"/>
+    <link rel="stylesheet" th:href="@{../styles/pages/project_details.css}">
+    <link rel="stylesheet" th:href="@{../styles/navbar.css}"/>
     <!--  Taken from https://stackoverflow.com/a/25688291  -->
     <script th:inline="javascript">
         /*<![CDATA[*/
@@ -17,8 +18,8 @@
 
         /*]]>*/
     </script>
-    <script type="text/javascript" th:src="@{/frontend/monthly_planner.js}" defer></script>
- </head>
+    <script type="text/javascript" th:src="@{../frontend/monthly_planner.js}" defer></script>
+</head>
 <body>
     <div class="navbar">
         <div class="navbar-items">
@@ -36,9 +37,9 @@
                         width="46" height="46" alt="Placeholder Profile Photo">
                 </button>
                 <div class="dropdown-content">
-                    <a class="dropdown-content-links" href="my_account">My Account</a>
-                    <a class="dropdown-content-links" href="user-list">View Users</a>
-                    <a class="dropdown-content-links" href="logout">Log Out</a>
+                    <a class="dropdown-content-links" href="../my_account">My Account</a>
+                    <a class="dropdown-content-links" href="../user-list">View Users</a>
+                    <a class="dropdown-content-links" href="../logout">Log Out</a>
                 </div>
             </div>
         </div>

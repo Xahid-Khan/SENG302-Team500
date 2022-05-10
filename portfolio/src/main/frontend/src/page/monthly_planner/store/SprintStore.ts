@@ -100,7 +100,7 @@ export class SprintStore {
         }
 
         try {
-            const res = await fetch(`/api/v1/sprints/${this.id}`, {
+            const res = await fetch(`../api/v1/sprints/${this.id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'

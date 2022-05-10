@@ -186,7 +186,7 @@ public class ProjectControllerTest {
                 {
                     "name": "NewName Project",
                     "description": "Updated project details",
-                    "startDate": "2021-04-01T10:00:00.00Z",
+                    "startDate": "2022-01-01T10:00:00.00Z",
                     "endDate": "2024-01-01T10:00:00.00Z"
                 }
                 """;
@@ -206,7 +206,7 @@ public class ProjectControllerTest {
 
         assertEquals("NewName Project", projectResponse.name());
         assertEquals("Updated project details", projectResponse.description());
-        assertEquals(Instant.parse("2021-04-01T10:00:00Z"), projectResponse.startDate());
+        assertEquals(Instant.parse("2022-01-01T10:00:00Z"), projectResponse.startDate());
         assertEquals(Instant.parse("2024-01-01T10:00:00.00Z"), projectResponse.endDate());
         assertEquals(projectId, projectResponse.id());
     }
