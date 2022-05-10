@@ -40,7 +40,7 @@ public class UserModel {
     private String email;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @Column(name = "roles", nullable = false)
+    @Column(nullable = false)
     private List<UserRole> roles = new ArrayList<>();
 
     @Lob
