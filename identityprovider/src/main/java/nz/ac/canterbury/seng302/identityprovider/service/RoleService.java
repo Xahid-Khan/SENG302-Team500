@@ -78,7 +78,7 @@ public class RoleService {
         modifyRoleOfUser(modificationRequest, false)
                 // FIXME
             ? UserRoleChangeResponse.newBuilder().setIsSuccess(true).setMessage(true)//.setMessage("Role removed successfully")
-            : UserRoleChangeResponse.newBuilder().setIsSuccess(false).setMessage(false)//.setMessage("Unable to remove role");
+            : UserRoleChangeResponse.newBuilder().setIsSuccess(false).setMessage(false);//.setMessage("Unable to remove role");
 
     return response.build();
   }
