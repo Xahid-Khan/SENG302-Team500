@@ -58,8 +58,9 @@ public class RoleService {
     // Generate a response based on if modifyRoleOfUser was successful or not
     var response =
         modifyRoleOfUser(modificationRequest, true)
-            ? UserRoleChangeResponse.newBuilder().setIsSuccess(true).setMessage("Role added successfully")
-            : UserRoleChangeResponse.newBuilder().setIsSuccess(false).setMessage("Unable to add role");
+                // FIXME
+            ? UserRoleChangeResponse.newBuilder().setIsSuccess(true).setMessage(true)//.setMessage("Role added successfully")
+            : UserRoleChangeResponse.newBuilder().setIsSuccess(false).setMessage(false);//.setMessage("Unable to add role");
 
     return response.build();
   }
@@ -75,8 +76,9 @@ public class RoleService {
     // Generate a response based on if modifyRoleOfUser was successful or not
     var response =
         modifyRoleOfUser(modificationRequest, false)
-            ? UserRoleChangeResponse.newBuilder().setIsSuccess(true).setMessage("Role removed successfully")
-            : UserRoleChangeResponse.newBuilder().setIsSuccess(false).setMessage("Unable to remove role");
+                // FIXME
+            ? UserRoleChangeResponse.newBuilder().setIsSuccess(true).setMessage(true)//.setMessage("Role removed successfully")
+            : UserRoleChangeResponse.newBuilder().setIsSuccess(false).setMessage(false)//.setMessage("Unable to remove role");
 
     return response.build();
   }
