@@ -1,5 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -15,8 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 public class UserListController {
@@ -88,7 +89,6 @@ public class UserListController {
             sortAttribute,
             ascending
         );
-
         // Construct response
         model.addAttribute("users", response.getUsersList());
         model.addAttribute("totalUserCount", response.getResultSetSize());
@@ -105,12 +105,22 @@ public class UserListController {
         return String.format("?page=%d&sortBy=%s&asc=%b", page, sortBy, sortDir);
     }
 
-    public String formatUserRoles(List<UserRole> roles) {
-        return roles.stream().map(role -> switch (role) {
-            case STUDENT -> "Student";
-            case TEACHER -> "Teacher";
-            case COURSE_ADMINISTRATOR -> "Course Administrator";
-            default -> "Student";
-        }).collect(Collectors.joining(", "));
+    public String formatUserRole(UserRole role) {
+        switch (role) {
+            case STUDENT: return "Student";
+            case TEACHER: return "Teacher";
+            case COURSE_ADMINISTRATOR: return "Course Administrator";
+            default: return "Default";
+        }
+    }
+
+    public List<UserRole> getAvailableRoles(UserResponse user) {
+        List<UserRole> list = new ArrayList<>();
+        for(UserRole role : UserRole.values()){
+            if(role != UserRole.UNRECOGNIZED && !user.getRolesList().contains(role)){
+                list.add(role);
+            }
+        }
+        return list;
     }
 }

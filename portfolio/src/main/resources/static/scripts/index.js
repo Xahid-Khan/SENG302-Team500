@@ -7,53 +7,6 @@ const LoadingStatus = {
   Error: "Error"
 };
 
-function leftPadNumber(number, places) {
-  const numberString = `${number}`
-
-  if (numberString.length >= places) {
-    return numberString;
-  }
-
-  return ('0'.repeat(places - numberString.length)) + number;
-}
-
-class DatetimeUtils {
-  static networkStringToLocalDate(utcString) {
-    return new Date(Date.parse(utcString))
-  }
-
-  static localToNetworkString(localDate) {
-    return localDate.toISOString();
-  }
-
-  static toLocalYMD(localDate) {
-    return `${leftPadNumber(localDate.getFullYear(), 4)}-${leftPadNumber(localDate.getMonth() + 1, 2)}-${leftPadNumber(localDate.getDate(), 2)}`
-  }
-
-  static fromLocalYMD(localString) {
-    // From: https://stackoverflow.com/a/64199706
-    const [year, month, day] = localString.split('-');
-    return new Date(year, month - 1, day);
-  }
-
-  static getTimeStringIfNonZeroLocally(date) {
-    if (date.getHours() !== 0 || date.getMinutes() !== 0 || date.getSeconds() !== 0) {
-      // There is an hours/minutes/seconds component to this date in the local timezone.
-      return `${date.getHours()}:${leftPadNumber(date.getMinutes(), 2)}${(date.getSeconds() !== 0) ? ':' + leftPadNumber(date.getSeconds(), 2) : ''}`;
-    }
-    return null;
-  }
-
-  static localToUserDMY(localDate) {
-    const hoursComponent = this.getTimeStringIfNonZeroLocally(localDate);
-    return `${localDate.getDate()} ${localDate.toLocaleString('default', {month: 'long'})} ${localDate.getFullYear()}${(hoursComponent !== null) ? ' ' + hoursComponent : ''}`;
-  }
-
-  static areEqual(date1, date2) {
-    return date1 <= date2 && date2 <= date1;
-  }
-}
-
 class PortfolioNetworkError extends Error {
   constructor(message, ...args) {
     super(message, ...args);
@@ -135,6 +88,9 @@ class ProjectView {
           <span class="project-title-text">
             <span id="project-title-text-${this.project.id}"></span> | <span id="project-startDate-${this.project.id}"></span> - <span id="project-endDate-${this.project.id}"></span>
           </span>   
+          <span class="monthly-planner-redirect">
+                  <button class="button monthly-planner-redirect-button" id="monthly-planner-redirect-button-${this.project.id}">View Monthly Planner</button>
+          </span> 
           <span class="crud">
                   <button class="button edit-project" id="project-edit-button-${this.project.id}" data-privilege="teacher">Edit</button>
                   <button class="button" id="project-delete-button-${this.project.id}" data-privilege="teacher">Delete</button>
@@ -258,7 +214,7 @@ class ProjectView {
     this.addSprintLoadingStatus = LoadingStatus.Pending;
 
     try {
-      const res = await fetch(`/api/v1/projects/${this.project.id}/sprints`, {
+      const res = await fetch(`api/v1/projects/${this.project.id}/sprints`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -286,9 +242,14 @@ class ProjectView {
     }
   }
 
+  monthlyPlannerRedirect(projectId) {
+    window.location.href = `/monthly-planner/${projectId}`
+  }
+
   wireView() {
     document.getElementById(`project-edit-button-${this.project.id}`).addEventListener("click", () => this.editCallback());
     document.getElementById(`project-delete-button-${this.project.id}`).addEventListener("click", () => this.deleteCallback());
+    document.getElementById(`monthly-planner-redirect-button-${this.project.id}`).addEventListener("click", () => this.monthlyPlannerRedirect(this.project.id));
     this.toggleSprintsButton.addEventListener('click', this.toggleSprints.bind(this));
     this.addSprintButton.addEventListener('click', this.openAddSprintForm.bind(this));
   }
@@ -786,7 +747,7 @@ class Project {
     this.updateLoadingStatus = LoadingStatus.Pending;
 
     try {
-      const result = await fetch(`/api/v1/projects/${this.project.id}`, {
+      const result = await fetch(`api/v1/projects/${this.project.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
@@ -833,7 +794,7 @@ class Project {
     this.deleteLoadingStatus = LoadingStatus.Pending;
 
     try {
-      const response = await fetch(`/api/v1/projects/${this.project.id}`, {
+      const response = await fetch(`api/v1/projects/${this.project.id}`, {
         method: 'DELETE'
       })
 
@@ -916,7 +877,7 @@ class Sprint {
     this.updateSprintLoadingStatus = LoadingStatus.Pending;
 
     try {
-      const response = await fetch(`/api/v1/sprints/${this.sprint.sprintId}`, {
+      const response = await fetch(`api/v1/sprints/${this.sprint.sprintId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
@@ -987,7 +948,7 @@ class Sprint {
     this.deleteLoadingStatus = LoadingStatus.Pending;
 
     try {
-      const response = await fetch(`/api/v1/sprints/${this.sprint.sprintId}`, {
+      const response = await fetch(`api/v1/sprints/${this.sprint.sprintId}`, {
         method: 'DELETE'
       })
       if (!response.ok) {
@@ -1044,7 +1005,7 @@ class Application {
     this.addProjectLoadingStatus = LoadingStatus.Pending;
 
     try {
-      const res = await fetch("/api/v1/projects", {
+      const res = await fetch("api/v1/projects", {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -1177,7 +1138,7 @@ class Application {
     this.clearProjects();
 
     try {
-      const result = await fetch('/api/v1/projects');
+      const result = await fetch('api/v1/projects');
 
       if (!result.ok) {
         await ErrorHandlerUtils.handleNetworkError(result, "get projects");

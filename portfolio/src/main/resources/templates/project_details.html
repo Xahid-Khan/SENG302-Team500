@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <link rel="stylesheet" th:href="@{/styles/common.css}" />
-    <link rel="stylesheet" th:href="@{/styles/pages/project_details.css}">
-    <link rel="stylesheet" th:href="@{/styles/navbar.css}"/>
+    <link rel="stylesheet" th:href="@{styles/common.css}" />
+    <link rel="stylesheet" th:href="@{styles/pages/project_details.css}">
+    <link rel="stylesheet" th:href="@{styles/navbar.css}"/>
 
     <title>SENG302 Homepage</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
@@ -41,76 +41,14 @@
         </div>
     </div>
 
-    <div class="projects" id="project-list">
-        <!--
-        <div class="project-view" id="project-view-0">
-            <div class="project-title">
-                <span class="project-title-text" id="project-title-text-0">
-                    Project 2022 | <span th:text="${currentDate}"></span> - <span th:text="${dateIn8Months}" ></span>
-                </span>   
-                <span class="crud">
-                        <button class="button edit-project">Edit</button>
-                        <button class="button">Delete</button>
-                </span>
-            </div>
-            <div class="edit-project-section" id="edit-project-section-0">
-                <p class="edit-section-title">Edit Project Details:</p>
-                <form class="user-inputs" id="user-inputs-0">
-
-                    <label>Project Name*:</label>
-                    <input type="text" name="project-name" id="project-name-0"><br><br>
-                    <div class="description">
-                        <label>Description:</label>
-                        <textarea name="description" id="description-0" cols="50" rows="10"></textarea><br><br>
-                    </div>
-                    <label>Start Date*:</label>
-                    <input type="date" name="start-date" id="start-date-0"><br><br>
-                    <label>End Date*:</label>
-                    <input type="date" name="end-date" id="end-date-0"><br><br>
-                    <p>*: Required field, if nothing is entered these fields will be set to default values.</p>
-
-                </form>
-                <div class="save-buttons">
-                    <button class="button save" id="save-0">Save</button>
-                    <button class="button cancel" id="cancel-0">Cancel</button>
-                </div>
-            </div>
-            <div>
-                <div class="project-description" id="project-description-0">
-                    This is the default project
-                </div>
-                <div class="sprint-view-controls">
-                    <button class="button add-sprint" id="add-sprint-0"> Add Sprint</button>
-                    <button class="button toggle-sprints" id="toggle-sprints-0"> Show Sprints</button>
-                </div>
-            </div>
-            <div class="sprints" id="sprints-0">
-                <div class="sprint-view" id="sprint-view-0-0">
-                    <div class="sprint-title">
-
-                        <span id="sprint-title-text-0-0"></span> | <span id="start-date-0-0"></span> - <span id="end-date-0-0"></span>
-
-                        <span class="crud">
-                            <button class="button sprint-controls">Edit</button>
-                            <button class="button sprint-controls">Delete</button>
-                            <button class="button toggle-sprint-details" id="toggle-sprint-details-0-0">+</button>
-                        </span>
-                    </div>
-                    <div class="sprint-description" id="sprint-description-0-0">
-
-                    </div>
-                </div>
-            </div>
-        </div>-->
-
-
-    </div>
+    <div class="projects" id="project-list"></div>
 
 
 
 </body>
 
-<script type="text/javascript" th:src="@{/scripts/index.js}"></script>
+<script type="text/javascript" th:src="@{frontend/project_details.js}"></script>
+<script type="text/javascript" th:src="@{scripts/index.js}"></script>
 
 <script>
 

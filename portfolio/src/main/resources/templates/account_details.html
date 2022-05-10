@@ -3,10 +3,10 @@
 <head>
     <title>My Account</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <link rel="stylesheet" th:href="@{/styles/common.css}"/>
-    <link rel="stylesheet" th:href="@{/styles/pages/account_details.css}"/>
-    <link rel="stylesheet" th:href="@{/styles/pages/project_details.css}">
-    <link rel="stylesheet" th:href="@{/styles/navbar.css}"/>
+    <link rel="stylesheet" th:href="@{styles/common.css}"/>
+    <link rel="stylesheet" th:href="@{styles/pages/account_details.css}"/>
+    <link rel="stylesheet" th:href="@{styles/pages/project_details.css}">
+    <link rel="stylesheet" th:href="@{styles/navbar.css}"/>
 
 </head>
 <body>
@@ -21,7 +21,7 @@
         </div>
         <div class="account">
             <div class="dropdown">
-                <button class="dropbutton"><div class="username" th:text="${username}"></div><img
+                <button class="dropbutton"><div class="username" th:text="${user.username}"></div><img
                         src="https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png"
                         width="46" height="46" alt="Placeholder Profile Photo">
                 </button>
@@ -36,9 +36,9 @@
 <div class="raised-card card-padding">
     <div class="container">
         <div class="name-container">
-            <div class="image-container">
+            <div class="image-container" style="padding:0">
                 <img src="https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png"
-                     width="150" height="150" alt="Placeholder Profile Photo">
+                       width="150" height="150" alt="Placeholder Profile Photo">
             </div>
             <div class="left-padding">
                 <h1 th:text="${user.firstName} + ' ' + ${user.middleName} + ' ' + ${user.lastName}" />
@@ -50,16 +50,23 @@
         </div>
         <div class="right-padding">
             <div>
-                <button onclick="location.href='/edit_account'" type="button">Edit</button>
+                <button onclick="location.href='edit_account'" type="button">Edit Details</button>
+                <button onclick="location.href='edit_password'" type="button">Edit Password</button>
+            </div>
+            <div class="edit-message" th:if="${editMessage != null}" th:text="${editMessage}">
+
             </div>
         </div>
     </div>
     <div>
         <h3 th:text="'Username:   ' + ${user.username}"/>
         <h3 th:text="'Email:   ' +${user.email}"/>
+        <h3 th:text="'Roles:   ' +${delegate.formatUserRoles(user.rolesList)}"/>
         <h3 th:text="'Member since:   ' + ${registration_date}"/>
         <h3 th:text="'Bio:   ' + ${user.bio}"/>
     </div>
+
+
 </div>
 
 </body>
