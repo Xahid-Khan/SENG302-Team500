@@ -474,10 +474,13 @@ class ProjectOrSprintEditor {
     this.endDateInput = document.getElementById(`edit-end-date-${this.entityId}`);
 
     this.colourInput = document.getElementById(`edit-colour-${this.entityId}`);
-    if (this.title === "New project details:" || this.title === "Edit project details:") {
+    if (!(this.title === "New sprint details:") && !(this.title === "Edit sprint details:")) {
       this.colourInput.outerHTML = "";
       document.getElementById(`color-label-${this.entityId}`).outerHTML = "";
     }
+    console.log("here")
+    console.log(this.containerElement);
+    console.log(this.initialData)
 
     this.saveButton = document.getElementById(`edit-save-button-${this.entityId}`);
 
@@ -757,11 +760,13 @@ class ProjectOrSprintEditor {
 class SprintView {
   expandedView = false;
 
-  constructor(containerElement, sprint, deleteCallback, editCallback) {
+  constructor(containerElement, events, sprints, sprint, deleteCallback, editCallback) {
     this.containerElement = containerElement;
     this.sprint = sprint;
     this.editCallback = editCallback;
     this.deleteCallback = deleteCallback;
+    this.events = events;
+    this.sprints = sprints;
 
     this.constructView();
     this.wireView();
@@ -783,7 +788,10 @@ class SprintView {
         </span>
     </div>
 
-    <div class="sprint-description" id="sprint-description-${this.sprint.sprintId}"></div>
+    <div class="sprint-details" id="sprint-details-${this.sprint.sprintId}">
+        <div class="sprint-description" id="sprint-description-${this.sprint.sprintId}"></div>
+        <div class="sprint-events" id="sprint-events-${this.sprint.sprintId}"></div>
+    </div>
     <div class="colour-block" id="sprint-colour-block-${this.sprint.sprintId}"></div>
     `;
 
@@ -791,9 +799,12 @@ class SprintView {
     this.sprintDetails = document.getElementById(`sprint-details-${this.sprint.sprintId}`);
     this.description = document.getElementById(`sprint-description-${this.sprint.sprintId}`);
     this.colourBlock = document.getElementById(`sprint-colour-block-${this.sprint.sprintId}`);
+    this.details = document.getElementById(`sprint-details-${this.sprint.sprintId}`);
+    this.sprintEvents = document.getElementById(`sprint-events-${this.sprint.sprintId}`);
     document.getElementById(`sprint-order-text-${this.sprint.sprintId}`).innerText = `Sprint ${this.sprint.orderNumber}`;
     document.getElementById(`sprint-title-text-${this.sprint.sprintId}`).innerText = this.sprint.name;
     this.description.innerText = "Description: " + this.sprint.description;
+    this.sprintEvents.innerHTML = this.getEvents();
     this.colourBlock.style.background = this.sprint.colour;
     document.getElementById(`start-date-${this.sprint.sprintId}`).innerText = DatetimeUtils.localToUserDMY(this.sprint.startDate);
     const displayedDate = new Date(this.sprint.endDate.valueOf());
@@ -806,11 +817,11 @@ class SprintView {
    */
   toggleExpandedView() {
     if (this.expandedView) {
-      this.description.style.display = "none";
+      this.details.style.display = "none";
       this.toggleButton.innerText = "+";
     }
     else {
-      this.description.style.display = "block";
+      this.details.style.display = "block";
       this.toggleButton.innerText = "-";
     }
 
@@ -824,6 +835,46 @@ class SprintView {
     this.toggleButton.addEventListener('click', this.toggleExpandedView.bind(this));
   }
 
+  getEvents() {
+    let html = "<label>Events occurring during this sprint: </label>";
+    this.events.forEach(event => {
+      if (event.startDate >= this.sprint.startDate && event.startDate <= this.sprint.endDate || event.endDate >= this.sprint.startDate && event.endDate <= this.sprint.endDate) {
+        html += `<div class="sprint-event-details">   - <span>${event.name}: </span>`
+        if (event.startDate >= this.sprint.startDate && event.startDate <= this.sprint.endDate) {
+          html += `<span style="color: ${this.sprint.colour}">${DatetimeUtils.localToUserDMY(event.startDate)}</span> - `;
+        } else {
+          let found = false;
+          this.sprints.forEach(sprint => {
+            if (event.startDate >= sprint.startDate && event.startDate <= sprint.endDate) {
+              html += `<span style="color: ${sprint.colour}">${DatetimeUtils.localToUserDMY(event.startDate)}</span> - `;
+              found = true;
+            }
+          });
+          if (!found) {
+            html += `<span">${DatetimeUtils.localToUserDMY(event.startDate)}</span> - `;
+          }
+        }
+        if (event.endDate >= this.sprint.startDate && event.endDate <= this.sprint.endDate) {
+          html += `<span style="color: ${this.sprint.colour}">${DatetimeUtils.localToUserDMY(event.endDate)}</span>`;
+        } else {
+          let found = false;
+          this.sprints.forEach(sprint => {
+            if (event.endDate >= sprint.startDate && event.endDate <= sprint.endDate) {
+              html += `<span style="color: ${sprint.colour}">${DatetimeUtils.localToUserDMY(event.endDate)}</span>`;
+              found = true;
+            }
+          });
+          if (!found) {
+            html += `<span>${DatetimeUtils.localToUserDMY(event.endDate)}</span>`;
+          }
+        }
+      }
+    });
+    if (html === "<label>Events occurring during this sprint: </label>") {
+      html += "<span>No events will occur during this sprint</span>"
+    }
+    return html;
+  }
 
   dispose() {
 
@@ -833,11 +884,12 @@ class SprintView {
 class EventView {
   expandedView = false;
 
-  constructor(containerElement, event, deleteCallback, editCallback) {
+  constructor(containerElement, sprints, event, deleteCallback, editCallback) {
     this.containerElement = containerElement;
     this.event = event;
     this.editCallback = editCallback;
     this.deleteCallback = deleteCallback;
+    this.sprints = sprints;
 
     this.constructView();
     this.wireView();
@@ -857,14 +909,21 @@ class EventView {
             <button class="button toggle-event-details" id="toggle-event-details-${this.event.eventId}">+</button>
         </span>
     </div>
-    <div class="event-description" id="event-description-${this.event.eventId}"></div>
+    <div class="event-details" id="event-details-${this.event.eventId}">
+        <div class="event-description" id="event-description-${this.event.eventId}"></div>
+        <div class="event-sprints" id="event-sprints-${this.event.eventId}"></div>
+    </div>
+    
     `;
 
     this.toggleButton = document.getElementById(`toggle-event-details-${this.event.eventId}`);
     this.description = document.getElementById(`event-description-${this.event.eventId}`);
+    this.details = document.getElementById(`event-details-${this.event.eventId}`);
+    this.eventSprints = document.getElementById(`event-sprints-${this.event.eventId}`);
 
     document.getElementById(`event-title-text-${this.event.eventId}`).innerText = this.event.name;
-    this.description.innerText = this.event.description;
+    this.description.innerText = "Description: " + this.event.description;
+    this.eventSprints.innerHTML = this.getSprints();
     document.getElementById(`start-date-${this.event.eventId}`).innerText = DatetimeUtils.localToUserDMY(this.event.startDate);
     const displayedDate = new Date(this.event.endDate.valueOf());
     displayedDate.setDate(displayedDate.getDate() - 1);
@@ -876,11 +935,11 @@ class EventView {
    */
   toggleExpandedView() {
     if (this.expandedView) {
-      this.description.style.display = "none";
+      this.details.style.display = "none";
       this.toggleButton.innerText = "+";
     }
     else {
-      this.description.style.display = "block";
+      this.details.style.display = "block";
       this.toggleButton.innerText = "-";
     }
 
@@ -894,6 +953,18 @@ class EventView {
     this.toggleButton.addEventListener('click', this.toggleExpandedView.bind(this));
   }
 
+  getSprints() {
+    let html = "<label>Sprints in progress during this event: </label>";
+    this.sprints.forEach(sprint => {
+      if (this.event.startDate >= sprint.startDate && this.event.startDate <= sprint.endDate || this.event.endDate >= sprint.startDate && this.event.endDate <= sprint.endDate) {
+        html += `<div class="event-sprint-details">   - <span>${sprint.name}: </span><span>${DatetimeUtils.localToUserDMY(sprint.startDate)}</span> - <span>${DatetimeUtils.localToUserDMY(sprint.endDate)}</span>`;
+      }
+    });
+    if (html === "<label>Sprints in progress during this event: </label>") {
+      html += "<span>No sprints are overlapping with this event</span>"
+    }
+    return html;
+  }
 
   dispose() {
 
@@ -1251,7 +1322,7 @@ class Sprint {
    */
   showViewer() {
     this.currentView?.dispose();
-    this.currentView = new SprintView(this.containerElement, this.sprint, this.deleteSprint.bind(this), this.showEditor.bind(this));
+    this.currentView = new SprintView(this.containerElement, this.project.events, this.project.events, this.sprint, this.deleteSprint.bind(this), this.showEditor.bind(this));
   }
 
   /**
@@ -1387,7 +1458,7 @@ class Event {
    */
   showViewer() {
     this.currentView?.dispose();
-    this.currentView = new EventView(this.containerElement, this.event, this.deleteEvent.bind(this), this.showEditor.bind(this));
+    this.currentView = new EventView(this.containerElement, this.project.sprints, this.event, this.deleteEvent.bind(this), this.showEditor.bind(this));
   }
 
   /**
