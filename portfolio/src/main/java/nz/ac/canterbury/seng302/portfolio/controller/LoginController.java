@@ -40,7 +40,7 @@ public class LoginController {
             Model model
     ) {
         if (principal != null && principal.getIsAuthenticated()) {
-            return "redirect:/my_account";
+            return "redirect:my_account";
         }
 
         model.addAttribute("login", new Login());//creates the DTO object which captures the inpuitd

@@ -16,7 +16,7 @@
     <h1>404 - Page not found!</h1>
     <p>A page at that URL doesn't exist.</p>
     <div class="actions">
-        <button onclick="window.location.href = '/login'">Go Home</button>
+        <button th:data-global-url-path-prefix="${globalUrlPathPrefix}" onclick="window.location.href = (this.getAttribute('data-global-url-path-prefix') ?? '') + '/login'">Go Home</button>
     </div>
 </div>
 </body>

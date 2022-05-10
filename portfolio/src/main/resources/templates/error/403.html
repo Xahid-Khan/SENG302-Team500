@@ -7,8 +7,8 @@
 
     <title>Page not found</title>
 
-    <link type="text/css" rel="stylesheet" th:href="@{/styles/common.css}"/>
-    <link type="text/css" rel="stylesheet" th:href="@{/styles/pages/error.css}"/>
+    <link type="text/css" rel="stylesheet" th:href="@{styles/common.css}"/>
+    <link type="text/css" rel="stylesheet" th:href="@{styles/pages/error.css}"/>
 </head>
 
 <body>
@@ -16,7 +16,7 @@
     <h1>403 - Permission Denied</h1>
     <p>Sorry, you don't have permission to load this page.</p>
     <div class="actions">
-        <button onclick="window.location.href = '/login'">Go Home</button>
+        <button th:data-global-url-path-prefix="${globalUrlPathPrefix}" onclick="window.location.href = (this.getAttribute('data-global-url-path-prefix') ?? '') + '/login'">Go Home</button>
     </div>
 </div>
 </body>

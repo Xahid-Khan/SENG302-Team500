@@ -17,7 +17,7 @@
     <h1 th:text="'Error ' + ${status} + ' - ' + ${message}"></h1>
     <p>Sorry about that!</p>
     <div class="actions">
-        <button onclick="window.location.href = '/login'">Go Home</button>
+        <button th:data-global-url-path-prefix="${globalUrlPathPrefix}" onclick="window.location.href = (this.getAttribute('data-global-url-path-prefix') ?? '') + '/login'">Go Home</button>
     </div>
 </div>
 
