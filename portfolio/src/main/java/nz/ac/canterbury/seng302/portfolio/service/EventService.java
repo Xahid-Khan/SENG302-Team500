@@ -5,6 +5,7 @@ import nz.ac.canterbury.seng302.portfolio.mapping.SprintMapper;
 import nz.ac.canterbury.seng302.portfolio.model.contract.BaseEventContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.BaseSprintContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.EventContract;
+import nz.ac.canterbury.seng302.portfolio.model.entity.EventEntity;
 import nz.ac.canterbury.seng302.portfolio.model.entity.ProjectEntity;
 import nz.ac.canterbury.seng302.portfolio.model.entity.SprintEntity;
 import nz.ac.canterbury.seng302.portfolio.repository.EventRepository;
@@ -40,7 +41,7 @@ public class EventService {
      * @throws IllegalArgumentException If the event ID is invalid
      * @return The event contract with the event ID
      */
-    public EventContract getEvent(String eventId) {
+    public EventContract get(String eventId) {
         var event= eventRepository.findById(eventId).orElseThrow(() -> new IllegalArgumentException("Invalid event ID"));
         return eventMapper.toContract(event);
     }
@@ -87,11 +88,12 @@ public class EventService {
      * @param event to update, with the new values
      */
     public void update(String eventId, BaseEventContract event) {
-        var eventEntity = eventRepository.findById(eventId).orElseThrow(() -> new NoSuchElementException("Invalid event ID"));
-        var project = eventEntity.getProject();
-        eventEntity.setName((event.name()));
-        eventEntity.setDescription(event.description());
+        EventEntity eventEntity = eventRepository.findById(eventId).orElseThrow(() -> new NoSuchElementException("Invalid event ID"));
 
+        eventEntity.setName(event.name());
+        eventEntity.setDescription(event.description());
+        eventEntity.setStartDate(event.startDate());
+        eventEntity.setEndDate(event.endDate());
 
         eventRepository.save(eventEntity);
     }
