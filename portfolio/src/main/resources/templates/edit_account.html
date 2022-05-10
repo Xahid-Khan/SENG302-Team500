@@ -40,7 +40,7 @@
     <div class="container">
         <div class="name-container">
             <div class="left-padding">
-                <form id='form' action="#" th:action="@{/edit_account}" th:object="${user}" method="post" enctype="multipart/form-data">
+                <form id='form' action="#" th:action="@{edit_account}" th:object="${user}" method="post" enctype="multipart/form-data">
                     <h1 class="edit-title">Edit Account Details</h1>
 
                     <!--    Submits a populated UserDTO to endpoint register -->
@@ -133,7 +133,7 @@
     </div>
 </div>
 
-<script type="text/javascript" th:src="@{/scripts/popup_form.js}"></script>
+<script type="text/javascript" th:src="@{scripts/popup_form.js}"></script>
 </body>
 
 <style>
