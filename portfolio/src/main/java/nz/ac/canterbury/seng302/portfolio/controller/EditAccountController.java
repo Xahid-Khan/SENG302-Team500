@@ -94,7 +94,7 @@ public class EditAccountController {
             return "edit_account";
         }
 
-        return "redirect:/my_account";
+        return "redirect:my_account";
     }
 
 }

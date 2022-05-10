@@ -5,13 +5,13 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="stylesheet" th:href="@{/styles/common.css}" />
-    <link rel="stylesheet" th:href="@{/styles/modal_form.css}">
+    <link rel="stylesheet" th:href="@{styles/common.css}" />
+    <link rel="stylesheet" th:href="@{styles/modal_form.css}">
 </head>
 
 <body>
 
-<form id='form' th:action="@{/register}" th:object="${user}" method="post" class="raised-card form">
+<form id='form' th:action="@{register}" th:object="${user}" method="post" class="raised-card form">
     <h1 class="title">Sign Up</h1>
 
     <!--    Submits a populated UserDTO to endpoint register -->
@@ -79,11 +79,11 @@
 
     <br/>* = Required field.<br/>
     <button id='submit' name="register" type="Submit" value="0">Register</button>
-    <a href="/login">Have an account? Login</a>
+    <a href="login">Have an account? Login</a>
 </form>
 
 </body>
 
-<script type="text/javascript" th:src="@{/scripts/registration.js}"></script>
+<script type="text/javascript" th:src="@{scripts/registration.js}"></script>
 
 </html>

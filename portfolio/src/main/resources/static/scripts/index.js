@@ -214,7 +214,7 @@ class ProjectView {
     this.addSprintLoadingStatus = LoadingStatus.Pending;
 
     try {
-      const res = await fetch(`/api/v1/projects/${this.project.id}/sprints`, {
+      const res = await fetch(`api/v1/projects/${this.project.id}/sprints`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -747,7 +747,7 @@ class Project {
     this.updateLoadingStatus = LoadingStatus.Pending;
 
     try {
-      const result = await fetch(`/api/v1/projects/${this.project.id}`, {
+      const result = await fetch(`api/v1/projects/${this.project.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
@@ -794,7 +794,7 @@ class Project {
     this.deleteLoadingStatus = LoadingStatus.Pending;
 
     try {
-      const response = await fetch(`/api/v1/projects/${this.project.id}`, {
+      const response = await fetch(`api/v1/projects/${this.project.id}`, {
         method: 'DELETE'
       })
 
@@ -877,7 +877,7 @@ class Sprint {
     this.updateSprintLoadingStatus = LoadingStatus.Pending;
 
     try {
-      const response = await fetch(`/api/v1/sprints/${this.sprint.sprintId}`, {
+      const response = await fetch(`api/v1/sprints/${this.sprint.sprintId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
@@ -948,7 +948,7 @@ class Sprint {
     this.deleteLoadingStatus = LoadingStatus.Pending;
 
     try {
-      const response = await fetch(`/api/v1/sprints/${this.sprint.sprintId}`, {
+      const response = await fetch(`api/v1/sprints/${this.sprint.sprintId}`, {
         method: 'DELETE'
       })
       if (!response.ok) {
@@ -1005,7 +1005,7 @@ class Application {
     this.addProjectLoadingStatus = LoadingStatus.Pending;
 
     try {
-      const res = await fetch("/api/v1/projects", {
+      const res = await fetch("api/v1/projects", {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -1138,7 +1138,7 @@ class Application {
     this.clearProjects();
 
     try {
-      const result = await fetch('/api/v1/projects');
+      const result = await fetch('api/v1/projects');
 
       if (!result.ok) {
         await ErrorHandlerUtils.handleNetworkError(result, "get projects");

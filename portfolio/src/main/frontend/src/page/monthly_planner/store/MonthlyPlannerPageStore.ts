@@ -59,7 +59,7 @@ export class MonthlyPlannerPageStore {
         this.project = undefined
 
         try {
-            const res = await fetch(`/api/v1/projects/${this.projectId}`)
+            const res = await fetch(`../api/v1/projects/${this.projectId}`)
 
             if (!res.ok) {
                 await handleErrorResponse(res, {
