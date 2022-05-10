@@ -614,6 +614,7 @@ class SprintView {
    */
   constructView() {
     this.containerElement.innerHTML = `
+    <div class="colour-block" id="sprint-colour-block-${this.sprint.sprintId}"></div>
     <div class="sprints" id="sprints-container-${this.sprint.sprintId}"></div>
     <div class="sprint-title">
         <span id="sprint-order-text-${this.sprint.sprintId}"></span>: <span id="sprint-title-text-${this.sprint.sprintId}" style="font-style: italic;"></span> | <span id="start-date-${this.sprint.sprintId}"></span> - <span id="end-date-${this.sprint.sprintId}"></span>
@@ -624,23 +625,17 @@ class SprintView {
             <button class="button toggle-sprint-details" id="toggle-sprint-details-${this.sprint.sprintId}">+</button>
         </span>
     </div>
-    <div class="sprint-details" id="sprint-details-${this.sprint.sprintId}"> 
-      <span class="sprint-colour" id="sprint-colour-${this.sprint.sprintId}"> </span>
-      <span class="colour-block" id="sprint-colour-block-${this.sprint.sprintId}"></span>
-    </div>
-    
+
     <div class="sprint-description" id="sprint-description-${this.sprint.sprintId}"></div>
     `;
 
     this.toggleButton = document.getElementById(`toggle-sprint-details-${this.sprint.sprintId}`);
     this.sprintDetails = document.getElementById(`sprint-details-${this.sprint.sprintId}`);
     this.description = document.getElementById(`sprint-description-${this.sprint.sprintId}`);
-    this.colour = document.getElementById(`sprint-colour-${this.sprint.sprintId}`);
     this.colourBlock = document.getElementById(`sprint-colour-block-${this.sprint.sprintId}`);
     document.getElementById(`sprint-order-text-${this.sprint.sprintId}`).innerText = `Sprint ${this.sprint.orderNumber}`;
     document.getElementById(`sprint-title-text-${this.sprint.sprintId}`).innerText = this.sprint.name;
     this.description.innerText = "Description: " + this.sprint.description;
-    this.colour.innerText = "Colour: ";
     this.colourBlock.style.background = this.sprint.colour;
     document.getElementById(`start-date-${this.sprint.sprintId}`).innerText = DatetimeUtils.localToUserDMY(this.sprint.startDate);
     const displayedDate = new Date(this.sprint.endDate.valueOf());
@@ -654,14 +649,10 @@ class SprintView {
   toggleExpandedView() {
     if (this.expandedView) {
       this.description.style.display = "none";
-      this.colour.style.display = "none";
-      this.colourBlock.style.display = "none";
       this.toggleButton.innerText = "+";
     }
     else {
       this.description.style.display = "block";
-      this.colour.style.display = "block";
-      this.colourBlock.style.display = "block";
       this.toggleButton.innerText = "-";
     }
 
