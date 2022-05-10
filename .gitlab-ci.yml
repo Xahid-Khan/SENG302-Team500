@@ -4,6 +4,7 @@ stages:
   - build
   - test
   - sonarqube
+  - predeploy
   - deploy
 
 tag-checker:
@@ -48,6 +49,18 @@ branch-build:
     - tags
     - master
     - dev
+    - U26_T75/configure_mariadb
+
+predeploy-copy-environment-variables:
+  stage: predeploy
+  script:
+    - python3 ../runner/export_environment_vars.py
+    - cp ./runner_env.sh /home/gitlab-runner/runner_env.sh
+  only:
+    - dev
+    - tags
+    - master
+    - U26_T75/configure_mariadb
 
 deploy-staging-identityprovider:
   stage: deploy
@@ -65,6 +78,7 @@ deploy-staging-identityprovider:
       - identityprovider/build/libs
   only:
     - dev
+    - U26_T75/configure_mariadb
 
 deploy-staging-portfolio:
   stage: deploy
@@ -82,6 +96,7 @@ deploy-staging-portfolio:
       - portfolio/build/libs
   only:
     - dev
+    - U26_T75/configure_mariadb
 
 deploy-production-identityprovider:
   stage: deploy

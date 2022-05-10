@@ -20,6 +20,7 @@ public class PortfolioApplication {
 
 
     public static void main(String[] args) {
+        System.out.printf("Got database password: %s\n", System.getenv("DB_PASSWORD"));  // TODO: Delete me, testing purposes only!
         SpringApplication.run(PortfolioApplication.class, args);
     }
 
