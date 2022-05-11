@@ -42,8 +42,9 @@ public class RoleServiceTest {
             "Pronouns",
             "Email@Email.Email",
             List.of(UserRole.STUDENT),
-            null,
-            null));
+            null
+        )
+    );
   }
 
   /** Adds a teacher role to a user. */

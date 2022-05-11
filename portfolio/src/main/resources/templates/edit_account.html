@@ -64,7 +64,7 @@
                                      width="150" height="150" alt="No Photo">
                             </button>
                         </div>
-                        <th:block th:if="${#imageError}">
+                        <th:block th:if="${imageError}">
                             <div class="form-error" id="errorMessageImage"><span th:text="${imageError}" aria-valuenow="test"></span></div>
                         </th:block>
 <!--                        <div id="errorMessageImage" value="">-->

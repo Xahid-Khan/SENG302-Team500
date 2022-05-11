@@ -1,5 +1,7 @@
 'use strict';
 
+import {leftPadNumber} from "../../../frontend/src/util/string_util";
+
 const LoadingStatus = {
   NotYetAttempted: "NotYetAttempted",
   Pending: "Pending",
@@ -320,7 +322,7 @@ class ProjectView {
     const defaultEndDate = new Date(defaultStartDate.valueOf());
     defaultEndDate.setDate(defaultEndDate.getDate() + 22);
 
-    const randomColor = Math.floor(Math.random() * 16777215).toString(16);
+    const randomColor = leftPadNumber(Math.floor(Math.random() * 16777215).toString(16), 6);
     const defaultColour = "#" + randomColor;
 
     const defaultSprint = {

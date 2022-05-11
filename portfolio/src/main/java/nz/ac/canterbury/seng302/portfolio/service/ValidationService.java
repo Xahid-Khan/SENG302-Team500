@@ -8,6 +8,7 @@ import javax.xml.bind.SchemaOutputResolver;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Locale;
 import java.util.NoSuchElementException;
 
 
@@ -89,7 +90,7 @@ public class ValidationService {
     public String checkAddSprint(String projectId, BaseSprintContract sprintContract) {
         try {
             ProjectContract project = projectService.getById(projectId);
-            String response = checkSprintDetails(project, "placeholderId", sprintContract.startDate(), sprintContract.endDate());
+            String response = checkSprintDetails(project, "placeholderId", sprintContract.startDate(), sprintContract.endDate(), sprintContract.colour());
             if (!response.equals("Okay")) {
                 return response;
             }
@@ -130,7 +131,7 @@ public class ValidationService {
             SprintContract sprint = sprintService.get(sprintId);
             try {
                 ProjectContract project = projectService.getById(sprint.projectId());
-                String response = checkSprintDetails(project, sprint.sprintId(), sprintContract.startDate(), sprintContract.endDate());
+                String response = checkSprintDetails(project, sprint.sprintId(), sprintContract.startDate(), sprintContract.endDate(), sprintContract.colour());
                 if (!response.equals("Okay")) {
                     return response;
                 }
@@ -194,9 +195,13 @@ public class ValidationService {
     /**
      * Checks sprint date details and returns respective messages.
      */
-    public String checkSprintDetails(ProjectContract project, String sprintId, Instant start, Instant end) {
-
-
+    public String checkSprintDetails(ProjectContract project, String sprintId, Instant start, Instant end, String colour) {
+        if (colour == null) {
+            return "Sprint requires a colour";
+        }
+        else if (!colour.toUpperCase().matches("^#((\\d|[A-F]){6})$")) {
+            return "Sprint colour must be in the format #RRGGBB";
+        }
         if (start.isBefore(project.startDate())) {
             return "Sprint cannot start before project start date";
         }

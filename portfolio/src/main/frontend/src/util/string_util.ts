@@ -5,7 +5,7 @@
  * @param places number of places to pad the number to.
  * @throws RangeError if the string representation of number is longer than places.
  */
-export const leftPadNumber = (number: number, places: number) => {
+export const leftPadNumber = (number: number | string, places: number) => {
     const numberString = `${number}`
 
     if (numberString.length >= places) {

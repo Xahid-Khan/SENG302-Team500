@@ -3,14 +3,18 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.google.protobuf.Timestamp;
 import nz.ac.canterbury.seng302.portfolio.DTO.User;
+import nz.ac.canterbury.seng302.portfolio.service.AuthenticateClientService;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
+import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticateResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -40,6 +44,25 @@ class RegistrationControllerTest {
   @Autowired MockMvc mockMvc;
 
   @MockBean private RegisterClientService service;
+
+  @MockBean private AuthenticateClientService authService;
+
+  @BeforeEach
+  public void beforeEach() {
+    when(authService.authenticate(any(), any()))
+            .thenReturn(
+                    AuthenticateResponse.newBuilder()
+                      .setUserId(0)
+                      .setToken("test_token")
+                      .setUsername("test_user")
+                      .setFirstName("Test")
+                      .setLastName("User")
+                      .setEmail("test@example.com")
+                      .setSuccess(true)
+                      .setMessage("Login successful")
+                      .build()
+            );
+  }
 
   private final String API_PATH = "/register";
 
@@ -73,7 +96,7 @@ class RegistrationControllerTest {
     // Creates the Post Body to be sent to the mock /register endpoint
     var postBody = buildPostBody(user);
     // Creates a mock for the /register endpoint
-    Mockito.when(service.register(any()))
+    when(service.register(any()))
         .thenReturn(
             UserRegisterResponse.newBuilder()
                 .setIsSuccess(true)
@@ -84,7 +107,7 @@ class RegistrationControllerTest {
     // Performs the request to the /register endpoint
     return this.mockMvc
         .perform(
-            post(API_PATH).contentType(MediaType.APPLICATION_FORM_URLENCODED).content(postBody))
+            post(API_PATH).contentType(MediaType.APPLICATION_FORM_URLENCODED).content(postBody).header("Host", "localhost:8080"))
         .andExpect(status().is3xxRedirection())
         .andReturn();
   }
@@ -94,7 +117,7 @@ class RegistrationControllerTest {
     // Creates the Post Body to be sent to the mock /register endpoint
     var postBody = buildPostBody(user);
     // Creates a mock for the /register endpoint
-    Mockito.when(service.register(any()))
+    when(service.register(any()))
             .thenReturn(
                     UserRegisterResponse.newBuilder()
                             .setIsSuccess(true)
