@@ -7,13 +7,10 @@
 .card-padding {
     padding: 5%;
     margin: 5% 5% 5% 5%;
-    overflow: scroll;
-    overflow-y: hidden;
-    overflow-x: auto;
 }
 
 a.buttonLink[disabled='disabled'] {
-    display: none;
+    visibility: hidden;
 }
 
 a.buttonLink {
@@ -31,15 +28,28 @@ a.buttonLink:hover {
     background-color: #0332D1;
 }
 
-.plusbtn{
-    color: #888;
-    font-weight: bold;
-    float: right;
-    font-size: 20px;
-    cursor: pointer;
+#pageNumber {
+    text-align: center;
 }
 
-.plusbtn:hover {
+.add-button {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+    height: 25px;
+    width: 25px;
+    font-family: inherit;
+    font-weight: bold;
+    text-align: center;
+    font-size: 25px;
+    line-height: 25px;
+    border-radius: 50%;
+    color: #888;
+    background-color: #cecece;
+    transition-duration: 0.4s;
+}
+
+.add-button:hover {
     color: #000;
 }
 

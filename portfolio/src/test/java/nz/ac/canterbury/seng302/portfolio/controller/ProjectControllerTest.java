@@ -57,7 +57,7 @@ public class ProjectControllerTest {
                 Instant.parse("2022-03-03T10:15:30.00Z")
         );
 
-        var sprint = new SprintEntity("New sprint", "My New Sprint Description", Instant.parse("2022-03-03T10:15:30.00Z"), Instant.parse("2023-03-03T10:15:30.00Z"));
+        var sprint = new SprintEntity("New sprint", "My New Sprint Description", Instant.parse("2022-03-03T10:15:30.00Z"), Instant.parse("2023-03-03T10:15:30.00Z"), "#fff");
         project1.addSprint(sprint);
 
         projectRepository.save(project1);
@@ -186,7 +186,7 @@ public class ProjectControllerTest {
                 {
                     "name": "NewName Project",
                     "description": "Updated project details",
-                    "startDate": "2021-04-01T10:00:00.00Z",
+                    "startDate": "2022-01-01T10:00:00.00Z",
                     "endDate": "2024-01-01T10:00:00.00Z"
                 }
                 """;
@@ -206,7 +206,7 @@ public class ProjectControllerTest {
 
         assertEquals("NewName Project", projectResponse.name());
         assertEquals("Updated project details", projectResponse.description());
-        assertEquals(Instant.parse("2021-04-01T10:00:00Z"), projectResponse.startDate());
+        assertEquals(Instant.parse("2022-01-01T10:00:00Z"), projectResponse.startDate());
         assertEquals(Instant.parse("2024-01-01T10:00:00.00Z"), projectResponse.endDate());
         assertEquals(projectId, projectResponse.id());
     }

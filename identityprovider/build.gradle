@@ -37,7 +37,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
-
+    implementation 'org.mariadb.jdbc:mariadb-java-client:3.0.4'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'io.cucumber:cucumber-java:7.2.3'
