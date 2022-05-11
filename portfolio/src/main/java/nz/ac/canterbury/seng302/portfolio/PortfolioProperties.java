@@ -24,4 +24,14 @@ public class PortfolioProperties {
     public String getUrlPathPrefix() {
         return urlPathPrefix;
     }
+
+
+
+    @Value("${nz.ac.canterbury.seng302.portfolio.imageUrlPath}")
+    private String imageUrlPath;
+
+    @ModelAttribute("globalImagePath")
+    public String getImagePath() {
+        return imageUrlPath;
+    }
 }

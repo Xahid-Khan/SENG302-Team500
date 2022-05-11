@@ -38,6 +38,7 @@ public class ProjectDetailsController {
 
     UserResponse userDetails = userAccountService.getUserById(userId);
 
+    model.addAttribute("userId", userId);
     model.addAttribute("username", userDetails.getUsername());
 
     return "project_details";

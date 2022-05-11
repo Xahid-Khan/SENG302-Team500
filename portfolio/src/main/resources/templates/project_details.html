@@ -24,7 +24,7 @@
             <div class="dropdown">
                 <button class="dropbutton"><div class="username" th:text="${username}"></div>
                     <div style="width: 46px;height: 46px;object-fit: cover;overflow: clip;">
-                        <img th:src="'http://localhost:8080/userImage/'+${userId}"
+                        <img th:src="'//' + ${globalImagePath} + ${userId}"
                              onerror="this.onerror=null;this.src='https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png'"
                              alt="Placeholder Profile Photo" style="height: 50px;" width="46" height="46">
                     </div>

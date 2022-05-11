@@ -27,7 +27,7 @@
             <div class="dropdown">
                 <button class="dropbutton"><div class="username" th:text="${username}"></div>
                     <div style="width: 46px;height: 46px;object-fit: cover;overflow: clip;">
-                        <img th:src="'http://localhost:8080/userImage/'+${userId}"
+                        <img th:src="'//' + ${globalImagePath} + ${userId}"
                              onerror="this.onerror=null;this.src='https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png'"
                              alt="Placeholder Profile Photo" style="height: 50px;" width="46" height="46">
                     </div>
@@ -61,7 +61,7 @@
                         <!--    Submits a populated UserDTO to endpoint register -->
                         <div class="image-container" style="padding-left:15%">
                             <button onclick="openPopupForm()" id="userPhotoButton" type="button" style="padding:0; width:150px; height:150px"}>
-                                <img th:src="'http://localhost:8080/userImage/'+${userId}"
+                                <img th:src="'//' + ${globalImagePath} + ${userId}"
                                      onerror="this.onerror=null;this.src='https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png'"
                                      width="150" height="150" alt="No Photo">
                             </button>

@@ -31,7 +31,7 @@ public class UserImageController {
             Optional<PhotoModel> userPhoto = photoRepository.findById(userId);
             response.setContentType("image/*");
             response.getOutputStream().write(userPhoto.get().getUserPhoto());
-            response.getOutputStream().close();
+
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
