@@ -8,6 +8,13 @@ const error = document.getElementById("field-error");
 form.addEventListener('submit', passwordMatchValidator);
 
 /**
+ * Enables the 'Confirm Password' field if a password is entered.
+ */
+const enableConfirmPassword = () => {
+    password2.enable = password1.value.length > 0
+}
+
+/**
  * Checks whether both password fields match. Directly prevents submission if not.
  */
 function passwordMatchValidator (event) {

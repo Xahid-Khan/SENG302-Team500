@@ -2,11 +2,10 @@ package nz.ac.canterbury.seng302.portfolio.DTO;
 
 import com.google.protobuf.Timestamp;
 
-import javax.annotation.MatchesPattern;
 import javax.annotation.Nullable;
-import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 /**
@@ -15,7 +14,7 @@ import javax.validation.constraints.Size;
  *  sends them off to the IDP to put in the database.
  */
 public record User(
-    @Pattern(regexp = "[\\p{L}\\p{N}]*", message = "Username must only contain alphabetical characters or numbers, with no spaces",groups = RegisteredUserValidation.class)
+    @Pattern(regexp = "[\\p{L}\\p{N}]*", message = "Username must only contain alphabetical characters or numbers, with no spaces", groups = RegisteredUserValidation.class)
     @NotBlank(message = "Username is required", groups = RegisteredUserValidation.class)
     @Size(min = 3, max = 32, message = "Username must be between 3 and 32 characters, and cannot contain any spaces", groups = RegisteredUserValidation.class)
     String username,
