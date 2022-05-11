@@ -58,6 +58,32 @@ export class DatetimeUtils {
     }
 
     /**
+     * Converts the given Date into an HH:MM string in the local timezone.
+     */
+    static toLocalHM(date: Date) {
+        return `${date.getHours()}:${leftPadNumber(date.getMinutes(), 2)}`
+    }
+
+    /**
+     * Copies the given date, setting the hours and minutes component to match the hours and minutes parsed from the
+     * hm string.
+     *
+     * @return Date with the new hours and minutes or null if hm is of an invalid format.
+     */
+    static withLocalHM(date: Date, hm: string): Date | null {
+        const [hoursStr, minutesStr] = hm.split(/:/, 2)
+        const hours = parseInt(hoursStr, 10)
+        const minutes = parseInt(minutesStr, 10)
+        if (isNaN(hours) || isNaN(minutes)) {
+            return null
+        }
+        const newDate = new Date(date.getTime())
+        newDate.setHours(hours)
+        newDate.setMinutes(minutes)
+        return newDate
+    }
+
+    /**
      * Format a JavaScript Date to a date string suitable for presentation to the user.
      *
      * Note that if the given Date has a non-zero time component in the local timezone the output of {@link getTimeStringIfNonZeroLocally} may be appended.
