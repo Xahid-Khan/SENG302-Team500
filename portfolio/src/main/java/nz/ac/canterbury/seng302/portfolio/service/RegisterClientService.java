@@ -131,4 +131,12 @@ public class RegisterClientService {
 
         requestStreamObserverContainer.observer.onNext(metadataRequest);
     }
+
+    public void deleteUserPhoto(int userId) {
+        DeleteUserProfilePhotoRequest.Builder request = DeleteUserProfilePhotoRequest.newBuilder();
+        request.setUserId(userId);
+
+        registrationStub.deleteUserProfilePhoto(request.build());
+    }
+
 }

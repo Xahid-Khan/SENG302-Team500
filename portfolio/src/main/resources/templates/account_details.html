@@ -54,6 +54,12 @@
         </div>
         <div class="right-padding">
             <div>
+                <form id="deletePhotoForm" action="#" th:action="@{/edit_account/imageDelete}" th:object="${user}" method="post"
+                    style="float:right; margin-left: 4px">
+                    <button>
+                        Delete Photo
+                    </button>
+                </form>
                 <button onclick="location.href='edit_account'" type="button">Edit Details</button>
                 <button onclick="location.href='edit_password'" type="button">Edit Password</button>
             </div>
