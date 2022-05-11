@@ -411,6 +411,17 @@ class ProjectView {
   }
 }
 
+const displayCharactersRemaining = (field, maxCharacters) => {
+  let lengthField;
+  // This is hacky, and should be solved when index.js is refactored.
+  if (field.id.includes("name")) {
+    lengthField = document.getElementById("edit-name-length")
+  } else {
+    lengthField = document.getElementById("edit-description-length")
+  }
+  lengthField.textContent = `${field.value.length} / ${maxCharacters}`;
+}
+
 /**
  * Handles editing view for both Projects and Sprints.
  */
@@ -443,12 +454,18 @@ class ProjectOrSprintEditor {
           <form class="user-inputs" id="edit-project-section-form-${this.entityId}">
   
               <label>Name*:</label>
-              <input type="text" name="project-name" id="edit-project-name-${this.entityId}"><br>
-              <div id="edit-project-name-error-${this.entityId}" class="form-error" style="display: none;"></div><br>
+              <div class="name">
+                <input type="text" name="project-name" id="edit-project-name-${this.entityId}" maxlength="32" oninput="displayCharactersRemaining(this, 32)" />
+                <span id="edit-name-length">0 / 32</span>
+                <br>
+                <div id="edit-project-name-error-${this.entityId}" class="form-error" style="display: none;"></div><br>
+              </div>
               
               <div class="description">
                   <label>Description:</label>
-                  <textarea name="description" id="edit-description-${this.entityId}" cols="50" rows="10"></textarea><br><br>
+                  <textarea name="description" id="edit-description-${this.entityId}" cols="50" rows="10" maxlength="1024" oninput="displayCharactersRemaining(this, 1024)"></textarea>
+                  <span id="edit-description-length">0 / 1024</span>
+                  <br><br>
               </div>
               <label>Start Date*:</label>
               <input type="date" name="start-date" id="edit-start-date-${this.entityId}"> <span id="edit-start-date-hours-${this.entityId}"></span><br><br>
