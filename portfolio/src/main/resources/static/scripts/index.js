@@ -567,6 +567,8 @@ class ProjectOrSprintEditor {
     }
   }
 
+  //TODO this validation need to cover the jpa validation in the corresponding Entity class or we get
+  // server error pop ups in the front end; these 2 validations should be consolidated
   /**
    * Sets the initial defaults for the inputs.
    */
@@ -608,6 +610,11 @@ class ProjectOrSprintEditor {
 
     if (this.nameInput.value.trim() === "") {
       this.setNameError("Name must not contain only whitespaces.");
+      return false;
+    }
+
+    if (this.title === "New event details:" && !this.nameInput.value.match("(?<=\\s|^)[a-zA-Z\s]*(?=[.,;:]?\\s|$)")) {
+      this.setNameError("Name can only contain characters");
       return false;
     }
 
