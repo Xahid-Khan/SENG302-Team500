@@ -44,26 +44,27 @@
                     <!--    Submits a populated UserDTO to endpoint register -->
 
                     <div class="form-row">
-                        <label th:for="email">Email</label>
+                        <label th:for="email">Email *</label>
                         <input type="email" th:field="*{email}" th:required="required"/>
                         <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="form-error">Email Error</div>
                     </div>
 
+                    <!-- TODO: Link to changing password -->
 
                     <div class="form-row">
-                        <label th:for="firstName">First Name</label>
+                        <label th:for="firstName">First Name *</label>
                         <input type="text" th:field="*{firstName}" th:required="required"/>
                         <div th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}" class="form-error">First Name Error</div>
                     </div>
 
                     <div class="form-row">
-                        <label th:for="middleName">Middle Name</label>
+                        <label th:for="middleName">Middle Name(s)</label>
                         <input type="text" th:field="*{middleName}"/>
                         <div th:if="${#fields.hasErrors('middleName')}" th:errors="*{middleName}" class="form-error">Middle Name Error</div>
                     </div>
 
                     <div class="form-row">
-                        <label th:for="lastName">Last Name</label>
+                        <label th:for="lastName">Last Name *</label>
                         <input type="text" th:field="*{lastName}" th:required="required"/>
                         <div th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}" class="form-error">Last Name Error</div>
                     </div>
@@ -103,6 +104,7 @@
 </div>
 
 </body>
+
 <style>
     input, textarea {
         width: 100%;
