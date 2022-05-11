@@ -57,11 +57,10 @@ class ProjectView {
   addDeadlineForm = null
   addDeadlineLoadingStatus = LoadingStatus.NotYetAttempted;
 
-  constructor(containerElement, project, editCallback, deleteCallback, sprintDeleteCallback, sprintUpdateCallback, eventDeleteCallback, eventUpdateCallback, deadlineDeleteCallback, deadlineUpdateCallback, milestoneDeleteCallback, milestoneUpdateCallback) {
   addMilestoneForm = null
   addMilestoneLoadingStatus = LoadingStatus.NotYetAttempted;
 
-  constructor(containerElement, project, editCallback, deleteCallback, sprintDeleteCallback, sprintUpdateCallback, eventDeleteCallback, eventUpdateCallback, milestoneDeleteCallback, milestoneUpdateCallback) {
+  constructor(containerElement, project, editCallback, deleteCallback, sprintDeleteCallback, sprintUpdateCallback, eventDeleteCallback, eventUpdateCallback, deadlineDeleteCallback, deadlineUpdateCallback, milestoneDeleteCallback, milestoneUpdateCallback) {
     console.log("project", project)
     this.containerElement = containerElement;
     this.project = project;
@@ -81,8 +80,6 @@ class ProjectView {
     this.sprintUpdateCallback = sprintUpdateCallback;
     this.eventDeleteCallback = eventDeleteCallback;
     this.eventUpdateCallback = eventUpdateCallback;
-    this.milestoneDeleteCallback = milestoneDeleteCallback;
-    this.milestoneUpdateCallback = milestoneUpdateCallback
     this.deadlineDeleteCallback = deadlineDeleteCallback;
     this.deadlineUpdateCallback = deadlineUpdateCallback
     this.milestoneDeleteCallback = milestoneDeleteCallback;
@@ -1505,95 +1502,6 @@ class MilestoneView {
 
   }
 }
-class MilestoneView {
-  expandedView = false;
-
-  constructor(containerElement, sprints, milestone, deleteCallback, editCallback) {
-    this.containerElement = containerElement;
-    this.milestone = milestone;
-    this.editCallback = editCallback;
-    this.deleteCallback = deleteCallback;
-    this.sprints = sprints;
-
-    this.constructView();
-    this.wireView();
-  }
-
-  /**
-   * Adds populated HTML to milestoneView.
-   */
-  constructView() {
-    this.containerElement.innerHTML = `
-    <div class="milestone-title">
-        <span id="milestone-title-text-${this.milestone.milestoneId}" style="font-style: italic;"></span> | <span id="start-date-${this.milestone.milestoneId}"></span> - <span id="end-date-${this.milestone.milestoneId}"></span>
-
-        <span class="crud">
-            <button class="button milestone-controls" id="milestone-button-edit-${this.milestone.milestoneId}" data-privilege="teacher">Edit</button>
-            <button class="button milestone-controls" id="milestone-button-delete-${this.milestone.milestoneId}" data-privilege="teacher">Delete</button>
-            <button class="button toggle-milestone-details" id="toggle-milestone-details-${this.milestone.milestoneId}">+</button>
-        </span>
-    </div>
-    <div class="milestone-details" id="milestone-details-${this.milestone.milestoneId}">
-        <div class="milestone-description" id="milestone-description-${this.milestone.milestoneId}"></div>
-        <div class="milestone-sprints" id="milestone-sprints-${this.milestone.milestoneId}"></div>
-    </div>
-    
-    `;
-
-    this.toggleButton = document.getElementById(`toggle-milestone-details-${this.milestone.milestoneId}`);
-    this.description = document.getElementById(`milestone-description-${this.milestone.milestoneId}`);
-    this.details = document.getElementById(`milestone-details-${this.milestone.milestoneId}`);
-    this.milestoneSprints = document.getElementById(`milestone-sprints-${this.milestone.milestoneId}`);
-
-    document.getElementById(`milestone-title-text-${this.milestone.milestoneId}`).innerText = this.milestone.name;
-    this.description.innerText = "Description: " + this.milestone.description;
-    this.milestoneSprints.innerHTML = this.getSprints();
-    document.getElementById(`start-date-${this.milestone.milestoneId}`).innerText = DatetimeUtils.localToUserDMY(this.milestone.startDate);
-    const displayedDate = new Date(this.milestone.endDate.valueOf());
-    displayedDate.setDate(displayedDate.getDate() - 1);
-    document.getElementById(`end-date-${this.milestone.milestoneId}`).innerText = DatetimeUtils.localToUserDMY(displayedDate);
-  }
-
-  /**
-   * Toggles expanded view and button for milestones.
-   */
-  toggleExpandedView() {
-    if (this.expandedView) {
-      this.details.style.display = "none";
-      this.toggleButton.innerText = "+";
-    }
-    else {
-      this.details.style.display = "block";
-      this.toggleButton.innerText = "-";
-    }
-
-    this.expandedView = !this.expandedView;
-  }
-
-  wireView() {
-    document.getElementById(`milestone-button-edit-${this.milestone.milestoneId}`).addEventListener('click', () => this.editCallback());
-    document.getElementById(`milestone-button-delete-${this.milestone.milestoneId}`).addEventListener("click", () => this.deleteCallback());
-
-    this.toggleButton.addEventListener('click', this.toggleExpandedView.bind(this));
-  }
-
-  getSprints() {
-    let html = "<label>Sprints in progress during this milestone: </label>";
-    this.sprints.forEach(sprint => {
-      if (this.milestone.startDate >= sprint.startDate && this.milestone.startDate <= sprint.endDate || this.milestone.endDate >= sprint.startDate && this.milestone.endDate <= sprint.endDate) {
-        html += `<div class="milestone-sprint-details">   - <span>${sprint.name}: </span><span>${DatetimeUtils.localToUserDMY(sprint.startDate)}</span> - <span>${DatetimeUtils.localToUserDMY(sprint.endDate)}</span>`;
-      }
-    });
-    if (html === "<label>Sprints in progress during this milestone: </label>") {
-      html += "<span>No sprints are overlapping with this milestone</span>"
-    }
-    return html;
-  }
-
-  dispose() {
-
-  }
-}
 class DeadlineView {
   expandedView = false;
 
@@ -2399,141 +2307,6 @@ class Milestone {
   showViewer() {
     this.currentView?.dispose();
     this.currentView = new MilestoneView(this.containerElement, this.project.sprints, this.milestone, this.deleteMilestone.bind(this), this.showEditor.bind(this));
-  }
-
-  /**
-   * Gets the sprint to explicitly destroy itself prior
-   */
-  dispose() {
-    this.currentView.dispose();
-  }
-
-  /**
-   * Handles deletion of sprint when making DELETE request.
-   */
-  async deleteMilestone() {
-    if (this.deleteLoadingStatus === LoadingStatus.Pending) {
-      return;
-    }
-
-    this.deleteLoadingStatus = LoadingStatus.Pending;
-
-    try {
-      const response = await fetch(`api/v1/milestones/${this.milestone.milestoneId}`, {
-        method: 'DELETE'
-      })
-      if (!response.ok) {
-        await ErrorHandlerUtils.handleNetworkError(response, "delete milestone");
-      }
-
-      this.deleteLoadingStatus = LoadingStatus.Done;
-      this.deleteCallback(this.milestone.milestoneId);
-    } catch (ex) {
-      this.deleteLoadingStatus = LoadingStatus.Error;
-
-      if (ex instanceof PortfolioNetworkError) {
-        throw ex;
-      }
-
-      ErrorHandlerUtils.handleUnknownNetworkError(ex, "delete milestone");
-    }
-  }
-}
-
-class Milestone {
-  constructor(containerElement, data, project, deleteCallback, milestoneUpdateSavedCallback) {
-    this.containerElement = containerElement;
-    this.project = project;
-    this.milestone = data;
-    this.milestoneUpdateSavedCallback = milestoneUpdateSavedCallback;
-    this.deleteCallback = deleteCallback;
-    this.updatemilestoneLoadingStatus = LoadingStatus.NotYetAttempted;
-
-    this.currentView = null;
-    this.showViewer();
-  }
-
-  /**
-   * Updates milestone according to newValue attributes.
-   * @param newValue
-   */
-  async updateMilestone(newValue) {
-    if (this.updatemilestoneLoadingStatus === LoadingStatus.Pending) {
-      return;
-    }
-    else if (
-        newValue.name === this.milestone.name
-        && newValue.description === this.milestone.description
-        && DatetimeUtils.areEqual(newValue.startDate, this.milestone.startDate)
-        && DatetimeUtils.areEqual(newValue.endDate, this.milestone.endDate)
-    ) {
-      // Nothing has changed
-
-      const showingSprints = this.currentView.showingSprints;
-
-      this.showViewer();
-
-      if (showingSprints) {
-        this.currentView.toggleSprints();
-      }
-
-      return;
-    }
-
-    this.updatemilestoneLoadingStatus = LoadingStatus.Pending;
-
-    try {
-      const response = await fetch(`api/v1/milestones/${this.milestone.milestoneId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(newValue)
-      })
-
-      if (!response.ok) {
-        await ErrorHandlerUtils.handleNetworkError(response, "update milestone");
-      }
-
-      const newMilestone = await response.json();
-      this.milestoneUpdateSavedCallback({
-        ...newMilestone,
-        startDate: DatetimeUtils.networkStringToLocalDate(newMilestone.startDate),
-        endDate: DatetimeUtils.networkStringToLocalDate(newMilestone.endDate)
-      });
-    }
-    catch (ex) {
-      this.updatemilestoneLoadingStatus = LoadingStatus.Error;
-
-      if (ex instanceof PortfolioNetworkError) {
-        throw ex;
-      }
-
-      ErrorHandlerUtils.handleUnknownNetworkError(ex, "update milestone");
-    }
-  }
-
-  /**
-   * Shows milestone editing view.
-   */
-  showEditor() {
-    this.currentView?.dispose();
-    this.currentView = new ProjectOrSprintEditor(
-        this.containerElement,
-        "Edit milestone details:",
-        this.milestone,
-        this.showViewer.bind(this),
-        this.updateMilestone().bind(this),
-        ProjectOrSprintEditor.makeProjectEventDatesValidator(this.project)
-    );
-  }
-
-  /**
-   * Refreshes view, disposing of the previous view and reloading it.
-   */
-  showViewer() {
-    this.currentView?.dispose();
-    this.currentView = new MilestoneView(this.containerElement, this.project.sprints, this.milestone, this.deletemilestone.bind(this), this.showEditor.bind(this));
   }
 
   /**
