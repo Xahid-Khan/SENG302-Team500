@@ -192,6 +192,21 @@ public class ValidationService {
                 eventContract.endDate());
     }
 
+    public String checkSprintDetails(ProjectContract project, String sprintId, Instant start, Instant end) {
+        if (start.isBefore(project.startDate())) {
+            return "Sprint cannot start before project start date";
+        }
+        if (end.isAfter(project.endDate())) {
+            return "Sprint cannot end after project end date";
+        }
+        for (SprintContract sprint: project.sprints()) {
+            if (start.isBefore(sprint.endDate()) && end.isAfter(sprint.startDate()) && !sprintId.equals(sprint.sprintId())) {
+                return "Sprint cannot begin while another sprint is still in progress";
+            }
+        }
+        return "Okay";
+    }
+
     /**
      * Checks sprint date details and returns respective messages.
      */
