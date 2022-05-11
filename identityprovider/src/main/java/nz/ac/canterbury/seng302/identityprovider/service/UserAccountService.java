@@ -1,13 +1,22 @@
 package nz.ac.canterbury.seng302.identityprovider.service;
 
+import com.google.protobuf.ByteString;
+import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
+
+import java.io.ByteArrayOutputStream;
+import java.io.Console;
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import net.devh.boot.grpc.server.service.GrpcService;
 import nz.ac.canterbury.seng302.identityprovider.exceptions.IrremovableRoleException;
 import nz.ac.canterbury.seng302.identityprovider.exceptions.UserDoesNotExistException;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
+import nz.ac.canterbury.seng302.shared.util.FileUploadStatus;
+import nz.ac.canterbury.seng302.shared.util.FileUploadStatusResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import nz.ac.canterbury.seng302.shared.util.ValidationError;
 
 /**
  * This base service contains multiple other services, and is used as a hub so GRPC does not
@@ -23,9 +32,11 @@ public class UserAccountService extends UserAccountServiceGrpc.UserAccountServic
 
   @Autowired private EditUserService editUserService;
 
+  @Autowired private ChangePasswordService changePasswordService;
+
   /**
-   * This is a GRPC user service method that is being over-ridden to register a user and return
-   * a UserRegisterRequest
+   * This is a GRPC user service method that is being over-ridden to register a user and return a
+   * UserRegisterRequest
    *
    * @param request parameters from the caller
    * @param responseObserver to receive results or errors
@@ -45,8 +56,8 @@ public class UserAccountService extends UserAccountServiceGrpc.UserAccountServic
   }
 
   /**
-   * This is a GRPC user service method that is being over-ridden to edit the users details and return
-   *    * a EditUserResponse
+   * This is a GRPC user service method that is being over-ridden to edit the users details and
+   * return * a EditUserResponse
    *
    * @param request parameters from the caller
    * @param responseObserver to receive results or errors
@@ -72,7 +83,8 @@ public class UserAccountService extends UserAccountServiceGrpc.UserAccountServic
    * @param responseObserver to receive results or errors
    */
   @Override
-  public void getUserAccountById(GetUserByIdRequest request, StreamObserver<UserResponse> responseObserver) {
+  public void getUserAccountById(
+      GetUserByIdRequest request, StreamObserver<UserResponse> responseObserver) {
     try {
       var res = getUserService.getUserAccountById(request);
 
@@ -99,8 +111,7 @@ public class UserAccountService extends UserAccountServiceGrpc.UserAccountServic
 
       responseObserver.onNext(response);
       responseObserver.onCompleted();
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       e.printStackTrace();
       responseObserver.onError(e);
     }
@@ -145,6 +156,97 @@ public class UserAccountService extends UserAccountServiceGrpc.UserAccountServic
     } catch (UserDoesNotExistException | IrremovableRoleException e) {
       e.printStackTrace();
       responseObserver.onError(e);
+    }
+  }
+
+  /**
+   * Uploads the stream of data from User and sends back the status response based on the upload
+   * status.
+   *
+   * @param responseObserver is of FileUploadStatusResponse
+   * @return a UploadUserProfilePhotoRequest
+   */
+  @Override
+  public StreamObserver<UploadUserProfilePhotoRequest> uploadUserProfilePhoto(
+      StreamObserver<FileUploadStatusResponse> responseObserver) {
+    return new StreamObserver<UploadUserProfilePhotoRequest>() {
+      Integer userId = null;
+      String fileType = null;
+      final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+
+      @Override
+      public void onNext(UploadUserProfilePhotoRequest request) {
+        FileUploadStatusResponse.Builder reply = FileUploadStatusResponse.newBuilder();
+
+        if (request.hasMetaData()) {
+          userId = request.getMetaData().getUserId();
+          fileType = request.getMetaData().getFileType();
+
+          reply.setStatus(FileUploadStatus.PENDING);
+          reply.setMessage("Pending");
+        } else {
+          if (userId == null) {
+            responseObserver.onError(new Throwable("Image chunk must be sent after metadata."));
+            return;
+          }
+
+          ByteString chunk = request.getFileContent();
+          try {
+            buffer.write(chunk.toByteArray());
+          } catch (IOException e) {
+            responseObserver.onError(
+                new Throwable("Exception occurred while loading image chunk."));
+            return;
+          }
+
+          reply.setStatus(FileUploadStatus.IN_PROGRESS);
+          reply.setMessage("Chunk received.");
+        }
+
+        responseObserver.onNext(reply.build());
+      }
+
+      @Override
+      public void onError(Throwable t) {
+        System.out.println(t.getMessage());
+      }
+
+      @Override
+      public void onCompleted() {
+        if (buffer.size() == 0) {
+          responseObserver.onError(new Throwable("Image data must be transferred."));
+          return;
+        }
+
+        FileUploadStatusResponse uploadStatus =
+            editUserService.UploadUserPhoto(userId, buffer.toByteArray());
+
+        if (uploadStatus.getStatus() == FileUploadStatus.FAILED) {
+          responseObserver.onError(new Throwable(String.valueOf(uploadStatus.getStatus())));
+          return;
+        }
+
+        FileUploadStatusResponse.Builder reply = FileUploadStatusResponse.newBuilder();
+        reply.setStatus(uploadStatus.getStatus()).setMessage(uploadStatus.getMessage());
+        responseObserver.onNext(reply.build());
+      }
+    };
+  }
+
+  @Override
+  public void changeUserPassword(
+      ChangePasswordRequest request, StreamObserver<ChangePasswordResponse> responseObserver) {
+    try {
+      var response = changePasswordService.changePassword(request);
+
+      responseObserver.onNext(response);
+      responseObserver.onCompleted();
+
+    } catch (UserDoesNotExistException e) {
+      e.printStackTrace();
+      responseObserver.onError(e);
+    } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+      e.printStackTrace();
     }
   }
 }

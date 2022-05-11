@@ -5,72 +5,74 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="stylesheet" th:href="@{/styles/common.css}" />
-    <link rel="stylesheet" th:href="@{/styles/modal_form.css}">
+    <link rel="stylesheet" th:href="@{styles/common.css}" />
+    <link rel="stylesheet" th:href="@{styles/modal_form.css}">
 </head>
 
 <body>
 
-<form id='form' th:action="@{/register}" th:object="${user}" method="post" class="raised-card form">
+<form id='form' th:action="@{register}" th:object="${user}" method="post" class="raised-card form">
     <h1 class="title">Sign Up</h1>
 
     <!--    Submits a populated UserDTO to endpoint register -->
     <div class="form-row">
         <label th:for="username">Username *</label>
-        <input type="text" name="username" th:required="required" autofocus/>
+        <input type="text" name="username" th:required="required" th:value="${user.username}" autofocus>
         <div th:if="${#fields.hasErrors('username')}" th:errors="*{username}" class="form-error">Username Error</div>
     </div>
 
     <div class="form-row">
         <label th:for="email">Email *</label>
-        <input type="email" name="email" th:required="required" />
+        <input type="email" name="email" th:required="required" th:value="${user.email}"/>
         <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="form-error">Email Error</div>
     </div>
 
     <div class="form-row">
         <label th:for="password">Password *</label>
-        <input id="password" type="password" name="password" th:required="required"/>
+        <input id="password" type="password" name="password" th:required="required" th:value="${user.password}" oninput="enableConfirmPassword()"/>
         <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="form-error">Password Error</div>
     </div>
 
     <div class="form-row">
         <label th:for="confirmPassword">Confirm password *</label>
-        <input id="confirmPassword" type="password" th:required="required"/>
+        <input id="confirmPassword" type="password" th:required="required"  th:value="${user.password}" disabled oninput="passwordMatchValidator()"/>
     </div>
+
+    <div id="confirmPassError" class="form-error"></div>
 
     <div class="form-row">
         <label th:for="firstName">First Name *</label>
-        <input type="text" name="firstName" th:required="required"/>
+        <input type="text" name="firstName" th:required="required" th:value="${user.firstName}"/>
         <div th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}" class="form-error">First Name Error</div>
     </div>
 
     <div class="form-row">
         <label th:for="middleName">Middle Name(s)</label>
-        <input type="text" name="middleName"/>
+        <input type="text" name="middleName" th:value="${user.middleName}"/>
         <div th:if="${#fields.hasErrors('middleName')}" th:errors="*{middleName}" class="form-error">Middle Name Error</div>
     </div>
 
     <div class="form-row">
         <label th:for="lastName">Last Name *</label>
-        <input type="text" name="lastName" th:required="required"/>
+        <input type="text" name="lastName" th:required="required" th:value="${user.lastName}"/>
         <div th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}" class="form-error">Last Name Error</div>
     </div>
 
     <div class="form-row">
         <label th:for="nickname">Nickname</label>
-        <input type="text" name="nickname"/>
+        <input type="text" name="nickname" th:value="${user.nickname}"/>
         <div th:if="${#fields.hasErrors('nickname')}" th:errors="*{nickname}" class="form-error">Nickname Error</div>
     </div>
 
     <div class="form-row">
         <label th:for="personalPronouns">Personal Pronouns</label>
-        <input type="text" name="personalPronouns"/>
+        <input type="text" name="personalPronouns" th:value="${user.personalPronouns}"/>
         <div th:if="${#fields.hasErrors('personalPronouns')}" th:errors="*{personalPronouns}" class="form-error">Pronouns Error</div>
     </div>
 
     <div class="form-row">
         <label th:for="bio">Bio</label>
-        <textarea name="bio"></textarea>
+        <textarea name="bio" th:value="${user.bio}"></textarea>
         <div th:if="${#fields.hasErrors('bio')}" th:errors="*{bio}" class="form-error">Bio Error</div>
     </div>
 
@@ -79,11 +81,10 @@
 
     <br/>* = Required field.<br/>
     <button id='submit' name="register" type="Submit" value="0">Register</button>
-    <a href="/login">Have an account? Login</a>
+    <a href="login">Have an account? Login</a>
 </form>
-
 </body>
 
-<script type="text/javascript" th:src="@{/scripts/password_validator.js}"></script>
+<script type="text/javascript" th:src="@{scripts/password_validator.js}"></script>
 
 </html>

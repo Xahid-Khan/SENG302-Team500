@@ -4,6 +4,7 @@ stages:
   - build
   - test
   - sonarqube
+  - predeploy
   - deploy
 
 tag-checker:
@@ -48,6 +49,16 @@ branch-build:
     - tags
     - master
     - dev
+
+predeploy-copy-environment-variables:
+  stage: predeploy
+  script:
+    - python3 ./runner/export_environment_vars.py
+    - cp ./runner_env.sh /home/gitlab-runner/runner_env.sh
+  only:
+    - dev
+    - tags
+    - master
 
 deploy-staging-identityprovider:
   stage: deploy
