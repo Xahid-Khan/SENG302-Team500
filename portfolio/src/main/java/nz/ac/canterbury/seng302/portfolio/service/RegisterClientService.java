@@ -5,6 +5,7 @@ import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import nz.ac.canterbury.seng302.portfolio.DTO.User;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
+import nz.ac.canterbury.seng302.shared.util.FileUploadStatus;
 import nz.ac.canterbury.seng302.shared.util.FileUploadStatusResponse;
 import org.springframework.stereotype.Service;
 
@@ -70,43 +71,64 @@ public class RegisterClientService {
 
     public void uploadUserPhoto(Integer userId, String fileType, byte[] uploadImage) {
         CountDownLatch latch = new CountDownLatch(1);
-        StreamObserver<UploadUserProfilePhotoRequest> requestStreamObserver = nonBlockingStub.uploadUserProfilePhoto (
-            new StreamObserver<>() {
-                @Override
-                public void onNext(FileUploadStatusResponse response) {
-                    response.getStatus();
-                    latch.countDown();
-                }
+        ByteString imageBuffer = ByteString.copyFrom(uploadImage);
+        var requestStreamObserverContainer = new Object() {
+            StreamObserver<UploadUserProfilePhotoRequest> observer;
+        };
 
-                @Override
-                public void onError(Throwable t) {
-                    latch.countDown();
-                }
+        var responseStreamObserver = new StreamObserver<FileUploadStatusResponse>() {
+            int nextStartIndex = 0;
 
-                @Override
-                public void onCompleted() {
-                    latch.countDown();
+
+            @Override
+            public void onNext(FileUploadStatusResponse response) {
+                try {
+                    if (response.getStatus().equals(FileUploadStatus.PENDING) || response.getStatus().equals(FileUploadStatus.IN_PROGRESS)) {
+                        var endIndex = Math.min(imageBuffer.size() - 1, nextStartIndex + (1024 * 1024));
+
+                        if (endIndex == nextStartIndex) {
+                            requestStreamObserverContainer.observer.onCompleted();
+                            return;
+                        }
+
+                        var chunk = imageBuffer.substring(nextStartIndex, endIndex);
+                        nextStartIndex = endIndex;
+
+                        UploadUserProfilePhotoRequest imageDataRequest = UploadUserProfilePhotoRequest.newBuilder()
+                                .setFileContent(chunk)
+                                .build();
+                        requestStreamObserverContainer.observer.onNext(imageDataRequest);
+                    } else if (response.getStatus().equals(FileUploadStatus.SUCCESS)) {
+                        latch.countDown();
+                        onCompleted();
+                    }
+                } catch (Exception e) {
+                    onError(e);
                 }
             }
-        );
 
-        ProfilePhotoUploadMetadata.Builder imageMetadata = ProfilePhotoUploadMetadata.newBuilder();
-                imageMetadata.setUserId(userId);
-                imageMetadata.setFileType(fileType);
+            @Override
+            public void onError(Throwable t) {
+                latch.countDown();
+                t.printStackTrace();
+            }
 
-        UploadUserProfilePhotoRequest.Builder userUploadDataRequest = UploadUserProfilePhotoRequest.newBuilder();
-                userUploadDataRequest.setMetaData(imageMetadata.build());
-                userUploadDataRequest.setFileContent(ByteString.copyFrom(uploadImage));
+            @Override
+            public void onCompleted() {
+                latch.countDown();
+            }
+        };
 
-        requestStreamObserver.onNext(userUploadDataRequest.build());
-    }
+        requestStreamObserverContainer.observer = nonBlockingStub.uploadUserProfilePhoto(responseStreamObserver);
 
+        var metadataRequest = UploadUserProfilePhotoRequest.newBuilder()
+                .setMetaData(
+                    ProfilePhotoUploadMetadata.newBuilder()
+                            .setUserId(userId)
+                            .setFileType(fileType)
+                )
+                .build();
 
-
-    public void deleteUserPhoto(int userId) {
-        DeleteUserProfilePhotoRequest.Builder request = DeleteUserProfilePhotoRequest.newBuilder();
-        request.setUserId(userId);
-
-        registrationStub.deleteUserProfilePhoto(request.build());
+        requestStreamObserverContainer.observer.onNext(metadataRequest);
     }
 }

@@ -22,10 +22,10 @@ import org.springframework.web.multipart.MultipartFile;
 @Controller
 public class EditAccountController {
 
-    @InitBinder
-    public void initBinder(WebDataBinder binder) {
-        binder.registerCustomEditor(String.class, new StringTrimmerEditor(false));
-    }
+  @InitBinder
+  public void initBinder(WebDataBinder binder) {
+    binder.registerCustomEditor(String.class, new StringTrimmerEditor(false));
+  }
 
     @Autowired
     private UploadPhotoService uploadPhotoService;
@@ -39,62 +39,67 @@ public class EditAccountController {
     @Autowired
     private AuthStateService authStateService;
 
-    @GetMapping(value="/edit_account")
-    public String getPage(Model model, @AuthenticationPrincipal AuthState principal){
+  @GetMapping(value = "/edit_account")
+  public String getPage(Model model, @AuthenticationPrincipal AuthState principal) {
 
+    Integer userId = authStateService.getId(principal);
 
-        Integer userId = authStateService.getId(principal);
+    UserResponse userDetails = userAccountService.getUserById(userId);
 
-        UserResponse userDetails = userAccountService.getUserById(userId);
+    // Prefill the form with the user's details
+    model.addAttribute("userId", userId);
+    model.addAttribute("username", userDetails.getUsername());
+    model.addAttribute("user", userDetails);
 
-        //Prefill the form with the user's details
-        model.addAttribute("username", userDetails.getUsername());
-        model.addAttribute("user", userDetails);
+    return "edit_account";
+  }
 
+  /**
+   * This controller receives a profile photo (file) and crops it to 1:1 and compress it to make
+   * sure it's lower than 5mb. Then it used the gRPC protocols provided in registerClientService to
+   * save the file in the DataBase in bytes (ByteString) format.
+   *
+   * @param user A User of ty User.
+   * @param bindingResult An interface that extends errors
+   * @param model HTML model DTO
+   * @param principal An Authority State to verify user.
+   * @param file Image that user wants to save.
+   * @return
+   */
+  @PostMapping(value = "/edit_account")
+  public String postPage(
+      @ModelAttribute @Validated(EditedUserValidation.class) User user,
+      BindingResult bindingResult,
+      Model model,
+      @AuthenticationPrincipal AuthState principal,
+      @RequestParam("image") MultipartFile file) {
+
+    if (bindingResult.hasErrors()) {
+      return "edit_account";
+    }
+    model.addAttribute("user", user);
+    try {
+      Integer userId = authStateService.getId(principal);
+      model.addAttribute("userId", userId);
+      if (file.getSize() > 10000 && file.getSize() < 5242000) {
+        byte[] uploadImage = uploadPhotoService.imageProcessing(file);
+        String fileType = uploadPhotoService.getFileType();
+
+        registerClientService.uploadUserPhoto(userId, fileType, uploadImage);
+
+      } else {
+        model.addAttribute("imageError", "File size must be more than 500KB and less than 5MB.");
         return "edit_account";
+      }
 
+      registerClientService.updateDetails(user, userId);
+
+        } catch (StatusRuntimeException e) {
+        model.addAttribute("error", "Error connecting to Identity Provider...");
+        return "edit_account";
     }
-
-    /**
-     * This controller receives a profile photo (file) and crops it to 1:1 and compress it to make sure it's lower than 5mb.
-     * Then it used the gRPC protocols provided in registerClientService to save the file in the DataBase in bytes (ByteString) format.
-     * @param user A User of ty User.
-     * @param bindingResult An interface that extends errors
-     * @param model HTML model DTO
-     * @param principal An Authority State to verify user.
-     * @param file Image that user wants to save.
-     * @return
-     */
-    @PostMapping(value="/edit_account")
-    public String postPage(@ModelAttribute @Validated(EditedUserValidation.class) User user, BindingResult bindingResult,
-                           Model model, @AuthenticationPrincipal AuthState principal, @RequestParam("image") MultipartFile file) {
-
-        if (bindingResult.hasErrors()) {
-            return "edit_account";
-        }
-        try {
-            int userId = authStateService.getId(principal);
-
-            if (file.getSize() > 1000 && file.getSize() < 5000000) {
-                byte[] uploadImage = uploadPhotoService.imageProcessing(file);
-                String fileType = uploadPhotoService.getFileType();
-
-                registerClientService.uploadUserPhoto(userId, fileType, uploadImage);
-                model.addAttribute("userPhotoBytes", "data:image/"+fileType +";charset=utf-8;base64," +uploadImage);
-            } else {
-                model.addAttribute("imageError", "File size must be more than 500KB and less than 5MB.");
-                return "edit_account";
-            }
-
-            registerClientService.updateDetails(user, userId);
-
-        } catch (StatusRuntimeException e){
-            model.addAttribute("registerMessage", "Error connecting to Identity Provider...");
-            return "edit_account";
-        }
-
-        return "redirect:/my_account";
-    }
+      return "redirect:my_account?edited=details";
+  }
 
     /**
      * A controller (endpoint) for deleting a user photo.

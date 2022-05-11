@@ -1,49 +1,25 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
-    <style>
-        table td{
-            vertical-align:top;
-            border:solid 1px #888;
-            padding:10px;
-        }
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    </style>
+    <title th:text="'Error ' + ${status} +  ': ' + ${message}"></title>
+
+    <link type="text/css" rel="stylesheet" th:href="@{/styles/common.css}"/>
+    <link type="text/css" rel="stylesheet" th:href="@{/styles/pages/error.css}"/>
+
 </head>
 <body>
-<h1>Basic Thymeleaf Error Page (You may want to make something better)</h1>
-<table>
-    <tr>
-        <td>Date</td>
-        <td th:text="${timestamp}"/>
-    </tr>
-    <tr>
-        <td>Path</td>
-        <td th:text="${path}"/>
-    </tr>
-    <tr>
-        <td>Error</td>
-        <td th:text="${error}"/>
-    </tr>
-    <tr>
-        <td>Status</td>
-        <td th:text="${status}"/>
-    </tr>
-    <tr>
-        <td>Message</td>
-        <td th:text="${message}"/>
-    </tr>
-    <tr>
-        <td>Exception</td>
-        <td th:text="${exception}"/>
-    </tr>
-    <tr>
-        <td>Trace</td>
-        <td>
-            <pre th:text="${trace}"/>
-        </td>
-    </tr>
-</table>
+
+<div class="raised-card error-container">
+    <h1 th:text="'Error ' + ${status} + ' - ' + ${message}"></h1>
+    <p>Sorry about that!</p>
+    <div class="actions">
+        <button th:data-global-url-path-prefix="${globalUrlPathPrefix}" onclick="window.location.href = (this.getAttribute('data-global-url-path-prefix') ?? '') + '/login'">Go Home</button>
+    </div>
+</div>
+
 </body>
 </html>

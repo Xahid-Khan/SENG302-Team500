@@ -7,3 +7,7 @@
 */bin/
 
 localdb/*
+data/*
+subdirectory/*
+identityprovider/config/*
+*.db

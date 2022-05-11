@@ -1,11 +1,14 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import nz.ac.canterbury.seng302.portfolio.DTO.User;
 import nz.ac.canterbury.seng302.portfolio.model.GetPaginatedUsersOrderingElement;
+import nz.ac.canterbury.seng302.portfolio.model.entity.SortingParameterEntity;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
+import nz.ac.canterbury.seng302.portfolio.service.SortingParametersService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
@@ -14,10 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-
-import java.util.ArrayList;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 public class UserListController {
@@ -28,6 +28,10 @@ public class UserListController {
 
     @Autowired
     private AuthStateService authStateService;
+
+    @Autowired
+    private SortingParametersService sortingParametersService;
+
 
     @GetMapping("/user-list")
     public String listUsers(
@@ -42,11 +46,27 @@ public class UserListController {
 
         UserResponse userDetails = userAccountService.getUserById(userId);
 
+
+        String sortAttributeString;
+        boolean ascending = ascendingMaybe.orElse(true);
+
+        if (sortingParametersService.checkExistance(userId) && sortAttributeMaybe.isEmpty()) {
+            SortingParameterEntity sortingParams = sortingParametersService.getSortingParams(userId);
+            sortAttributeString = sortingParams.getSortAttribute();
+            ascending = sortingParams.isSortOrder();
+
+        } else if (!sortAttributeMaybe.isEmpty()) {
+            sortAttributeString = sortAttributeMaybe.get();
+
+            sortingParametersService.saveSortingParams(userId, sortAttributeString, ascending);
+        } else {
+            sortAttributeString = "name";
+        }
+
         model.addAttribute("username", userDetails.getUsername());
+
         // Supply defaults
         int page = pageMaybe.orElse(1);
-        String sortAttributeString = sortAttributeMaybe.orElse("name");
-        boolean ascending = ascendingMaybe.orElse(true);
 
         // Validate inputs
         if (page < 1) {
@@ -54,7 +74,6 @@ public class UserListController {
         }
 
         var sortAttribute = switch (sortAttributeString) {
-            case "name" -> GetPaginatedUsersOrderingElement.NAME;
             case "username" -> GetPaginatedUsersOrderingElement.USERNAME;
             case "alias" -> GetPaginatedUsersOrderingElement.NICKNAME;
             case "roles" -> GetPaginatedUsersOrderingElement.ROLES;
@@ -70,8 +89,8 @@ public class UserListController {
             sortAttribute,
             ascending
         );
-
         // Construct response
+        model.addAttribute("userId", userId);
         model.addAttribute("users", response.getUsersList());
         model.addAttribute("totalUserCount", response.getResultSetSize());
         model.addAttribute("pageOffset", offset);
@@ -87,12 +106,22 @@ public class UserListController {
         return String.format("?page=%d&sortBy=%s&asc=%b", page, sortBy, sortDir);
     }
 
-    public String formatUserRoles(List<UserRole> roles) {
-        return roles.stream().map(role -> switch (role) {
-            case STUDENT -> "Student";
-            case TEACHER -> "Teacher";
-            case COURSE_ADMINISTRATOR -> "Course Administrator";
-            default -> "Student";
-        }).collect(Collectors.joining(", "));
+    public String formatUserRole(UserRole role) {
+        switch (role) {
+            case STUDENT: return "Student";
+            case TEACHER: return "Teacher";
+            case COURSE_ADMINISTRATOR: return "Course Administrator";
+            default: return "Default";
+        }
+    }
+
+    public List<UserRole> getAvailableRoles(UserResponse user) {
+        List<UserRole> list = new ArrayList<>();
+        for(UserRole role : UserRole.values()){
+            if(role != UserRole.UNRECOGNIZED && !user.getRolesList().contains(role)){
+                list.add(role);
+            }
+        }
+        return list;
     }
 }

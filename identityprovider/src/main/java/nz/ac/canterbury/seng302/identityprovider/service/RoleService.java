@@ -22,13 +22,14 @@ public class RoleService {
   // Helper function to reduce duplicate code.
   // Gets the user, checks if modification is legal (returns false if not), modifies, saves.
   // If addingRole is true, role will be added. If false, role will be deleted.
-  private boolean modifyRoleOfUser(ModifyRoleOfUserRequest modificationRequest, boolean addingRole)
+  private UserRoleChangeResponse modifyRoleOfUser(ModifyRoleOfUserRequest modificationRequest, boolean addingRole)
       throws UserDoesNotExistException {
     UserModel user = repository.findById(modificationRequest.getUserId());
     if (user == null) {
       throw new UserDoesNotExistException("Error: User does not exist.");
     }
     UserRole roleToChange = modificationRequest.getRole();
+    var response = UserRoleChangeResponse.newBuilder();
 
     // If the role is being added, the user should not have the role.
     // If the role is being deleted, the user should have the role.
@@ -42,9 +43,18 @@ public class RoleService {
         user.deleteRole(roleToChange);
       }
       repository.save(user);
-      return true;
+      return response
+              .setIsSuccess(true)
+              .setMessage("Successfully " + (addingRole ? "added" : "removed") + " user role")
+              .build();
     }
-    return false;
+    String message = addingRole ?
+            "Failed to add role, user already has role" :
+            "Failed to remove role, user doesnt have role";
+    return response
+            .setIsSuccess(false)
+            .setMessage(message)
+            .build();
   }
 
   /**
@@ -55,13 +65,7 @@ public class RoleService {
    */
   public UserRoleChangeResponse addRoleToUser(ModifyRoleOfUserRequest modificationRequest)
       throws UserDoesNotExistException {
-    // Generate a response based on if modifyRoleOfUser was successful or not
-    var response =
-        modifyRoleOfUser(modificationRequest, true)
-            ? UserRoleChangeResponse.newBuilder().setIsSuccess(true).setMessage(true)
-            : UserRoleChangeResponse.newBuilder().setIsSuccess(false).setMessage(false);
-
-    return response.build();
+    return modifyRoleOfUser(modificationRequest, true);
   }
 
   /**
@@ -72,12 +76,6 @@ public class RoleService {
    */
   public UserRoleChangeResponse removeRoleFromUser(ModifyRoleOfUserRequest modificationRequest)
       throws UserDoesNotExistException, IrremovableRoleException {
-    // Generate a response based on if modifyRoleOfUser was successful or not
-    var response =
-        modifyRoleOfUser(modificationRequest, false)
-            ? UserRoleChangeResponse.newBuilder().setIsSuccess(true).setMessage(true)
-            : UserRoleChangeResponse.newBuilder().setIsSuccess(false).setMessage(false);
-
-    return response.build();
+    return modifyRoleOfUser(modificationRequest, false);
   }
 }

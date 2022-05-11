@@ -6,5 +6,6 @@ public record BaseSprintContract(
     String name,
     String description,
     Instant startDate,
-    Instant endDate
+    Instant endDate,
+    String colour
 ) {}
