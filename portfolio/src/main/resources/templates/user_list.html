@@ -5,13 +5,15 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="stylesheet" th:href="@{/styles/common.css}" />
-    <link rel="stylesheet" th:href="@{/styles/table.css}" />
-    <link rel="stylesheet" th:href="@{/styles/pages/project_details.css}"/>
-    <link rel="stylesheet" th:href="@{/styles/navbar.css}"/>
-    <link rel="stylesheet" th:href="@{/styles/pages/user_list.css}" />
+    <link rel="stylesheet" th:href="@{styles/common.css}" />
+    <link rel="stylesheet" th:href="@{styles/table.css}" />
+    <link rel="stylesheet" th:href="@{styles/pages/project_details.css}"/>
+    <link rel="stylesheet" th:href="@{styles/navbar.css}"/>
+    <link rel="stylesheet" th:href="@{styles/dropdown.css}" />
+    <link rel="stylesheet" th:href="@{styles/pages/user_list.css}" />
+    <link rel="stylesheet" th:href="@{styles/chip.css}"/>
 
-    <script type="text/javascript" th:src="@{/scripts/user_list.js}"></script>
+    <script type="text/javascript" th:src="@{scripts/user_list.js}"></script>
 </head>
 <body>
     <div style="display: none">
@@ -37,6 +39,7 @@
             </div>
             <div>
                 <a href="project-details" id="home-page">Projects</a>
+                <a href="user-list">View Users</a>
             </div>
         </div>
         <div class="account">
@@ -50,7 +53,6 @@
                 </button>
                 <div class="dropdown-content">
                     <a class="dropdown-content-links" href="my_account">My Account</a>
-                    <a class="dropdown-content-links" href="user-list">View Users</a>
                     <a class="dropdown-content-links" href="logout">Log Out</a>
                 </div>
             </div>
@@ -61,21 +63,28 @@
         <h1>Users</h1>
         <th:block th:if="${#lists.isEmpty(users)}">
             <p>No users to display on this page</p>
+            <a class="buttonLink" th:disabled="${currentPage==0}" th:href="${delegate.formatUrl(1, sortBy, sortDir)}">First Page</a>
         </th:block>
         <th:block th:if="${not #lists.isEmpty(users)}">
             <div class="container">
                 <span th:with="pageEndOffset=${pageOffset + users.size()}">
-                    Displaying users <span th:text="${pageOffset}"></span> - <span th:text="${pageEndOffset}"></span> of <span th:text="${totalUserCount}"></span>
+                    Displaying users <span th:text="${pageOffset + 1}"></span> - <span th:text="${pageEndOffset}"></span> of <span th:text="${totalUserCount}"></span>
                 </span>
                 <div>
                     <span th:with="prevPage=${currentPage - 1}">
+                        <a class="buttonLink" th:disabled="${prevPage<=1}" th:href="${delegate.formatUrl(1, sortBy, sortDir)}">First Page</a>
                         <a class="buttonLink" id='previous' th:disabled="${prevPage==0}" th:href="${delegate.formatUrl(prevPage, sortBy, sortDir)}">Previous Page</a>
                     </span>
                     <span th:with="nextPage=${currentPage + 1}">
                         <th:block th:with="maxPage=${(totalUserCount/pageSize) + ((totalUserCount % pageSize == 0) ? 0 : 1)}">
+                            <label for="pageNumber">Go to page</label>
+                            <input type="number" id="pageNumber" th:value="${currentPage}" min="1" th:max="${maxPage}">
+                            <a class="buttonLink" th:attr="onclick=|goToPage('${maxPage}')|">Go</a>
                             <a class="buttonLink" id='next' th:disabled="${nextPage>maxPage}" th:href="${delegate.formatUrl(nextPage, sortBy, sortDir)}">Next Page</a>
+                            <a class="buttonLink" id='last' th:disabled="${nextPage>maxPage - 1}" th:href="${delegate.formatUrl(maxPage, sortBy, sortDir)}">Last Page</a>
                         </th:block>
                     </span>
+
                 </div>
             </div>
             </br>
@@ -90,7 +99,24 @@
                     <div class="tableCell" th:text="${user.firstName} + ' ' + (${user.middleName} ?: '') + ' ' + ${user.lastName}"/>
                     <div class="tableCell" th:text="${user.username}"/>
                     <div class="tableCell" th:text="${user.nickname}"/>
-                    <div class="tableCell" th:text="${delegate.formatUserRoles(user.rolesList)}"/>
+                    <div class="tableCell">
+                        <span th:each="role: ${user.rolesList}">
+                            <form class="chip">
+                                <span class="label" th:text="${delegate.formatUserRole(role)}"/>
+                                <button class="remove-button" onclick="this.parentElement.style.display='none'" type="submit">&times;</button>
+                            </form>
+                        </span>
+                        <div class="dropdown-box">
+                            <div class="add-button">
+                                +
+                            </div>
+                            <div class="dropdown-content" >
+                                <div th:each="role:${delegate.getAvailableRoles(user)}">
+                                    <a class="dropdown-option" th:text="${delegate.formatUserRole(role)}"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </th:block>

@@ -3,10 +3,10 @@
 <head>
     <title>My Account</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <link rel="stylesheet" th:href="@{/styles/common.css}"/>
-    <link rel="stylesheet" th:href="@{/styles/pages/account_details.css}"/>
-    <link rel="stylesheet" th:href="@{/styles/pages/project_details.css}">
-    <link rel="stylesheet" th:href="@{/styles/navbar.css}"/>
+    <link rel="stylesheet" th:href="@{styles/common.css}"/>
+    <link rel="stylesheet" th:href="@{styles/pages/account_details.css}"/>
+    <link rel="stylesheet" th:href="@{styles/pages/project_details.css}">
+    <link rel="stylesheet" th:href="@{styles/navbar.css}"/>
 
 </head>
 <body>
@@ -17,20 +17,17 @@
             </div>
             <div>
                 <a href="project-details" id="home-page">Projects</a>
+                <a href="user-list">View Users</a>
             </div>
         </div>
         <div class="account">
             <div class="dropdown">
-                <button class="dropbutton"><div class="username" th:text="${username}"></div>
-                    <div style="width: 46px;height: 46px;object-fit: cover;overflow: clip;">
-                        <img th:src="'http://localhost:8080/userImage/'+${userId}"
-                             onerror="this.onerror=null;this.src='https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png'"
-                             alt="Placeholder Profile Photo" style="height: 50px;" width="46" height="46">
-                    </div>
+                <button class="dropbutton"><div class="username" th:text="${user.username}"></div><img
+                        src="https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png"
+                        width="46" height="46" alt="Placeholder Profile Photo">
                 </button>
                 <div class="dropdown-content">
                     <a class="dropdown-content-links" href="my_account">My Account</a>
-                    <a class="dropdown-content-links" href="user-list">View Users</a>
                     <a class="dropdown-content-links" href="logout">Log Out</a>
                 </div>
             </div>
@@ -40,8 +37,7 @@
     <div class="container">
         <div class="name-container">
             <div class="image-container" style="padding:0">
-                <img th:src="'http://localhost:8080/userImage/'+${userId}"
-                     onerror="this.onerror=null;this.src='https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png'"
+                <img src="https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png"
                        width="150" height="150" alt="Placeholder Profile Photo">
             </div>
             <div class="left-padding">
@@ -54,7 +50,11 @@
         </div>
         <div class="right-padding">
             <div>
-                <button onclick="location.href='/edit_account'" type="button">Edit</button>
+                <button onclick="location.href='edit_account'" type="button">Edit Details</button>
+                <button onclick="location.href='edit_password'" type="button">Edit Password</button>
+            </div>
+            <div class="edit-message" th:if="${editMessage != null}" th:text="${editMessage}">
+
             </div>
         </div>
     </div>

@@ -82,7 +82,7 @@ public class RegistrationController {
       //Allows the bindingResult (errors) and user fields to persist through the redirect
       redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.user", bindingResult);
       redirectAttributes.addFlashAttribute("user", user);
-      return "redirect:/register";
+      return "redirect:register";
     }
 
     UserRegisterResponse registerReply;
@@ -97,7 +97,6 @@ public class RegistrationController {
       model.addAttribute("registerMessage", "Error connecting to Identity Provider...");
       return "registration_form";
     }
-
 
     //Logs the user in
     AuthenticateResponse loginReply;
@@ -119,11 +118,11 @@ public class RegistrationController {
               domain.startsWith("localhost") ? null : domain
       );
       // Redirect user if login succeeds
-      redirectAttributes.addFlashAttribute("message", "Successfully logged in.");
-      return "redirect:/my_account";
+      //redirectAttributes.addFlashAttribute("message", "Successfully logged in.");
+      return "redirect:my_account";
     }
 
-    return "redirect:/login"; // return the template in templates folder
+    return "redirect:login"; // return the template in templates folder
   }
 
 }

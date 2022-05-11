@@ -15,6 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -22,6 +23,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.time.temporal.ChronoUnit;
 
@@ -48,7 +50,16 @@ public class UserAccountController {
      * @return user account page
      */
     @GetMapping(value="/my_account")
-    public String getPage(Model model, @AuthenticationPrincipal AuthState principal){
+    public String getPage(Model model,
+                          @AuthenticationPrincipal AuthState principal,
+                          @RequestParam Optional<String> edited){
+        if (edited.isPresent()) {
+            if (edited.get().equals("password")) {
+                model.addAttribute("editMessage", "Password changed successfully");
+            } else if (edited.get().equals("details")) {
+                model.addAttribute("editMessage", "User details updated successfully");
+            }
+        }
 
         Integer userId = authStateService.getId(principal);
 

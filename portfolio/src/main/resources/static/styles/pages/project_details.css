@@ -20,6 +20,17 @@ body {
     color: #666666;
 }
 
+.colour-block {
+    display: block;
+    width: 100%;
+    height: 6px;
+    margin-top: 12px;
+}
+
+.sprint-details {
+    display: flex;
+}
+
 .toggle-sprint-details {
     padding: 8px 12px;
 }

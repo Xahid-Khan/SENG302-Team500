@@ -12,7 +12,8 @@ public class SprintMapper {
             contract.name(),
             contract.description(),
             contract.startDate(),
-            contract.endDate()
+            contract.endDate(),
+            contract.colour()
         );
     }
 
@@ -24,6 +25,7 @@ public class SprintMapper {
             entity.getDescription(),
             entity.getStartDate(),
             entity.getEndDate(),
+            entity.getColour(),
             orderNumber
         );
     }

@@ -132,7 +132,8 @@ public class ValidationServiceTest {
         SprintEntity sprint = new SprintEntity("test",
                 "",
                 Instant.parse("2021-12-03T10:15:30.00Z"),
-                Instant.parse("2021-12-05T10:15:30.00Z"));
+                Instant.parse("2021-12-05T10:15:30.00Z"),
+                "#fff");
         validProject.addSprint(sprint);
         sprintRepository.save(sprint);
         projectRepository.save(validProject);
@@ -174,7 +175,8 @@ public class ValidationServiceTest {
         BaseSprintContract sprint = new BaseSprintContract("test sprint",
                 "testing",
                 Instant.parse("2021-12-03T10:15:30.00Z"),
-                Instant.parse("2021-12-05T10:15:30.00Z"));
+                Instant.parse("2021-12-05T10:15:30.00Z"),
+                "#fff");
 
         String response = validationService.checkAddSprint(project.getId(), sprint);
         assertEquals("Okay", response);
@@ -182,14 +184,16 @@ public class ValidationServiceTest {
         sprint = new BaseSprintContract("",
                 "testing",
                 Instant.parse("2021-12-03T10:15:30.00Z"),
-                Instant.parse("2021-12-05T10:15:30.00Z"));
+                Instant.parse("2021-12-05T10:15:30.00Z"),
+                "#fff");
         response = validationService.checkAddSprint(project.getId(), sprint);
         assertEquals("Sprint name must not be empty", response);
 
         sprint = new BaseSprintContract("Test Sprint",
                 "testing",
                 Instant.parse("2021-12-02T10:15:30.00Z"),
-                Instant.parse("2021-12-05T10:15:30.00Z"));
+                Instant.parse("2021-12-05T10:15:30.00Z"),
+                "#fff");
         response = validationService.checkAddSprint(project.getId(), sprint);
         assertEquals("Sprint cannot start before project start date", response);
 
@@ -203,7 +207,8 @@ public class ValidationServiceTest {
         BaseSprintContract sprint = new BaseSprintContract("Test Sprint",
                 "test desc",
                 Instant.parse("2021-12-03T10:15:30.00Z"),
-                Instant.parse("2021-12-05T10:15:30.00Z"));
+                Instant.parse("2021-12-05T10:15:30.00Z"),
+                "#fff");
 
         ProjectEntity project = new ProjectEntity("",
                 "testing",
@@ -223,7 +228,8 @@ public class ValidationServiceTest {
         BaseSprintContract invalidSprint = new BaseSprintContract("   ",
                 "test desc",
                 Instant.parse("2021-12-03T10:15:30.00Z"),
-                Instant.parse("2021-12-05T10:15:30.00Z"));
+                Instant.parse("2021-12-05T10:15:30.00Z"),
+                "#fff");
 
 
         response = validationService.checkUpdateSprint(sprintEntity.getId(), invalidSprint);
@@ -232,7 +238,8 @@ public class ValidationServiceTest {
         invalidSprint = new BaseSprintContract("",
                 "test desc",
                 Instant.parse("2021-12-03T10:15:30.00Z"),
-                Instant.parse("2021-12-05T10:15:30.00Z"));
+                Instant.parse("2021-12-05T10:15:30.00Z"),
+                "#fff");
 
 
         response = validationService.checkUpdateSprint(sprintEntity.getId(), invalidSprint);
@@ -243,7 +250,8 @@ public class ValidationServiceTest {
         sprint = new BaseSprintContract("Test Sprint",
                 "test desc",
                 Instant.parse("2021-12-01T10:15:30.00Z"),
-                Instant.parse("2021-12-05T10:15:30.00Z"));
+                Instant.parse("2021-12-05T10:15:30.00Z"),
+                "#fff");
         sprintEntity = sprintMapper.toEntity(sprint);
         project.addSprint(sprintEntity);
         sprintRepository.save(sprintEntity);
@@ -254,7 +262,8 @@ public class ValidationServiceTest {
         sprint = new BaseSprintContract("",
                 "test desc",
                 Instant.parse("2021-12-03T10:15:30.00Z"),
-                Instant.parse("2021-12-04T00:00:30.00Z"));
+                Instant.parse("2021-12-04T00:00:30.00Z"),
+                "#fff");
         sprintEntity = sprintMapper.toEntity(sprint);
         project.addSprint(sprintEntity);
         sprintRepository.save(sprintEntity);
@@ -295,6 +304,7 @@ public class ValidationServiceTest {
                 "test desc",
                 Instant.parse("2021-12-03T10:15:30.00Z"),
                 Instant.parse("2021-12-04T10:15:30.00Z"),
+                "#fff",
                 1L);
         List<SprintContract> sprints = new ArrayList<SprintContract>();
         sprints.add(sprint);
