@@ -115,7 +115,7 @@ class ProjectView {
 
     console.log("Binding milestone");
 
-    this.milestones.set(milestoneData.eventId, new Milestone(milestoneElement, milestoneData, this.project, this.milestoneDeleteCallback, this.milestoneUpdateCallback));
+    this.milestones.set(milestoneData.milestoneId, new Milestone(milestoneElement, milestoneData, this.project, this.milestoneDeleteCallback, this.milestoneUpdateCallback));
 
     console.log("Milestone bound");
   }
@@ -1286,6 +1286,40 @@ class Project {
     this.currentView.toggleEvents();
   }
 
+  onMilestoneUpdate(milestone) {
+    console.log(`Project notified of update to milestone: `, milestone);
+
+    // Delete the outdated event from the events array.
+    // NB: Since this method is sometimes called with new events, a deletion is not guaranteed to occur here.
+    for (let j=0; j < this.project.milestones.length; j++) {
+      if (this.project.milestones[j].milestoneId === milestone.milestoneId) {
+        this.project.milestones.splice(j, 1);
+        break;
+      }
+    }
+
+    // Insert the updated milestone.
+    this.project.milestones.splice(milestone.orderNumber - 1, 0, milestone);
+
+    // Update the orderNumbers of events after this one in the list.
+    for (let j=milestone.orderNumber; j < this.project.milestones.length; j++) {
+      this.project.milestones[j].orderNumber ++;
+    }
+
+    const showingSprints = this.currentView.showingSprints;
+    const showingEvents = this.currentView.showingEvents;
+
+    // Refresh the view
+    this.showViewer();
+    if (showingSprints) {
+      this.currentView.toggleSprints();
+    }
+    if (showingEvents) {
+      this.currentView.toggleEvents();
+    }
+    this.currentView.toggleMilestones();
+  }
+
   /**
    * Gets the project to explicitly destroy itself .
    */
@@ -1822,7 +1856,7 @@ class Milestone {
    */
   showViewer() {
     this.currentView?.dispose();
-    this.currentView = new MilestoneView(this.containerElement, this.project.sprints, this.milestone, this.deletemilestone.bind(this), this.showEditor.bind(this));
+    this.currentView = new MilestoneView(this.containerElement, this.project.sprints, this.milestone, this.deleteMilestone.bind(this), this.showEditor.bind(this));
   }
 
   /**

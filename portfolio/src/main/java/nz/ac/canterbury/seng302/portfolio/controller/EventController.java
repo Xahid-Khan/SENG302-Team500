@@ -39,7 +39,7 @@ public class EventController {
     @GetMapping(value = "/events/{eventId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<EventContract> getEvent(@PathVariable String eventId) {
         try {
-            var event = eventService.getEvent(eventId);
+            var event = eventService.get(eventId);
 
             return ResponseEntity.ok(event);
         }
@@ -127,7 +127,7 @@ public class EventController {
             try {
                 eventService.update(id, event);
 
-                return ResponseEntity.ok(eventService.getEvent(id));
+                return ResponseEntity.ok(eventService.get(id));
             } catch (NoSuchElementException ex) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }

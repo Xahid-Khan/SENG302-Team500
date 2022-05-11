@@ -156,7 +156,7 @@ public class ValidationService {
     public String checkUpdateEvent(String eventId, BaseEventContract eventContract) {
 
         try {
-            EventContract event = eventService.getEvent(eventId);
+            EventContract event = eventService.get(eventId);
             try {
                 ProjectContract project = projectService.getById(event.projectId());
                 String response = checkSprintDetails(project, event.eventId(), eventContract.startDate(), eventContract.endDate());
