@@ -7,7 +7,6 @@ import nz.ac.canterbury.seng302.portfolio.model.contract.BaseSprintContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.EventContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.EventEntity;
 import nz.ac.canterbury.seng302.portfolio.model.entity.ProjectEntity;
-import nz.ac.canterbury.seng302.portfolio.model.entity.SprintEntity;
 import nz.ac.canterbury.seng302.portfolio.repository.EventRepository;
 import nz.ac.canterbury.seng302.portfolio.repository.ProjectRepository;
 import nz.ac.canterbury.seng302.portfolio.repository.SprintRepository;
@@ -34,6 +33,10 @@ public class EventService {
     @Autowired
     private SprintMapper sprintMapper;
 
+    private String milestoneType = "milestone";
+
+    private String deadlineType = "milestone";
+
     /**
      * Get the event with the event ID
      *
@@ -53,9 +56,13 @@ public class EventService {
      * @return
      */
     public EventContract createEvent(String projectId, BaseEventContract event) {
+        //Check if type is valid
+        if (!isValidType(event)) {
+            throw new IllegalArgumentException("Invalid event type");
+        }
+
         var project = projectRepository.findById(projectId).orElseThrow(() -> new IllegalArgumentException("Invalid project ID"));
         var entity = eventMapper.toEntity(event);
-
         project.newEvent(entity);
         projectRepository.save(project);
         eventRepository.save(entity);
@@ -86,6 +93,10 @@ public class EventService {
      * @param event to update, with the new values
      */
     public void update(String eventId, BaseEventContract event) {
+        if (!isValidType(event)) {
+            throw new IllegalArgumentException("Invalid event type");
+        }
+
         EventEntity eventEntity = eventRepository.findById(eventId).orElseThrow(() -> new NoSuchElementException("Invalid event ID"));
 
         eventEntity.setName(event.name());
@@ -126,6 +137,23 @@ public class EventService {
 
         }
         return sprintIds;
+    }
+    public boolean isValidType(BaseEventContract event) {
+        String eventType = String.valueOf(event.type());
+
+        // Switch for eventType being event, milestone or deadline
+        switch (eventType) {
+            case "event":
+                return true;
+            case "deadline":
+                //start date and end date must be same
+                return event.startDate().equals(event.endDate()) ? true : false;
+            case "milestone":
+                // Check that the start date is just a day and no time
+                // Convert the start date to a LocalDate
+                return event.startDate().equals(event.endDate()) ? true : false;
+        }
+        return false;
     }
     /**
      * Goes through all the events in the project and returns the ids of the ones whose dates overlap with the sprint provided
