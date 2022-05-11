@@ -76,15 +76,18 @@ public class EditAccountController {
     model.addAttribute("user", user);
     try {
       Integer userId = authStateService.getId(principal);
-      if (file.getSize() > 10000 && file.getSize() < 5242000) {
-        byte[] uploadImage = uploadPhotoService.imageProcessing(file);
-        String fileType = uploadPhotoService.getFileType();
 
-        registerClientService.uploadUserPhoto(userId, fileType, uploadImage);
+      if (file != null && !file.isEmpty()) {
+        if (file.getSize() > (5 * 1024) && file.getSize() < 5242000) {
+          byte[] uploadImage = uploadPhotoService.imageProcessing(file);
+          String fileType = uploadPhotoService.getFileType();
 
-      } else {
-        model.addAttribute("imageError", "File size must be more than 10KB and less than 5MB.");
-        return "edit_account";
+          registerClientService.uploadUserPhoto(userId, fileType, uploadImage);
+
+        } else {
+          model.addAttribute("imageError", "File size must be more than 5KB and less than 5MB.");
+          return "edit_account";
+        }
       }
 
       registerClientService.updateDetails(user, userId);

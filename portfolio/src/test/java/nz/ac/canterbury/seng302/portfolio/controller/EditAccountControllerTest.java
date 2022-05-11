@@ -61,7 +61,6 @@ class EditAccountControllerTest {
                 .param("personalPronouns", user.personalPronouns())
                 .param("bio", user.bio())
                 .param("edit_account", "0")
-                .param("image", null)
         ;
 
         // Creates a mock for the /edit_account endpoint
@@ -137,7 +136,7 @@ class EditAccountControllerTest {
                         "Nickname",
                         "Bio",
                         "Pronouns",
-                        "email%40email.com",
+                        "email@email.com",
                         null);
 
 
@@ -173,7 +172,7 @@ class EditAccountControllerTest {
                         "Nickname",
                         "Bio",
                         "Pronouns",
-                        "email%40email.com",
+                        "email@email.com",
                         null);
 
         var result = this.mockMvc
@@ -209,7 +208,7 @@ class EditAccountControllerTest {
                         nickname,
                         bio,
                         personalPronouns,
-                        "email%40email.com",
+                        "email@email.com",
                         null);
 
         var result = this.mockMvc
@@ -251,7 +250,7 @@ class EditAccountControllerTest {
                         nickname,
                         bio,
                         personalPronouns,
-                        "email%40email.com",
+                        "email@email.com",
                         null);
 
 
