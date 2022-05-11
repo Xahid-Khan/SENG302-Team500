@@ -258,6 +258,7 @@ public class ValidationService {
         }
         return checkBaseFields("Milestone",
                 milestoneContract.name(),
+                milestoneContract.description(),
                 milestoneContract.startDate(),
                 milestoneContract.endDate());
     }
@@ -276,7 +277,7 @@ public class ValidationService {
                 if (!response.equals("Okay")) {
                     return response;
                 }
-                response = checkBaseFields("Milestone", milestoneContract.name(), milestoneContract.startDate(), milestoneContract.endDate());
+                response = checkBaseFields("Milestone", milestoneContract.name(), milestoneContract.description(), milestoneContract.startDate(), milestoneContract.endDate());
                 if (!response.equals("Okay")) {
                     return response;
                 }
@@ -294,6 +295,7 @@ public class ValidationService {
 
         return checkBaseFields("Milestone",
                 milestoneContract.name(),
+                milestoneContract.description(),
                 milestoneContract.startDate(),
                 milestoneContract.endDate());
     }
@@ -313,6 +315,7 @@ public class ValidationService {
         }
         return checkBaseFields("Deadline",
                 deadlineContract.name(),
+                deadlineContract.description(),
                 deadlineContract.startDate(),
                 deadlineContract.endDate());
     }
@@ -331,7 +334,7 @@ public class ValidationService {
                 if (!response.equals("Okay")) {
                     return response;
                 }
-                response = checkBaseFields("Deadline", deadlineContract.name(), deadlineContract.startDate(), deadlineContract.endDate());
+                response = checkBaseFields("Deadline", deadlineContract.name(), deadlineContract.description(), deadlineContract.startDate(), deadlineContract.endDate());
                 if (!response.equals("Okay")) {
                     return response;
                 }
@@ -349,6 +352,7 @@ public class ValidationService {
 
         return checkBaseFields("Milestone",
                 deadlineContract.name(),
+                deadlineContract.description(),
                 deadlineContract.startDate(),
                 deadlineContract.endDate());
     }
