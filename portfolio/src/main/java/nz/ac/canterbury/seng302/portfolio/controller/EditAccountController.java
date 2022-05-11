@@ -68,7 +68,7 @@ public class EditAccountController {
       BindingResult bindingResult,
       Model model,
       @AuthenticationPrincipal AuthState principal,
-      @RequestParam("image") MultipartFile file) {
+      @RequestParam(value = "image", required = false) MultipartFile file) {
 
     if (bindingResult.hasErrors()) {
       return "edit_account";
@@ -83,7 +83,7 @@ public class EditAccountController {
         registerClientService.uploadUserPhoto(userId, fileType, uploadImage);
 
       } else {
-        model.addAttribute("imageError", "File size must be more than 500KB and less than 5MB.");
+        model.addAttribute("imageError", "File size must be more than 10KB and less than 5MB.");
         return "edit_account";
       }
 
