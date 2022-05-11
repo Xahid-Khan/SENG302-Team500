@@ -95,6 +95,7 @@ public class UserListController {
             ascending
         );
         // Construct response
+        model.addAttribute("userId", userId);
         model.addAttribute("users", response.getUsersList());
         model.addAttribute("totalUserCount", response.getResultSetSize());
         model.addAttribute("pageOffset", offset);

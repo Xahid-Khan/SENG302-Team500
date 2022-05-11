@@ -14,6 +14,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -68,10 +69,11 @@ public class UserAccountController {
         String dateString = getFormattedDate(userDetails.getCreated());
 
         //Prefill the form with the user's details
+        model.addAttribute("userId", userId);
         model.addAttribute("delegate", this);
         model.addAttribute("user", userDetails);
         model.addAttribute("registration_date", dateString);
-
+        model.addAttribute("userId", userId);
 
         return "account_details";
     }
@@ -87,6 +89,7 @@ public class UserAccountController {
         model.addAttribute("delegate", this);
         model.addAttribute("user", userDetails);
         model.addAttribute("registration_date", dateString);
+        model.addAttribute("userId", id);
 
         return "account_details";
     }

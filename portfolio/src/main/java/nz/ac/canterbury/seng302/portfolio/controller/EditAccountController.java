@@ -44,6 +44,7 @@ public class EditAccountController {
     UserResponse userDetails = userAccountService.getUserById(userId);
 
     // Prefill the form with the user's details
+    model.addAttribute("userId", userId);
     model.addAttribute("username", userDetails.getUsername());
     model.addAttribute("user", userDetails);
 
@@ -76,6 +77,7 @@ public class EditAccountController {
     model.addAttribute("user", user);
     try {
       Integer userId = authStateService.getId(principal);
+      model.addAttribute("userId", userId);
       if (file.getSize() > 10000 && file.getSize() < 5242000) {
         byte[] uploadImage = uploadPhotoService.imageProcessing(file);
         String fileType = uploadPhotoService.getFileType();
