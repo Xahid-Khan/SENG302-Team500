@@ -7,53 +7,6 @@ const LoadingStatus = {
   Error: "Error"
 };
 
-function leftPadNumber(number, places) {
-  const numberString = `${number}`
-
-  if (numberString.length >= places) {
-    return numberString;
-  }
-
-  return ('0'.repeat(places - numberString.length)) + number;
-}
-
-class DatetimeUtils {
-  static networkStringToLocalDate(utcString) {
-    return new Date(Date.parse(utcString))
-  }
-
-  static localToNetworkString(localDate) {
-    return localDate.toISOString();
-  }
-
-  static toLocalYMD(localDate) {
-    return `${leftPadNumber(localDate.getFullYear(), 4)}-${leftPadNumber(localDate.getMonth() + 1, 2)}-${leftPadNumber(localDate.getDate(), 2)}`
-  }
-
-  static fromLocalYMD(localString) {
-    // From: https://stackoverflow.com/a/64199706
-    const [year, month, day] = localString.split('-');
-    return new Date(year, month - 1, day);
-  }
-
-  static getTimeStringIfNonZeroLocally(date) {
-    if (date.getHours() !== 0 || date.getMinutes() !== 0 || date.getSeconds() !== 0) {
-      // There is an hours/minutes/seconds component to this date in the local timezone.
-      return `${date.getHours()}:${leftPadNumber(date.getMinutes(), 2)}${(date.getSeconds() !== 0) ? ':' + leftPadNumber(date.getSeconds(), 2) : ''}`;
-    }
-    return null;
-  }
-
-  static localToUserDMY(localDate) {
-    const hoursComponent = this.getTimeStringIfNonZeroLocally(localDate);
-    return `${localDate.getDate()} ${localDate.toLocaleString('default', {month: 'long'})} ${localDate.getFullYear()}${(hoursComponent !== null) ? ' ' + hoursComponent : ''}`;
-  }
-
-  static areEqual(date1, date2) {
-    return date1 <= date2 && date2 <= date1;
-  }
-}
-
 class PortfolioNetworkError extends Error {
   constructor(message, ...args) {
     super(message, ...args);
@@ -101,7 +54,6 @@ class ProjectView {
     this.deleteCallback = deleteCallback;
     this.sprintDeleteCallback = sprintDeleteCallback;
     this.sprintUpdateCallback = sprintUpdateCallback;
-
     this.constructAndPopulateView();
     this.wireView();
   }
@@ -135,6 +87,9 @@ class ProjectView {
           <span class="project-title-text">
             <span id="project-title-text-${this.project.id}"></span> | <span id="project-startDate-${this.project.id}"></span> - <span id="project-endDate-${this.project.id}"></span>
           </span>   
+          <span class="monthly-planner-redirect">
+                  <button class="button monthly-planner-redirect-button" id="monthly-planner-redirect-button-${this.project.id}">View Monthly Planner</button>
+          </span> 
           <span class="crud">
                   <button class="button edit-project" id="project-edit-button-${this.project.id}" data-privilege="teacher">Edit</button>
                   <button class="button" id="project-delete-button-${this.project.id}" data-privilege="teacher">Delete</button>
@@ -211,12 +166,16 @@ class ProjectView {
     const defaultEndDate = new Date(defaultStartDate.valueOf());
     defaultEndDate.setDate(defaultEndDate.getDate() + 22);
 
+    const randomColor = Math.floor(Math.random() * 16777215).toString(16);
+    const defaultColour = "#" + randomColor;
+
     const defaultSprint = {
       id: `__NEW_SPRINT_FORM_${this.project.id}`,
       name: `Sprint ${defaultName}`,
       description: null,
       startDate: defaultStartDate,
-      endDate: defaultEndDate
+      endDate: defaultEndDate,
+      colour: defaultColour
     };
 
     this.addSprintForm = {
@@ -258,7 +217,7 @@ class ProjectView {
     this.addSprintLoadingStatus = LoadingStatus.Pending;
 
     try {
-      const res = await fetch(`/api/v1/projects/${this.project.id}/sprints`, {
+      const res = await fetch(`api/v1/projects/${this.project.id}/sprints`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -274,7 +233,8 @@ class ProjectView {
       this.sprintUpdateCallback({
         ...newSprint,
         startDate: DatetimeUtils.networkStringToLocalDate(newSprint.startDate),
-        endDate: DatetimeUtils.networkStringToLocalDate(newSprint.endDate)
+        endDate: DatetimeUtils.networkStringToLocalDate(newSprint.endDate),
+        colour: newSprint.colour
       });
     }
     catch (ex) {
@@ -286,9 +246,14 @@ class ProjectView {
     }
   }
 
+  monthlyPlannerRedirect(projectId) {
+    window.location.href = `/monthly-planner/${projectId}`
+  }
+
   wireView() {
     document.getElementById(`project-edit-button-${this.project.id}`).addEventListener("click", () => this.editCallback());
     document.getElementById(`project-delete-button-${this.project.id}`).addEventListener("click", () => this.deleteCallback());
+    document.getElementById(`monthly-planner-redirect-button-${this.project.id}`).addEventListener("click", () => this.monthlyPlannerRedirect(this.project.id));
     this.toggleSprintsButton.addEventListener('click', this.toggleSprints.bind(this));
     this.addSprintButton.addEventListener('click', this.openAddSprintForm.bind(this));
   }
@@ -341,6 +306,8 @@ class ProjectOrSprintEditor {
               <input type="date" name="start-date" id="edit-start-date-${this.entityId}"> <span id="edit-start-date-hours-${this.entityId}"></span><br><br>
               <label>End Date*:</label>
               <input type="date" name="end-date" id="edit-end-date-${this.entityId}"> <span id="edit-end-date-hours-${this.entityId}"></span><br>
+              <label id="color-label-${this.entityId}"><br>Colour*:</label>
+              <input type="color" name="colour" id="edit-colour-${this.entityId}"><br></input>
               <div id="edit-project-date-error-${this.entityId}" class="form-error" style="display: none;"></div><br>
               
               <p>* = Required field.</p>
@@ -357,6 +324,13 @@ class ProjectOrSprintEditor {
     this.descriptionInput = document.getElementById(`edit-description-${this.entityId}`);
     this.startDateInput = document.getElementById(`edit-start-date-${this.entityId}`);
     this.endDateInput = document.getElementById(`edit-end-date-${this.entityId}`);
+
+    this.colourInput = document.getElementById(`edit-colour-${this.entityId}`);
+    if (this.title === "New project details:" || this.title === "Edit project details:") {
+      this.colourInput.outerHTML = "";
+      document.getElementById(`color-label-${this.entityId}`).outerHTML = "";
+    }
+
     this.saveButton = document.getElementById(`edit-save-button-${this.entityId}`);
 
     this.startDateHoursField = document.getElementById(`edit-start-date-hours-${this.entityId}`);
@@ -400,6 +374,7 @@ class ProjectOrSprintEditor {
     this.nameInput.value = this.initialData.name ?? "";
     this.descriptionInput.value = this.initialData.description ?? "";
     this.startDateInput.value = (this.initialData.startDate) ? DatetimeUtils.toLocalYMD(this.initialData.startDate) : "";
+    this.colourInput.value = this.initialData.colour ?? "#000000";
     if (this.initialData.endDate) {
       const displayedDate = new Date(this.initialData.endDate.valueOf());
       displayedDate.setDate(displayedDate.getDate() - 1);
@@ -479,6 +454,10 @@ class ProjectOrSprintEditor {
     return null;
   }
 
+  getColour() {
+    return this.colourInput.value;
+  }
+
   /**
    * Checks that the date fields are valid and populates error fields if not.
    *
@@ -525,7 +504,8 @@ class ProjectOrSprintEditor {
           name: this.nameInput.value,
           description: this.descriptionInput.value,
           startDate: this.getStartDateInputValue(),
-          endDate: this.getEndDateInputValue()
+          endDate: this.getEndDateInputValue(),
+          colour: this.getColour()
         })
       } finally {
         this.saveButton.innerText = "Save";
@@ -644,15 +624,19 @@ class SprintView {
             <button class="button toggle-sprint-details" id="toggle-sprint-details-${this.sprint.sprintId}">+</button>
         </span>
     </div>
+
     <div class="sprint-description" id="sprint-description-${this.sprint.sprintId}"></div>
+    <div class="colour-block" id="sprint-colour-block-${this.sprint.sprintId}"></div>
     `;
 
     this.toggleButton = document.getElementById(`toggle-sprint-details-${this.sprint.sprintId}`);
+    this.sprintDetails = document.getElementById(`sprint-details-${this.sprint.sprintId}`);
     this.description = document.getElementById(`sprint-description-${this.sprint.sprintId}`);
-
+    this.colourBlock = document.getElementById(`sprint-colour-block-${this.sprint.sprintId}`);
     document.getElementById(`sprint-order-text-${this.sprint.sprintId}`).innerText = `Sprint ${this.sprint.orderNumber}`;
     document.getElementById(`sprint-title-text-${this.sprint.sprintId}`).innerText = this.sprint.name;
-    this.description.innerText = this.sprint.description;
+    this.description.innerText = "Description: " + this.sprint.description;
+    this.colourBlock.style.background = this.sprint.colour;
     document.getElementById(`start-date-${this.sprint.sprintId}`).innerText = DatetimeUtils.localToUserDMY(this.sprint.startDate);
     const displayedDate = new Date(this.sprint.endDate.valueOf());
     displayedDate.setDate(displayedDate.getDate() - 1);
@@ -786,7 +770,7 @@ class Project {
     this.updateLoadingStatus = LoadingStatus.Pending;
 
     try {
-      const result = await fetch(`/api/v1/projects/${this.project.id}`, {
+      const result = await fetch(`api/v1/projects/${this.project.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
@@ -833,7 +817,7 @@ class Project {
     this.deleteLoadingStatus = LoadingStatus.Pending;
 
     try {
-      const response = await fetch(`/api/v1/projects/${this.project.id}`, {
+      const response = await fetch(`api/v1/projects/${this.project.id}`, {
         method: 'DELETE'
       })
 
@@ -907,6 +891,7 @@ class Sprint {
         && newValue.description === this.sprint.description
         && DatetimeUtils.areEqual(newValue.startDate, this.sprint.startDate)
         && DatetimeUtils.areEqual(newValue.endDate, this.sprint.endDate)
+        && newValue.colour === this.sprint.colour
     ) {
       // Nothing has changed
       this.showViewer();
@@ -916,7 +901,7 @@ class Sprint {
     this.updateSprintLoadingStatus = LoadingStatus.Pending;
 
     try {
-      const response = await fetch(`/api/v1/sprints/${this.sprint.sprintId}`, {
+      const response = await fetch(`api/v1/sprints/${this.sprint.sprintId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
@@ -932,7 +917,8 @@ class Sprint {
       this.sprintUpdateSavedCallback({
         ...newSprint,
         startDate: DatetimeUtils.networkStringToLocalDate(newSprint.startDate),
-        endDate: DatetimeUtils.networkStringToLocalDate(newSprint.endDate)
+        endDate: DatetimeUtils.networkStringToLocalDate(newSprint.endDate),
+        colour: newSprint.colour
       });
     }
     catch (ex) {
@@ -987,7 +973,7 @@ class Sprint {
     this.deleteLoadingStatus = LoadingStatus.Pending;
 
     try {
-      const response = await fetch(`/api/v1/sprints/${this.sprint.sprintId}`, {
+      const response = await fetch(`api/v1/sprints/${this.sprint.sprintId}`, {
         method: 'DELETE'
       })
       if (!response.ok) {
@@ -1044,7 +1030,7 @@ class Application {
     this.addProjectLoadingStatus = LoadingStatus.Pending;
 
     try {
-      const res = await fetch("/api/v1/projects", {
+      const res = await fetch("api/v1/projects", {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -1177,7 +1163,7 @@ class Application {
     this.clearProjects();
 
     try {
-      const result = await fetch('/api/v1/projects');
+      const result = await fetch('api/v1/projects');
 
       if (!result.ok) {
         await ErrorHandlerUtils.handleNetworkError(result, "get projects");

@@ -35,9 +35,13 @@ public class LoginController {
      */
     @GetMapping(value = "/login")//Mapped to GET
     public String login(
+            @AuthenticationPrincipal AuthState principal,
             @RequestParam(name="error", required=false) String error,
             Model model
     ) {
+        if (principal != null && principal.getIsAuthenticated()) {
+            return "redirect:my_account";
+        }
 
         model.addAttribute("login", new Login());//creates the DTO object which captures the inpuitd
         model.addAttribute("error", error);
@@ -95,7 +99,7 @@ public class LoginController {
             );
             // Redirect user if login succeeds
             redirectAttributes.addFlashAttribute("message", "Successfully logged in.");
-            return "redirect:/my_account";
+            return "redirect:my_account";
         }
 
         model.addAttribute("error", loginReply.getMessage());
@@ -113,10 +117,10 @@ public class LoginController {
         Model model
     ) {
         if (principal != null) {
-            return "redirect:/my_account";
+            return "redirect:my_account";
         }
         else {
-            return "redirect:/login";
+            return "redirect:login";
         }
     }
 

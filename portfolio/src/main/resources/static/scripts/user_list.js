@@ -27,11 +27,35 @@ const reloadWithLastStoredParameters = () => {
   }
 };
 
+const goToPage = (maxPage) => {
+  const lastParameters = JSON.parse(
+      window.localStorage.getItem("user_list_last_parameters"));
+  const page = Number(document.getElementById("pageNumber").value)
+  if (!isNaN(page)) {
+    let baseUrl;
+    if (!isNaN(Number(maxPage))) {
+      // If the page is too big, then just load the max page instead.
+      baseUrl = `?page=` + (page > maxPage ? maxPage : page)
+    } else {
+      baseUrl = `?page=${page}`;
+    }
+    console.log(baseUrl)
+    // If we need to sort by or change ascension order, add them here
+    if (lastParameters) {
+      if (lastParameters.sortBy)
+        baseUrl += `&sortBy=${lastParameters.sortBy}`;
+      if (lastParameters.asc)
+        baseUrl += `&asc=${lastParameters.asc}`;
+    }
+    window.location.href = baseUrl;
+  }
+}
+
 (() => {
   // Executed every time the page loads.
   const params = parseParameters();
   if (params === null) {
-    // The page has no parameters, default to the ones that we has last
+    // The page has no parameters, default to the ones that we had last
     reloadWithLastStoredParameters();
   }
   else {
