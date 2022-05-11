@@ -8,11 +8,13 @@ import java.util.stream.Collectors;
 import nz.ac.canterbury.seng302.portfolio.model.GetPaginatedUsersOrderingElement;
 import nz.ac.canterbury.seng302.portfolio.model.entity.SortingParameterEntity;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
+import nz.ac.canterbury.seng302.portfolio.service.RolesService;
 import nz.ac.canterbury.seng302.portfolio.service.SortingParametersService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserRoleChangeResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -25,6 +27,9 @@ public class UserListController {
 
     @Autowired
     private UserAccountService userAccountService;
+
+    @Autowired
+    private RolesService rolesService;
 
     @Autowired
     private AuthStateService authStateService;
@@ -101,6 +106,32 @@ public class UserListController {
         return "user_list";
     }
 
+    @PostMapping("/user-list/{action}/{id}/{roleNumber}")
+    public String updateRoles(@AuthenticationPrincipal AuthState principal,
+                              @PathVariable String action,
+                              @PathVariable Integer id,
+                              @PathVariable Integer roleNumber) {
+
+        if (action.equals("remove")) {
+            UserRoleChangeResponse response = userAccountService.removeRole(id, UserRole.forNumber(roleNumber));
+            if (response.getIsSuccess()) {
+                return "redirect:/user-list";
+            } else {
+                return "redirect:/greeting";
+            }
+        } else if (action.equals("add")) {
+            UserRoleChangeResponse response = userAccountService.addRole(id, UserRole.forNumber(roleNumber));
+            if (response.getIsSuccess()) {
+                return "redirect:/user-list";
+            } else {
+                return "redirect:/greeting";
+            }
+        }
+        return "redirect:/user-list";
+    }
+
+
+
     public String formatUrl(int page, String sortBy, boolean sortDir) {
         return String.format("?page=%d&sortBy=%s&asc=%b", page, sortBy, sortDir);
     }
@@ -110,7 +141,7 @@ public class UserListController {
             case STUDENT: return "Student";
             case TEACHER: return "Teacher";
             case COURSE_ADMINISTRATOR: return "Course Administrator";
-            default: return "Default";
+            default: return "Role not found";
         }
     }
 
