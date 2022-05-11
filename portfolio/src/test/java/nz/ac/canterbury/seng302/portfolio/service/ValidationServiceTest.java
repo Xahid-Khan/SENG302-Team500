@@ -284,16 +284,16 @@ public class ValidationServiceTest {
         Instant startDate = Instant.parse("2021-12-03T10:15:30.00Z");
         Instant endDate = Instant.parse("2021-12-05T10:15:30.00Z");
 
-        String response = validationService.checkSprintDetails(project, "", startDate, endDate);
+        String response = validationService.checkSprintDetails(project, "", startDate, endDate, "#000000");
         assertEquals("Okay", response);
 
         startDate = Instant.parse("2021-12-02T10:15:30.00Z");
-        response = validationService.checkSprintDetails(project, "", startDate, endDate);
+        response = validationService.checkSprintDetails(project, "", startDate, endDate, "#000000");
         assertEquals("Sprint cannot start before project start date", response);
         startDate = Instant.parse("2021-12-03T10:15:30.00Z");
 
         endDate = Instant.parse("2021-12-06T10:15:30.00Z");
-        response = validationService.checkSprintDetails(project, "", startDate, endDate);
+        response = validationService.checkSprintDetails(project, "", startDate, endDate, "#000000");
         assertEquals("Sprint cannot end after project end date", response);
         endDate = Instant.parse("2021-12-05T10:15:30.00Z");
 
@@ -315,7 +315,7 @@ public class ValidationServiceTest {
                 Instant.parse("2021-12-05T10:15:30.00Z"),
                 sprints.stream().toList());
         startDate = Instant.parse("2021-12-04T00:00:30.00Z");
-        response = validationService.checkSprintDetails(project, "", startDate, endDate);
+        response = validationService.checkSprintDetails(project, "", startDate, endDate, "#000000");
         assertEquals("Sprint cannot begin while another sprint is still in progress", response);
 
     }
