@@ -17,7 +17,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
 
 @Controller
@@ -28,13 +27,17 @@ public class EditAccountController {
     binder.registerCustomEditor(String.class, new StringTrimmerEditor(false));
   }
 
-  @Autowired private UploadPhotoService uploadPhotoService;
+    @Autowired
+    private UploadPhotoService uploadPhotoService;
 
-  @Autowired private RegisterClientService registerClientService;
+    @Autowired
+    private RegisterClientService registerClientService;
 
-  @Autowired private UserAccountService userAccountService;
+    @Autowired
+    private UserAccountService userAccountService;
 
-  @Autowired private AuthStateService authStateService;
+    @Autowired
+    private AuthStateService authStateService;
 
   @GetMapping(value = "/edit_account")
   public String getPage(Model model, @AuthenticationPrincipal AuthState principal) {
@@ -44,6 +47,7 @@ public class EditAccountController {
     UserResponse userDetails = userAccountService.getUserById(userId);
 
     // Prefill the form with the user's details
+    model.addAttribute("userId", userId);
     model.addAttribute("username", userDetails.getUsername());
     model.addAttribute("user", userDetails);
 
@@ -76,7 +80,7 @@ public class EditAccountController {
     model.addAttribute("user", user);
     try {
       Integer userId = authStateService.getId(principal);
-
+      model.addAttribute("userId", userId);
       if (file != null && !file.isEmpty()) {
         if (file.getSize() > (5 * 1024) && file.getSize() < 5242000) {
           byte[] uploadImage = uploadPhotoService.imageProcessing(file);
@@ -92,10 +96,27 @@ public class EditAccountController {
 
       registerClientService.updateDetails(user, userId);
 
-    } catch (StatusRuntimeException e) {
-      model.addAttribute("error", "Error connecting to Identity Provider...");
-      return "edit_account";
+        } catch (StatusRuntimeException e) {
+        model.addAttribute("error", "Error connecting to Identity Provider...");
+        return "edit_account";
     }
-    return "redirect:my_account?edited=details";
+      return "redirect:my_account?edited=details";
   }
+
+    /**
+     * A controller (endpoint) for deleting a user photo.
+     * @param principal An Authority State to verify user.
+     * @param user A user of type User.
+     * @param model HTML model DTO
+     * @return a String to redirect the page to.
+     */
+    @PostMapping(value = "/edit_account/imageDelete")
+    public String deleteUserPhoto(@AuthenticationPrincipal AuthState principal, @ModelAttribute User user, Model model) {
+
+        int userId = authStateService.getId(principal);
+        registerClientService.deleteUserPhoto(userId);
+        model.addAttribute("user", user);
+        return "redirect:/my_account";
+    }
+
 }

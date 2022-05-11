@@ -3,13 +3,11 @@
 <head>
     <title>My Account</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <link rel="stylesheet" th:href="@{styles/common.css}"/>
-    <link rel="stylesheet" th:href="@{styles/pages/account_details.css}"/>
-    <link rel="stylesheet" th:href="@{styles/pages/editing_account.css}"/>
-    <link rel="stylesheet" th:href="@{styles/pages/project_details.css}">
-    <link rel="stylesheet" th:href="@{styles/navbar.css}"/>
-    <link rel="stylesheet" th:href="@{styles/pages/upload_popup.css}"/>
-
+    <link rel="stylesheet" th:href="@{/styles/common.css}"/>
+    <link rel="stylesheet" th:href="@{/styles/pages/account_details.css}"/>
+    <link rel="stylesheet" th:href="@{/styles/pages/project_details.css}">
+    <link rel="stylesheet" th:href="@{/styles/navbar.css}"/>
+    <link rel="stylesheet" th:href="@{/styles/pages/upload_popup.css}"/>
 
 </head>
 <body>
@@ -25,9 +23,12 @@
         </div>
         <div class="account">
             <div class="dropdown">
-                <button class="dropbutton"><div class="username" th:text="${username}"></div><img
-                        src="https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png"
-                        width="46" height="46" alt="Placeholder Profile Photo">
+                <button class="dropbutton"><div class="username" th:text="${username}"></div>
+                    <div style="width: 46px;height: 46px;object-fit: cover;overflow: clip;">
+                        <img th:src="'//' + ${globalImagePath} + ${userId}"
+                             onerror="this.onerror=null;this.src='https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png'"
+                             alt="Placeholder Profile Photo" style="height: 50px;" width="46" height="46">
+                    </div>
                 </button>
                 <div class="dropdown-content">
                     <a class="dropdown-content-links" href="my_account">My Account</a>
@@ -58,7 +59,8 @@
                         <!--    Submits a populated UserDTO to endpoint register -->
                         <div class="image-container" style="padding-left:15%">
                             <button onclick="openPopupForm()" id="userPhotoButton" type="button" style="padding:0; width:150px; height:150px"}>
-                                <img src="https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png"
+                                <img th:src="'//' + ${globalImagePath} + ${userId}"
+                                     onerror="this.onerror=null;this.src='https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png'"
                                      width="150" height="150" alt="No Photo">
                             </button>
                         </div>

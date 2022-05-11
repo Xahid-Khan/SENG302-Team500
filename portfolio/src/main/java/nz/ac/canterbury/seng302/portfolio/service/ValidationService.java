@@ -1,9 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
-import nz.ac.canterbury.seng302.portfolio.model.contract.BaseProjectContract;
-import nz.ac.canterbury.seng302.portfolio.model.contract.BaseSprintContract;
-import nz.ac.canterbury.seng302.portfolio.model.contract.ProjectContract;
-import nz.ac.canterbury.seng302.portfolio.model.contract.SprintContract;
+import nz.ac.canterbury.seng302.portfolio.model.contract.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +20,15 @@ public class ValidationService {
 
     @Autowired
     private SprintService sprintService;
+
+    @Autowired
+    private EventService eventService;
+
+    @Autowired
+    private MilestoneService milestoneService;
+
+    @Autowired
+    private DeadlineService deadlineService;
 
     public String checkAddProject(BaseProjectContract projectContract) {
 
@@ -98,6 +104,25 @@ public class ValidationService {
     }
 
     /**
+     * Checks event inputs when am event is added.
+     */
+    public String checkAddEvent(String projectId, BaseEventContract eventContract) {
+        try {
+            ProjectContract project = projectService.getById(projectId);
+            String response = checkEventDetails(project, eventContract.startDate(), eventContract.endDate());
+            if (!response.equals("Okay")) {
+                return response;
+            }
+        } catch (NoSuchElementException error) {
+            return "Project ID does not exist";
+        }
+        return checkBaseFields("Event",
+                eventContract.name(),
+                eventContract.startDate(),
+                eventContract.endDate());
+    }
+
+    /**
      * Checks when a sprint has been updated.
      */
     public String checkUpdateSprint(String sprintId, BaseSprintContract sprintContract) {
@@ -133,6 +158,41 @@ public class ValidationService {
     }
 
     /**
+     * Checks when an event has been updated.
+     */
+    public String checkUpdateEvent(String eventId, BaseEventContract eventContract) {
+
+        try {
+            EventContract event = eventService.get(eventId);
+            try {
+                ProjectContract project = projectService.getById(event.projectId());
+                String response = checkSprintDetails(project, event.eventId(), eventContract.startDate(), eventContract.endDate());
+                if (!response.equals("Okay")) {
+                    return response;
+                }
+                response = checkBaseFields("Event", eventContract.name(), eventContract.startDate(), eventContract.endDate());
+                if (!response.equals("Okay")) {
+                    return response;
+                }
+
+            } catch (NoSuchElementException error) {
+                return "Project ID does not exist";
+            }
+
+
+        } catch (NoSuchElementException error) {
+
+            return "Event ID does not exist";
+        }
+
+
+        return checkBaseFields("Event",
+                eventContract.name(),
+                eventContract.startDate(),
+                eventContract.endDate());
+    }
+
+    /**
      * Checks sprint date details and returns respective messages.
      */
     public String checkSprintDetails(ProjectContract project, String sprintId, Instant start, Instant end, String colour) {
@@ -156,5 +216,133 @@ public class ValidationService {
         return "Okay";
 
     }
+
+    /**
+     * Checks event date details and returns respective messages.
+     */
+    public String checkEventDetails(ProjectContract project, Instant start, Instant end) {
+
+
+        if (start.isBefore(project.startDate())) {
+            return "Event cannot start before project start date";
+        }
+        if (end.isAfter(project.endDate())) {
+            return "Event cannot end after project end date";
+        }
+
+        return "Okay";
+
+    }
+
+    /**
+     * Checks milestone inputs when a milestone is added.
+     */
+    public String checkAddMilestone(String projectId, BaseMilestoneContract milestoneContract) {
+        try {
+            ProjectContract project = projectService.getById(projectId);
+            String response = checkEventDetails(project, milestoneContract.startDate(), milestoneContract.endDate());
+            if (!response.equals("Okay")) {
+                return response;
+            }
+        } catch (NoSuchElementException error) {
+            return "Project ID does not exist";
+        }
+        return checkBaseFields("Milestone",
+                milestoneContract.name(),
+                milestoneContract.startDate(),
+                milestoneContract.endDate());
+    }
+
+
+    /**
+     * Checks when a milestone has been updated.
+     */
+    public String checkUpdateMilestone(String milestoneId, BaseMilestoneContract milestoneContract) {
+
+        try {
+            MilestoneContract milestone = milestoneService.get(milestoneId);
+            try {
+                ProjectContract project = projectService.getById(milestone.projectId());
+                String response = checkSprintDetails(project, milestone.milestoneId(), milestoneContract.startDate(), milestoneContract.endDate());
+                if (!response.equals("Okay")) {
+                    return response;
+                }
+                response = checkBaseFields("Milestone", milestoneContract.name(), milestoneContract.startDate(), milestoneContract.endDate());
+                if (!response.equals("Okay")) {
+                    return response;
+                }
+
+            } catch (NoSuchElementException error) {
+                return "Project ID does not exist";
+            }
+
+
+        } catch (NoSuchElementException error) {
+
+            return "Milestone ID does not exist";
+        }
+
+
+        return checkBaseFields("Milestone",
+                milestoneContract.name(),
+                milestoneContract.startDate(),
+                milestoneContract.endDate());
+    }
+
+    /**
+     * Checks deadline inputs when a milestone is added.
+     */
+    public String checkAddDeadline(String projectId, BaseDeadlineContract deadlineContract) {
+        try {
+            ProjectContract project = projectService.getById(projectId);
+            String response = checkEventDetails(project, deadlineContract.startDate(), deadlineContract.endDate());
+            if (!response.equals("Okay")) {
+                return response;
+            }
+        } catch (NoSuchElementException error) {
+            return "Project ID does not exist";
+        }
+        return checkBaseFields("Deadline",
+                deadlineContract.name(),
+                deadlineContract.startDate(),
+                deadlineContract.endDate());
+    }
+
+
+    /**
+     * Checks when a deadline has been updated.
+     */
+    public String checkUpdateDeadline(String deadlineId, BaseDeadlineContract deadlineContract) {
+
+        try {
+            DeadlineContract deadline = deadlineService.get(deadlineId);
+            try {
+                ProjectContract project = projectService.getById(deadline.projectId());
+                String response = checkSprintDetails(project, deadline.deadlineId(), deadlineContract.startDate(), deadlineContract.endDate());
+                if (!response.equals("Okay")) {
+                    return response;
+                }
+                response = checkBaseFields("Deadline", deadlineContract.name(), deadlineContract.startDate(), deadlineContract.endDate());
+                if (!response.equals("Okay")) {
+                    return response;
+                }
+
+            } catch (NoSuchElementException error) {
+                return "Project ID does not exist";
+            }
+
+
+        } catch (NoSuchElementException error) {
+
+            return "Deadline ID does not exist";
+        }
+
+
+        return checkBaseFields("Milestone",
+                deadlineContract.name(),
+                deadlineContract.startDate(),
+                deadlineContract.endDate());
+    }
+
 }
 

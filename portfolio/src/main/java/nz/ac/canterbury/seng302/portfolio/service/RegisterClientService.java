@@ -71,7 +71,6 @@ public class RegisterClientService {
 
     public void uploadUserPhoto(Integer userId, String fileType, byte[] uploadImage) {
         CountDownLatch latch = new CountDownLatch(1);
-
         ByteString imageBuffer = ByteString.copyFrom(uploadImage);
         var requestStreamObserverContainer = new Object() {
             StreamObserver<UploadUserProfilePhotoRequest> observer;
@@ -79,6 +78,7 @@ public class RegisterClientService {
 
         var responseStreamObserver = new StreamObserver<FileUploadStatusResponse>() {
             int nextStartIndex = 0;
+
 
             @Override
             public void onNext(FileUploadStatusResponse response) {
@@ -131,4 +131,12 @@ public class RegisterClientService {
 
         requestStreamObserverContainer.observer.onNext(metadataRequest);
     }
+
+    public void deleteUserPhoto(int userId) {
+        DeleteUserProfilePhotoRequest.Builder request = DeleteUserProfilePhotoRequest.newBuilder();
+        request.setUserId(userId);
+
+        registrationStub.deleteUserProfilePhoto(request.build());
+    }
+
 }

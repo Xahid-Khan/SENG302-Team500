@@ -18,6 +18,7 @@ public class UserMapper {
    */
   public UserResponse toUserResponse(UserModel user) {
     return UserResponse.newBuilder()
+        .setId(user.getId())
         .setUsername(user.getUsername())
         .setFirstName(user.getFirstName())
         .setMiddleName(user.getMiddleName())
