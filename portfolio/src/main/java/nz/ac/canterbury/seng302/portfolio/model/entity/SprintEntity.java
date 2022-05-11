@@ -32,7 +32,7 @@ public class SprintEntity {
     @Column(nullable = false)
     private String name;
 
-    @Column
+    @Column(length = 1024)
     private String description;
 
     @Column(nullable = false)

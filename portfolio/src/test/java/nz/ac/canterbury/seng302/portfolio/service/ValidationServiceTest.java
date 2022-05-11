@@ -61,24 +61,28 @@ public class ValidationServiceTest {
 
         String response = validationService.checkBaseFields("Project",
         "test project",
+            "test description",
                 Instant.parse("2021-12-03T10:15:30.00Z"),
                 Instant.parse("2021-12-05T10:15:30.00Z"));
         assertEquals("Okay", response);
 
         response = validationService.checkBaseFields("Project",
                 "",
+            "test description",
                 Instant.parse("2021-12-03T10:15:30.00Z"),
                 Instant.parse("2021-12-05T10:15:30.00Z"));
         assertEquals("Project name must not be empty", response);
 
         response = validationService.checkBaseFields("Sprint",
                 "Sprint Two",
+            "test description",
                 Instant.parse("2021-12-03T10:15:30.00Z"),
                 Instant.parse("2021-12-01T10:15:30.00Z"));
         assertEquals("Sprint start date must be earlier than the end date", response);
 
         response = validationService.checkBaseFields("Sprint",
                 "Sprint Two",
+            "test description",
                 Instant.parse("2020-12-03T10:15:30.00Z"),
                 Instant.parse("2021-12-01T10:15:30.00Z"));
 
@@ -86,6 +90,7 @@ public class ValidationServiceTest {
 
         response = validationService.checkBaseFields("Sprint",
                 "    ",
+            "test description",
                 Instant.parse("2021-12-03T10:15:30.00Z"),
                 Instant.parse("2022-12-01T10:15:30.00Z"));
 

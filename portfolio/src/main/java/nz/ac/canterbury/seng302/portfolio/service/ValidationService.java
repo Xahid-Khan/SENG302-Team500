@@ -34,6 +34,7 @@ public class ValidationService {
 
         return checkBaseFields("Project",
                 projectContract.name(),
+                projectContract.description(),
                 projectContract.startDate(),
                 projectContract.endDate());
     }
@@ -41,12 +42,20 @@ public class ValidationService {
     /**
      * Checks the base input fields for the user.
      */
-    public String checkBaseFields(String type, String name, Instant start, Instant end) {
+    public String checkBaseFields(String type, String name, String description, Instant start, Instant end) {
         if (name.equals("")) {
             return type + " name must not be empty";
         }
         if (name.trim().equals("")) {
             return type + " name must not contain only whitespaces";
+        }
+
+        if (name.length() > 32) {
+            return type + " name must not be more than 32 characters";
+        }
+
+        if (description.length() > 1024) {
+            return type + " description must not be more than 1024 characters";
         }
 
         if (end.isBefore(start)) {
@@ -80,6 +89,7 @@ public class ValidationService {
 
         return checkBaseFields("Project",
                 projectContract.name(),
+                projectContract.description(),
                 projectContract.startDate(),
                 projectContract.endDate());
     }
@@ -99,6 +109,7 @@ public class ValidationService {
         }
         return checkBaseFields("Sprint",
                 sprintContract.name(),
+                sprintContract.description(),
                 sprintContract.startDate(),
                 sprintContract.endDate());
     }
@@ -118,6 +129,7 @@ public class ValidationService {
         }
         return checkBaseFields("Event",
                 eventContract.name(),
+                eventContract.description(),
                 eventContract.startDate(),
                 eventContract.endDate());
     }
@@ -135,7 +147,7 @@ public class ValidationService {
                 if (!response.equals("Okay")) {
                     return response;
                 }
-                response = checkBaseFields("Sprint", sprintContract.name(), sprintContract.startDate(), sprintContract.endDate());
+                response = checkBaseFields("Sprint", sprintContract.name(), sprintContract.description(), sprintContract.startDate(), sprintContract.endDate());
                 if (!response.equals("Okay")) {
                     return response;
                 }
@@ -153,6 +165,7 @@ public class ValidationService {
 
         return checkBaseFields("Sprint",
                 sprintContract.name(),
+                sprintContract.description(),
                 sprintContract.startDate(),
                 sprintContract.endDate());
     }
@@ -170,7 +183,7 @@ public class ValidationService {
                 if (!response.equals("Okay")) {
                     return response;
                 }
-                response = checkBaseFields("Event", eventContract.name(), eventContract.startDate(), eventContract.endDate());
+                response = checkBaseFields("Event", eventContract.name(), eventContract.description(), eventContract.startDate(), eventContract.endDate());
                 if (!response.equals("Okay")) {
                     return response;
                 }
@@ -188,6 +201,7 @@ public class ValidationService {
 
         return checkBaseFields("Event",
                 eventContract.name(),
+                eventContract.description(),
                 eventContract.startDate(),
                 eventContract.endDate());
     }
@@ -264,6 +278,7 @@ public class ValidationService {
         }
         return checkBaseFields("Milestone",
                 milestoneContract.name(),
+                milestoneContract.description(),
                 milestoneContract.startDate(),
                 milestoneContract.endDate());
     }
@@ -282,7 +297,7 @@ public class ValidationService {
                 if (!response.equals("Okay")) {
                     return response;
                 }
-                response = checkBaseFields("Milestone", milestoneContract.name(), milestoneContract.startDate(), milestoneContract.endDate());
+                response = checkBaseFields("Milestone", milestoneContract.name(), milestoneContract.description(), milestoneContract.startDate(), milestoneContract.endDate());
                 if (!response.equals("Okay")) {
                     return response;
                 }
@@ -300,6 +315,7 @@ public class ValidationService {
 
         return checkBaseFields("Milestone",
                 milestoneContract.name(),
+                milestoneContract.description(),
                 milestoneContract.startDate(),
                 milestoneContract.endDate());
     }
@@ -319,6 +335,7 @@ public class ValidationService {
         }
         return checkBaseFields("Deadline",
                 deadlineContract.name(),
+                deadlineContract.description(),
                 deadlineContract.startDate(),
                 deadlineContract.endDate());
     }
@@ -337,7 +354,7 @@ public class ValidationService {
                 if (!response.equals("Okay")) {
                     return response;
                 }
-                response = checkBaseFields("Deadline", deadlineContract.name(), deadlineContract.startDate(), deadlineContract.endDate());
+                response = checkBaseFields("Deadline", deadlineContract.name(), deadlineContract.description(), deadlineContract.startDate(), deadlineContract.endDate());
                 if (!response.equals("Okay")) {
                     return response;
                 }
@@ -355,6 +372,7 @@ public class ValidationService {
 
         return checkBaseFields("Milestone",
                 deadlineContract.name(),
+                deadlineContract.description(),
                 deadlineContract.startDate(),
                 deadlineContract.endDate());
     }
