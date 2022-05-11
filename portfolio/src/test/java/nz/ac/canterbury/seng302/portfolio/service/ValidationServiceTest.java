@@ -179,7 +179,7 @@ public class ValidationServiceTest {
                 "testing",
                 Instant.parse("2021-12-03T10:15:30.00Z"),
                 Instant.parse("2021-12-05T10:15:30.00Z"),
-                "#fff");
+                "#fff000");
 
         String response = validationService.checkAddSprint(project.getId(), sprint);
         assertEquals("Okay", response);
@@ -188,7 +188,7 @@ public class ValidationServiceTest {
                 "testing",
                 Instant.parse("2021-12-03T10:15:30.00Z"),
                 Instant.parse("2021-12-05T10:15:30.00Z"),
-                "#fff");
+                "#fff000");
         response = validationService.checkAddSprint(project.getId(), sprint);
         assertEquals("Sprint name must not be empty", response);
 
@@ -196,7 +196,7 @@ public class ValidationServiceTest {
                 "testing",
                 Instant.parse("2021-12-02T10:15:30.00Z"),
                 Instant.parse("2021-12-05T10:15:30.00Z"),
-                "#fff");
+                "#fff000");
         response = validationService.checkAddSprint(project.getId(), sprint);
         assertEquals("Sprint cannot start before project start date", response);
 
@@ -211,7 +211,7 @@ public class ValidationServiceTest {
                 "test desc",
                 Instant.parse("2021-12-03T10:15:30.00Z"),
                 Instant.parse("2021-12-05T10:15:30.00Z"),
-                "#fff");
+                "#fff000");
 
         ProjectEntity project = new ProjectEntity("",
                 "testing",
@@ -232,7 +232,7 @@ public class ValidationServiceTest {
                 "test desc",
                 Instant.parse("2021-12-03T10:15:30.00Z"),
                 Instant.parse("2021-12-05T10:15:30.00Z"),
-                "#fff");
+                "#fff000");
 
 
         response = validationService.checkUpdateSprint(sprintEntity.getId(), invalidSprint);
@@ -242,7 +242,7 @@ public class ValidationServiceTest {
                 "test desc",
                 Instant.parse("2021-12-03T10:15:30.00Z"),
                 Instant.parse("2021-12-05T10:15:30.00Z"),
-                "#fff");
+                "#fff000");
 
 
         response = validationService.checkUpdateSprint(sprintEntity.getId(), invalidSprint);
@@ -254,7 +254,7 @@ public class ValidationServiceTest {
                 "test desc",
                 Instant.parse("2021-12-01T10:15:30.00Z"),
                 Instant.parse("2021-12-05T10:15:30.00Z"),
-                "#fff");
+                "#fff000");
         sprintEntity = sprintMapper.toEntity(sprint);
         project.addSprint(sprintEntity);
         sprintRepository.save(sprintEntity);
@@ -266,7 +266,7 @@ public class ValidationServiceTest {
                 "test desc",
                 Instant.parse("2021-12-03T10:15:30.00Z"),
                 Instant.parse("2021-12-04T00:00:30.00Z"),
-                "#fff");
+                "#fff000");
         sprintEntity = sprintMapper.toEntity(sprint);
         project.addSprint(sprintEntity);
         sprintRepository.save(sprintEntity);
@@ -288,16 +288,16 @@ public class ValidationServiceTest {
         Instant startDate = Instant.parse("2021-12-03T10:15:30.00Z");
         Instant endDate = Instant.parse("2021-12-05T10:15:30.00Z");
 
-        String response = validationService.checkSprintDetails(project, "", startDate, endDate);
+        String response = validationService.checkSprintDetails(project, "", startDate, endDate, "#000000");
         assertEquals("Okay", response);
 
         startDate = Instant.parse("2021-12-02T10:15:30.00Z");
-        response = validationService.checkSprintDetails(project, "", startDate, endDate);
+        response = validationService.checkSprintDetails(project, "", startDate, endDate, "#000000");
         assertEquals("Sprint cannot start before project start date", response);
         startDate = Instant.parse("2021-12-03T10:15:30.00Z");
 
         endDate = Instant.parse("2021-12-06T10:15:30.00Z");
-        response = validationService.checkSprintDetails(project, "", startDate, endDate);
+        response = validationService.checkSprintDetails(project, "", startDate, endDate, "#000000");
         assertEquals("Sprint cannot end after project end date", response);
         endDate = Instant.parse("2021-12-05T10:15:30.00Z");
 
@@ -320,7 +320,7 @@ public class ValidationServiceTest {
                 sprints.stream().toList(),
                 new ArrayList<EventContract>());
         startDate = Instant.parse("2021-12-04T00:00:30.00Z");
-        response = validationService.checkSprintDetails(project, "", startDate, endDate);
+        response = validationService.checkSprintDetails(project, "", startDate, endDate, "#000000");
         assertEquals("Sprint cannot begin while another sprint is still in progress", response);
 
     }

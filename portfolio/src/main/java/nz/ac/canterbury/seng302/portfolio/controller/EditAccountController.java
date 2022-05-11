@@ -72,7 +72,7 @@ public class EditAccountController {
       BindingResult bindingResult,
       Model model,
       @AuthenticationPrincipal AuthState principal,
-      @RequestParam("image") MultipartFile file) {
+      @RequestParam(value = "image", required = false) MultipartFile file) {
 
     if (bindingResult.hasErrors()) {
       return "edit_account";
@@ -81,24 +81,27 @@ public class EditAccountController {
     try {
       Integer userId = authStateService.getId(principal);
       model.addAttribute("userId", userId);
-      if (file.getSize() > 10000 && file.getSize() < 5242000) {
-        byte[] uploadImage = uploadPhotoService.imageProcessing(file);
-        String fileType = uploadPhotoService.getFileType();
+      if (file != null && !file.isEmpty()) {
+        if (file.getSize() > (5 * 1024) && file.getSize() < 5242000) {
+          byte[] uploadImage = uploadPhotoService.imageProcessing(file);
+          String fileType = uploadPhotoService.getFileType();
 
-        registerClientService.uploadUserPhoto(userId, fileType, uploadImage);
+          registerClientService.uploadUserPhoto(userId, fileType, uploadImage);
 
-      } else {
-        model.addAttribute("imageError", "File size must be more than 500KB and less than 5MB.");
-        return "edit_account";
+        } else {
+          model.addAttribute("imageError", "File size must be more than 5KB and less than 5MB.");
+          return "edit_account";
+        }
       }
 
       registerClientService.updateDetails(user, userId);
 
-        } catch (StatusRuntimeException e) {
-        model.addAttribute("error", "Error connecting to Identity Provider...");
-        return "edit_account";
+    } catch (StatusRuntimeException e) {
+      model.addAttribute("error", "Error connecting to Identity Provider...");
+      return "edit_account";
     }
-      return "redirect:my_account?edited=details";
+
+    return "redirect:my_account?edited=details";
   }
 
     /**

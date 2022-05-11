@@ -81,8 +81,8 @@ public class RegistrationController {
     if (bindingResult.hasErrors()) {
       //Allows the bindingResult (errors) and user fields to persist through the redirect
       redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.user", bindingResult);
-      redirectAttributes.addFlashAttribute("user", user);
-      return "redirect:register";
+      model.addAttribute("user", user);
+      return "registration_form";
     }
 
     UserRegisterResponse registerReply;
@@ -104,7 +104,7 @@ public class RegistrationController {
       loginReply = authenticateClientService.authenticate(user.username(), user.password());
     } catch (StatusRuntimeException e){
       model.addAttribute("error", "Error connecting to Identity Provider...");
-      return "login_form";
+      return "redirect:login";
     }
 
     if (loginReply.getSuccess()) {

@@ -141,7 +141,8 @@ public class SprintControllerTest {
                 "name": "test sprint",
                 "startDate": "2023-01-01T10:00:00.00Z",
                 "endDate": "2023-01-15T10:00:00.00Z",
-                "description": "test description"
+                "description": "test description",
+                "colour": "#000000"
             }
             """;
 
@@ -170,7 +171,8 @@ public class SprintControllerTest {
                 "name": "test sprint",
                 "startDate": "2023-01-01T10:00:00.00Z",
                 "endDate": "2023-01-15T10:00:00.00Z",
-                "description": "test description"
+                "description": "test description",
+                "colour": "#000000"
             }
             """;
 
@@ -192,7 +194,8 @@ public class SprintControllerTest {
             {
                 "name": "test sprint",
                 "startDate": "2023-01-01T10:00:00.00Z",
-                "endDate": "2023-01-15T10:00:00.00Z"
+                "endDate": "2023-01-15T10:00:00.00Z",
+                "colour": "#000000"
             }
             """;
 
@@ -221,7 +224,8 @@ public class SprintControllerTest {
                 "name": "test sprint",
                 "startDate": "2023-01-01T10:00:00.00Z",
                 "endDate": "2023-01-15T10:00:00.00Z",
-                "description": "test description"
+                "description": "test description",
+                "colour": "#000000"
             }
             """;
 
@@ -249,7 +253,8 @@ public class SprintControllerTest {
                 "sprintId": "%s",
                 "name": "post-edit test sprint",
                 "startDate": "2023-01-04T10:00:00.00Z",
-                "endDate": "2023-01-15T10:00:00.00Z"
+                "endDate": "2023-01-15T10:00:00.00Z",
+                "colour": "#000000"
             }
             """, projectId, sprintId);
         this.mockMvc.perform(
@@ -312,7 +317,8 @@ public class SprintControllerTest {
             {
                 "name": "test sprint",
                 "startDate": "2023-01-01T10:00:00.00Z",
-                "endDate": "2023-01-15T10:00:00.00Z"
+                "endDate": "2023-01-15T10:00:00.00Z",
+                "colour": "#000000"
             }
             """;
 
@@ -342,7 +348,8 @@ public class SprintControllerTest {
                 "sprintId": "%s",
                 "name": "post-edit test sprint",
                 "startDate": "2023-01-04T10:00:00.00Z",
-                "endDate": "2023-01-15T10:00:00.00Z"
+                "endDate": "2023-01-15T10:00:00.00Z",
+                "colour": "#000000"
             }
             """, projectId, sprintId);
         this.mockMvc.perform(
