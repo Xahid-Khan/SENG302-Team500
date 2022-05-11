@@ -11,12 +11,22 @@ body {
     margin-top: 10px;
 }
 
+.milestones {
+    padding: 20px;
+    margin-top: 10px;
+}
+
 .sprints {
     margin-top: 10px;
     padding: 20px;
 }
 
 .event-section-title {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.milestone-section-title {
     font-size: 20px;
     font-weight: bold;
 }
@@ -33,6 +43,13 @@ body {
 }
 
 .event-details {
+    display: none;
+    overflow: hidden;
+    font-size: 14px;
+    padding-left: 10px;
+}
+
+.milestone-details {
     display: none;
     overflow: hidden;
     font-size: 14px;
@@ -130,6 +147,11 @@ body {
     margin-top: 15px
 }
 
+.milestone-view {
+    padding: 20px;
+    margin-top: 15px
+}
+
 .sprint-title {
     font-size: 18px;
     font-weight: bold;
@@ -137,6 +159,12 @@ body {
 }
 
 .event-title {
+    font-size: 18px;
+    font-weight: bold;
+    padding-bottom: 20px;
+}
+
+.milestone-title {
     font-size: 18px;
     font-weight: bold;
     padding-bottom: 20px;

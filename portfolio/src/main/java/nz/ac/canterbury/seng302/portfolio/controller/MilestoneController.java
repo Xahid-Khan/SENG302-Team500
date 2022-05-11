@@ -1,7 +1,9 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.contract.BaseEventContract;
+import nz.ac.canterbury.seng302.portfolio.model.contract.BaseMilestoneContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.EventContract;
+import nz.ac.canterbury.seng302.portfolio.model.contract.MilestoneContract;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +19,10 @@ import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/api/v1")
-public class EventController {
+public class MilestoneController {
 
     @Autowired
-    private EventService eventService;
+    private MilestoneService milestoneService;
 
     @Autowired
     private ProjectService projectService;
@@ -32,16 +34,16 @@ public class EventController {
     private RolesService rolesService;
 
     /**
-     * This method will be invoked when API receives a GET request with a event ID embedded in URL.
-     * @param eventId event-ID the user wants to retrieve
-     * @return a event contract (JSON) type of the event.
+     * This method will be invoked when API receives a GET request with a milestone ID embedded in URL.
+     * @param milestoneId milestone-ID the user wants to retrieve
+     * @return a event contract (JSON) type of the milestone.
      */
-    @GetMapping(value = "/events/{eventId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<EventContract> getEvent(@PathVariable String eventId) {
+    @GetMapping(value = "/milestones/{milestoneId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<MilestoneContract> getMilestone(@PathVariable String milestoneId) {
         try {
-            var event = eventService.get(eventId);
+            var milestone = milestoneService.get(milestoneId);
 
-            return ResponseEntity.ok(event);
+            return ResponseEntity.ok(milestone);
         }
         catch (NoSuchElementException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -50,14 +52,14 @@ public class EventController {
 
     /**
      * This method will be invoked when API receives a GET request with a Project ID embedded in URL and
-     * will produce all the events of that specific project.
+     * will produce all the milestones of that specific project.
      * @param projectId Project-ID of the project User is interested in
-     * @return A list of events of a given project in Event Contract (JSON) type.
+     * @return A list of milestones of a given project in milestone Contract (JSON) type.
      */
-    @GetMapping(value = "/projects/{projectId}/events", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<EventContract>> getProjectEvents(@PathVariable String projectId) {
+    @GetMapping(value = "/projects/{projectId}/milestones", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<MilestoneContract>> getProjectMilestones(@PathVariable String projectId) {
         try {
-            var result = projectService.getById(projectId).events();
+            var result = projectService.getById(projectId).milestones();
 
             return ResponseEntity.ok(result);
         }
@@ -72,15 +74,15 @@ public class EventController {
      * @param projectId Project-ID of the project User wants the event to be added to.
      * @return A list of events of a given project in Event Contract (JSON) type.
      */
-    @PostMapping(value = "/projects/{projectId}/events", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> createEvent(
+    @PostMapping(value = "/projects/{projectId}/milestones", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> createMilestone(
             @AuthenticationPrincipal AuthState principal,
             @PathVariable String projectId,
-            @RequestBody BaseEventContract event
+            @RequestBody BaseMilestoneContract milestone
     ) {
         ArrayList<String> roles = rolesService.getRolesByToken(principal);
         if (roles.contains("TEACHER") || roles.contains("COORDINATOR")) {
-            String errorMessage = validationService.checkAddEvent(projectId, event);
+            String errorMessage = validationService.checkAddMilestone(projectId, milestone);
             if (!errorMessage.equals("Okay")) {
                 if (errorMessage.equals("Project ID does not exist") || errorMessage.equals("Event ID does not exist")) {
                     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
@@ -89,7 +91,7 @@ public class EventController {
             }
 
             try {
-                var result = eventService.createEvent(projectId, event);
+                var result = milestoneService.createMilestone(projectId, milestone);
 
                 return ResponseEntity.status(HttpStatus.CREATED).body(result);
             }
@@ -107,15 +109,15 @@ public class EventController {
      * @param id Project-ID of the project User wants to make the changes to.
      * @return The updated event value
      */
-    @PutMapping(value = "/events/{id}")
-    public ResponseEntity<?> updateEvent(
+    @PutMapping(value = "/milestones/{id}")
+    public ResponseEntity<?> updateMilestone(
             @AuthenticationPrincipal AuthState principal,
             @PathVariable String id,
-            @RequestBody BaseEventContract event
+            @RequestBody BaseMilestoneContract milestone
     ) {
         ArrayList<String> roles = rolesService.getRolesByToken(principal);
         if (roles.contains("TEACHER") || roles.contains("COORDINATOR")) {
-            String errorMessage = validationService.checkUpdateEvent(id, event);
+            String errorMessage = validationService.checkUpdateMilestone(id, milestone);
             if (!errorMessage.equals("Okay")) {
                 if (errorMessage.equals("Project ID does not exist") || errorMessage.equals(
                         "Event ID does not exist")) {
@@ -125,9 +127,9 @@ public class EventController {
             }
 
             try {
-                eventService.update(id, event);
+                milestoneService.update(id, milestone);
 
-                return ResponseEntity.ok(eventService.get(id));
+                return ResponseEntity.ok(milestoneService.get(id));
             } catch (NoSuchElementException ex) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
@@ -138,18 +140,18 @@ public class EventController {
 
     /**
      * This method will be invoked when API receives a DELETE request with a Event ID embedded in URL
-     * @param id Event ID the user wants to delete
+     * @param id Milestone ID the user wants to delete
      * @return status_Code 204.
      */
-    @DeleteMapping(value = "/events/{id}")
-    public ResponseEntity<Void> deleteEvent(
+    @DeleteMapping(value = "/milestones/{id}")
+    public ResponseEntity<Void> deleteMilestone(
             @AuthenticationPrincipal AuthState principal,
             @PathVariable String id
     ) {
         ArrayList<String> roles = rolesService.getRolesByToken(principal);
         if (roles.contains("TEACHER") || roles.contains("COORDINATOR")) {
             try {
-                eventService.delete(id);
+                milestoneService.delete(id);
 
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
             } catch (NoSuchElementException ex) {

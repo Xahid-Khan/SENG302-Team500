@@ -11,11 +11,11 @@ import javax.validation.constraints.Pattern;
 import java.time.Instant;
 
 /**
- * Entity class for events.
+ * Entity class for milestones.
  */
 @Entity
-@Table(name = "event")
-public class EventEntity {
+@Table(name = "milestone")
+public class MilestoneEntity {
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "uuid2")
@@ -43,7 +43,6 @@ public class EventEntity {
     @NotNull
     @Column(name = "end_date")
     private Instant endDate;
-
 
     public String getId() {
         return id;
@@ -93,19 +92,18 @@ public class EventEntity {
         this.name = title;
     }
 
-    protected EventEntity() {}
+    protected MilestoneEntity() {}
 
-    public EventEntity(String name, String description, @NotNull Instant startDate, @NotNull Instant endDate) {
+    public MilestoneEntity(String name, String description, @NotNull Instant startDate, @NotNull Instant endDate) {
         this.name = name;
         this.description = description;
         this.startDate = startDate;
         this.endDate = endDate;
     }
 
-    public enum EventType {
+    public enum MilestoneType {
         EVENT,
         DEADLINE,
         MILESTONE
     }
 }
-
