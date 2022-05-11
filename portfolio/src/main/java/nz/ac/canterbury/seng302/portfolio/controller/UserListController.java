@@ -133,7 +133,7 @@ public class UserListController {
             case STUDENT: return "Student";
             case TEACHER: return "Teacher";
             case COURSE_ADMINISTRATOR: return "Course Administrator";
-            default: return "Default";
+            default: return "Role not found";
         }
     }
 
