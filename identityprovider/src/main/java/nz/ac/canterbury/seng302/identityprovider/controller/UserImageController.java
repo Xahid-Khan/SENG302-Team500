@@ -30,9 +30,10 @@ public class UserImageController {
     void showUserImage(@PathVariable("id") int userId, HttpServletResponse response) throws IOException {
         response.setContentType("image/*");
         try (ServletOutputStream imageStream = response.getOutputStream()) {
-            Optional<PhotoModel> userPhoto = photoRepository.findById(userId);
-            imageStream.write(userPhoto.get().getUserPhoto());
-
+            PhotoModel userPhoto = photoRepository.findById(userId).orElse(null);
+            if (userPhoto != null) {
+                imageStream.write(userPhoto.getUserPhoto());
+            }
         }
     }
 
