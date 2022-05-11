@@ -3,11 +3,7 @@ package nz.ac.canterbury.seng302.portfolio.service;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import nz.ac.canterbury.seng302.portfolio.mapping.UserMapper;
 import nz.ac.canterbury.seng302.portfolio.model.GetPaginatedUsersOrderingElement;
-import nz.ac.canterbury.seng302.shared.identityprovider.GetPaginatedUsersRequest;
-import nz.ac.canterbury.seng302.shared.identityprovider.GetUserByIdRequest;
-import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedUsersResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -68,5 +64,22 @@ public class UserAccountService {
 
         return userAccountServiceBlockingStub.getPaginatedUsers(allUsers);
     }
+
+    public UserRoleChangeResponse removeRole(int id, UserRole role) {
+        ModifyRoleOfUserRequest req = ModifyRoleOfUserRequest.newBuilder()
+                .setUserId(id)
+                .setRole(role)
+                .build();
+        return userAccountServiceBlockingStub.removeRoleFromUser(req);
+    }
+
+    public UserRoleChangeResponse addRole(int id, UserRole role) {
+        ModifyRoleOfUserRequest req = ModifyRoleOfUserRequest.newBuilder()
+                .setUserId(id)
+                .setRole(role)
+                .build();
+        return userAccountServiceBlockingStub.addRoleToUser(req);
+    }
+
 
 }

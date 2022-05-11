@@ -2,20 +2,29 @@ package nz.ac.canterbury.seng302.portfolio.mapping;
 
 import java.util.ArrayList;
 
-import nz.ac.canterbury.seng302.portfolio.model.contract.BaseProjectContract;
-import nz.ac.canterbury.seng302.portfolio.model.contract.ProjectContract;
-import nz.ac.canterbury.seng302.portfolio.model.contract.SprintContract;
+import nz.ac.canterbury.seng302.portfolio.model.contract.*;
 import nz.ac.canterbury.seng302.portfolio.model.entity.ProjectEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
-
+/**
+ * Mapper for projects from JSON to entity and vice versa.
+ */
 @Component
 public class ProjectMapper {
 
     @Autowired
     private SprintMapper sprintMapper;
+
+    @Autowired
+    private EventMapper eventMapper;
+
+    @Autowired
+    private MilestoneMapper milestoneMapper;
+
+    @Autowired
+    private DeadlineMapper deadlineMapper;
 
     /**
      * This function converts the received JSON body to the Project Entity.
@@ -33,7 +42,7 @@ public class ProjectMapper {
 
     /**
      * This method receives a project Entity and converts that entity into transferable JSON data type,
-     * while doing so it also retrives all the sprints related to that project.
+     * while doing so it also retrieves all the sprints and events related to that project.
      * @param entity a project entity that is retried from database
      * @return      returns a project and related sprints in JSON data type.
      */
@@ -48,6 +57,34 @@ public class ProjectMapper {
             ));
         }
 
+        var eventEntities = entity.getEvents();
+        var eventContracts = new ArrayList<EventContract>();
+
+        for (int i=0; i < eventEntities.size(); i++) {
+            eventContracts.add(eventMapper.toContract(
+                    eventEntities.get(i)
+            ));
+        }
+
+        var deadlineEntities = entity.getDeadlines();
+        var deadlineContracts = new ArrayList<DeadlineContract>();
+
+        for (int i=0; i < deadlineEntities.size(); i++) {
+            deadlineContracts.add(deadlineMapper.toContract(
+                    deadlineEntities.get(i)
+            ));
+        }
+
+        var milestoneEntities = entity.getMilestones();
+        var milestoneContracts = new ArrayList<MilestoneContract>();
+
+        for (int i=0; i < milestoneEntities.size(); i++) {
+            milestoneContracts.add(milestoneMapper.toContract(
+                    milestoneEntities.get(i)
+            ));
+        }
+
+
 
         return new ProjectContract(
                 entity.getId(),
@@ -55,7 +92,10 @@ public class ProjectMapper {
                 entity.getDescription(),
                 entity.getStartDate(),
                 entity.getEndDate(),
-                sprintContracts
+                sprintContracts,
+                eventContracts,
+                milestoneContracts,
+                deadlineContracts
         );
     }
 

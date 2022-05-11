@@ -13,6 +13,10 @@ public class PortfolioProperties {
     @Value("${nz.ac.canterbury.seng302.portfolio.urlPathPrefix}")
     private String urlPathPrefix;
 
+    @Value("${nz.ac.canterbury.seng302.portfolio.imageUrlPath}")
+    private String imageUrlPath;
+
+
     /**
      * Provides access to the <code>nz.ac.canterbury.seng302.portfolio.urlPathPrefix</code> property specified
      * in application.properties.
@@ -23,5 +27,14 @@ public class PortfolioProperties {
     @ModelAttribute("globalUrlPathPrefix")
     public String getUrlPathPrefix() {
         return urlPathPrefix;
+    }
+
+    /**
+     * Provides access to the url property for getting the image specified in application.properties files.
+     * @return a String URL path ending with /
+     */
+    @ModelAttribute("globalImagePath")
+    public String getImagePath() {
+        return imageUrlPath;
     }
 }

@@ -45,6 +45,7 @@ public class EditPasswordController {
         UserResponse userDetails = userAccountService.getUserById(userId);
 
         //Prefill the form with the user's details
+        model.addAttribute("userId", userId);
         model.addAttribute("username", userDetails.getUsername());
 
         return "edit_password";
@@ -93,6 +94,7 @@ public class EditPasswordController {
         try {
 
             Integer userId = authStateService.getId(principal);
+            model.addAttribute("userId", userId);
             ChangePasswordResponse response = changePasswordClientService.updatePassword(userId, currentPassword, newPassword);
 
             if (!response.getIsSuccess()) {
