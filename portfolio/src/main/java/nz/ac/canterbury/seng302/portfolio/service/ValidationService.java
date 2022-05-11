@@ -23,6 +23,9 @@ public class ValidationService {
     @Autowired
     private EventService eventService;
 
+    @Autowired
+    private MilestoneService milestoneService;
+
     public String checkAddProject(BaseProjectContract projectContract) {
 
         return checkBaseFields("Project",
@@ -97,7 +100,7 @@ public class ValidationService {
     }
 
     /**
-     * Checks sprint inputs when a event is added.
+     * Checks event inputs when am event is added.
      */
     public String checkAddEvent(String projectId, BaseEventContract eventContract) {
         try {
@@ -151,7 +154,7 @@ public class ValidationService {
     }
 
     /**
-     * Checks when a event has been updated.
+     * Checks when an event has been updated.
      */
     public String checkUpdateEvent(String eventId, BaseEventContract eventContract) {
 
@@ -163,7 +166,7 @@ public class ValidationService {
                 if (!response.equals("Okay")) {
                     return response;
                 }
-                response = checkBaseFields("Sprint", eventContract.name(), eventContract.startDate(), eventContract.endDate());
+                response = checkBaseFields("Event", eventContract.name(), eventContract.startDate(), eventContract.endDate());
                 if (!response.equals("Okay")) {
                     return response;
                 }
@@ -175,11 +178,11 @@ public class ValidationService {
 
         } catch (NoSuchElementException error) {
 
-            return "Sprint ID does not exist";
+            return "Event ID does not exist";
         }
 
 
-        return checkBaseFields("Sprint",
+        return checkBaseFields("Event",
                 eventContract.name(),
                 eventContract.startDate(),
                 eventContract.endDate());
@@ -207,7 +210,7 @@ public class ValidationService {
     }
 
     /**
-     * Checks sprint date details and returns respective messages.
+     * Checks event date details and returns respective messages.
      */
     public String checkEventDetails(ProjectContract project, Instant start, Instant end) {
 
@@ -222,5 +225,61 @@ public class ValidationService {
         return "Okay";
 
     }
+
+    /**
+     * Checks milestone inputs when a milestone is added.
+     */
+    public String checkAddMilestone(String projectId, BaseMilestoneContract milestoneContract) {
+        try {
+            ProjectContract project = projectService.getById(projectId);
+            String response = checkEventDetails(project, milestoneContract.startDate(), milestoneContract.endDate());
+            if (!response.equals("Okay")) {
+                return response;
+            }
+        } catch (NoSuchElementException error) {
+            return "Project ID does not exist";
+        }
+        return checkBaseFields("Milestone",
+                milestoneContract.name(),
+                milestoneContract.startDate(),
+                milestoneContract.endDate());
+    }
+
+
+    /**
+     * Checks when a milestone has been updated.
+     */
+    public String checkUpdateMilestone(String milestoneId, BaseMilestoneContract milestoneContract) {
+
+        try {
+            MilestoneContract milestone = milestoneService.get(milestoneId);
+            try {
+                ProjectContract project = projectService.getById(milestone.projectId());
+                String response = checkSprintDetails(project, milestone.milestoneId(), milestoneContract.startDate(), milestoneContract.endDate());
+                if (!response.equals("Okay")) {
+                    return response;
+                }
+                response = checkBaseFields("Milestone", milestoneContract.name(), milestoneContract.startDate(), milestoneContract.endDate());
+                if (!response.equals("Okay")) {
+                    return response;
+                }
+
+            } catch (NoSuchElementException error) {
+                return "Project ID does not exist";
+            }
+
+
+        } catch (NoSuchElementException error) {
+
+            return "Milestone ID does not exist";
+        }
+
+
+        return checkBaseFields("Milestone",
+                milestoneContract.name(),
+                milestoneContract.startDate(),
+                milestoneContract.endDate());
+    }
+
 }
 

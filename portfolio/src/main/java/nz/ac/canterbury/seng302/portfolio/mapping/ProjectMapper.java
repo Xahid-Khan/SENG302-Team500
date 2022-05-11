@@ -2,10 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.mapping;
 
 import java.util.ArrayList;
 
-import nz.ac.canterbury.seng302.portfolio.model.contract.BaseProjectContract;
-import nz.ac.canterbury.seng302.portfolio.model.contract.EventContract;
-import nz.ac.canterbury.seng302.portfolio.model.contract.ProjectContract;
-import nz.ac.canterbury.seng302.portfolio.model.contract.SprintContract;
+import nz.ac.canterbury.seng302.portfolio.model.contract.*;
 import nz.ac.canterbury.seng302.portfolio.model.entity.ProjectEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -22,6 +19,9 @@ public class ProjectMapper {
 
     @Autowired
     private EventMapper eventMapper;
+
+    @Autowired
+    private MilestoneMapper milestoneMapper;
 
     /**
      * This function converts the received JSON body to the Project Entity.
@@ -63,6 +63,15 @@ public class ProjectMapper {
             ));
         }
 
+        var milestoneEntities = entity.getMilestones();
+        var milestoneContracts = new ArrayList<MilestoneContract>();
+
+        for (int i=0; i < milestoneEntities.size(); i++) {
+            milestoneContracts.add(milestoneMapper.toContract(
+                    milestoneEntities.get(i)
+            ));
+        }
+
 
 
         return new ProjectContract(
@@ -72,7 +81,8 @@ public class ProjectMapper {
                 entity.getStartDate(),
                 entity.getEndDate(),
                 sprintContracts,
-                eventContracts
+                eventContracts,
+                milestoneContracts
         );
     }
 

@@ -109,9 +109,9 @@ class ProjectView {
 
   appendMilestone(milestoneData) {
     const milestoneElement = document.createElement("div")
-    milestoneElement.classList.add("event-view", "raised-card");
-    milestoneElement.id = `event-view-${milestoneElement.id}`;
-    this.eventContainer.appendChild(milestoneElement);
+    milestoneElement.classList.add("milestone-view", "raised-card");
+    milestoneElement.id = `milestone-view-${milestoneElement.id}`;
+    this.milestoneContainer.appendChild(milestoneElement);
 
     console.log("Binding milestone");
 
@@ -192,7 +192,7 @@ class ProjectView {
     }
 
     for (let k = 0; k < this.project.milestones.length; k++) {
-      this.appendEvent(this.project.milestones[k]);
+      this.appendMilestone(this.project.milestones[k]);
     }
   }
 
@@ -238,7 +238,7 @@ class ProjectView {
     else {
       // Show the events
       this.toggleMilestonesButton.innerText = "Hide Milestones";
-      this.milestones.style.display = "block";
+      this.milestonesContainer.style.display = "block";
     }
 
     this.showingMilestones = !this.showingMilestones;
@@ -501,7 +501,6 @@ class ProjectView {
     }
 
     this.addMilestoneLoadingStatus = LoadingStatus.Pending;
-
     try {
       const res = await fetch(`api/v1/projects/${this.project.id}/milestones`, {
         method: 'POST',
@@ -541,6 +540,8 @@ class ProjectView {
     document.getElementById(`monthly-planner-redirect-button-${this.project.id}`).addEventListener("click", () => this.monthlyPlannerRedirect(this.project.id));
     this.toggleSprintsButton.addEventListener('click', this.toggleSprints.bind(this));
     this.addSprintButton.addEventListener('click', this.openAddSprintForm.bind(this));
+    this.toggleEventsButton.addEventListener('click', this.toggleEvents.bind(this));
+    this.addEventButton.addEventListener('click', this.openAddEventForm.bind(this));
     this.toggleMilestonesButton.addEventListener('click', this.toggleMilestones.bind(this));
     this.addMilestoneButton.addEventListener('click', this.openAddMilestoneForm.bind(this));
   }
@@ -589,10 +590,10 @@ class ProjectOrSprintEditor {
                   <label>Description:</label>
                   <textarea name="description" id="edit-description-${this.entityId}" cols="50" rows="10"></textarea><br><br>
               </div>
-              <label>Start Date*:</label>
-              <input type="date" name="start-date" id="edit-start-date-${this.entityId}"> <span id="edit-start-date-hours-${this.entityId}"></span><br><br>
-              <label>End Date*:</label>
-              <input type="date" name="end-date" id="edit-end-date-${this.entityId}"> <span id="edit-end-date-hours-${this.entityId}"></span><br>
+              <label id="start-date-label-${this.entityId}">Start Date*:</label>
+              <input type="date" name="start-date" id="edit-start-date-${this.entityId}"> <span id="edit-start-date-hours-${this.entityId}"><br><br></span>
+              <label id="end-date-label-${this.entityId}">End Date*:</label>
+              <input type="date" name="end-date" id="edit-end-date-${this.entityId}"> <span id="edit-end-date-hours-${this.entityId}"><br></span>
               <label id="color-label-${this.entityId}"><br>Colour*:</label>
               <input type="color" name="colour" id="edit-colour-${this.entityId}"><br></input>
               <div id="edit-project-date-error-${this.entityId}" class="form-error" style="display: none;"></div><br>
@@ -611,20 +612,32 @@ class ProjectOrSprintEditor {
     this.descriptionInput = document.getElementById(`edit-description-${this.entityId}`);
     this.startDateInput = document.getElementById(`edit-start-date-${this.entityId}`);
     this.endDateInput = document.getElementById(`edit-end-date-${this.entityId}`);
+    this.endDateHoursField = document.getElementById(`edit-end-date-hours-${this.entityId}`);
+    this.startDateLabel  = document.getElementById(`start-date-label-${this.entityId}`);
+    this.endDateLabel  = document.getElementById(`end-date-label-${this.entityId}`);
 
     this.colourInput = document.getElementById(`edit-colour-${this.entityId}`);
     if (!(this.title === "New sprint details:") && !(this.title === "Edit sprint details:")) {
       this.colourInput.outerHTML = "";
       document.getElementById(`color-label-${this.entityId}`).outerHTML = "";
     }
-    console.log("here")
+
+    if (this.title === "New milestone details:" || this.title === "Edit milestone details:") {
+      this.endDateInput.outerHTML = "";
+      this.endDateInput = document.getElementById(`edit-start-date-${this.entityId}`);
+      this.startDateLabel.innerText = "Date*:";
+      this.endDateLabel.outerHTML = "";
+      this.endDateHoursField.outerHTML = "";
+      this.endDateHoursField = document.getElementById(`edit-start-date-hours-${this.entityId}`);
+    }
+
     console.log(this.containerElement);
     console.log(this.initialData)
 
     this.saveButton = document.getElementById(`edit-save-button-${this.entityId}`);
 
     this.startDateHoursField = document.getElementById(`edit-start-date-hours-${this.entityId}`);
-    this.endDateHoursField = document.getElementById(`edit-end-date-hours-${this.entityId}`);
+
 
     // Error fields
     this.nameErrorEl = document.getElementById(`edit-project-name-error-${this.entityId}`);
@@ -885,6 +898,16 @@ class ProjectOrSprintEditor {
   static makeProjectEventDatesValidator(project) {
     return (startDate, endDate) => {
       if (startDate < project.startDate || project.endDate < endDate) {
+        return "Event must fit within the project dates.";
+      }
+
+      return null;
+    }
+  }
+
+  static makeProjectMilestoneDatesValidator(project) {
+    return (startDate) => {
+      if (startDate < project.startDate || project.endDate < startDate) {
         return "Event must fit within the project dates.";
       }
 
@@ -1246,12 +1269,16 @@ class Project {
     }
 
     const showingEvents = this.currentView.showingEvents;
+    const showingMilestones = this.currentView.showingMilestones;
 
     // Refresh the view
     this.showViewer();
 
     if (showingEvents) {
       this.currentView.toggleEvents();
+    }
+    if (showingMilestones) {
+      this.currentView.toggleMilestones();
     }
     this.currentView.toggleSprints();
   }
@@ -1277,11 +1304,15 @@ class Project {
     }
 
     const showingSprints = this.currentView.showingSprints;
+    const showingMilestones = this.currentView.showingMilestones;
 
     // Refresh the view
     this.showViewer();
     if (showingSprints) {
       this.currentView.toggleSprints();
+    }
+    if (showingMilestones) {
+      this.currentView.toggleMilestones();
     }
     this.currentView.toggleEvents();
   }
@@ -1289,8 +1320,8 @@ class Project {
   onMilestoneUpdate(milestone) {
     console.log(`Project notified of update to milestone: `, milestone);
 
-    // Delete the outdated event from the events array.
-    // NB: Since this method is sometimes called with new events, a deletion is not guaranteed to occur here.
+    // Delete the outdated event from the milestones array.
+    // NB: Since this method is sometimes called with new milestones, a deletion is not guaranteed to occur here.
     for (let j=0; j < this.project.milestones.length; j++) {
       if (this.project.milestones[j].milestoneId === milestone.milestoneId) {
         this.project.milestones.splice(j, 1);
@@ -1301,7 +1332,7 @@ class Project {
     // Insert the updated milestone.
     this.project.milestones.splice(milestone.orderNumber - 1, 0, milestone);
 
-    // Update the orderNumbers of events after this one in the list.
+    // Update the orderNumbers of milestones after this one in the list.
     for (let j=milestone.orderNumber; j < this.project.milestones.length; j++) {
       this.project.milestones[j].orderNumber ++;
     }
@@ -1345,7 +1376,7 @@ class Project {
    */
   showViewer() {
     this.currentView?.dispose();
-    this.currentView = new ProjectView(this.containerElement, this.project, this.showEditor.bind(this), this.deleteProject.bind(this), this.deleteSprint.bind(this), this.onSprintUpdate.bind(this), this.deleteEvent.bind(this), this.onEventUpdate.bind(this));
+    this.currentView = new ProjectView(this.containerElement, this.project, this.showEditor.bind(this), this.deleteProject.bind(this), this.deleteSprint.bind(this), this.onSprintUpdate.bind(this), this.deleteEvent.bind(this), this.onEventUpdate.bind(this), this.deleteMilestone.bind(this), this.onMilestoneUpdate.bind(this));
   }
 
   /**
@@ -1457,10 +1488,14 @@ class Project {
     }
 
     const showingEvents = this.currentView.showingEvents;
+    const showingMilestones = this.currentView.showingMilestones;
     this.showViewer();
     this.currentView.toggleSprints();
     if (showingEvents) {
       this.currentView.toggleEvents();
+    }
+    if (showingMilestones) {
+      this.currentView.toggleMilestones();
     }
   }
 
@@ -1477,6 +1512,7 @@ class Project {
     }
 
     const showingSprints = this.currentView.showingSprints;
+    const showingMilestones = this.currentView.showingMilestones;
 
     this.showViewer();
     this.currentView.toggleEvents();
@@ -1484,7 +1520,37 @@ class Project {
     if (showingSprints) {
       this.currentView.toggleSprints();
     }
+    if (showingMilestones) {
+      this.currentView.toggleMilestones();
+    }
 
+  }
+
+  deleteMilestone(milestoneId) {
+    for (let j=0; j < this.project.milestones.length; j++) {
+      if (this.project.milestones[j].milestoneId === milestoneId) {
+        this.project.milestones.splice(j, 1);
+      }
+
+    }
+
+    for (let i=0; i < this.project.milestones.length; i++) {
+      this.project.milestones[i].orderNumber = i + 1;
+    }
+
+    const showingSprints = this.currentView.showingSprints;
+    const showingEvents = this.currentView.showingMilestones;
+
+    this.showViewer();
+    this.currentView.toggleMilestones();
+
+    if (showingSprints) {
+      this.currentView.toggleSprints();
+    }
+
+    if (showingEvents) {
+      this.currentView.toggleEvents();
+    }
   }
 
 }
@@ -1522,11 +1588,16 @@ class Sprint {
     ) {
       // Nothing has changed
       const showingEvents = this.currentView.showingEvents;
+      const showingMilestones = this.currentView.showingMilestones;
 
       this.showViewer();
-
+      this.currentView.toggleSprints();
       if (showingEvents) {
         this.currentView.toggleEvents();
+      }
+
+      if (showingMilestones) {
+        this.currentView.toggleMilestones();
       }
       return;
     }
@@ -1602,7 +1673,6 @@ class Sprint {
     if (this.deleteLoadingStatus === LoadingStatus.Pending) {
       return;
     }
-    console.log("here")
     this.deleteLoadingStatus = LoadingStatus.Pending;
 
     try {
@@ -1658,11 +1728,17 @@ class Event {
       // Nothing has changed
 
       const showingSprints = this.currentView.showingSprints;
+      const showingMilestones = this.currentView.showingMilestones;
 
       this.showViewer();
 
+      this.currentView.toggleEvents()
+
       if (showingSprints) {
         this.currentView.toggleSprints();
+      }
+      if (showingMilestones) {
+        this.currentView.toggleMilestones();
       }
 
       return;
@@ -1793,11 +1869,15 @@ class Milestone {
       // Nothing has changed
 
       const showingSprints = this.currentView.showingSprints;
+      const showingEvents = this.currentView.showingEvents;
 
       this.showViewer();
-
+      this.currentView.toggleMilestones();
       if (showingSprints) {
         this.currentView.toggleSprints();
+      }
+      if (showingEvents) {
+        this.currentView.toggleEvents();
       }
 
       return;
@@ -1847,7 +1927,7 @@ class Milestone {
         this.milestone,
         this.showViewer.bind(this),
         this.updateMilestone().bind(this),
-        ProjectOrSprintEditor.makeProjectEventDatesValidator(this.project)
+        ProjectOrSprintEditor.makeProjectMilestoneDatesValidator(this.project)
     );
   }
 
@@ -2098,6 +2178,7 @@ class Application {
           }
         })
       }
+
       this.projectsLoadingState = LoadingStatus.Done;
     } catch (ex) {
       this.projectsLoadingState = LoadingStatus.Error;

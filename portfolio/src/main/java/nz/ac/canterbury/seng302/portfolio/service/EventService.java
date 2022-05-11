@@ -56,10 +56,7 @@ public class EventService {
      * @return
      */
     public EventContract createEvent(String projectId, BaseEventContract event) {
-        //Check if type is valid
-        if (!isValidType(event)) {
-            throw new IllegalArgumentException("Invalid event type");
-        }
+
 
         var project = projectRepository.findById(projectId).orElseThrow(() -> new IllegalArgumentException("Invalid project ID"));
         var entity = eventMapper.toEntity(event);
@@ -83,8 +80,8 @@ public class EventService {
 
 
         project.removeEvent(event);
-        projectRepository.save(project);
         eventRepository.deleteById(eventId);
+        projectRepository.save(project);
     }
 
     /**
@@ -93,9 +90,6 @@ public class EventService {
      * @param event to update, with the new values
      */
     public void update(String eventId, BaseEventContract event) {
-        if (!isValidType(event)) {
-            throw new IllegalArgumentException("Invalid event type");
-        }
 
         EventEntity eventEntity = eventRepository.findById(eventId).orElseThrow(() -> new NoSuchElementException("Invalid event ID"));
 
