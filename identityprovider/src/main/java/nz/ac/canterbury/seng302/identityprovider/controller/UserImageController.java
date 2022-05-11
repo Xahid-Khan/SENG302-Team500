@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.swing.text.html.Option;
 import java.io.IOException;
@@ -27,15 +28,11 @@ public class UserImageController {
      */
     @GetMapping(value = "/userImage/{id}")
     void showUserImage(@PathVariable("id") int userId, HttpServletResponse response) throws IOException {
-        try {
+        response.setContentType("image/*");
+        try (ServletOutputStream imageStream = response.getOutputStream()) {
             Optional<PhotoModel> userPhoto = photoRepository.findById(userId);
-            response.setContentType("image/*");
-            response.getOutputStream().write(userPhoto.get().getUserPhoto());
+            imageStream.write(userPhoto.get().getUserPhoto());
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            response.getOutputStream().close();
         }
     }
 
