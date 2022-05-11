@@ -50,6 +50,16 @@ public class ProjectEntity {
     @Fetch(value = FetchMode.SUBSELECT)
     private List<EventEntity> events = new ArrayList<>();
 
+    @OneToMany(mappedBy = "project", fetch = FetchType.EAGER)
+    @OrderBy("startDate")
+    @Fetch(value = FetchMode.SUBSELECT)
+    private List<MilestoneEntity> milestones = new ArrayList<>();
+
+    @OneToMany(mappedBy = "project", fetch = FetchType.EAGER)
+    @OrderBy("startDate")
+    @Fetch(value = FetchMode.SUBSELECT)
+    private List<DeadlineEntity> deadlines = new ArrayList<>();
+
 
     protected ProjectEntity() {}
 
@@ -111,6 +121,12 @@ public class ProjectEntity {
 
     public List<EventEntity> getEvents() {return events;}
 
+    public List<DeadlineEntity> getDeadlines() {return deadlines;}
+
+    public List<MilestoneEntity> getMilestones() {
+        return milestones;
+    }
+
     /**
      * Inserts the given sprint to the sprints list, retaining sorted order.
      *
@@ -141,5 +157,30 @@ public class ProjectEntity {
     public void removeEvent(EventEntity event) {
         events.remove(event);
         event.setProject(null);
+    }
+
+    public void newDeadline(DeadlineEntity deadline) {
+        deadlines.add(deadline);
+        deadline.setProject(this);
+    }
+
+    public void addDeadline(DeadlineEntity deadline) {
+        deadlines.add(deadline);
+        deadline.setProject(this);
+    }
+
+    public void removeDeadline(DeadlineEntity deadline) {
+        deadlines.remove(deadline);
+        deadline.setProject(null);
+    }
+
+    public void newMilestone(MilestoneEntity milestone) {
+        milestones.add(milestone);
+        milestone.setProject(this);
+    }
+
+    public void removeMilestone(MilestoneEntity milestone) {
+        milestones.remove(milestone);
+        milestone.setProject(null);
     }
 }

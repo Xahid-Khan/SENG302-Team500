@@ -8,11 +8,13 @@ import java.util.stream.Collectors;
 import nz.ac.canterbury.seng302.portfolio.model.GetPaginatedUsersOrderingElement;
 import nz.ac.canterbury.seng302.portfolio.model.entity.SortingParameterEntity;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
+import nz.ac.canterbury.seng302.portfolio.service.RolesService;
 import nz.ac.canterbury.seng302.portfolio.service.SortingParametersService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserRoleChangeResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -43,8 +45,14 @@ public class UserListController {
     ) {
 
         Integer userId = authStateService.getId(principal);
+        model.addAttribute("userId", userId);
 
         UserResponse userDetails = userAccountService.getUserById(userId);
+        List<UserRole> roles = userDetails.getRolesList();
+
+        if ((roles.contains(UserRole.COURSE_ADMINISTRATOR) || roles.contains(UserRole.TEACHER))) {
+            model.addAttribute("isAdmin", true);
+        }
 
 
         String sortAttributeString;
@@ -90,6 +98,7 @@ public class UserListController {
             ascending
         );
         // Construct response
+        model.addAttribute("userId", userId);
         model.addAttribute("users", response.getUsersList());
         model.addAttribute("totalUserCount", response.getResultSetSize());
         model.addAttribute("pageOffset", offset);
@@ -101,6 +110,51 @@ public class UserListController {
         return "user_list";
     }
 
+    @PostMapping("/user-list")
+    public String updateRoles(@AuthenticationPrincipal AuthState principal,
+                              Model model,
+                              @RequestParam(name="action") String action,
+                              @RequestParam(name="id") Integer id,
+                              @RequestParam(name="roleNumber") Integer roleNumber) {
+        Integer userId = authStateService.getId(principal);
+        UserResponse userDetails = userAccountService.getUserById(userId);
+        List<UserRole> roles = userDetails.getRolesList();
+
+        model.addAttribute("roleMessageTarget", id);
+
+        if (roles.contains(UserRole.TEACHER) || roles.contains(UserRole.COURSE_ADMINISTRATOR)) {
+
+            if (userId.equals(id)) {
+                model.addAttribute("roleMessage", "Cannot add roles for yourself");
+            }
+
+            if (action.equals("remove")) {
+                if (userId.equals(id)) {
+                    model.addAttribute("roleMessage", "Cannot remove roles for yourself");
+                }
+                try {
+                    UserRoleChangeResponse response = userAccountService.removeRole(id, UserRole.forNumber(roleNumber));
+                    if (!response.getIsSuccess()) {
+                        model.addAttribute("roleMessage", "Error adding role");
+                    }
+                } catch (Exception e) { // TODO: Fix this Exception to be IrremovableRoleException
+                    model.addAttribute("roleMessage", "User must have at least one role");
+                }
+            } else if (action.equals("add")) {
+                UserRoleChangeResponse response = userAccountService.addRole(id, UserRole.forNumber(roleNumber));
+                if (!response.getIsSuccess()) {
+                    model.addAttribute("roleMessage", "Error adding role");
+                }
+            }
+        }
+
+        return listUsers(principal, Optional.empty(), Optional.empty(), Optional.empty(), model);
+
+
+    }
+
+
+
     public String formatUrl(int page, String sortBy, boolean sortDir) {
         return String.format("?page=%d&sortBy=%s&asc=%b", page, sortBy, sortDir);
     }
@@ -110,7 +164,7 @@ public class UserListController {
             case STUDENT: return "Student";
             case TEACHER: return "Teacher";
             case COURSE_ADMINISTRATOR: return "Course Administrator";
-            default: return "Default";
+            default: return "Role not found";
         }
     }
 

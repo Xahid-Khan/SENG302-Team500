@@ -44,9 +44,12 @@
         </div>
         <div class="account">
             <div class="dropdown">
-                <button class="dropbutton"><div class="username" th:text="${username}"></div><img
-                        src="https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png"
-                        width="46" height="46" alt="Placeholder Profile Photo">
+                <button class="dropbutton"><div class="username" th:text="${username}"></div>
+                    <div style="width: 46px;height: 46px;object-fit: cover;overflow: clip;">
+                        <img th:src="'//' + ${globalImagePath} + ${userId}"
+                             onerror="this.onerror=null;this.src='https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png'"
+                             alt="Placeholder Profile Photo" style="height: 50px;" width="46" height="46">
+                    </div>
                 </button>
                 <div class="dropdown-content">
                     <a class="dropdown-content-links" href="my_account">My Account</a>
@@ -93,26 +96,44 @@
                     <th:block th:include="::columnHeaderFragment ('roles', 'Roles')"></th:block>
                 </div>
                 <div class="tableRow" th:each="user: ${users}">
-                    <div class="tableCell" th:text="${user.firstName} + ' ' + (${user.middleName} ?: '') + ' ' + ${user.lastName}"/>
+                    <div class="tableCell" th:text="${user.firstName} + ' ' + (${user.middleName} ?: '') + ' ' + ${user.lastName} + ${(user.id == userId) ? ' (You)' : ''}"/>
                     <div class="tableCell" th:text="${user.username}"/>
                     <div class="tableCell" th:text="${user.nickname}"/>
                     <div class="tableCell">
                         <span th:each="role: ${user.rolesList}">
-                            <form class="chip">
-                                <span class="label" th:text="${delegate.formatUserRole(role)}"/>
-                                <button class="remove-button" onclick="this.parentElement.style.display='none'" type="submit">&times;</button>
+                            <form class="chip"  th:method="post">
+                                <input type="hidden" th:name="action" th:value="remove"/>
+                                <input type="hidden" th:name="id" th:value="${user.id}"/>
+                                <input type="hidden" th:name="roleNumber" th:value="${role.number}"/>
+                                <span class="role-item" th:text="${delegate.formatUserRole(role)}"/>
+                                <span th:if="${isAdmin==true and user.id != userId}">
+                                    <button class="closebtn" onclick="this.parentElement.style.display='none'" type="submit">&times;</button>
+                                </span>
                             </form>
                         </span>
-                        <div class="dropdown-box">
-                            <div class="add-button">
-                                +
+                        <div class="dropdown">
+                            <div class="add-role" th:if="${isAdmin==true and user.id != userId}">
+                                <button class="dropbutton">
+                                    +
+                                </button>
                             </div>
-                            <div class="dropdown-content" >
-                                <div th:each="role:${delegate.getAvailableRoles(user)}">
-                                    <a class="dropdown-option" th:text="${delegate.formatUserRole(role)}"/>
+                            <div class="add-role-dropdown">
+                                <div class="dropdown-content role-list" th:with="roles=${delegate.getAvailableRoles(user)}">
+                                    <div th:each="role:${roles}">
+                                        <form th:action="@{/user-list}" th:method="post">
+                                            <input type="hidden" th:name="action" th:value="add"/>
+                                            <input type="hidden" th:name="id" th:value="${user.id}"/>
+                                            <input type="hidden" th:name="roleNumber" th:value="${role.number}"/>
+                                            <button class="role-dropdown-content-links" th:text="${delegate.formatUserRole(role)}" type="submit"></button>
+                                        </form>
+                                    </div>
+                                    <div th:if="${roles.size()}==0">
+                                        <button class="role-dropdown-content-links">User has all roles</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                        <div class="form-error" th:if="${roleMessage != null && roleMessageTarget == user.id}" th:text="${roleMessage}"></div>
                     </div>
                 </div>
             </div>
@@ -120,3 +141,5 @@
     </div>
 </body>
 </html>
+
+

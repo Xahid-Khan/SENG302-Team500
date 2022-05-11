@@ -44,6 +44,7 @@ public class EventEntity {
     @Column(name = "end_date")
     private Instant endDate;
 
+
     public String getId() {
         return id;
     }
@@ -100,4 +101,6 @@ public class EventEntity {
         this.startDate = startDate;
         this.endDate = endDate;
     }
+
 }
+
