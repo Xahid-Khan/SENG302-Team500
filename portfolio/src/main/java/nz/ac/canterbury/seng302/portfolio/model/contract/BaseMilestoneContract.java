@@ -9,6 +9,5 @@ public record BaseMilestoneContract(
         String name,
         String description,
         Instant startDate,
-        Instant endDate,
-        MilestoneEntity.MilestoneType type
+        Instant endDate
 ) {}

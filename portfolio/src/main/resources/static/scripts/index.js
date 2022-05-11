@@ -41,7 +41,6 @@ class ErrorHandlerUtils {
 class ProjectView {
   showingSprints = false;
   showingEvents = false;
-  showingMilestones = false;
   showingDeadlines = false;
   showingMilestones = false;
 
@@ -50,9 +49,6 @@ class ProjectView {
 
   addSprintForm = null;
   addSprintLoadingStatus = LoadingStatus.NotYetAttempted;
-
-  addMilestoneForm = null
-  addMilestoneLoadingStatus = LoadingStatus.NotYetAttempted;
 
   addDeadlineForm = null
   addDeadlineLoadingStatus = LoadingStatus.NotYetAttempted;
@@ -134,28 +130,15 @@ class ProjectView {
     console.log("Milestone bound");
   }
 
-  appendMilestone(milestoneData) {
-    const milestoneElement = document.createElement("div")
-    milestoneElement.classList.add("event-view", "raised-card");
-    milestoneElement.id = `event-view-${milestoneElement.id}`;
-    this.eventContainer.appendChild(milestoneElement);
-
-    console.log("Binding milestone");
-
-    this.milestones.set(milestoneData.eventId, new Milestone(milestoneElement, milestoneData, this.project, this.milestoneDeleteCallback, this.milestoneUpdateCallback));
-
-    console.log("Milestone bound");
-  }
-
   appendDeadline(deadlineData) {
     const deadlineElement = document.createElement("div")
-    deadlineElement.classList.add("event-view", "raised-card");
-    deadlineElement.id = `event-view-${deadlineElement.id}`;
-    this.eventContainer.appendChild(deadlineElement);
+    deadlineElement.classList.add("deadline-view", "raised-card");
+    deadlineElement.id = `deadline-view-${deadlineElement.id}`;
+    this.deadlineContainer.appendChild(deadlineElement);
 
     console.log("Binding deadline");
 
-    this.deadlines.set(deadlineData.eventId, new Deadline(deadlineElement, deadlineData, this.project, this.deadlineDeleteCallback, this.deadlineUpdateCallback));
+    this.deadlines.set(deadlineData.deadlineId, new Deadline(deadlineElement, deadlineData, this.project, this.deadlineDeleteCallback, this.deadlineUpdateCallback));
 
     console.log("Deadline bound");
   }
@@ -183,22 +166,17 @@ class ProjectView {
               <button class="button add-sprint" id="add-sprint-button-${this.project.id}" data-privilege="teacher"> Add Sprint</button>
               <button class="button add-event" id="add-event-button-${this.project.id}" data-privilege="teacher"> Add Event</button>
               <button class="button add-milestone" id="add-milestone-button-${this.project.id}" data-privilege="teacher"> Add Milestone</button>
-              <button class="button add-milestone" id="add-milestone-button-${this.project.id}" data-privilege="teacher"> Add Milestone</button>
               <button class="button add-deadline" id="add-deadline-button-${this.project.id}" data-privilege="teacher"> Add Deadline</button>
           </div>
           <div class="toggle-view-controls">
               <button class="button toggle-sprints" id="toggle-sprint-button-${this.project.id}"> Show Sprints</button>
               <button class="button toggle-events" id="toggle-event-button-${this.project.id}"> Show Events</button>
               <button class="button toggle-milestones" id="toggle-milestone-button-${this.project.id}"> Show Milestones</button>
-              <button class="button toggle-milestones" id="toggle-milestone-button-${this.project.id}"> Show Milestones</button>
               <button class="button toggle-deadlines" id="toggle-deadline-button-${this.project.id}"> Show Deadlines</button>
           </div>    
       </div>
       <div class="events raised-card" id="events-container-${this.project.id}">
         <h1 class="event-section-title">Events:</h1>
-      </div>
-      <div class="milestones raised-card" id="milestones-container-${this.project.id}">
-        <h1 class="milestone-section-title">Milestones:</h1>
       </div>
       <div class="deadlines raised-card" id="deadlines-container-${this.project.id}">
         <h1 class="deadline-section-title">Deadlines:</h1>
@@ -233,11 +211,6 @@ class ProjectView {
     this.milestonesContainer = document.getElementById(`milestones-container-${this.project.id}`);
     this.milestoneContainer = document.getElementById(`milestones-container-${this.project.id}`);
 
-    this.addMilestoneButton = document.getElementById(`add-milestone-button-${this.project.id}`);
-    this.toggleMilestonesButton = document.getElementById(`toggle-milestone-button-${this.project.id}`);
-    this.milestonesContainer = document.getElementById(`milestones-container-${this.project.id}`);
-    this.milestoneContainer = document.getElementById(`milestones-container-${this.project.id}`);
-
     this.addDeadlineButton = document.getElementById(`add-deadline-button-${this.project.id}`);
     this.toggleDeadlinesButton = document.getElementById(`toggle-deadline-button-${this.project.id}`);
     this.deadlinesContainer = document.getElementById(`deadlines-container-${this.project.id}`);
@@ -255,12 +228,8 @@ class ProjectView {
       this.appendMilestone(this.project.milestones[k]);
     }
 
-    for (let k = 0; k < this.project.milestones.length; k++) {
-      this.appendEvent(this.project.milestones[k]);
-    }
-
     for (let k = 0; k < this.project.deadlines.length; k++) {
-      this.appendEvent(this.project.deadlines[k]);
+      this.appendDeadline(this.project.deadlines[k]);
     }
   }
 
@@ -312,21 +281,6 @@ class ProjectView {
     this.showingMilestones = !this.showingMilestones;
   }
 
-  toggleMilestones() {
-    if (this.showingMilestones) {
-      // Hide the sprints
-      this.toggleMilestonesButton.innerText = "Show Milestones";
-      this.milestonesContainer.style.display = "none";
-    }
-    else {
-      // Show the events
-      this.toggleMilestonesButton.innerText = "Hide Milestones";
-      this.milestones.style.display = "block";
-    }
-
-    this.showingMilestones = !this.showingMilestones;
-  }
-
   toggleDeadlines() {
     if (this.showingDeadlines) {
       // Hide the sprints
@@ -336,7 +290,7 @@ class ProjectView {
     else {
       // Show the events
       this.toggleDeadlinesButton.innerText = "Hide Deadlines";
-      this.deadlines.style.display = "block";
+      this.deadlinesContainer.style.display = "block";
     }
 
     this.showingDeadlines = !this.showingDeadlines;
@@ -599,94 +553,6 @@ class ProjectView {
     }
 
     this.addMilestoneLoadingStatus = LoadingStatus.Pending;
-    try {
-      const res = await fetch(`api/v1/projects/${this.project.id}/milestones`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(milestone)
-      });
-
-      if (!res.ok) {
-        await ErrorHandlerUtils.handleNetworkError(res, "creating project");
-      }
-
-      const newMilestone = await res.json();
-      this.milestoneUpdateCallback({
-        ...newMilestone,
-        startDate: DatetimeUtils.networkStringToLocalDate(newMilestone.startDate),
-        endDate: DatetimeUtils.networkStringToLocalDate(newMilestone.endDate)
-      });
-    }
-    catch (ex) {
-      this.addMilestoneLoadingStatus = LoadingStatus.Error;
-      if (ex instanceof PortfolioNetworkError) {
-        throw ex;
-      }
-      ErrorHandlerUtils.handleUnknownNetworkError(ex, "creating project");
-    }
-  }
-
-  openAddMilestoneForm() {
-    if (this.addMilestoneForm !== null) {
-      return;
-    }
-
-    const formContainerElement = document.createElement("div");
-    formContainerElement.classList.add("milestone-view", "raised-card");
-    formContainerElement.id = `create-milestone-form-container-${this.project.id}`;
-    this.milestoneContainer.append(this.milestonesContainer.firstChild, formContainerElement)
-
-    const defaultMilestone = {
-      id: `__NEW_MILESTONE_FORM_${this.project.id}`,
-      name: null,
-      description: null,
-      startDate: null,
-      endDate: null
-    };
-
-    this.addMilestoneForm = {
-      container: formContainerElement,
-      controller: new ProjectOrSprintEditor(
-          formContainerElement,
-          "New milestone details:",
-          defaultMilestone,
-          this.closeAddMilestoneForm.bind(this),
-          this.submitAddMilestoneForm.bind(this),
-          ProjectOrSprintEditor.makeProjectEventDatesValidator(this.project)
-      )
-    };
-
-    if (!this.showingMilestones) {
-      this.toggleMilestones();
-    }
-  }
-
-  /**
-   * Closes the add milestone form.
-   */
-  closeAddMilestoneForm() {
-    if (this.addMilestoneForm === null) {
-      return;
-    }
-
-    this.addMilestoneForm.controller.dispose();
-    this.milestonesContainer.removeChild(this.addMilestoneForm.container);
-    this.addMilestoneForm = null;
-  }
-
-  /**
-   * Submits the add milestone form, checking if this task is not being done currently (loading status).
-   * @param milestone
-   * @returns {Promise<void>}
-   */
-  async submitAddMilestoneForm(milestone) {
-    if (this.addMilestoneLoadingStatus === LoadingStatus.Pending) {
-      return;
-    }
-
-    this.addMilestoneLoadingStatus = LoadingStatus.Pending;
 
     try {
       const res = await fetch(`api/v1/projects/${this.project.id}/milestones`, {
@@ -728,7 +594,7 @@ class ProjectView {
     this.deadlineContainer.append(this.deadlinesContainer.firstChild, formContainerElement)
 
     const defaultDeadline = {
-      id: `__NEW_MILESTONE_FORM_${this.project.id}`,
+      id: `__NEW_DEADLINE_FORM_${this.project.id}`,
       name: null,
       description: null,
       startDate: null,
@@ -807,7 +673,7 @@ class ProjectView {
   }
 
   monthlyPlannerRedirect(projectId) {
-    window.location.href = `/monthly-planner/${projectId}`
+    window.location.href = `monthly-planner/${projectId}`
   }
 
   wireView() {
@@ -818,8 +684,6 @@ class ProjectView {
     this.addSprintButton.addEventListener('click', this.openAddSprintForm.bind(this));
     this.toggleEventsButton.addEventListener('click', this.toggleEvents.bind(this));
     this.addEventButton.addEventListener('click', this.openAddEventForm.bind(this));
-    this.toggleMilestonesButton.addEventListener('click', this.toggleMilestones.bind(this));
-    this.addMilestoneButton.addEventListener('click', this.openAddMilestoneForm.bind(this));
     this.toggleMilestonesButton.addEventListener('click', this.toggleMilestones.bind(this));
     this.addMilestoneButton.addEventListener('click', this.openAddMilestoneForm.bind(this));
     this.toggleDeadlinesButton.addEventListener('click', this.toggleDeadlines.bind(this));
@@ -902,7 +766,7 @@ class ProjectOrSprintEditor {
       document.getElementById(`color-label-${this.entityId}`).outerHTML = "";
     }
 
-    if (this.title === "New milestone details:" || this.title === "Edit milestone details:") {
+    if (this.title === "New milestone details:" || this.title === "Edit milestone details:" || this.title === "New deadline details:" || this.title === "Edit deadline details:") {
       this.endDateInput.outerHTML = "";
       this.endDateInput = document.getElementById(`edit-start-date-${this.entityId}`);
       this.startDateLabel.innerText = "Date*:";
@@ -1202,13 +1066,15 @@ class ProjectOrSprintEditor {
 class SprintView {
   expandedView = false;
 
-  constructor(containerElement, events, sprints, sprint, deleteCallback, editCallback) {
+  constructor(containerElement, events, deadlines, milestones, sprints, sprint, deleteCallback, editCallback) {
     this.containerElement = containerElement;
     this.sprint = sprint;
     this.editCallback = editCallback;
     this.deleteCallback = deleteCallback;
     this.events = events;
     this.sprints = sprints;
+    this.deadlines = deadlines;
+    this.milestones = milestones;
 
     this.constructView();
     this.wireView();
@@ -1233,6 +1099,8 @@ class SprintView {
     <div class="sprint-details" id="sprint-details-${this.sprint.sprintId}">
         <div class="sprint-description" id="sprint-description-${this.sprint.sprintId}"></div>
         <div class="sprint-events" id="sprint-events-${this.sprint.sprintId}"></div>
+        <div class="sprint-deadlines" id="sprint-deadlines-${this.sprint.sprintId}"></div>
+        <div class="sprint-milestones" id="sprint-milestones-${this.sprint.sprintId}"></div>
     </div>
     <div class="colour-block" id="sprint-colour-block-${this.sprint.sprintId}"></div>
     `;
@@ -1243,10 +1111,14 @@ class SprintView {
     this.colourBlock = document.getElementById(`sprint-colour-block-${this.sprint.sprintId}`);
     this.details = document.getElementById(`sprint-details-${this.sprint.sprintId}`);
     this.sprintEvents = document.getElementById(`sprint-events-${this.sprint.sprintId}`);
+    this.sprintDeadlines = document.getElementById(`sprint-deadlines-${this.sprint.sprintId}`);
+    this.sprintMilestones = document.getElementById(`sprint-milestones-${this.sprint.sprintId}`);
     document.getElementById(`sprint-order-text-${this.sprint.sprintId}`).innerText = `Sprint ${this.sprint.orderNumber}`;
     document.getElementById(`sprint-title-text-${this.sprint.sprintId}`).innerText = this.sprint.name;
     this.description.innerText = "Description: " + this.sprint.description;
     this.sprintEvents.innerHTML = this.getEvents();
+    this.sprintDeadlines.innerHTML = this.getDeadlines();
+    this.sprintMilestones.innerHTML = this.getMilestones();
     this.colourBlock.style.background = this.sprint.colour;
     document.getElementById(`start-date-${this.sprint.sprintId}`).innerText = DatetimeUtils.localToUserDMY(this.sprint.startDate);
     const displayedDate = new Date(this.sprint.endDate.valueOf());
@@ -1314,6 +1186,32 @@ class SprintView {
     });
     if (html === "<label>Events occurring during this sprint: </label>") {
       html += "<span>No events will occur during this sprint</span>"
+    }
+    return html;
+  }
+
+  getDeadlines() {
+    let html = "<label>Deadlines occurring during this sprint: </label>";
+    this.deadlines.forEach(deadline => {
+      if (deadline.startDate >= this.sprint.startDate && deadline.startDate <= this.sprint.endDate) {
+        html += `<div class="sprint-deadline-details">   - <span>${deadline.name}: </span> <span style="color: ${this.sprint.colour}">${DatetimeUtils.localToUserDMY(deadline.startDate)}</span>`;
+      }
+    });
+    if (html === "<label>Deadlines occurring during this sprint: </label>") {
+      html += "<span>No deadlines will occur during this sprint</span>"
+    }
+    return html;
+  }
+
+  getMilestones() {
+    let html = "<label>Milestones occurring during this sprint: </label>";
+    this.milestones.forEach(milestone => {
+      if (milestone.startDate >= this.sprint.startDate && milestone.startDate <= this.sprint.endDate) {
+        html += `<div class="sprint-milestone-details">   - <span>${milestone.name}: </span> <span style="color: ${this.sprint.colour}">${DatetimeUtils.localToUserDMY(milestone.startDate)}</span>`;
+      }
+    });
+    if (html === "<label>Milestones occurring during this sprint: </label>") {
+      html += "<span>No milestones will occur during this sprint</span>"
     }
     return html;
   }
@@ -1674,6 +1572,7 @@ class Project {
 
     const showingSprints = this.currentView.showingSprints;
     const showingMilestones = this.currentView.showingMilestones;
+    const showingDeadlines = this.currentView.showingDeadlines;
 
     // Refresh the view
     this.showViewer();
@@ -1682,6 +1581,9 @@ class Project {
     }
     if (showingMilestones) {
       this.currentView.toggleMilestones();
+    }
+    if (showingDeadlines) {
+      this.currentView.toggleDeadlines()
     }
     this.currentView.toggleEvents();
   }
@@ -1708,6 +1610,7 @@ class Project {
 
     const showingSprints = this.currentView.showingSprints;
     const showingEvents = this.currentView.showingEvents;
+    const showingDeadlines = this.currentView.showingDeadlines;
 
     // Refresh the view
     this.showViewer();
@@ -1717,7 +1620,48 @@ class Project {
     if (showingEvents) {
       this.currentView.toggleEvents();
     }
+    if (showingDeadlines) {
+      this.currentView.toggleDeadlines()
+    }
     this.currentView.toggleMilestones();
+  }
+
+  onDeadlineUpdate(deadline) {
+    console.log(`Project notified of update to deadline: `, deadline);
+
+    // Delete the outdated event from the events array.
+    // NB: Since this method is sometimes called with new events, a deletion is not guaranteed to occur here.
+    for (let j=0; j < this.project.deadlines.length; j++) {
+      if (this.project.deadlines[j].eventId === deadline.eventId) {
+        this.project.deadlines.splice(j, 1);
+        break;
+      }
+    }
+
+    // Insert the updated event.
+    this.project.deadlines.splice(deadline.orderNumber - 1, 0, deadline);
+
+    // Update the orderNumbers of events after this one in the list.
+    for (let j=deadline.orderNumber; j < this.project.deadlines.length; j++) {
+      this.project.deadlines[j].orderNumber ++;
+    }
+
+    const showingSprints = this.currentView.showingSprints;
+    const showingMilestones = this.currentView.showingMilestones;
+    const showingEvents = this.currentView.showingEvents;
+
+    // Refresh the view
+    this.showViewer();
+    if (showingSprints) {
+      this.currentView.toggleSprints();
+    }
+    if (showingMilestones) {
+      this.currentView.toggleMilestones();
+    }
+    if (showingEvents) {
+      this.currentView.toggleEvents();
+    }
+    this.currentView.toggleDeadlines();
   }
 
   /**
@@ -1745,7 +1689,7 @@ class Project {
    */
   showViewer() {
     this.currentView?.dispose();
-    this.currentView = new ProjectView(this.containerElement, this.project, this.showEditor.bind(this), this.deleteProject.bind(this), this.deleteSprint.bind(this), this.onSprintUpdate.bind(this), this.deleteEvent.bind(this), this.onEventUpdate.bind(this), this.deleteMilestone.bind(this), this.onMilestoneUpdate.bind(this));
+    this.currentView = new ProjectView(this.containerElement, this.project, this.showEditor.bind(this), this.deleteProject.bind(this), this.deleteSprint.bind(this), this.onSprintUpdate.bind(this), this.deleteEvent.bind(this), this.onEventUpdate.bind(this), this.deleteDeadline.bind(this), this.onDeadlineUpdate.bind(this), this.deleteMilestone.bind(this), this.onMilestoneUpdate.bind(this));
   }
 
   /**
@@ -1883,6 +1827,7 @@ class Project {
 
     const showingSprints = this.currentView.showingSprints;
     const showingMilestones = this.currentView.showingMilestones;
+    const showingDeadlines = this.currentView.showingDeadlines;
 
     this.showViewer();
     this.currentView.toggleEvents();
@@ -1892,6 +1837,9 @@ class Project {
     }
     if (showingMilestones) {
       this.currentView.toggleMilestones();
+    }
+    if (showingDeadlines) {
+      this.currentView.toggleDeadlines()
     }
 
   }
@@ -1909,13 +1857,50 @@ class Project {
     }
 
     const showingSprints = this.currentView.showingSprints;
-    const showingEvents = this.currentView.showingMilestones;
+    const showingEvents = this.currentView.showingEvents;
+    const showingDeadlines = this.currentView.showingDeadlines;
 
     this.showViewer();
     this.currentView.toggleMilestones();
 
     if (showingSprints) {
       this.currentView.toggleSprints();
+    }
+
+    if (showingEvents) {
+      this.currentView.toggleEvents();
+    }
+
+    if (showingDeadlines) {
+      this.currentView.toggleDeadlines()
+    }
+  }
+
+  deleteDeadline(deadlineId) {
+    for (let j=0; j < this.project.deadlines.length; j++) {
+      if (this.project.deadlines[j].deadlineId === deadlineId) {
+        this.project.deadlines.splice(j, 1);
+      }
+
+    }
+
+    for (let i=0; i < this.project.deadlines.length; i++) {
+      this.project.deadlines[i].orderNumber = i + 1;
+    }
+
+    const showingSprints = this.currentView.showingSprints;
+    const showingEvents = this.currentView.showingEvents;
+    const showingMilestones = this.currentView.showingMilestones;
+
+    this.showViewer();
+    this.currentView.toggleDeadlines();
+
+    if (showingSprints) {
+      this.currentView.toggleSprints();
+    }
+
+    if (showingMilestones) {
+      this.currentView.toggleMilestones();
     }
 
     if (showingEvents) {
@@ -2026,7 +2011,7 @@ class Sprint {
    */
   showViewer() {
     this.currentView?.dispose();
-    this.currentView = new SprintView(this.containerElement, this.project.events, this.project.events, this.sprint, this.deleteSprint.bind(this), this.showEditor.bind(this));
+    this.currentView = new SprintView(this.containerElement, this.project.events, this.project.deadlines, this.project.milestones, this.project.events, this.sprint, this.deleteSprint.bind(this), this.showEditor.bind(this));
   }
 
   /**
@@ -2099,6 +2084,7 @@ class Event {
 
       const showingSprints = this.currentView.showingSprints;
       const showingMilestones = this.currentView.showingMilestones;
+      const showingDeadlines = this.currentView.showingDeadlines;
 
       this.showViewer();
 
@@ -2109,6 +2095,9 @@ class Event {
       }
       if (showingMilestones) {
         this.currentView.toggleMilestones();
+      }
+      if (showingDeadlines) {
+        this.currentView.toggleDeadlines()
       }
 
       return;
@@ -2240,6 +2229,7 @@ class Milestone {
 
       const showingSprints = this.currentView.showingSprints;
       const showingEvents = this.currentView.showingEvents;
+      const showingDeadlines = this.currentView.showingDeadlines;
 
       this.showViewer();
       this.currentView.toggleMilestones();
@@ -2248,6 +2238,9 @@ class Milestone {
       }
       if (showingEvents) {
         this.currentView.toggleEvents();
+      }
+      if (showingDeadlines) {
+        this.currentView.toggleDeadlines()
       }
 
       return;
@@ -2378,12 +2371,22 @@ class Deadline {
       // Nothing has changed
 
       const showingSprints = this.currentView.showingSprints;
+      const showingEvents = this.currentView.showingEvents;
+      const showingMilestones = this.currentView.showingMilestones;
 
       this.showViewer();
 
       if (showingSprints) {
         this.currentView.toggleSprints();
       }
+      if (showingEvents) {
+        this.currentView.toggleEvents()
+      }
+      if (showingMilestones) {
+        this.currentView.toggleMilestones()
+      }
+
+      this.currentView.toggleDeadlines();
 
       return;
     }
@@ -2441,7 +2444,7 @@ class Deadline {
    */
   showViewer() {
     this.currentView?.dispose();
-    this.currentView = new DeadlineView(this.containerElement, this.project.sprints, this.deadline, this.deletedeadline.bind(this), this.showEditor.bind(this));
+    this.currentView = new DeadlineView(this.containerElement, this.project.sprints, this.deadline, this.deleteDeadline.bind(this), this.showEditor.bind(this));
   }
 
   /**
@@ -2687,9 +2690,6 @@ class Application {
           }
           if (project.currentView.toggleEvents) {
             project.currentView.toggleEvents();
-          }
-          if (project.currentView.toggleMilestones) {
-            project.currentView.toggleMilestones();
           }
           if (project.currentView.toggleMilestones) {
             project.currentView.toggleMilestones();

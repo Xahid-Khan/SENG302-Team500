@@ -21,5 +21,6 @@ public record ProjectContract(
         Instant endDate,
         List<SprintContract> sprints,
         List<EventContract> events,
-        List<MilestoneContract> milestones
+        List<MilestoneContract> milestones,
+        List<DeadlineContract> deadlines
 ) { }

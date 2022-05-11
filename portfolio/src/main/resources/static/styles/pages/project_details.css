@@ -16,6 +16,11 @@ body {
     margin-top: 10px;
 }
 
+.deadlines {
+    padding: 20px;
+    margin-top: 10px;
+}
+
 .sprints {
     margin-top: 10px;
     padding: 20px;
@@ -31,6 +36,11 @@ body {
     font-weight: bold;
 }
 
+.deadline-section-title {
+    font-size: 20px;
+    font-weight: bold;
+}
+
 .project-view {
     width: 100%;
     margin-bottom: 40px;
@@ -40,6 +50,7 @@ body {
 .sprint-details {
     display: none;
     overflow: hidden;
+    padding-left: 10px;
 }
 
 .event-details {
@@ -50,6 +61,13 @@ body {
 }
 
 .milestone-details {
+    display: none;
+    overflow: hidden;
+    font-size: 14px;
+    padding-left: 10px;
+}
+
+.deadline-details {
     display: none;
     overflow: hidden;
     font-size: 14px;
@@ -152,6 +170,11 @@ body {
     margin-top: 15px
 }
 
+.deadline-view {
+    padding: 20px;
+    margin-top: 15px
+}
+
 .sprint-title {
     font-size: 18px;
     font-weight: bold;
@@ -165,6 +188,12 @@ body {
 }
 
 .milestone-title {
+    font-size: 18px;
+    font-weight: bold;
+    padding-bottom: 20px;
+}
+
+.deadline-title {
     font-size: 18px;
     font-weight: bold;
     padding-bottom: 20px;

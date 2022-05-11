@@ -23,6 +23,9 @@ public class ProjectMapper {
     @Autowired
     private MilestoneMapper milestoneMapper;
 
+    @Autowired
+    private DeadlineMapper deadlineMapper;
+
     /**
      * This function converts the received JSON body to the Project Entity.
      * @param contract a JSON data received via HTTP body.
@@ -63,6 +66,15 @@ public class ProjectMapper {
             ));
         }
 
+        var deadlineEntities = entity.getDeadlines();
+        var deadlineContracts = new ArrayList<DeadlineContract>();
+
+        for (int i=0; i < deadlineEntities.size(); i++) {
+            deadlineContracts.add(deadlineMapper.toContract(
+                    deadlineEntities.get(i)
+            ));
+        }
+
         var milestoneEntities = entity.getMilestones();
         var milestoneContracts = new ArrayList<MilestoneContract>();
 
@@ -82,7 +94,8 @@ public class ProjectMapper {
                 entity.getEndDate(),
                 sprintContracts,
                 eventContracts,
-                milestoneContracts
+                milestoneContracts,
+                deadlineContracts
         );
     }
 

@@ -102,10 +102,5 @@ public class EventEntity {
         this.endDate = endDate;
     }
 
-    public enum EventType {
-        EVENT,
-        DEADLINE,
-        MILESTONE
-    }
 }
 

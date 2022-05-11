@@ -26,6 +26,9 @@ public class ValidationService {
     @Autowired
     private MilestoneService milestoneService;
 
+    @Autowired
+    private DeadlineService deadlineService;
+
     public String checkAddProject(BaseProjectContract projectContract) {
 
         return checkBaseFields("Project",
@@ -279,6 +282,61 @@ public class ValidationService {
                 milestoneContract.name(),
                 milestoneContract.startDate(),
                 milestoneContract.endDate());
+    }
+
+    /**
+     * Checks deadline inputs when a milestone is added.
+     */
+    public String checkAddDeadline(String projectId, BaseDeadlineContract deadlineContract) {
+        try {
+            ProjectContract project = projectService.getById(projectId);
+            String response = checkEventDetails(project, deadlineContract.startDate(), deadlineContract.endDate());
+            if (!response.equals("Okay")) {
+                return response;
+            }
+        } catch (NoSuchElementException error) {
+            return "Project ID does not exist";
+        }
+        return checkBaseFields("Deadline",
+                deadlineContract.name(),
+                deadlineContract.startDate(),
+                deadlineContract.endDate());
+    }
+
+
+    /**
+     * Checks when a deadline has been updated.
+     */
+    public String checkUpdateDeadline(String deadlineId, BaseDeadlineContract deadlineContract) {
+
+        try {
+            DeadlineContract deadline = deadlineService.get(deadlineId);
+            try {
+                ProjectContract project = projectService.getById(deadline.projectId());
+                String response = checkSprintDetails(project, deadline.deadlineId(), deadlineContract.startDate(), deadlineContract.endDate());
+                if (!response.equals("Okay")) {
+                    return response;
+                }
+                response = checkBaseFields("Deadline", deadlineContract.name(), deadlineContract.startDate(), deadlineContract.endDate());
+                if (!response.equals("Okay")) {
+                    return response;
+                }
+
+            } catch (NoSuchElementException error) {
+                return "Project ID does not exist";
+            }
+
+
+        } catch (NoSuchElementException error) {
+
+            return "Deadline ID does not exist";
+        }
+
+
+        return checkBaseFields("Milestone",
+                deadlineContract.name(),
+                deadlineContract.startDate(),
+                deadlineContract.endDate());
     }
 
 }

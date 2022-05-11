@@ -1,20 +1,15 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
-import nz.ac.canterbury.seng302.portfolio.mapping.EventMapper;
 import nz.ac.canterbury.seng302.portfolio.mapping.MilestoneMapper;
-import nz.ac.canterbury.seng302.portfolio.mapping.SprintMapper;
-import nz.ac.canterbury.seng302.portfolio.model.contract.*;
-import nz.ac.canterbury.seng302.portfolio.model.entity.EventEntity;
+import nz.ac.canterbury.seng302.portfolio.model.contract.BaseMilestoneContract;
+import nz.ac.canterbury.seng302.portfolio.model.contract.MilestoneContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.MilestoneEntity;
-import nz.ac.canterbury.seng302.portfolio.model.entity.ProjectEntity;
-import nz.ac.canterbury.seng302.portfolio.repository.EventRepository;
 import nz.ac.canterbury.seng302.portfolio.repository.MilestoneRepository;
 import nz.ac.canterbury.seng302.portfolio.repository.ProjectRepository;
 import nz.ac.canterbury.seng302.portfolio.repository.SprintRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.NoSuchElementException;
 
 @Service
@@ -33,19 +28,19 @@ public class MilestoneService {
 
 
     /**
-     * Get the event with the event ID
+     * Get the milestone with the milestone ID
      *
-     * @param eventId The event ID
-     * @throws IllegalArgumentException If the event ID is invalid
-     * @return The event contract with the event ID
+     * @param milestoneId The milestone ID
+     * @throws IllegalArgumentException If the milestone ID is invalid
+     * @return The milestone contract with the milestone ID
      */
-    public MilestoneContract get(String eventId) {
-        var event= milestoneRepository.findById(eventId).orElseThrow(() -> new IllegalArgumentException("Invalid event ID"));
-        return milestoneMapper.toContract(event);
+    public MilestoneContract get(String milestoneId) {
+        var milestone= milestoneRepository.findById(milestoneId).orElseThrow(() -> new IllegalArgumentException("Invalid milestone ID"));
+        return milestoneMapper.toContract(milestone);
     }
 
     /**
-     * Creates an event within a project and puts it in a sprint
+     * Creates an milestone within a project and puts it in a sprint
      * if it falls within the sprint's start and end dates
      *
      * @return
@@ -63,13 +58,13 @@ public class MilestoneService {
 
 
     /**
-     * Deletes an event, including removing it from its parent project.
+     * Deletes an milestone, including removing it from its parent project.
      *
      * @param milestoneId to delete
      * @throws NoSuchElementException if the id is invalid
      */
     public void delete(String milestoneId) {
-        var milestone = milestoneRepository.findById(milestoneId).orElseThrow(() -> new NoSuchElementException("Invalid event ID"));
+        var milestone = milestoneRepository.findById(milestoneId).orElseThrow(() -> new NoSuchElementException("Invalid milestone ID"));
         var project = milestone.getProject();
 
         project.removeMilestone(milestone);
@@ -78,13 +73,13 @@ public class MilestoneService {
     }
 
     /**
-     * Updates an event using the EventContract provided
-     * @param eventId to update
+     * Updates a milestone using the MilestoneContract provided
+     * @param milestoneId to update
      * @param milestone to update, with the new values
      */
-    public void update(String eventId, BaseMilestoneContract milestone) {
+    public void update(String milestoneId, BaseMilestoneContract milestone) {
 
-        MilestoneEntity milestoneEntity = milestoneRepository.findById(eventId).orElseThrow(() -> new NoSuchElementException("Invalid event ID"));
+        MilestoneEntity milestoneEntity = milestoneRepository.findById(milestoneId).orElseThrow(() -> new NoSuchElementException("Invalid milestone ID"));
 
         milestoneEntity.setName(milestone.name());
         milestoneEntity.setDescription(milestone.description());
