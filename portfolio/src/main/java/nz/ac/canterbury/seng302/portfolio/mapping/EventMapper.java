@@ -20,7 +20,8 @@ public class EventMapper {
                 contract.name(),
                 contract.description(),
                 contract.startDate(),
-                contract.endDate()
+                contract.endDate(),
+                contract.type()
         );
     }
     /**
@@ -36,7 +37,8 @@ public class EventMapper {
                     entity.getName(),
                     entity.getDescription(),
                     entity.getStartDate(),
-                    entity.getEndDate()
+                    entity.getEndDate(),
+                    entity.getType()
             );
         }
 }
