@@ -112,11 +112,9 @@ public class EditAccountController {
     public String deleteUserPhoto(@AuthenticationPrincipal AuthState principal, @ModelAttribute User user, Model model) {
 
         int userId = authStateService.getId(principal);
-        System.out.println("Delete");
-        System.out.println(userId);
         registerClientService.deleteUserPhoto(userId);
         model.addAttribute("user", user);
-        return "redirect:/edit_account";
+        return "redirect:/my_account";
     }
 
 }

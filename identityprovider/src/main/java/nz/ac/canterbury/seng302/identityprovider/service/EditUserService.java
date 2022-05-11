@@ -93,10 +93,10 @@ public class EditUserService {
 
             photoRepository.save(deletePhoto);
             reply.setIsSuccess(true);
-            reply.setMessage(true);
+            reply.setMessage("User profile photo has been deleted");
         } catch (Exception e) {
             reply.setIsSuccess(false);
-            reply.setMessage(false);
+            reply.setMessage("Unable to delete user profile photo");
         }
         return reply.build();
     }
