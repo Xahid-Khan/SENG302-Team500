@@ -2,10 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.service;
 
 import nz.ac.canterbury.seng302.portfolio.mapping.ProjectMapper;
 import nz.ac.canterbury.seng302.portfolio.mapping.SprintMapper;
-import nz.ac.canterbury.seng302.portfolio.model.contract.BaseProjectContract;
-import nz.ac.canterbury.seng302.portfolio.model.contract.BaseSprintContract;
-import nz.ac.canterbury.seng302.portfolio.model.contract.ProjectContract;
-import nz.ac.canterbury.seng302.portfolio.model.contract.SprintContract;
+import nz.ac.canterbury.seng302.portfolio.model.contract.*;
 import nz.ac.canterbury.seng302.portfolio.model.entity.ProjectEntity;
 import nz.ac.canterbury.seng302.portfolio.model.entity.SprintEntity;
 import nz.ac.canterbury.seng302.portfolio.repository.ProjectRepository;
@@ -102,7 +99,8 @@ public class ValidationServiceTest {
                 "testing",
                 Instant.parse("2021-12-03T10:15:30.00Z"),
                 Instant.parse("2021-12-05T10:15:30.00Z"),
-                new ArrayList<SprintContract>().stream().toList());
+                new ArrayList<SprintContract>().stream().toList(),
+                new ArrayList<EventContract>().stream().toList());
 
         String response = validationService.checkUpdateProject("randomId", project);
         assertEquals("Project ID does not exist", response);
@@ -279,7 +277,8 @@ public class ValidationServiceTest {
                 "testing",
                 Instant.parse("2021-12-03T10:15:30.00Z"),
                 Instant.parse("2021-12-05T10:15:30.00Z"),
-                new ArrayList<SprintContract>().stream().toList());
+                new ArrayList<SprintContract>().stream().toList(),
+                new ArrayList<EventContract>().stream().toList());
 
         Instant startDate = Instant.parse("2021-12-03T10:15:30.00Z");
         Instant endDate = Instant.parse("2021-12-05T10:15:30.00Z");
@@ -313,7 +312,8 @@ public class ValidationServiceTest {
                 "testing",
                 Instant.parse("2021-12-03T10:15:30.00Z"),
                 Instant.parse("2021-12-05T10:15:30.00Z"),
-                sprints.stream().toList());
+                sprints.stream().toList(),
+                new ArrayList<EventContract>());
         startDate = Instant.parse("2021-12-04T00:00:30.00Z");
         response = validationService.checkSprintDetails(project, "", startDate, endDate);
         assertEquals("Sprint cannot begin while another sprint is still in progress", response);

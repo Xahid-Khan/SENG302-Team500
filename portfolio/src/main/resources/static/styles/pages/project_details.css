@@ -6,18 +6,76 @@ body {
     min-height: 100vh;
 }
 
+.events {
+    padding: 20px;
+    margin-top: 10px;
+}
+
+.milestones {
+    padding: 20px;
+    margin-top: 10px;
+}
+
+.deadlines {
+    padding: 20px;
+    margin-top: 10px;
+}
+
+.sprints {
+    margin-top: 10px;
+    padding: 20px;
+}
+
+.event-section-title {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.milestone-section-title {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.deadline-section-title {
+    font-size: 20px;
+    font-weight: bold;
+}
+
 .project-view {
     width: 100%;
     margin-bottom: 40px;
     padding: 20px;
 }
 
-.sprint-description {
+.sprint-details {
     display: none;
     overflow: hidden;
-    padding-left: 20px;
-    padding-bottom: 10px;
-    color: #666666;
+    padding-left: 10px;
+}
+
+.event-details {
+    display: none;
+    overflow: hidden;
+    font-size: 14px;
+    padding-left: 10px;
+}
+
+.milestone-details {
+    display: none;
+    overflow: hidden;
+    font-size: 14px;
+    padding-left: 10px;
+}
+
+.deadline-details {
+    display: none;
+    overflow: hidden;
+    font-size: 14px;
+    padding-left: 10px;
+}
+
+.event-sprints {
+    padding-top: 5px;
 }
 
 .colour-block {
@@ -25,10 +83,6 @@ body {
     width: 100%;
     height: 6px;
     margin-top: 12px;
-}
-
-.sprint-details {
-    display: flex;
 }
 
 .toggle-sprint-details {
@@ -85,7 +139,13 @@ body {
     margin-right: 5px;
 }
 
-.sprint-view-controls {
+.add-view-controls {
+    display: flex;
+    justify-content: right;
+    margin-right: 5px;
+}
+
+.toggle-view-controls {
     display: flex;
     justify-content: right;
     margin-right: 5px;
@@ -100,7 +160,40 @@ body {
     margin-top: 15px
 }
 
+.event-view {
+    padding: 20px;
+    margin-top: 15px
+}
+
+.milestone-view {
+    padding: 20px;
+    margin-top: 15px
+}
+
+.deadline-view {
+    padding: 20px;
+    margin-top: 15px
+}
+
 .sprint-title {
+    font-size: 18px;
+    font-weight: bold;
+    padding-bottom: 20px;
+}
+
+.event-title {
+    font-size: 18px;
+    font-weight: bold;
+    padding-bottom: 20px;
+}
+
+.milestone-title {
+    font-size: 18px;
+    font-weight: bold;
+    padding-bottom: 20px;
+}
+
+.deadline-title {
     font-size: 18px;
     font-weight: bold;
     padding-bottom: 20px;
@@ -127,7 +220,7 @@ body {
     display: none;
 }
 
-.add-sprint {
+.events {
     display: none;
 }
 
@@ -198,15 +291,16 @@ body {
         padding-right: 35px;
     }
 
-    .sprint-description {
-        font-size: 14px;
-    }
-
     .project-title {
         font-size: 22px;
     }
 
     .sprint-view {
+        margin-bottom: 10px;
+        padding: 15px;
+    }
+
+    .event-view {
         margin-bottom: 10px;
         padding: 15px;
     }
@@ -221,6 +315,10 @@ body {
     }
 
     .sprint-title {
+        padding-bottom: 10px;
+    }
+
+    .event-title {
         padding-bottom: 10px;
     }
 
@@ -263,6 +361,11 @@ body {
         padding: 10px;
     }
 
+    .event-view {
+        margin-bottom: 10px;
+        padding: 10px;
+    }
+
     button {
         padding: 4px 6px;
         font-size: 10px;
@@ -273,13 +376,12 @@ body {
         padding-right: 120px;
     }
 
-    .sprint-description {
-        font-size: 10px;
-        padding-left: 15px;
+    .sprint-title {
+        font-size: 13px;
+        padding-bottom: 5px;
     }
 
-
-    .sprint-title {
+    .event-title {
         font-size: 13px;
         padding-bottom: 5px;
     }
@@ -325,16 +427,19 @@ body {
         padding-right: 100px;
     }
 
-    .sprint-description {
-        font-size: 8px;
-        padding-left: 7px;
-    }
-
     .sprint-title {
         font-size: 10px;
     }
 
+    .event-title {
+        font-size: 10px;
+    }
+
     .sprint-view {
+        padding: 8px;
+    }
+
+    .event-view {
         padding: 8px;
     }
 
@@ -376,6 +481,10 @@ body {
     }
 
     .sprint-title {
+        font-size: 7px;
+    }
+
+    .event-title {
         font-size: 7px;
     }
     
