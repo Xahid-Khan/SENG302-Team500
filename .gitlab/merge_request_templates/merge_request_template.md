@@ -8,12 +8,12 @@ Not all of these must be checked off. This ensures that the branch is checked be
 - [ ] MR title formatted (`[UXX/TXX]: Task title`)  
 - [ ] Merging into Dev  
 - [ ] UI/UX Changes  
-- Please attach screenshots of said changes as individual comments per notable UI change  
+- - Please attach screenshots of said changes as individual comments per notable UI change  
 - [ ] Checkstyled  
 - [ ] Linted  
-- [ ] Unit/Integration tests  
-- Please fill in the following if the branch is a large change:  
-- Coverage before branch: (`x`/100)  
-- Coverage after branch: (`x`/100)  
+- [ ] Unit/Integration tests
+- - Please fill in the following if the branch is a large change:  
+- - Coverage before branch: (`x`/100)  
+- - Coverage after branch: (`x`/100)  
 - [ ] Manual tests
 - [ ] Relevant ACs covered
