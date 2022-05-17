@@ -6,6 +6,7 @@ import os
 
 ENVIRONMENT_VARIABLES_NAMES = [
     "DB_PASSWORD",
+    "SONARQUBE_KEY",
 ]
 
 env_variable_values = []
