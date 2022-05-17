@@ -22,15 +22,15 @@ public class RoleService {
   // Helper function to reduce duplicate code.
   // Gets the user, checks if modification is legal (returns false if not), modifies, saves.
   // If addingRole is true, role will be added. If false, role will be deleted.
-  private UserRoleChangeResponse modifyRoleOfUser(ModifyRoleOfUserRequest modificationRequest, boolean addingRole)
-      throws UserDoesNotExistException {
-    UserModel user = repository.findById(modificationRequest.getUserId());
-    if (user == null) {
-      throw new UserDoesNotExistException("Error: User does not exist.");
-    }
+  private UserRoleChangeResponse modifyRoleOfUser(ModifyRoleOfUserRequest modificationRequest, boolean addingRole) {
+
     UserRole roleToChange = modificationRequest.getRole();
     var response = UserRoleChangeResponse.newBuilder();
+    UserModel user = repository.findById(modificationRequest.getUserId());
 
+    if (user == null) {
+      return response.setIsSuccess(false).setMessage("Error: User does not exist.").build();
+    }
     // If the role is being added, the user should not have the role.
     // If the role is being deleted, the user should have the role.
     if (addingRole != user.getRoles().contains(roleToChange)) {
@@ -38,7 +38,7 @@ public class RoleService {
         user.addRole(roleToChange);
       } else {
         if (user.getRoles().size() == 1) {
-          throw new IrremovableRoleException("Error: User must have at least 1 role.");
+          return response.setIsSuccess(false).setMessage("Error: User must have at least 1 role.").build();
         }
         user.deleteRole(roleToChange);
       }
