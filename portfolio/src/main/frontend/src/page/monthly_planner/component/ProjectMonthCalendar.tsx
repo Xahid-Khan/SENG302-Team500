@@ -58,6 +58,32 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
         end: project.endDate
     }
 
+    const getEventData = () => {
+        let listOfEvents : any= [];
+        let allEvents = project.events;
+        allEvents.map((event) => {
+            for (let startDate = new Date(event.startDate); startDate <= new Date(event.endDate); startDate.setDate(startDate.getDate() + 1)) {
+                listOfEvents.push({
+                    id: event.id,
+                    start: startDate,
+                    end: startDate,
+                    title: 1,
+                    value: 1,
+                    allDay: !DatetimeUtils.hasTimeComponent(startDate),
+                })
+            }
+
+        })
+        console.log(listOfEvents)
+        listOfEvents.reduce(function (eventA: any, eventB: any) {
+            if (eventA.start === eventB.start) {
+                eventA.values = eventA.value + eventB.value;
+                return eventA
+            }
+        }, {})
+        console.log(listOfEvents)
+    }
+
     const events = project.sprints.map(sprint => ({
         id: sprint.id,
         start: sprint.startDate,
@@ -67,7 +93,7 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
         // This hides the time on the event and must be true for drag and drop resizing to be enabled
         allDay: !DatetimeUtils.hasTimeComponent(sprint.startDate) && !DatetimeUtils.hasTimeComponent(sprint.endDate),
     }))
-
+    getEventData();
     return (
         <>
             <h3>{project.name}</h3>
