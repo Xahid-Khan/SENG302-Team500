@@ -1,13 +1,5 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import com.google.protobuf.Timestamp;
 import nz.ac.canterbury.seng302.portfolio.DTO.User;
 import nz.ac.canterbury.seng302.portfolio.service.AuthenticateClientService;
@@ -19,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,6 +20,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.time.Instant;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * This class tests the Registration Controller, which is used for handling reasonable inputs on
@@ -492,7 +491,64 @@ class RegistrationControllerTest {
 
     assertTrue(wasError(result));
   }
+  /**
+   * Tests using emojis in bio
+   *
+   * @throws Exception if perform fails for some reason
+   */
+  @ParameterizedTest
+  @ValueSource(strings = {"\uD83D\uDE97", "\uD83D\uDE02", "♪"})
+  void registerInvalidBio(String bio) throws Exception {
+    var user =
+            new User(
+                    "username",
+                    "Password1",
+                    "FirstName",
+                    "Middle Names",
+                    "LastName",
+                    "Nickname",
+                    bio,
+                    "Pronouns",
+                    "email%40email.com",
+                    currentTimestamp());
 
+    var result = submitInvalidRegistration(user);
+
+    assertTrue(wasError(result));
+  }
+
+  /**
+   * Tests using valid bios.
+   * In order, tests characters and the valid special characters.
+   * @param bio Bio input
+   * @throws Exception if perform fails for some reason
+   */
+  @ParameterizedTest
+  @ValueSource(strings = {"Test", "!?.,#$%^&*()[]{};'<>:\"-=_+"})
+  void registerValidBio(String bio) throws Exception {
+    var validUser =
+            new User(
+                    "Username1",
+                    "Password1",
+                    "FirstName",
+                    "Middle Names",
+                    "LastName",
+                    "Nickname",
+                    "Bio",
+                    "Pronouns",
+                    "email%40email.com",
+                    currentTimestamp()
+            );
+
+    var result = submitValidRegistration(validUser);
+
+    assertFalse(wasError(result));
+  }
+
+  /**
+   * Creates the current timestamp
+   * @return timestamp
+   */
   public static Timestamp currentTimestamp() {
     return Timestamp
             .newBuilder()
