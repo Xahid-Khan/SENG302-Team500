@@ -1,5 +1,7 @@
 'use strict';
 
+import {leftPadNumber} from "../../../frontend/src/util/string_util";
+
 const LoadingStatus = {
   NotYetAttempted: "NotYetAttempted",
   Pending: "Pending",
@@ -320,7 +322,7 @@ class ProjectView {
     const defaultEndDate = new Date(defaultStartDate.valueOf());
     defaultEndDate.setDate(defaultEndDate.getDate() + 22);
 
-    const randomColor = Math.floor(Math.random() * 16777215).toString(16);
+    const randomColor = leftPadNumber(Math.floor(Math.random() * 16777215).toString(16), 6);
     const defaultColour = "#" + randomColor;
 
     const defaultSprint = {
@@ -431,7 +433,8 @@ class ProjectView {
           defaultEvent,
           this.closeAddEventForm.bind(this),
           this.submitAddEventForm.bind(this),
-          ProjectOrSprintEditor.makeProjectEventDatesValidator(this.project)
+          ProjectOrSprintEditor.makeProjectEventDatesValidator(this.project),
+          true
       )
     };
 
@@ -695,6 +698,17 @@ class ProjectView {
   }
 }
 
+const displayCharactersRemaining = (field, maxCharacters) => {
+  let lengthField;
+  // This is hacky, and should be solved when index.js is refactored.
+  if (field.id.includes("name")) {
+    lengthField = document.getElementById("edit-name-length")
+  } else {
+    lengthField = document.getElementById("edit-description-length")
+  }
+  lengthField.textContent = `${field.value.length} / ${maxCharacters}`;
+}
+
 /**
  * Handles editing view for both Projects and Sprints.
  */
@@ -702,7 +716,8 @@ class ProjectOrSprintEditor {
   startDateEdited = false
   endDateEdited = false
 
-  constructor(containerElement, title, entityData, cancelCallback, submitCallback, customDatesValidator) {
+  constructor(containerElement, title, entityData, cancelCallback, submitCallback, customDatesValidator, allowTimeInput = false) {
+    this.allowTimeInput = allowTimeInput;
     this.containerElement = containerElement;
     this.title = title;
     this.initialData = entityData;
@@ -727,17 +742,27 @@ class ProjectOrSprintEditor {
           <form class="user-inputs" id="edit-project-section-form-${this.entityId}">
   
               <label>Name*:</label>
-              <input type="text" name="project-name" id="edit-project-name-${this.entityId}"><br>
-              <div id="edit-project-name-error-${this.entityId}" class="form-error" style="display: none;"></div><br>
+              <div class="name">
+                <input type="text" name="project-name" id="edit-project-name-${this.entityId}" maxlength="32" oninput="displayCharactersRemaining(this, 32)" />
+                <span id="edit-name-length">0 / 32</span>
+                <br>
+                <div id="edit-project-name-error-${this.entityId}" class="form-error" style="display: none;"></div><br>
+              </div>
               
               <div class="description">
                   <label>Description:</label>
-                  <textarea name="description" id="edit-description-${this.entityId}" cols="50" rows="10"></textarea><br><br>
+                  <textarea name="description" id="edit-description-${this.entityId}" cols="50" rows="10" maxlength="1024" oninput="displayCharactersRemaining(this, 1024)"></textarea>
+                  <span id="edit-description-length">0 / 1024</span>
+                  <br><br>
               </div>
               <label id="start-date-label-${this.entityId}">Start Date*:</label>
-              <input type="date" name="start-date" id="edit-start-date-${this.entityId}"> <span id="edit-start-date-hours-${this.entityId}"><br><br></span>
+              <input type="date" name="start-date" id="edit-start-date-${this.entityId}">
+                ${(this.allowTimeInput) ? `<input type="time" name="start-time" id="edit-start-time-${this.entityId}">` : `<span id="edit-start-date-hours-${this.entityId}"></span>`}<br><br>
+              
               <label id="end-date-label-${this.entityId}">End Date*:</label>
-              <input type="date" name="end-date" id="edit-end-date-${this.entityId}"> <span id="edit-end-date-hours-${this.entityId}"><br></span>
+              <input type="date" name="end-date" id="edit-end-date-${this.entityId}">
+                ${(this.allowTimeInput) ? `<input type="time" name="end-time" id="edit-end-time-${this.entityId}">` : `<span id="edit-end-date-hours-${this.entityId}"></span>`}<br><br>
+
               <label id="color-label-${this.entityId}"><br>Colour*:</label>
               <input type="color" name="colour" id="edit-colour-${this.entityId}"><br></input>
               <div id="edit-project-date-error-${this.entityId}" class="form-error" style="display: none;"></div><br>
@@ -780,8 +805,8 @@ class ProjectOrSprintEditor {
 
     this.saveButton = document.getElementById(`edit-save-button-${this.entityId}`);
 
-    this.startDateHoursField = document.getElementById(`edit-start-date-hours-${this.entityId}`);
-
+    this.startDateHoursField = document.getElementById((this.allowTimeInput) ? `edit-start-time-${this.entityId}` : `edit-start-date-hours-${this.entityId}`);
+    this.endDateHoursField = document.getElementById((this.allowTimeInput) ? `edit-end-time-${this.entityId}` : `edit-end-date-hours-${this.entityId}`);
 
     // Error fields
     this.nameErrorEl = document.getElementById(`edit-project-name-error-${this.entityId}`);
@@ -815,21 +840,10 @@ class ProjectOrSprintEditor {
   }
 
   /**
-   * Sets the initial defaults for the inputs.
+   * Populates the start and end date hour labels if time input is disabled and the dates have an hours component.
+   * If no hours component exists, then the labels are hidden entirely.
    */
-  fillDefaults() {
-    this.nameInput.value = this.initialData.name ?? "";
-    this.descriptionInput.value = this.initialData.description ?? "";
-    this.startDateInput.value = (this.initialData.startDate) ? DatetimeUtils.toLocalYMD(this.initialData.startDate) : "";
-    this.colourInput.value = this.initialData.colour ?? "#000000";
-    if (this.initialData.endDate) {
-      const displayedDate = new Date(this.initialData.endDate.valueOf());
-      displayedDate.setDate(displayedDate.getDate() - 1);
-      this.endDateInput.value = DatetimeUtils.toLocalYMD(displayedDate);
-    } else {
-      this.endDateInput.value = "";
-    }
-
+  _fillUnmodifiableDateHours() {
     if (this.initialData.startDate) {
       const startDateHours = DatetimeUtils.getTimeStringIfNonZeroLocally(this.initialData.startDate);
       if (startDateHours !== null) {
@@ -853,6 +867,36 @@ class ProjectOrSprintEditor {
     }
   }
 
+  //TODO this validation need to cover the jpa validation in the corresponding Entity class or we get
+  // server error pop ups in the front end; these 2 validations should be consolidated
+  /**
+   * Sets the initial defaults for the inputs.
+   */
+  fillDefaults() {
+    this.nameInput.value = this.initialData.name ?? "";
+    this.descriptionInput.value = this.initialData.description ?? "";
+    this.startDateInput.value = (this.initialData.startDate) ? DatetimeUtils.toLocalYMD(this.initialData.startDate) : "";
+    this.colourInput.value = this.initialData.colour ?? "#000000";
+    if (this.initialData.endDate) {
+      const displayedDate = new Date(this.initialData.endDate.valueOf());
+      if (!this.allowTimeInput && DatetimeUtils.getTimeStringIfNonZeroLocally(this.initialData.endDate) === null) {
+        // Only go back a day if there is no time specified and we don't allow time input
+        displayedDate.setDate(displayedDate.getDate() - 1);
+      }
+      this.endDateInput.value = DatetimeUtils.toLocalYMD(displayedDate);
+    } else {
+      this.endDateInput.value = "";
+    }
+
+    if (this.allowTimeInput) {
+      this.startDateHoursField.value = (this.initialData.startDate) ? DatetimeUtils.toLocalHM(this.initialData.startDate) : "";
+      this.endDateHoursField.value = (this.initialData.endDate) ? DatetimeUtils.toLocalHM(this.initialData.endDate) : "";
+    }
+    else {
+      this._fillUnmodifiableDateHours();
+    }
+  }
+
   /**
    * Checks that the name field is valid and populates the error field if not.
    *
@@ -869,6 +913,11 @@ class ProjectOrSprintEditor {
       return false;
     }
 
+    if (this.title === "New event details:" && !this.nameInput.value.match("(?<=\\s|^)[a-zA-Z\s]*(?=[.,;:]?\\s|$)")) {
+      this.setNameError("Name can only contain characters");
+      return false;
+    }
+
     this.setNameError(null);
     return true;
   }
@@ -879,9 +928,14 @@ class ProjectOrSprintEditor {
   getStartDateInputValue() {
     if (!this.startDateEdited) {
       return this.initialData.startDate ?? null;
-    }const rawValue = this.startDateInput.value;
+    }
+    const rawValue = this.startDateInput.value;
     if (rawValue) {
-      return DatetimeUtils.fromLocalYMD(rawValue);
+      let date = DatetimeUtils.fromLocalYMD(rawValue);
+      if (this.allowTimeInput) {
+        date = DatetimeUtils.withLocalHM(date, this.startDateHoursField.value);
+      }
+      return date;
     }
     return null;
   }
@@ -892,10 +946,16 @@ class ProjectOrSprintEditor {
   getEndDateInputValue() {
     if (!this.endDateEdited) {
       return this.initialData.endDate ?? null;
-    }const rawValue = this.endDateInput.value;
+    }
+    const rawValue = this.endDateInput.value;
     if (rawValue) {
-      const dayAfter = DatetimeUtils.fromLocalYMD(rawValue);
-      dayAfter.setDate(dayAfter.getDate() + 1);
+      let dayAfter = DatetimeUtils.fromLocalYMD(rawValue);
+      if (this.allowTimeInput) {
+        dayAfter = DatetimeUtils.withLocalHM(dayAfter, this.endDateHoursField.value);
+      }
+      else {
+        dayAfter.setDate(dayAfter.getDate() + 1);
+      }
       return dayAfter;
     }
     return null;
@@ -928,7 +988,8 @@ class ProjectOrSprintEditor {
     if (customError !== null) {
       this.setDateError(customError);
       return false;
-    }this.setDateError(null);
+    }
+    this.setDateError(null);
     return true;
   }
 
@@ -977,14 +1038,29 @@ class ProjectOrSprintEditor {
     this.nameInput.addEventListener('input', this.validateName.bind(this));  // Ensure that the validator is called as the user types to provide real-time feedback.
     this.startDateInput.addEventListener('change', () => {
       this.startDateEdited = true;
-      this.startDateHoursField.style.display = "none";  // Date is in local time now, so no hours component is necessary.
+      if (!this.allowTimeInput) {
+        this.startDateHoursField.style.display = "none";  // Date is in local time now, so no hours component is necessary.
+      }
       this.validateDates();
     });
     this.endDateInput.addEventListener('change', () => {
       this.endDateEdited = true;
-      this.endDateHoursField.style.display = "none";  // Date is in local time now, so no hours component is necessary.
+      if (!this.allowTimeInput) {
+        this.endDateHoursField.style.display = "none";  // Date is in local time now, so no hours component is necessary.
+      }
       this.validateDates();
     });
+
+    if (this.allowTimeInput) {
+      this.startDateHoursField.addEventListener('change', () => {
+        this.startDateEdited = true;
+        this.validateDates();
+      });
+      this.endDateHoursField.addEventListener('change', () => {
+        this.endDateEdited = true;
+        this.validateDates();
+      });
+    }
   }
 
   dispose() {
@@ -1122,7 +1198,10 @@ class SprintView {
     this.colourBlock.style.background = this.sprint.colour;
     document.getElementById(`start-date-${this.sprint.sprintId}`).innerText = DatetimeUtils.localToUserDMY(this.sprint.startDate);
     const displayedDate = new Date(this.sprint.endDate.valueOf());
-    displayedDate.setDate(displayedDate.getDate() - 1);
+    if (DatetimeUtils.getTimeStringIfNonZeroLocally(this.sprint.endDate) === null) {
+      displayedDate.setDate(displayedDate.getDate() - 1);
+    }
+
     document.getElementById(`end-date-${this.sprint.sprintId}`).innerText = DatetimeUtils.localToUserDMY(displayedDate);
   }
 
@@ -1266,7 +1345,9 @@ class EventView {
     this.eventSprints.innerHTML = this.getSprints();
     document.getElementById(`start-date-${this.event.eventId}`).innerText = DatetimeUtils.localToUserDMY(this.event.startDate);
     const displayedDate = new Date(this.event.endDate.valueOf());
-    displayedDate.setDate(displayedDate.getDate() - 1);
+    if (DatetimeUtils.getTimeStringIfNonZeroLocally(this.event.endDate) === null) {
+      displayedDate.setDate(displayedDate.getDate() - 1);
+    }
     document.getElementById(`end-date-${this.event.eventId}`).innerText = DatetimeUtils.localToUserDMY(displayedDate);
   }
 
@@ -2146,8 +2227,9 @@ class Event {
         "Edit event details:",
         this.event,
         this.showViewer.bind(this),
-        this.updateEvent().bind(this),
-        ProjectOrSprintEditor.makeProjectEventDatesValidator(this.project)
+        this.updateEvent.bind(this),
+        ProjectOrSprintEditor.makeProjectEventDatesValidator(this.project),
+        true
     );
   }
 

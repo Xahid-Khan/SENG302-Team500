@@ -10,7 +10,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.google.protobuf.ByteString;
 import nz.ac.canterbury.seng302.portfolio.DTO.User;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
@@ -20,17 +19,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 /**
  * This class tests the Edit Account Controller, which is used for handling reasonable inputs on
@@ -51,35 +47,21 @@ class EditAccountControllerTest {
 
     private final String API_PATH = "/edit_account";
 
-    // Helper function to place create a Post Body out of a user.
-    // Note that a factory or builder pattern could've been used here,
-    //  however this is just for testing.
-    private String buildPostBody(User user) {
-        return "username="
-                + user.username()
-                + "&email="
-                + user.email()
-                + "&password="
-                + user.password()
-                + "&firstName="
-                + user.firstName()
-                + "&middleName="
-                + user.middleName()
-                + "&lastName="
-                + user.lastName()
-                + "&nickname="
-                + user.nickname()
-                + "&personalPronouns="
-                + user.personalPronouns()
-                + "&bio="
-                + user.bio()
-                + "&edit_account=0";
-    }
-
     // Helper function to submit an edit account request to a mock /edit_account endpoint.
-    private String submitEditAccount(User user) {
+    private MockHttpServletRequestBuilder buildEditAccountRequestAndRegisterMocks(User user) {
         // Creates the Post Body to be sent to the mock /edit endpoint
-        String postBody = buildPostBody(user);
+        var request = MockMvcRequestBuilders.multipart(API_PATH)
+                .param("username", user.username())
+                .param("email", user.email())
+                .param("password", user.password())
+                .param("firstName", user.firstName())
+                .param("middleName", user.middleName())
+                .param("lastName", user.lastName())
+                .param("nickname", user.nickname())
+                .param("personalPronouns", user.personalPronouns())
+                .param("bio", user.bio())
+                .param("edit_account", "0")
+        ;
 
         // Creates a mock for the /edit_account endpoint
         when(service.updateDetails(any(), any()))
@@ -93,7 +75,7 @@ class EditAccountControllerTest {
         when(authStateService.getId(any()))
                 .thenReturn(1);
 
-        return postBody;
+        return request;
     }
 
     // Helper function for extrapolating if the request was invalid.
@@ -154,16 +136,12 @@ class EditAccountControllerTest {
                         "Nickname",
                         "Bio",
                         "Pronouns",
-                        "email%40email.com",
+                        "email@email.com",
                         null);
 
-        String postBody = submitEditAccount(user);
 
         var result = this.mockMvc
-                .perform(
-                        post(API_PATH)
-                                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                                .content(postBody))
+                .perform(buildEditAccountRequestAndRegisterMocks(user))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn();
         assertTrue(wasError(result));
@@ -194,16 +172,11 @@ class EditAccountControllerTest {
                         "Nickname",
                         "Bio",
                         "Pronouns",
-                        "email%40email.com",
+                        "email@email.com",
                         null);
 
-        String postBody = submitEditAccount(user);
-
         var result = this.mockMvc
-                .perform(
-                        post(API_PATH)
-                                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                                .content(postBody))
+                .perform(buildEditAccountRequestAndRegisterMocks(user))
                 .andExpect(status().is3xxRedirection())
                 .andReturn();
 
@@ -235,16 +208,11 @@ class EditAccountControllerTest {
                         nickname,
                         bio,
                         personalPronouns,
-                        "email%40email.com",
+                        "email@email.com",
                         null);
 
-        String postBody = submitEditAccount(user);
-
         var result = this.mockMvc
-                .perform(
-                        post(API_PATH)
-                                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                                .content(postBody))
+                .perform(buildEditAccountRequestAndRegisterMocks(user))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn();
 
@@ -282,16 +250,12 @@ class EditAccountControllerTest {
                         nickname,
                         bio,
                         personalPronouns,
-                        "email%40email.com",
+                        "email@email.com",
                         null);
 
-        String postBody = submitEditAccount(user);
 
         var result = this.mockMvc
-                .perform(
-                        post(API_PATH)
-                                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                                .content(postBody))
+                .perform(buildEditAccountRequestAndRegisterMocks(user))
                 .andExpect(status().is3xxRedirection())
                 .andReturn();
 
@@ -317,13 +281,8 @@ class EditAccountControllerTest {
                         "",
                         null);
 
-        String postBody = submitEditAccount(user);
-
         var result = this.mockMvc
-                .perform(
-                        post(API_PATH)
-                                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                                .content(postBody))
+                .perform(buildEditAccountRequestAndRegisterMocks(user))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn();
 

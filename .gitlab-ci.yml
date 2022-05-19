@@ -3,10 +3,11 @@ stages:
   - publishProtosToLocalMavenRepo
   - build
   - test
-  - sonarqube
   - predeploy
+  - sonarqube
   - deploy
 
+##### TAG CHECKING #####
 tag-checker:
   stage: tagChecking
   script:
@@ -14,18 +15,7 @@ tag-checker:
   only:
     - tags
 
-junit-porfolio:
-  stage: test
-  script:
-    - cd portfolio
-    - ./gradlew test
-
-junit-identityprovider:
-  stage: test
-  script:
-    - cd identityprovider
-    - ./gradlew test
-
+##### gRPC PROTOS #####
 publish-protos-to-maven-local:
   stage: publishProtosToLocalMavenRepo
   script:
@@ -33,6 +23,7 @@ publish-protos-to-maven-local:
     - ./gradlew clean
     - ./gradlew publishToMavenLocal
 
+##### BUILDING #####
 # builds all branches, except dev and master
 branch-build:
   stage: build
@@ -50,6 +41,20 @@ branch-build:
     - master
     - dev
 
+##### TESTING #####
+#junit-porfolio:
+#  stage: test
+#  script:
+#    - cd portfolio
+#    - ./gradlew test
+
+#junit-identityprovider:
+#  stage: test
+#  script:
+#    - cd identityprovider
+#    - ./gradlew test
+
+##### PRE-DEPLOY #####
 predeploy-copy-environment-variables:
   stage: predeploy
   script:
@@ -60,6 +65,16 @@ predeploy-copy-environment-variables:
     - tags
     - master
 
+##### SONARQUBE #####
+sonarqube-report:
+  stage: sonarqube
+  script:
+    - cd identityprovider
+    - ./gradlew sonarqube
+    - cd ../portfolio
+    - ./gradlew sonarqube
+
+##### DEPLOY #####
 deploy-staging-identityprovider:
   stage: deploy
   script:

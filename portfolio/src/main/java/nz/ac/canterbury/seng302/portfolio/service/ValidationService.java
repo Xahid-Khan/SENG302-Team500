@@ -8,6 +8,7 @@ import javax.xml.bind.SchemaOutputResolver;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Locale;
 import java.util.NoSuchElementException;
 
 
@@ -33,6 +34,7 @@ public class ValidationService {
 
         return checkBaseFields("Project",
                 projectContract.name(),
+                projectContract.description(),
                 projectContract.startDate(),
                 projectContract.endDate());
     }
@@ -40,12 +42,20 @@ public class ValidationService {
     /**
      * Checks the base input fields for the user.
      */
-    public String checkBaseFields(String type, String name, Instant start, Instant end) {
+    public String checkBaseFields(String type, String name, String description, Instant start, Instant end) {
         if (name.equals("")) {
             return type + " name must not be empty";
         }
         if (name.trim().equals("")) {
             return type + " name must not contain only whitespaces";
+        }
+
+        if (name.length() > 32) {
+            return type + " name must not be more than 32 characters";
+        }
+
+        if (description.length() > 1024) {
+            return type + " description must not be more than 1024 characters";
         }
 
         if (end.isBefore(start)) {
@@ -79,6 +89,7 @@ public class ValidationService {
 
         return checkBaseFields("Project",
                 projectContract.name(),
+                projectContract.description(),
                 projectContract.startDate(),
                 projectContract.endDate());
     }
@@ -89,7 +100,7 @@ public class ValidationService {
     public String checkAddSprint(String projectId, BaseSprintContract sprintContract) {
         try {
             ProjectContract project = projectService.getById(projectId);
-            String response = checkSprintDetails(project, "placeholderId", sprintContract.startDate(), sprintContract.endDate());
+            String response = checkSprintDetails(project, "placeholderId", sprintContract.startDate(), sprintContract.endDate(), sprintContract.colour());
             if (!response.equals("Okay")) {
                 return response;
             }
@@ -98,6 +109,7 @@ public class ValidationService {
         }
         return checkBaseFields("Sprint",
                 sprintContract.name(),
+                sprintContract.description(),
                 sprintContract.startDate(),
                 sprintContract.endDate());
     }
@@ -117,6 +129,7 @@ public class ValidationService {
         }
         return checkBaseFields("Event",
                 eventContract.name(),
+                eventContract.description(),
                 eventContract.startDate(),
                 eventContract.endDate());
     }
@@ -130,11 +143,11 @@ public class ValidationService {
             SprintContract sprint = sprintService.get(sprintId);
             try {
                 ProjectContract project = projectService.getById(sprint.projectId());
-                String response = checkSprintDetails(project, sprint.sprintId(), sprintContract.startDate(), sprintContract.endDate());
+                String response = checkSprintDetails(project, sprint.sprintId(), sprintContract.startDate(), sprintContract.endDate(), sprintContract.colour());
                 if (!response.equals("Okay")) {
                     return response;
                 }
-                response = checkBaseFields("Sprint", sprintContract.name(), sprintContract.startDate(), sprintContract.endDate());
+                response = checkBaseFields("Sprint", sprintContract.name(), sprintContract.description(), sprintContract.startDate(), sprintContract.endDate());
                 if (!response.equals("Okay")) {
                     return response;
                 }
@@ -152,6 +165,7 @@ public class ValidationService {
 
         return checkBaseFields("Sprint",
                 sprintContract.name(),
+                sprintContract.description(),
                 sprintContract.startDate(),
                 sprintContract.endDate());
     }
@@ -169,7 +183,7 @@ public class ValidationService {
                 if (!response.equals("Okay")) {
                     return response;
                 }
-                response = checkBaseFields("Event", eventContract.name(), eventContract.startDate(), eventContract.endDate());
+                response = checkBaseFields("Event", eventContract.name(), eventContract.description(), eventContract.startDate(), eventContract.endDate());
                 if (!response.equals("Okay")) {
                     return response;
                 }
@@ -187,16 +201,36 @@ public class ValidationService {
 
         return checkBaseFields("Event",
                 eventContract.name(),
+                eventContract.description(),
                 eventContract.startDate(),
                 eventContract.endDate());
+    }
+
+    public String checkSprintDetails(ProjectContract project, String sprintId, Instant start, Instant end) {
+        if (start.isBefore(project.startDate())) {
+            return "Sprint cannot start before project start date";
+        }
+        if (end.isAfter(project.endDate())) {
+            return "Sprint cannot end after project end date";
+        }
+        for (SprintContract sprint: project.sprints()) {
+            if (start.isBefore(sprint.endDate()) && end.isAfter(sprint.startDate()) && !sprintId.equals(sprint.sprintId())) {
+                return "Sprint cannot begin while another sprint is still in progress";
+            }
+        }
+        return "Okay";
     }
 
     /**
      * Checks sprint date details and returns respective messages.
      */
-    public String checkSprintDetails(ProjectContract project, String sprintId, Instant start, Instant end) {
-
-
+    public String checkSprintDetails(ProjectContract project, String sprintId, Instant start, Instant end, String colour) {
+        if (colour == null) {
+            return "Sprint requires a colour";
+        }
+        else if (!colour.toUpperCase().matches("^#((\\d|[A-F]){6})$")) {
+            return "Sprint colour must be in the format #RRGGBB";
+        }
         if (start.isBefore(project.startDate())) {
             return "Sprint cannot start before project start date";
         }
@@ -244,6 +278,7 @@ public class ValidationService {
         }
         return checkBaseFields("Milestone",
                 milestoneContract.name(),
+                milestoneContract.description(),
                 milestoneContract.startDate(),
                 milestoneContract.endDate());
     }
@@ -262,7 +297,7 @@ public class ValidationService {
                 if (!response.equals("Okay")) {
                     return response;
                 }
-                response = checkBaseFields("Milestone", milestoneContract.name(), milestoneContract.startDate(), milestoneContract.endDate());
+                response = checkBaseFields("Milestone", milestoneContract.name(), milestoneContract.description(), milestoneContract.startDate(), milestoneContract.endDate());
                 if (!response.equals("Okay")) {
                     return response;
                 }
@@ -280,6 +315,7 @@ public class ValidationService {
 
         return checkBaseFields("Milestone",
                 milestoneContract.name(),
+                milestoneContract.description(),
                 milestoneContract.startDate(),
                 milestoneContract.endDate());
     }
@@ -299,6 +335,7 @@ public class ValidationService {
         }
         return checkBaseFields("Deadline",
                 deadlineContract.name(),
+                deadlineContract.description(),
                 deadlineContract.startDate(),
                 deadlineContract.endDate());
     }
@@ -317,7 +354,7 @@ public class ValidationService {
                 if (!response.equals("Okay")) {
                     return response;
                 }
-                response = checkBaseFields("Deadline", deadlineContract.name(), deadlineContract.startDate(), deadlineContract.endDate());
+                response = checkBaseFields("Deadline", deadlineContract.name(), deadlineContract.description(), deadlineContract.startDate(), deadlineContract.endDate());
                 if (!response.equals("Okay")) {
                     return response;
                 }
@@ -335,6 +372,7 @@ public class ValidationService {
 
         return checkBaseFields("Milestone",
                 deadlineContract.name(),
+                deadlineContract.description(),
                 deadlineContract.startDate(),
                 deadlineContract.endDate());
     }
