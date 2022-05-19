@@ -103,7 +103,7 @@
                         <div class="roles-container">
                             <div class="chip-row">
                                 <div th:each="role: ${user.rolesList}">
-                                    <form class="chip" th:disabled="${isAdmin==false or user.id == userId or user.rolesList.size()==1}" th:method="post">
+                                    <form class="chip" th:disabled="${isAdmin==false or user.id == userId or user.rolesList.size()==1}" th:method="delete">
                                         <input type="hidden" th:name="action" th:value="remove"/>
                                         <input type="hidden" th:name="id" th:value="${user.id}"/>
                                         <input type="hidden" th:name="roleNumber" th:value="${role.number}"/>
@@ -120,8 +120,7 @@
                                 </button>
                                 <div class="dropdown-content">
                                     <div th:each="role:${roles}">
-                                        <form th:action="@{/user-list}" th:method="post">
-                                            <input type="hidden" th:name="action" th:value="add"/>
+                                        <form th:method="post">
                                             <input type="hidden" th:name="id" th:value="${user.id}"/>
                                             <input type="hidden" th:name="roleNumber" th:value="${role.number}"/>
                                             <button class="dropdown-option" th:text="${delegate.formatUserRole(role)}" type="submit"></button>
@@ -129,7 +128,6 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
                         <div class="form-error" th:if="${roleMessage != null && roleMessageTarget == user.id}" th:text="${roleMessage}"/>
                     </div>
                 </div>
