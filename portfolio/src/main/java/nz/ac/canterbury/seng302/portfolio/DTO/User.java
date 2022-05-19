@@ -2,9 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.DTO;
 
 import com.google.protobuf.Timestamp;
 
-import javax.annotation.MatchesPattern;
 import javax.annotation.Nullable;
-import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
@@ -44,6 +42,7 @@ public record User(
     @Size(max = 32, message = "Nickname cannot be longer than 32 characters", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
     @Nullable String nickname,
 
+    @Pattern(regexp = "^[ A-Za-z0-9_!?.,#$%^&*()\\[\\]{};'<>:\"-=_+]*$", message = "Bio must only contain letters, numbers or the following special characters !?.,#$%^&*()[]{};'<>:\"-=_+", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
     @Size(max = 512, message = "Bio cannot be longer than 512 characters", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
     @Nullable String bio,
 
