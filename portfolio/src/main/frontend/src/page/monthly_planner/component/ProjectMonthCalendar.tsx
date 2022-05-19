@@ -59,29 +59,43 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
     }
 
     const getEventData = () => {
-        let listOfEvents : any= [];
+        let mapOfEvents = new Map();
+        let listOfEvents : any[] = [];
         let allEvents = project.events;
-        allEvents.map((event) => {
-            for (let startDate = new Date(event.startDate); startDate <= new Date(event.endDate); startDate.setDate(startDate.getDate() + 1)) {
-                listOfEvents.push({
-                    id: event.id,
-                    start: startDate,
-                    end: startDate,
-                    title: 1,
-                    value: 1,
-                    allDay: !DatetimeUtils.hasTimeComponent(startDate),
-                })
-            }
 
-        })
-        console.log(listOfEvents)
-        listOfEvents.reduce(function (eventA: any, eventB: any) {
-            if (eventA.start === eventB.start) {
-                eventA.values = eventA.value + eventB.value;
-                return eventA
+        allEvents.forEach((event) =>
+            {
+                let startDate = new Date(event.startDate);
+                while (startDate <= new Date(event.endDate)) {
+                    listOfEvents.push({
+                        id: event.id,
+                        start: JSON.parse(JSON.stringify(startDate)),
+                        // allDay: !DatetimeUtils.hasTimeComponent(startDate),
+                    })
+                    if (mapOfEvents.has(JSON.parse(JSON.stringify(startDate.toISOString().slice(0,10))))) {
+                        const currentCount = (mapOfEvents.get(JSON.parse(JSON.stringify(startDate.toISOString().slice(0,10)))));
+                        mapOfEvents.set(JSON.parse(JSON.stringify(startDate.toISOString().slice(0,10))), currentCount + 1)
+                    } else {
+                        mapOfEvents.set(JSON.parse(JSON.stringify(startDate.toISOString().slice(0,10))), 1);
+                    }
+                    startDate.setDate(startDate.getDate() + 1);
+                }
             }
-        }, {})
-        console.log(listOfEvents)
+        )
+        console.log(mapOfEvents);
+        mapOfEvents.forEach((val: any, key: any) => events.push({
+            id: key,
+            start: key,
+            end: key,
+            backgroundColor: "rgba(52, 52, 52, 0.0)",
+            // backgroundColor: "",
+            textColor: "black",
+            extendedProps: {
+                img: "https://pinngle.me/img/logo.png"
+            },
+            title: val,
+            allDay: true,
+        }))
     }
 
     const events = project.sprints.map(sprint => ({
@@ -89,11 +103,17 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
         start: sprint.startDate,
         end: sprint.endDate,
         backgroundColor: sprint.colour,
+        textColor: "white",
+        extendedProps: {
+            img: "https://pinngle.me/img/logo.png"
+        },
         title: `Sprint ${sprint.orderNumber}: ${sprint.name}`,
         // This hides the time on the event and must be true for drag and drop resizing to be enabled
         allDay: !DatetimeUtils.hasTimeComponent(sprint.startDate) && !DatetimeUtils.hasTimeComponent(sprint.endDate),
     }))
+
     getEventData();
+    console.log(events);
     return (
         <>
             <h3>{project.name}</h3>
