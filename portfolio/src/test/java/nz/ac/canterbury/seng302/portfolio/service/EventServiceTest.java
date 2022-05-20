@@ -57,7 +57,7 @@ public class EventServiceTest {
         var project = new ProjectEntity("testproject", null, Instant.parse("2022-12-01T10:15:30.00Z"), Instant.parse("2023-01-20T10:15:30.00Z"));
         projectRepository.save(project);
         // Create an event
-        BaseEventContract event = new BaseEventContract("test event", "testdescription", Instant.parse("2022-12-01T10:15:30.00Z"), Instant.parse("2022-12-02T10:15:30.00Z"), EventEntity.EventType.EVENT);
+        BaseEventContract event = new BaseEventContract("test event", "testdescription", Instant.parse("2022-12-01T10:15:30.00Z"), Instant.parse("2022-12-02T10:15:30.00Z"));
         EventContract eventContract = eventService.createEvent(project.getId(), event);
 
         // Check that the event was created
@@ -83,7 +83,7 @@ public class EventServiceTest {
 
         // Create an event
         BaseEventContract event = new BaseEventContract("test event", "testdescription",
-                Instant.parse("2022-12-01T10:15:30.00Z"), Instant.parse("2022-12-02T10:15:30.00Z"), EventEntity.EventType.EVENT);
+                Instant.parse("2022-12-01T10:15:30.00Z"), Instant.parse("2022-12-02T10:15:30.00Z"));
         eventService.createEvent(project.getId(), event);
 
         // Check that the event was created
@@ -115,7 +115,7 @@ public class EventServiceTest {
 
         // Create an event
         BaseEventContract event = new BaseEventContract("test event", "testdescription",
-                Instant.parse("2022-12-01T10:15:30.00Z"), Instant.parse("2022-12-02T10:15:30.00Z"), EventEntity.EventType.EVENT);
+                Instant.parse("2022-12-01T10:15:30.00Z"), Instant.parse("2022-12-02T10:15:30.00Z"));
         eventService.createEvent(project.getId(), event);
 
         // Check that the event was created
@@ -133,7 +133,7 @@ public class EventServiceTest {
         //update it
         var idToUpdate = eventRepository.findAll().iterator().next().getId();
         BaseEventContract event2 = new BaseEventContract("test event two", "testdescription2",
-                Instant.parse("2022-12-01T10:15:30.00Z"), Instant.parse("2022-12-02T10:15:30.00Z"), EventEntity.EventType.EVENT);
+                Instant.parse("2022-12-01T10:15:30.00Z"), Instant.parse("2022-12-02T10:15:30.00Z"));
         eventService.update(idToUpdate, event2);
 
         //Check the event is still there
@@ -154,7 +154,7 @@ public class EventServiceTest {
 
         // Create an event
         BaseEventContract event = new BaseEventContract("test event", "testdescription",
-                Instant.parse("2022-12-01T10:15:30.00Z"), Instant.parse("2022-12-02T10:15:30.00Z"), EventEntity.EventType.EVENT);
+                Instant.parse("2022-12-01T10:15:30.00Z"), Instant.parse("2022-12-02T10:15:30.00Z"));
         eventService.createEvent(project.getId(), event);
 
         // Check that the event was created
