@@ -48,10 +48,7 @@ public class UserListController {
         UserResponse userDetails = userAccountService.getUserById(userId);
         List<UserRole> roles = userDetails.getRolesList();
 
-        if ((roles.contains(UserRole.COURSE_ADMINISTRATOR) || roles.contains(UserRole.TEACHER))) {
-            model.addAttribute("isAdmin", true);
-        }
-
+        model.addAttribute("isAdmin", hasAdmin(roles));
 
         String sortAttributeString;
         boolean ascending = ascendingMaybe.orElse(true);
@@ -114,7 +111,7 @@ public class UserListController {
         List<UserRole> roles = userDetails.getRolesList();
         model.addAttribute("roleMessageTarget", id);
 
-        if (roles.contains(UserRole.TEACHER) || roles.contains(UserRole.COURSE_ADMINISTRATOR)) {
+        if (hasAdmin(roles)) {
             if (!userId.equals(id)) {
                 UserRoleChangeResponse response = adding ?
                         userAccountService.addRole(id, UserRole.forNumber(roleNumber)) :
@@ -173,5 +170,9 @@ public class UserListController {
             }
         }
         return list;
+    }
+
+    private boolean hasAdmin(List<UserRole> roles){
+        return (roles.contains(UserRole.COURSE_ADMINISTRATOR) || roles.contains(UserRole.TEACHER));
     }
 }

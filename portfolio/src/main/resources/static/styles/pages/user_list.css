@@ -49,76 +49,22 @@ a.buttonLink:hover {
     transition-duration: 0.4s;
 }
 
+.add-button[disabled='disabled'] {
+    display: none;
+}
+
 .add-button:hover {
     color: #000;
-}
-
-/* Dropdown button */
-.dropbutton {
-    font-family: inherit; /* Important for vertical align on mobile phones */
-    margin: 0; /* Important for vertical align on mobile phones */
-    display: flex;
-}
-
-.add-role {
-    display: flex;
-    justify-content: right;
-}
-
-.add-role-dropdown{
-    display: flex;
-}
-
-.role-list{
-    right: 113px;
-}
-
-.closebtn {
-    cursor: pointer;
-    background-color: transparent;
-    border: none;
-    padding: 5px 4px;
-    transition-duration: 0s;
-    font-size: 14px;
-}
-
-.closebtn:hover {
-    background-color: transparent;
-}
-
-.role-dropdown-content-links {
-    color: black;
-    cursor: pointer;
-    background-color: transparent;
-    border: none;
-    padding: 5px 10px;
-    width: 100%;
-    font-size: 14px;
-}
-
-.role-dropdown-content-links:hover {
-    cursor: pointer;
     background-color: #cecece;
 }
 
-.role-item {
-    padding-right: 2px;
+.dropdown-box:hover .add-button{
+    transform: rotate(90deg);
 }
 
-@media (max-width: 960px){
-    .role-list{
-        right: 78px;
-    }
-}
-
-@media (max-width: 640px){
-    .role-list{
-        right: 78px;
-    }
-}
-
-@media (max-width: 480px){
-    .role-list{
-        right: 78px;
-    }
+.roles-container {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 5px;
 }
