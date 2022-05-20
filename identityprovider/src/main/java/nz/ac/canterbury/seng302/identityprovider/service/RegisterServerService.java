@@ -23,55 +23,59 @@ public class RegisterServerService {
 
   @Autowired private PasswordService passwordService;
 
+  public UserRegisterResponse register(UserRegisterRequest request)
+      throws NoSuchAlgorithmException, InvalidKeySpecException {
+    UserRegisterResponse.Builder reply = UserRegisterResponse.newBuilder();
 
+    var passwordHash = passwordService.hashPassword(request.getPassword());
+    List<UserRole> roles = new ArrayList<>();
+    roles.add(UserRole.STUDENT);
+    UserModel user =
+        new UserModel(
+            request.getUsername(),
+            passwordHash,
+            request.getFirstName(),
+            request.getMiddleName(),
+            request.getLastName(),
+            request.getNickname(),
+            request.getBio(),
+            request.getPersonalPronouns(),
+            request.getEmail(),
+            roles,
+            currentTimestamp());
 
-    public UserRegisterResponse register(UserRegisterRequest request)
-            throws NoSuchAlgorithmException, InvalidKeySpecException {
-        UserRegisterResponse.Builder reply = UserRegisterResponse.newBuilder();
-
-        var passwordHash = passwordService.hashPassword(request.getPassword());
-        List<UserRole> roles = new ArrayList<>();
-        roles.add(UserRole.STUDENT);
-        UserModel user =
-                new UserModel(
-                        request.getUsername(),
-                        passwordHash,
-                        request.getFirstName(),
-                        request.getMiddleName(),
-                        request.getLastName(),
-                        request.getNickname(),
-                        request.getBio(),
-                        request.getPersonalPronouns(),
-                        request.getEmail(),
-                        roles,
-                        currentTimestamp());
-
-        // If a username already exists in the database, return an error
-        if (repository.findByUsername(request.getUsername()) != null) {
-            reply
-                    .setIsSuccess(false)
-                    .setNewUserId(-1)
-                    .setMessage("Error: Username in use")
-                    .addValidationErrors(
-                            ValidationError.newBuilder()
-                                    .setFieldName("username")
-                                    .setErrorText("Error: Username in use"));
-        } else {
-            repository.save(user);
-            reply
-                    .setIsSuccess(true)
-                    .setNewUserId(user.getId())
-                    .setMessage("Registered new user: " + user);
-        }
-
-        return reply.build();
+    // If a username already exists in the database, return an error
+    if (repository.findByUsername(request.getUsername()) != null) {
+      reply
+          .setIsSuccess(false)
+          .setNewUserId(-1)
+          .setMessage("Error: Username already in use")
+          .addValidationErrors(
+              ValidationError.newBuilder()
+                  .setFieldName("username")
+                  .setErrorText("Error: Username already in use"));
+    // If an email already exists in the database, return an error
+    } else if (repository.findByEmail(request.getEmail()) != null) {
+      reply
+          .setIsSuccess(false)
+          .setNewUserId(-1)
+          .setMessage("Error: Email already in use")
+          .addValidationErrors(
+              ValidationError.newBuilder()
+                  .setFieldName("email")
+                  .setErrorText("Error: Email already in use"));
+    } else {
+      repository.save(user);
+      reply
+          .setIsSuccess(true)
+          .setNewUserId(user.getId())
+          .setMessage("Registered new user: " + user);
     }
 
-    public static Timestamp currentTimestamp() {
-        return Timestamp
-                .newBuilder()
-                .setSeconds(Instant.now().getEpochSecond())
-                .build();
-    }
+    return reply.build();
+  }
+
+  public static Timestamp currentTimestamp() {
+    return Timestamp.newBuilder().setSeconds(Instant.now().getEpochSecond()).build();
+  }
 }
-
