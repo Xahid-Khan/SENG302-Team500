@@ -17,14 +17,14 @@ class MilestoneView {
      */
     constructView() {
         this.containerElement.innerHTML = `
+    <div class="crud">
+        <button class="icon-button milestone-controls" id="milestone-button-edit-${this.milestone.milestoneId}" data-privilege="teacher"><i class="fa-solid fa-pen-to-square"></i></button>
+        <button class="icon-button milestone-controls" id="milestone-button-delete-${this.milestone.milestoneId}" data-privilege="teacher"><i class="fa-solid fa-trash-can"></i></button>
+        <button class="icon-button toggle-milestone-details" id="toggle-milestone-details-${this.milestone.milestoneId}"><i class="fa-solid fa-plus"></i></button>
+    </div>
     <div class="milestone-title">
-        <span id="milestone-title-text-${this.milestone.milestoneId}" style="font-style: italic;"></span> | <span id="start-date-${this.milestone.milestoneId}"></span> - <span id="end-date-${this.milestone.milestoneId}"></span>
+        <i class="fa-solid fa-flag"></i> <span id="milestone-title-text-${this.milestone.milestoneId}" style="font-style: italic;"></span> | <span id="start-date-${this.milestone.milestoneId}"></span> - <span id="end-date-${this.milestone.milestoneId}"></span>
 
-        <span class="crud">
-            <button class="button milestone-controls" id="milestone-button-edit-${this.milestone.milestoneId}" data-privilege="teacher">Edit</button>
-            <button class="button milestone-controls" id="milestone-button-delete-${this.milestone.milestoneId}" data-privilege="teacher">Delete</button>
-            <button class="button toggle-milestone-details" id="toggle-milestone-details-${this.milestone.milestoneId}">+</button>
-        </span>
     </div>
     <div class="milestone-details" id="milestone-details-${this.milestone.milestoneId}">
         <div class="milestone-description" id="milestone-description-${this.milestone.milestoneId}"></div>

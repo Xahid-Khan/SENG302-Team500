@@ -7,6 +7,11 @@ class Event {
         this.deleteCallback = deleteCallback;
         this.updateEventLoadingStatus = LoadingStatus.NotYetAttempted;
 
+        this.milestonesContainer = null;
+        this.deadlinesContainer = null;
+        this.showingMilestones = false;
+        this.showingDeadlines = false;
+
         this.currentView = null;
         this.showViewer();
     }
@@ -19,33 +24,12 @@ class Event {
         if (this.updateEventLoadingStatus === LoadingStatus.Pending) {
             return;
         }
-        else if (
-            newValue.name === this.event.name
-            && newValue.description === this.event.description
-            && DatetimeUtils.areEqual(newValue.startDate, this.event.startDate)
-            && DatetimeUtils.areEqual(newValue.endDate, this.event.endDate)
-        ) {
-            // Nothing has changed
 
-            const showingSprints = this.currentView.showingSprints;
-            const showingMilestones = this.currentView.showingMilestones;
-            const showingDeadlines = this.currentView.showingDeadlines;
-
-            this.showViewer();
-
-            this.currentView.toggleEvents()
-
-            if (showingSprints) {
-                this.currentView.toggleSprints();
-            }
-            if (showingMilestones) {
-                this.currentView.toggleMilestones();
-            }
-            if (showingDeadlines) {
-                this.currentView.toggleDeadlines()
-            }
-
-            return;
+        if (this.showingMilestones) {
+            this.milestonesContainer.style.display = "block";
+        }
+        if (this.showingDeadlines) {
+            this.deadlinesContainer.style.display = "block";
         }
 
         this.updateEventLoadingStatus = LoadingStatus.Pending;
@@ -85,6 +69,16 @@ class Event {
      * Shows event editing view.
      */
     showEditor() {
+        this.milestonesContainer = this.currentView.containerElement.parentElement.parentElement.getElementsByClassName("milestones").item(0);
+        this.deadlinesContainer = this.currentView.containerElement.parentElement.parentElement.getElementsByClassName("deadlines").item(0);
+        if (this.milestonesContainer.style.display === "block") {
+            this.showingMilestones = true;
+            this.milestonesContainer.style.display = "none";
+        }
+        if (this.deadlinesContainer.style.display === "block") {
+            this.showingDeadlines = true;
+            this.deadlinesContainer.style.display = "none";
+        }
         this.currentView?.dispose();
         this.currentView = new Editor(
             this.containerElement,
@@ -101,6 +95,12 @@ class Event {
      * Refreshes view, disposing of the previous view and reloading it.
      */
     showViewer() {
+        if (this.showingMilestones) {
+            this.milestonesContainer.style.display = "block";
+        }
+        if (this.showingDeadlines) {
+            this.deadlinesContainer.style.display = "block";
+        }
         this.currentView?.dispose();
         this.currentView = new EventView(this.containerElement, this.project.sprints, this.event, this.deleteEvent.bind(this), this.showEditor.bind(this));
     }

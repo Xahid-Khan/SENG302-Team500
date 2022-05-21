@@ -17,14 +17,14 @@ class EventView {
      */
     constructView() {
         this.containerElement.innerHTML = `
+    <div class="crud">
+            <button class="icon-button event-controls" id="event-button-edit-${this.event.eventId}" data-privilege="teacher"><i class="fa-solid fa-pen-to-square"></i></button>
+            <button class="icon-button event-controls" id="event-button-delete-${this.event.eventId}" data-privilege="teacher"><i class="fa-solid fa-trash-can"></i></button>
+            <button class="icon-button toggle-event-details" id="toggle-event-details-${this.event.eventId}"><i class="fa-solid fa-plus"></i></button>
+    </div>
     <div class="event-title">
-        <span id="event-title-text-${this.event.eventId}" style="font-style: italic;"></span> | <span id="start-date-${this.event.eventId}"></span> - <span id="end-date-${this.event.eventId}"></span>
+        <i class="fa-solid fa-calendar-day"></i> <span id="event-title-text-${this.event.eventId}" style="font-style: italic;"></span> | <span id="start-date-${this.event.eventId}"></span> - <span id="end-date-${this.event.eventId}"></span>
 
-        <span class="crud">
-            <button class="button event-controls" id="event-button-edit-${this.event.eventId}" data-privilege="teacher">Edit</button>
-            <button class="button event-controls" id="event-button-delete-${this.event.eventId}" data-privilege="teacher">Delete</button>
-            <button class="button toggle-event-details" id="toggle-event-details-${this.event.eventId}">+</button>
-        </span>
     </div>
     <div class="event-details" id="event-details-${this.event.eventId}">
         <div class="event-description" id="event-description-${this.event.eventId}"></div>

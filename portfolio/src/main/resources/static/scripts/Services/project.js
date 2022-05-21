@@ -45,6 +45,7 @@ class Project {
 
         const showingEvents = this.currentView.showingEvents;
         const showingMilestones = this.currentView.showingMilestones;
+        const showingDeadlines = this.currentView.showingDeadlines
 
         // Refresh the view
         this.showViewer();
@@ -54,6 +55,9 @@ class Project {
         }
         if (showingMilestones) {
             this.currentView.toggleMilestones();
+        }
+        if (showingDeadlines) {
+            this.currentView.toggleDeadlines()
         }
         this.currentView.toggleSprints();
     }
@@ -107,7 +111,6 @@ class Project {
                 break;
             }
         }
-
         // Insert the updated milestone.
         this.project.milestones.splice(milestone.orderNumber - 1, 0, milestone);
 

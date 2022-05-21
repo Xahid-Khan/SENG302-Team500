@@ -121,39 +121,64 @@ class ProjectView {
             <span id="project-title-text-${this.project.id}"></span> | <span id="project-startDate-${this.project.id}"></span> - <span id="project-endDate-${this.project.id}"></span>
           </span>   
           <span class="monthly-planner-redirect">
-                  <button class="button monthly-planner-redirect-button" id="monthly-planner-redirect-button-${this.project.id}">View Monthly Planner</button>
-          </span> 
+              <button class="button monthly-planner-redirect-button" id="monthly-planner-redirect-button-${this.project.id}">View Monthly Planner</button>
+          </span>
           <span class="crud">
-                  <button class="button edit-project" id="project-edit-button-${this.project.id}" data-privilege="teacher">Edit</button>
-                  <button class="button" id="project-delete-button-${this.project.id}" data-privilege="teacher">Delete</button>
+              <button class="button edit-project" id="project-edit-button-${this.project.id}" data-privilege="teacher">Edit</button>
+              <button class="button" id="project-delete-button-${this.project.id}" data-privilege="teacher">Delete</button>
           </span>
       </div>
       <div>
           <div class="project-description" id="project-description-${this.project.id}"></div>
-          <div class="add-view-controls">
-              <button class="button add-sprint" id="add-sprint-button-${this.project.id}" data-privilege="teacher"> Add Sprint</button>
-              <button class="button add-event" id="add-event-button-${this.project.id}" data-privilege="teacher"> Add Event</button>
-              <button class="button add-milestone" id="add-milestone-button-${this.project.id}" data-privilege="teacher"> Add Milestone</button>
-              <button class="button add-deadline" id="add-deadline-button-${this.project.id}" data-privilege="teacher"> Add Deadline</button>
-          </div>
           <div class="toggle-view-controls">
-              <button class="button toggle-sprints" id="toggle-sprint-button-${this.project.id}"> Show Sprints</button>
               <button class="button toggle-events" id="toggle-event-button-${this.project.id}"> Show Events</button>
-              <button class="button toggle-milestones" id="toggle-milestone-button-${this.project.id}"> Show Milestones</button>
               <button class="button toggle-deadlines" id="toggle-deadline-button-${this.project.id}"> Show Deadlines</button>
+              <button class="button toggle-milestones" id="toggle-milestone-button-${this.project.id}"> Show Milestones</button>
+              <button class="button toggle-sprints" id="toggle-sprint-button-${this.project.id}"> Show Sprints</button>
           </div>    
       </div>
-      <div class="events raised-card" id="events-container-${this.project.id}">
-        <h1 class="event-section-title">Events:</h1>
-      </div>
-      <div class="deadlines raised-card" id="deadlines-container-${this.project.id}">
-        <h1 class="deadline-section-title">Deadlines:</h1>
-      </div>
-      <div class="milestones raised-card" id="milestones-container-${this.project.id}">
-        <h1 class="milestone-section-title">Milestones:</h1>
+      <div class="project-events">
+          <div class="events raised-card" id="events-container-${this.project.id}">
+          <div class="event-header">
+             <div class="event-section-title">
+                <i class="fa-solid fa-calendar-day"></i>
+                Events:
+             </div>
+             <div class="add-event">
+                <button class="button" id="add-event-button-${this.project.id}" data-privilege="teacher"> Add Event</button>
+             </div>
+          </div>
+          </div>
+          <div class="deadlines raised-card" id="deadlines-container-${this.project.id}">
+            <div class="deadline-header">
+                <div class="deadline-section-title">
+                    <i class="fa-solid fa-stopwatch"></i>
+                    Deadlines:
+                </div>
+                <div class="add-deadline">
+                    <button class="button" id="add-deadline-button-${this.project.id}" data-privilege="teacher"> Add Deadline</button>
+                </div>
+            </div>
+          </div>
+          <div class="milestones raised-card" id="milestones-container-${this.project.id}">
+              <div class="milestone-header">
+                <div class="milestone-section-title"> 
+                    <i class="fa-solid fa-flag"></i>
+                    Milestones:
+                </div>
+                <div class="add-milestone">
+                    <button class="button" id="add-milestone-button-${this.project.id}" data-privilege="teacher"> Add Milestone</button>
+                </div>
+              </div>
+          </div>
       </div>
       <div class="sprints raised-card" id="sprints-container-${this.project.id}">
-        <h1 class="event-section-title">Sprints:</h1>
+        <div class="sprint-header">
+            <div class="sprint-section-title">Sprints:</div>
+            <div class="add-sprint">
+                <button class="button" id="add-sprint-button-${this.project.id}" data-privilege="teacher"> Add Sprint</button>
+            </div>
+        </div>
       </div>
     `;
 
@@ -263,7 +288,7 @@ class ProjectView {
 
         this.showingDeadlines = !this.showingDeadlines;
     }
-
+    
     /**
      * Opens the add sprint form.
      */
@@ -284,7 +309,7 @@ class ProjectView {
             defaultName = this.project.sprints[(this.project.sprints.length - 1)].orderNumber + 1;
             defaultStartDate = new Date(this.project.sprints[(this.project.sprints.length - 1)].endDate.valueOf());
         }
-
+        
         const defaultEndDate = new Date(defaultStartDate.valueOf());
         defaultEndDate.setDate(defaultEndDate.getDate() + 22);
 
@@ -377,6 +402,13 @@ class ProjectView {
             return;
         }
 
+        if (this.showingMilestones) {
+            this.milestonesContainer.style.display = "none";
+        }
+        if (this.showingDeadlines) {
+            this.deadlinesContainer.style.display = "none";
+        }
+
         const formContainerElement = document.createElement("div");
         formContainerElement.classList.add("event-view", "raised-card");
         formContainerElement.id = `create-event-form-container-${this.project.id}`;
@@ -416,6 +448,13 @@ class ProjectView {
             return;
         }
 
+        if (this.showingMilestones) {
+            this.milestonesContainer.style.display = "block";
+        }
+        if (this.showingDeadlines) {
+            this.deadlinesContainer.style.display = "block";
+        }
+
         this.addEventForm.controller.dispose();
         this.eventsContainer.removeChild(this.addEventForm.container);
         this.addEventForm = null;
@@ -452,6 +491,12 @@ class ProjectView {
                 startDate: DatetimeUtils.networkStringToLocalDate(newEvent.startDate),
                 endDate: DatetimeUtils.networkStringToLocalDate(newEvent.endDate)
             });
+            if (this.showingMilestones) {
+                this.milestonesContainer.style.display = "block";
+            }
+            if (this.showingDeadlines) {
+                this.deadlinesContainer.style.display = "block";
+            }
         }
         catch (ex) {
             this.addEventLoadingStatus = LoadingStatus.Error;
@@ -465,6 +510,13 @@ class ProjectView {
     openAddMilestoneForm() {
         if (this.addMilestoneForm !== null) {
             return;
+        }
+
+        if (this.showingEvents) {
+            this.eventsContainer.style.display = "none";
+        }
+        if (this.showingDeadlines) {
+            this.deadlinesContainer.style.display = "none";
         }
 
         const formContainerElement = document.createElement("div");
@@ -505,6 +557,13 @@ class ProjectView {
             return;
         }
 
+        if (this.showingEvents) {
+            this.eventsContainer.style.display = "block";
+        }
+        if (this.showingDeadlines) {
+            this.deadlinesContainer.style.display = "block";
+        }
+
         this.addMilestoneForm.controller.dispose();
         this.milestonesContainer.removeChild(this.addMilestoneForm.container);
         this.addMilestoneForm = null;
@@ -541,6 +600,12 @@ class ProjectView {
                 startDate: DatetimeUtils.networkStringToLocalDate(newMilestone.startDate),
                 endDate: DatetimeUtils.networkStringToLocalDate(newMilestone.endDate)
             });
+            if (this.showingEvents) {
+                this.eventsContainer.style.display = "block";
+            }
+            if (this.showingDeadlines) {
+                this.deadlinesContainer.style.display = "block";
+            }
         }
         catch (ex) {
             this.addMilestoneLoadingStatus = LoadingStatus.Error;
@@ -554,6 +619,13 @@ class ProjectView {
     openAddDeadlineForm() {
         if (this.addDeadlineForm !== null) {
             return;
+        }
+
+        if (this.showingEvents) {
+            this.eventsContainer.style.display = "none";
+        }
+        if (this.showingMilestones) {
+            this.milestonesContainer.style.display = "none";
         }
 
         const formContainerElement = document.createElement("div");
@@ -594,6 +666,13 @@ class ProjectView {
             return;
         }
 
+        if (this.showingEvents) {
+            this.eventsContainer.style.display = "block";
+        }
+        if (this.showingMilestones) {
+            this.milestonesContainer.style.display = "block";
+        }
+
         this.addDeadlineForm.controller.dispose();
         this.deadlinesContainer.removeChild(this.addDeadlineForm.container);
         this.addDeadlineForm = null;
@@ -630,6 +709,12 @@ class ProjectView {
                 startDate: DatetimeUtils.networkStringToLocalDate(newDeadline.startDate),
                 endDate: DatetimeUtils.networkStringToLocalDate(newDeadline.endDate)
             });
+            if (this.showingEvents) {
+                this.eventsContainer.style.display = "block";
+            }
+            if (this.showingMilestones) {
+                this.milestonesContainer.style.display = "block";
+            }
         }
         catch (ex) {
             this.addDeadlineLoadingStatus = LoadingStatus.Error;

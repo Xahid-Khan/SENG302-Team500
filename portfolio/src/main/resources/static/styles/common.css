@@ -21,12 +21,13 @@ body {
 }
 
 /* Buttons */
-button {
+.button {
   color: #fff;
   cursor: pointer;
   background-color: #43C0FE;
   border: none;
   padding: 8px 12px;
+  margin: 0 3px;
   transition-duration: 0.4s;
   font-size: 14px;
 }

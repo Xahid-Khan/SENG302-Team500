@@ -22,7 +22,7 @@
         </div>
         <div class="account">
             <div class="dropdown">
-                <button class="dropbutton"><div class="username" th:text="${user.username}"></div>
+                <button class="button dropbutton"><div class="username" th:text="${user.username}"></div>
                     <div style="width: 46px;height: 46px;object-fit: cover;overflow: clip;">
                         <img th:src="'//' + ${globalImagePath} + ${userId}"
                              onerror="this.onerror=null;this.src='https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png'"
@@ -56,12 +56,12 @@
             <div>
                 <form id="deletePhotoForm" action="#" th:action="@{/edit_account/imageDelete}" th:object="${user}" method="post"
                     style="float:right; margin-left: 4px">
-                    <button>
+                    <button class="button">
                         Delete Photo
                     </button>
                 </form>
-                <button onclick="location.href='edit_account'" type="button">Edit Details</button>
-                <button onclick="location.href='edit_password'" type="button">Edit Password</button>
+                <button class="button" onclick="location.href='edit_account'" type="button">Edit Details</button>
+                <button class="button" onclick="location.href='edit_password'" type="button">Edit Password</button>
             </div>
             <div class="edit-message" th:if="${editMessage != null}" th:text="${editMessage}">
 

@@ -29,9 +29,9 @@ class Editor {
       <div class="edit-project-section" id="edit-project-section-${this.entityId}">
           <p class="edit-section-title" id="edit-section-form-title-${this.entityId}">Edit Details:</p>
           <form class="user-inputs" id="edit-project-section-form-${this.entityId}">
-  
-              <label>Name*:</label>
+
               <div class="name">
+                <label>Name*:</label>
                 <input type="text" name="project-name" id="edit-project-name-${this.entityId}" maxlength="32" oninput="displayCharactersRemaining(this, 32)" />
                 <span id="edit-name-length">0 / 32</span>
                 <br>

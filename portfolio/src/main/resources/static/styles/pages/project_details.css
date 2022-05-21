@@ -8,17 +8,20 @@ body {
 
 .events {
     padding: 20px;
-    margin-top: 10px;
+    margin: 5px;
+    width: 100%;
 }
 
 .milestones {
     padding: 20px;
-    margin-top: 10px;
+    margin: 5px;
+    width: 100%;
 }
 
 .deadlines {
     padding: 20px;
-    margin-top: 10px;
+    margin: 5px;
+    width: 100%;
 }
 
 .sprints {
@@ -29,6 +32,80 @@ body {
 .event-section-title {
     font-size: 20px;
     font-weight: bold;
+}
+
+.sprint-section-title {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.sprint-event-details {
+    padding-left: 10px;
+}
+
+.sprint-milestone-details {
+    padding-left: 10px;
+}
+
+.sprint-deadline-details {
+    padding-left: 10px;
+}
+
+.sprint-details label {
+    font-weight: bold;
+}
+
+.sprint-details div {
+    padding-top: 10px;
+}
+
+.deadline-header {
+    display: flex;
+    align-items: center;
+}
+
+.milestone-header {
+    display: flex;
+    align-items: center;
+}
+
+.event-header {
+    display: flex;
+    align-items: center;
+}
+
+.sprint-header {
+    display: flex;
+    align-items: center;
+}
+
+.add-deadline {
+    justify-content: right;
+    flex: 1;
+    display: flex;
+}
+
+.add-sprint {
+    justify-content: right;
+    flex: 1;
+    display: flex;
+}
+
+.add-event {
+    justify-content: right;
+    flex: 1;
+    display: flex;
+}
+
+.add-milestone {
+    justify-content: right;
+    flex: 1;
+    display: flex;
+}
+
+.icon-button:hover {
+    cursor: pointer;
+    background-color: #7f7e82;
 }
 
 .milestone-section-title {
@@ -85,10 +162,6 @@ body {
     margin-top: 12px;
 }
 
-.toggle-sprint-details {
-    padding: 8px 12px;
-}
-
 .toggle-sprint-details:hover {
     background-color: #0332D1;
 }
@@ -136,12 +209,6 @@ body {
 }
 
 .edit-project {
-    margin-right: 5px;
-}
-
-.add-view-controls {
-    display: flex;
-    justify-content: right;
     margin-right: 5px;
 }
 
@@ -212,11 +279,15 @@ body {
     margin-bottom: 10px;
 }
 
-.toggle-sprints {
-    margin-left: 10px;
+.sprints {
+    display: none;
 }
 
-.sprints {
+.deadlines {
+    display: none;
+}
+
+.milestones {
     display: none;
 }
 
@@ -226,6 +297,7 @@ body {
 
 .crud {
     float: right;
+    padding-left: 5px;
 }
 
 .monthly-planner-redirect {
@@ -233,7 +305,13 @@ body {
     padding-left: 12px;
 }
 
-.edit-project-section {}
+.project-events {
+    display: flex;
+}
+
+textarea {
+    resize: none;
+}
 
 .edit-section-title {
     font-size: 25px;
@@ -275,6 +353,26 @@ body {
     vertical-align: top;
 }
 
+@media only screen and (max-width: 1320px) {
+
+    .project-events {
+        display: block;
+    }
+
+    .events {
+        width: 95%;
+    }
+
+    .deadlines {
+        width: 95%;
+    }
+
+    .milestones {
+        width: 95%;
+    }
+
+}
+
 @media only screen and (max-width: 960px) {
 
     .projects {
@@ -305,7 +403,7 @@ body {
         padding: 15px;
     }
 
-    button {
+    .button {
         margin: 3px;
         font-size: 12px;
     }
@@ -366,7 +464,7 @@ body {
         padding: 10px;
     }
 
-    button {
+    .button {
         padding: 4px 6px;
         font-size: 10px;
     }
@@ -406,7 +504,7 @@ body {
         margin-bottom: 15px;
     }
 
-    button {
+    .button {
         font-size: 9px;
         margin: 1px;
     }
@@ -466,7 +564,7 @@ body {
         font-size: 7px;
     }
 
-    button {
+    .button {
         font-size: 7px;
     }
 

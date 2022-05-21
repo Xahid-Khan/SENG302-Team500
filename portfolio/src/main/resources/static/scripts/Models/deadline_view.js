@@ -17,14 +17,15 @@ class DeadlineView {
      */
     constructView() {
         this.containerElement.innerHTML = `
+    <div class="crud">
+            <button class="icon-button deadline-controls" id="deadline-button-edit-${this.deadline.deadlineId}" data-privilege="teacher"><i class="fa-solid fa-pen-to-square"></i></button>
+            <button class="icon-button deadline-controls" id="deadline-button-delete-${this.deadline.deadlineId}" data-privilege="teacher"><i class="fa-solid fa-trash-can"></i></button>
+            <button class="icon-button toggle-deadline-details" id="toggle-deadline-details-${this.deadline.deadlineId}"><i class="fa-solid fa-plus"></i></button>
+    </div>
     <div class="deadline-title">
-        <span id="deadline-title-text-${this.deadline.deadlineId}" style="font-style: italic;"></span> | <span id="start-date-${this.deadline.deadlineId}"></span> - <span id="end-date-${this.deadline.deadlineId}"></span>
+        <i class="fa-solid fa-flag"></i> <span id="deadline-title-text-${this.deadline.deadlineId}" style="font-style: italic;"></span> | <span id="start-date-${this.deadline.deadlineId}"></span> - <span id="end-date-${this.deadline.deadlineId}"></span>
 
-        <span class="crud">
-            <button class="button deadline-controls" id="deadline-button-edit-${this.deadline.deadlineId}" data-privilege="teacher">Edit</button>
-            <button class="button deadline-controls" id="deadline-button-delete-${this.deadline.deadlineId}" data-privilege="teacher">Delete</button>
-            <button class="button toggle-deadline-details" id="toggle-deadline-details-${this.deadline.deadlineId}">+</button>
-        </span>
+        
     </div>
     <div class="deadline-details" id="deadline-details-${this.deadline.deadlineId}">
         <div class="deadline-description" id="deadline-description-${this.deadline.deadlineId}"></div>
