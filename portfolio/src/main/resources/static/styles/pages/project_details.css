@@ -196,7 +196,7 @@ body {
 .add-project {
     display: flex;
     justify-content: right;
-    padding-right: 100px;
+    padding-right: 50px;
 }
 
 .add-project-button {
