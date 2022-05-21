@@ -205,7 +205,7 @@ body {
 
 .projects {
     justify-content: center;
-    padding: 0 142px 100px 100px;
+    padding: 0 84px 45px 45px;
 }
 
 .edit-project {
@@ -353,7 +353,7 @@ textarea {
     vertical-align: top;
 }
 
-@media only screen and (max-width: 1320px) {
+@media only screen and (max-width: 1175px) {
 
     .project-events {
         display: block;
