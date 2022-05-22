@@ -175,6 +175,21 @@ class Project {
         this.currentView.toggleDeadlines();
     }
 
+    onEventEdit() {
+        this.currentView.deadlinesContainer.style.display = "none";
+        this.currentView.milestonesContainer.style.display = "none";
+    }
+
+    onDeadlineEdit() {
+        this.currentView.eventsContainer.style.display = "none";
+        this.currentView.milestonesContainer.style.display = "none";
+    }
+
+    onMilestoneEdit() {
+        this.currentView.deadlinesContainer.style.display = "none";
+        this.currentView.eventsContainer.style.display = "none";
+    }
+
     /**
      * Gets the project to explicitly destroy itself .
      */
@@ -200,7 +215,7 @@ class Project {
      */
     showViewer() {
         this.currentView?.dispose();
-        this.currentView = new ProjectView(this.containerElement, this.project, this.showEditor.bind(this), this.deleteProject.bind(this), this.deleteSprint.bind(this), this.onSprintUpdate.bind(this), this.deleteEvent.bind(this), this.onEventUpdate.bind(this), this.deleteDeadline.bind(this), this.onDeadlineUpdate.bind(this), this.deleteMilestone.bind(this), this.onMilestoneUpdate.bind(this));
+        this.currentView = new ProjectView(this.containerElement, this.project, this.showEditor.bind(this), this.deleteProject.bind(this), this.deleteSprint.bind(this), this.onSprintUpdate.bind(this), this.deleteEvent.bind(this), this.onEventUpdate.bind(this), this.deleteDeadline.bind(this), this.onDeadlineUpdate.bind(this), this.deleteMilestone.bind(this), this.onMilestoneUpdate.bind(this), this.onEventEdit.bind(this), this.onDeadlineEdit.bind(this), this.onMilestoneEdit.bind(this));
     }
 
     /**

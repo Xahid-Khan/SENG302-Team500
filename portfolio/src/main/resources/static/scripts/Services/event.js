@@ -1,16 +1,13 @@
 class Event {
-    constructor(containerElement, data, project, deleteCallback, eventUpdateSavedCallback) {
+    constructor(containerElement, data, project, deleteCallback, eventUpdateSavedCallback, eventEditCallback, loadEventsCallback) {
         this.containerElement = containerElement;
         this.project = project;
         this.event = data;
         this.eventUpdateSavedCallback = eventUpdateSavedCallback;
         this.deleteCallback = deleteCallback;
+        this.eventEditCallback = eventEditCallback;
         this.updateEventLoadingStatus = LoadingStatus.NotYetAttempted;
-
-        this.milestonesContainer = null;
-        this.deadlinesContainer = null;
-        this.showingMilestones = false;
-        this.showingDeadlines = false;
+        this.loadEventsCallback = loadEventsCallback;
 
         this.currentView = null;
         this.showViewer();
@@ -23,13 +20,6 @@ class Event {
     async updateEvent(newValue) {
         if (this.updateEventLoadingStatus === LoadingStatus.Pending) {
             return;
-        }
-
-        if (this.showingMilestones) {
-            this.milestonesContainer.style.display = "block";
-        }
-        if (this.showingDeadlines) {
-            this.deadlinesContainer.style.display = "block";
         }
 
         this.updateEventLoadingStatus = LoadingStatus.Pending;
@@ -69,16 +59,7 @@ class Event {
      * Shows event editing view.
      */
     showEditor() {
-        this.milestonesContainer = this.currentView.containerElement.parentElement.parentElement.getElementsByClassName("milestones").item(0);
-        this.deadlinesContainer = this.currentView.containerElement.parentElement.parentElement.getElementsByClassName("deadlines").item(0);
-        if (this.milestonesContainer.style.display === "block") {
-            this.showingMilestones = true;
-            this.milestonesContainer.style.display = "none";
-        }
-        if (this.deadlinesContainer.style.display === "block") {
-            this.showingDeadlines = true;
-            this.deadlinesContainer.style.display = "none";
-        }
+        this.eventEditCallback();
         this.currentView?.dispose();
         this.currentView = new Editor(
             this.containerElement,
@@ -95,12 +76,7 @@ class Event {
      * Refreshes view, disposing of the previous view and reloading it.
      */
     showViewer() {
-        if (this.showingMilestones) {
-            this.milestonesContainer.style.display = "block";
-        }
-        if (this.showingDeadlines) {
-            this.deadlinesContainer.style.display = "block";
-        }
+        this.loadEventsCallback();
         this.currentView?.dispose();
         this.currentView = new EventView(this.containerElement, this.project.sprints, this.event, this.deleteEvent.bind(this), this.showEditor.bind(this));
     }

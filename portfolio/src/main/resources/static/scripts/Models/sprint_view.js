@@ -24,17 +24,17 @@ class SprintView {
     constructView() {
         this.containerElement.innerHTML = `
     <div class="sprints" id="sprints-container-${this.sprint.sprintId}"></div>
-    <div class="sprint-title">
+    <div class="events-title">
         <span id="sprint-order-text-${this.sprint.sprintId}"></span>: <span id="sprint-title-text-${this.sprint.sprintId}" style="font-style: italic;"></span> | <span id="start-date-${this.sprint.sprintId}"></span> - <span id="end-date-${this.sprint.sprintId}"></span>
 
         <span class="crud">
-            <button class="icon-button sprint-controls" id="sprint-button-edit-${this.sprint.sprintId}" data-privilege="teacher"><i class="fa-solid fa-pen-to-square"></i></button>
-            <button class="icon-button sprint-controls" id="sprint-button-delete-${this.sprint.sprintId}" data-privilege="teacher"><i class="fa-solid fa-trash-can"></i></button>
-            <button class="icon-button toggle-sprint-details" id="toggle-sprint-details-${this.sprint.sprintId}"><i class="fa-solid fa-plus"></i></button>
+            <button class="icon-button sprint-controls" id="sprint-button-edit-${this.sprint.sprintId}" data-privilege="teacher"><span class="material-icons md-11">edit</span></button>
+            <button class="icon-button sprint-controls" id="sprint-button-delete-${this.sprint.sprintId}" data-privilege="teacher"><span class="material-icons md-11">clear</span></button>
+            <button class="icon-button toggle-sprint-details" id="toggle-sprint-details-${this.sprint.sprintId}">+</button>
         </span>
     </div>
 
-    <div class="sprint-details" id="sprint-details-${this.sprint.sprintId}">
+    <div class="events-details" id="sprint-details-${this.sprint.sprintId}">
         <div class="sprint-description" id="sprint-description-${this.sprint.sprintId}"></div>
         <div class="sprint-events" id="sprint-events-${this.sprint.sprintId}"></div>
         <div class="sprint-deadlines" id="sprint-deadlines-${this.sprint.sprintId}"></div>
@@ -94,7 +94,7 @@ class SprintView {
         let html = "";
         this.events.forEach(event => {
             if (event.startDate >= this.sprint.startDate && event.startDate <= this.sprint.endDate || event.endDate >= this.sprint.startDate && event.endDate <= this.sprint.endDate) {
-                html += `<i class="fa-solid fa-calendar-day"></i> <span>${event.name}: </span>`
+                html += `<span class="material-icons">event</span> <span>${event.name}: </span>`
                 if (event.startDate >= this.sprint.startDate && event.startDate <= this.sprint.endDate) {
                     html += `<span style="color: ${this.sprint.colour}">${DatetimeUtils.localToUserDMY(event.startDate)}</span> - `;
                 } else {
@@ -128,7 +128,7 @@ class SprintView {
         if (html === "") {
             html = "<label>Events occurring during this sprint: </label> <span>No events will occur during this sprint</span>"
         } else {
-            html = `<label>Events occurring during this sprint: </label> <div class="sprint-event-details">` + html;
+            html = `<label>Events occurring during this sprint: </label> <div class="sprint-events-details">` + html;
         }
         return html;
     }
@@ -137,13 +137,13 @@ class SprintView {
         let html = "";
         this.deadlines.forEach(deadline => {
             if (deadline.startDate >= this.sprint.startDate && deadline.startDate <= this.sprint.endDate) {
-                html += `<i class="fa-solid fa-stopwatch"></i> <span>${deadline.name}: </span> <span style="color: ${this.sprint.colour}">${DatetimeUtils.localToUserDMY(deadline.startDate)}</span>`;
+                html += `<span class="material-icons">timer</span> <span>${deadline.name}: </span> <span style="color: ${this.sprint.colour}">${DatetimeUtils.localToUserDMY(deadline.startDate)}</span>`;
             }
         });
         if (html === "") {
             html += "<label>Deadlines occurring during this sprint:</label> <span>No deadlines will occur during this sprint</span>"
         } else {
-            html = `<label>Deadlines occurring during this sprint: </label> <div class="sprint-deadline-details">` + html;
+            html = `<label>Deadlines occurring during this sprint: </label> <div class="sprint-events-details">` + html;
         }
         return html;
     }
@@ -152,13 +152,13 @@ class SprintView {
         let html = "";
         this.milestones.forEach(milestone => {
             if (milestone.startDate >= this.sprint.startDate && milestone.startDate <= this.sprint.endDate) {
-                html += `<i class="fa-solid fa-flag"></i> <span>${milestone.name}: </span> <span style="color: ${this.sprint.colour}">${DatetimeUtils.localToUserDMY(milestone.startDate)}</span><br>`;
+                html += `<span class="material-icons">flag</span> <span>${milestone.name}: </span> <span style="color: ${this.sprint.colour}">${DatetimeUtils.localToUserDMY(milestone.startDate)}</span><br>`;
             }
         });
         if (html === "") {
             html = "<label>Milestones occurring during this sprint: </label> <span>No milestones will occur during this sprint</span>"
         } else {
-            html = `<label>Milestones occurring during this sprint: </label> <div class="sprint-milestone-details">` + html;
+            html = `<label>Milestones occurring during this sprint: </label> <div class="sprint-events-details">` + html;
         }
         return html;
     }

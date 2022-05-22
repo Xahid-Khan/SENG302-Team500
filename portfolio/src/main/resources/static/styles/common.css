@@ -21,7 +21,7 @@ body {
 }
 
 /* Buttons */
-.button {
+button {
   color: #fff;
   cursor: pointer;
   background-color: #43C0FE;

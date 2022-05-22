@@ -18,17 +18,17 @@ class EventView {
     constructView() {
         this.containerElement.innerHTML = `
     <div class="crud">
-            <button class="icon-button event-controls" id="event-button-edit-${this.event.eventId}" data-privilege="teacher"><i class="fa-solid fa-pen-to-square"></i></button>
-            <button class="icon-button event-controls" id="event-button-delete-${this.event.eventId}" data-privilege="teacher"><i class="fa-solid fa-trash-can"></i></button>
-            <button class="icon-button toggle-event-details" id="toggle-event-details-${this.event.eventId}"><i class="fa-solid fa-plus"></i></button>
+            <button class="icon-button event-controls" id="event-button-edit-${this.event.eventId}" data-privilege="teacher"><span class="material-icons" >edit</span></button>
+            <button class="icon-button event-controls" id="event-button-delete-${this.event.eventId}" data-privilege="teacher"><span class="material-icons">clear</span></button>
+            <button class="icon-button toggle-event-details" id="toggle-event-details-${this.event.eventId}">+</button>
     </div>
-    <div class="event-title">
-        <i class="fa-solid fa-calendar-day"></i> <span id="event-title-text-${this.event.eventId}" style="font-style: italic;"></span> | <span id="start-date-${this.event.eventId}"></span> - <span id="end-date-${this.event.eventId}"></span>
+    <div class="events-title">
+        <span id="event-title-text-${this.event.eventId}" style="font-style: italic;"></span> | <span id="start-date-${this.event.eventId}"></span> - <span id="end-date-${this.event.eventId}"></span>
 
     </div>
-    <div class="event-details" id="event-details-${this.event.eventId}">
+    <div class="events-details" id="event-details-${this.event.eventId}">
         <div class="event-description" id="event-description-${this.event.eventId}"></div>
-        <div class="event-sprints" id="event-sprints-${this.event.eventId}"></div>
+        <div class="events-sprints" id="event-sprints-${this.event.eventId}"></div>
     </div>
     
     `;
@@ -76,7 +76,7 @@ class EventView {
         let html = "<label>Sprints in progress during this event: </label>";
         this.sprints.forEach(sprint => {
             if (this.event.startDate >= sprint.startDate && this.event.startDate <= sprint.endDate || this.event.endDate >= sprint.startDate && this.event.endDate <= sprint.endDate) {
-                html += `<div class="event-sprint-details">   - <span>${sprint.name}: </span><span>${DatetimeUtils.localToUserDMY(sprint.startDate)}</span> - <span>${DatetimeUtils.localToUserDMY(sprint.endDate)}</span>`;
+                html += `<div class="event-sprint-details" style="color: ${sprint.colour}">   - <span>${sprint.name}: </span><span>${DatetimeUtils.localToUserDMY(sprint.startDate)}</span> - <span>${DatetimeUtils.localToUserDMY(sprint.endDate)}</span>`;
             }
         });
         if (html === "<label>Sprints in progress during this event: </label>") {

@@ -18,18 +18,18 @@ class DeadlineView {
     constructView() {
         this.containerElement.innerHTML = `
     <div class="crud">
-            <button class="icon-button deadline-controls" id="deadline-button-edit-${this.deadline.deadlineId}" data-privilege="teacher"><i class="fa-solid fa-pen-to-square"></i></button>
-            <button class="icon-button deadline-controls" id="deadline-button-delete-${this.deadline.deadlineId}" data-privilege="teacher"><i class="fa-solid fa-trash-can"></i></button>
-            <button class="icon-button toggle-deadline-details" id="toggle-deadline-details-${this.deadline.deadlineId}"><i class="fa-solid fa-plus"></i></button>
+            <button class="icon-button deadline-controls" id="deadline-button-edit-${this.deadline.deadlineId}" data-privilege="teacher"><span class="material-icons">edit</span></button>
+            <button class="icon-button deadline-controls" id="deadline-button-delete-${this.deadline.deadlineId}" data-privilege="teacher"><span class="material-icons">clear</span></button>
+            <button class="icon-button toggle-deadline-details" id="toggle-deadline-details-${this.deadline.deadlineId}">+</button>
     </div>
-    <div class="deadline-title">
-        <i class="fa-solid fa-flag"></i> <span id="deadline-title-text-${this.deadline.deadlineId}" style="font-style: italic;"></span> | <span id="start-date-${this.deadline.deadlineId}"></span> - <span id="end-date-${this.deadline.deadlineId}"></span>
+    <div class="events-title">
+        <span id="deadline-title-text-${this.deadline.deadlineId}" style="font-style: italic;"></span> | <span id="start-date-${this.deadline.deadlineId}"></span> - <span id="end-date-${this.deadline.deadlineId}"></span>
 
         
     </div>
-    <div class="deadline-details" id="deadline-details-${this.deadline.deadlineId}">
+    <div class="events-details" id="deadline-details-${this.deadline.deadlineId}">
         <div class="deadline-description" id="deadline-description-${this.deadline.deadlineId}"></div>
-        <div class="deadline-sprints" id="deadline-sprints-${this.deadline.deadlineId}"></div>
+        <div class="events-sprints" id="deadline-sprints-${this.deadline.deadlineId}"></div>
     </div>
     
     `;
@@ -75,7 +75,7 @@ class DeadlineView {
         let html = "<label>Sprints in progress during this deadline: </label>";
         this.sprints.forEach(sprint => {
             if (this.deadline.startDate >= sprint.startDate && this.deadline.startDate <= sprint.endDate || this.deadline.endDate >= sprint.startDate && this.deadline.endDate <= sprint.endDate) {
-                html += `<div class="deadline-sprint-details">   - <span>${sprint.name}: </span><span>${DatetimeUtils.localToUserDMY(sprint.startDate)}</span> - <span>${DatetimeUtils.localToUserDMY(sprint.endDate)}</span>`;
+                html += `<div class="deadline-sprint-details"  style="color: ${sprint.colour}">   - <span>${sprint.name}: </span><span>${DatetimeUtils.localToUserDMY(sprint.startDate)}</span> - <span>${DatetimeUtils.localToUserDMY(sprint.endDate)}</span>`;
             }
         });
         if (html === "<label>Sprints in progress during this deadline: </label>") {

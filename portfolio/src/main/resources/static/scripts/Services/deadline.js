@@ -1,16 +1,13 @@
 class Deadline {
-    constructor(containerElement, data, project, deleteCallback, deadlineUpdateSavedCallback) {
+    constructor(containerElement, data, project, deleteCallback, deadlineUpdateSavedCallback, deadlineEditCallback, loadEventsCallback) {
         this.containerElement = containerElement;
         this.project = project;
         this.deadline = data;
         this.deadlineUpdateSavedCallback = deadlineUpdateSavedCallback;
         this.deleteCallback = deleteCallback;
         this.updatedeadlineLoadingStatus = LoadingStatus.NotYetAttempted;
-
-        this.eventsContainer = null;
-        this.milestonesContainer = null;
-        this.showingEvents = false;
-        this.showingMilestones = false;
+        this.deadlineEditCallback = deadlineEditCallback;
+        this.loadEventsCallback = loadEventsCallback;
 
         this.currentView = null;
         this.showViewer();
@@ -23,13 +20,6 @@ class Deadline {
     async updateDeadline(newValue) {
         if (this.updatedeadlineLoadingStatus === LoadingStatus.Pending) {
             return;
-        }
-
-        if (this.showingEvents) {
-            this.eventsContainer.style.display = "block";
-        }
-        if (this.showingMilestones) {
-            this.milestonesContainer.style.display = "block";
         }
 
         this.updatedeadlineLoadingStatus = LoadingStatus.Pending;
@@ -69,16 +59,7 @@ class Deadline {
      * Shows deadline editing view.
      */
     showEditor() {
-        this.eventsContainer = this.currentView.containerElement.parentElement.parentElement.getElementsByClassName("events").item(0);
-        this.milestonesContainer = this.currentView.containerElement.parentElement.parentElement.getElementsByClassName("deadlines").item(0);
-        if (this.eventsContainer.style.display === "block") {
-            this.showingEvents = true;
-            this.eventsContainer.style.display = "none";
-        }
-        if (this.milestonesContainer.style.display === "block") {
-            this.showingMilestones = true;
-            this.milestonesContainer.style.display = "none";
-        }
+        this.deadlineEditCallback();
         this.currentView?.dispose();
         this.currentView = new Editor(
             this.containerElement,
@@ -94,12 +75,7 @@ class Deadline {
      * Refreshes view, disposing of the previous view and reloading it.
      */
     showViewer() {
-        if (this.showingEvents) {
-            this.eventsContainer.style.display = "block";
-        }
-        if (this.showingMilestones) {
-            this.milestonesContainer.style.display = "block";
-        }
+        this.loadEventsCallback();
         this.currentView?.dispose();
         this.currentView = new DeadlineView(this.containerElement, this.project.sprints, this.deadline, this.deleteDeadline.bind(this), this.showEditor.bind(this));
     }

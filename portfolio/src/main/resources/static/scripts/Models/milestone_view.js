@@ -18,17 +18,17 @@ class MilestoneView {
     constructView() {
         this.containerElement.innerHTML = `
     <div class="crud">
-        <button class="icon-button milestone-controls" id="milestone-button-edit-${this.milestone.milestoneId}" data-privilege="teacher"><i class="fa-solid fa-pen-to-square"></i></button>
-        <button class="icon-button milestone-controls" id="milestone-button-delete-${this.milestone.milestoneId}" data-privilege="teacher"><i class="fa-solid fa-trash-can"></i></button>
-        <button class="icon-button toggle-milestone-details" id="toggle-milestone-details-${this.milestone.milestoneId}"><i class="fa-solid fa-plus"></i></button>
+        <button class="icon-button milestone-controls" id="milestone-button-edit-${this.milestone.milestoneId}" data-privilege="teacher"><span class="material-icons">edit</span></button>
+        <button class="icon-button milestone-controls" id="milestone-button-delete-${this.milestone.milestoneId}" data-privilege="teacher"><span class="material-icons">clear</span></button>
+        <button class="icon-button toggle-milestone-details" id="toggle-milestone-details-${this.milestone.milestoneId}">+</i></button>
     </div>
-    <div class="milestone-title">
-        <i class="fa-solid fa-flag"></i> <span id="milestone-title-text-${this.milestone.milestoneId}" style="font-style: italic;"></span> | <span id="start-date-${this.milestone.milestoneId}"></span> - <span id="end-date-${this.milestone.milestoneId}"></span>
+    <div class="events-title">
+        <span id="milestone-title-text-${this.milestone.milestoneId}" style="font-style: italic;"></span> | <span id="start-date-${this.milestone.milestoneId}"></span> - <span id="end-date-${this.milestone.milestoneId}"></span>
 
     </div>
-    <div class="milestone-details" id="milestone-details-${this.milestone.milestoneId}">
+    <div class="events-details" id="milestone-details-${this.milestone.milestoneId}">
         <div class="milestone-description" id="milestone-description-${this.milestone.milestoneId}"></div>
-        <div class="milestone-sprints" id="milestone-sprints-${this.milestone.milestoneId}"></div>
+        <div class="events-sprints" id="milestone-sprints-${this.milestone.milestoneId}"></div>
     </div>
     
     `;
@@ -73,7 +73,7 @@ class MilestoneView {
         let html = "<label>Sprints in progress during this milestone: </label>";
         this.sprints.forEach(sprint => {
             if (this.milestone.startDate >= sprint.startDate && this.milestone.startDate <= sprint.endDate || this.milestone.endDate >= sprint.startDate && this.milestone.endDate <= sprint.endDate) {
-                html += `<div class="milestone-sprint-details">   - <span>${sprint.name}: </span><span>${DatetimeUtils.localToUserDMY(sprint.startDate)}</span> - <span>${DatetimeUtils.localToUserDMY(sprint.endDate)}</span>`;
+                html += `<div class="milestone-sprint-details"  style="color: ${sprint.colour}">   - <span>${sprint.name}: </span><span>${DatetimeUtils.localToUserDMY(sprint.startDate)}</span> - <span>${DatetimeUtils.localToUserDMY(sprint.endDate)}</span>`;
             }
         });
         if (html === "<label>Sprints in progress during this milestone: </label>") {
