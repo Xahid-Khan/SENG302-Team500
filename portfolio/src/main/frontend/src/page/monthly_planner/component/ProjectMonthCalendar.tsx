@@ -12,6 +12,7 @@ import {LoadingPending} from "../../../util/network/loading_status";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 
+
 /**
  * Component that displays a month calendar for the current project and its sprints.
  *
@@ -58,6 +59,29 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
         end: project.endDate
     }
 
+    // const eventImage : CSS.Properties = {
+    //
+    // }
+
+    function renderEventImage(eventInfo: any) {
+        if (eventInfo.event.title.includes("Sprint")) {
+            return (
+                <div>
+                    <p>{eventInfo.event.title}</p>
+                </div>
+            )
+        } else {
+            return (
+                <div>
+                    <p>{eventInfo.event.title}</p>
+                    <img className={"eventImage"}
+                         src={"https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png"}
+                         width={"30px"} height={"30px"} style={{float: "left", margin:"-36px 0 0 15px"}}/>
+                </div>
+            )
+        }
+    }
+
     const getEventData = () => {
         let mapOfEvents = new Map();
         let listOfEvents : any[] = [];
@@ -82,7 +106,7 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
                 }
             }
         )
-        console.log(mapOfEvents);
+
         mapOfEvents.forEach((val: any, key: any) => events.push({
             id: key,
             start: key,
@@ -90,9 +114,7 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
             backgroundColor: "rgba(52, 52, 52, 0.0)",
             // backgroundColor: "",
             textColor: "black",
-            extendedProps: {
-                img: "https://pinngle.me/img/logo.png"
-            },
+            // description: {renderEventImage},
             title: val,
             allDay: true,
         }))
@@ -104,9 +126,7 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
         end: sprint.endDate,
         backgroundColor: sprint.colour,
         textColor: "white",
-        extendedProps: {
-            img: "https://pinngle.me/img/logo.png"
-        },
+        // description: {renderEventImage},
         title: `Sprint ${sprint.orderNumber}: ${sprint.name}`,
         // This hides the time on the event and must be true for drag and drop resizing to be enabled
         allDay: !DatetimeUtils.hasTimeComponent(sprint.startDate) && !DatetimeUtils.hasTimeComponent(sprint.endDate),
@@ -121,7 +141,7 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
                 plugins={[dayGridPlugin, interactionPlugin]}
                 initialView="dayGridMonth"
                 events={events}
-
+                eventContent={renderEventImage}
                 /* Drag and drop config */
                 //The origin of window comes from the Thymeleaf template of "monthly_planner.html".
                 editable={!project.sprintsSaving && (window as any) != null ? (window as any).userCanEdit : false} // We shouldn't allow sprints to be updated while we're still trying to save an earlier update, since this could lead to overlapping sprints.
