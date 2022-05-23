@@ -47,4 +47,9 @@ public class MonthlyPlannerController {
 
         return "monthly_planner";
     }
+
+    @GetMapping("/socket_test")
+    public String socketTest() {
+        return "socket_test";
+    }
 }
