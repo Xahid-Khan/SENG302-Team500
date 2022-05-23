@@ -59,9 +59,49 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
         end: project.endDate
     }
 
-    // const eventImage : CSS.Properties = {
-    //
-    // }
+    const events = project.sprints.map(sprint => ({
+        id: sprint.id,
+        start: sprint.startDate,
+        end: sprint.endDate,
+        backgroundColor: sprint.colour,
+        textColor: "white",
+        title: `Sprint ${sprint.orderNumber}: ${sprint.name}`,
+        // This hides the time on the event and must be true for drag and drop resizing to be enabled
+        allDay: !DatetimeUtils.hasTimeComponent(sprint.startDate) && !DatetimeUtils.hasTimeComponent(sprint.endDate),
+    }))
+
+
+    let eventDictionary = new Map();
+    let allDates = new Set();
+    const eventToDictionary = () => {
+        project.events.map((event) => {
+            let startDate = new Date(event.startDate);
+            while (startDate <= new Date(event.endDate)) {
+                startDate.setDate(startDate.getDate() + 1);
+                if (eventDictionary.has(JSON.parse(JSON.stringify(startDate.toISOString().slice(0,10))))) {
+                    const currentEvents = (eventDictionary.get(JSON.parse(JSON.stringify(startDate.toISOString().slice(0,10)))));
+                    console.log(startDate.toString().slice());
+                    console.log(startDate.toUTCString());
+                    eventDictionary.set(JSON.parse(JSON.stringify(startDate.toISOString().slice(0,10))), currentEvents.concat([event]))
+                } else {
+                    eventDictionary.set(JSON.parse(JSON.stringify(startDate.toISOString().slice(0,10))), [event]);
+                }
+                allDates.add(JSON.parse(JSON.stringify(startDate.toISOString().slice(0,10))))
+            }
+        })
+
+        allDates.forEach((eventDate: any) => events.push({
+                    id: eventDate,
+                    start: eventDate,
+                    end: eventDate,
+                    backgroundColor: "rgba(52, 52, 52, 0.0)",
+                    textColor: "black",
+                    title: "",
+                    allDay: true,
+                }))
+    }
+
+    eventToDictionary();
 
     function renderEventImage(eventInfo: any) {
         if (eventInfo.event.title.includes("Sprint")) {
@@ -72,68 +112,25 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
             )
         } else {
             return (
-                <div>
-                    <p>{eventInfo.event.title}</p>
-                    <img className={"eventImage"}
-                         src={"https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png"}
-                         width={"30px"} height={"30px"} style={{float: "left", margin:"-36px 0 0 15px"}}/>
+                <div style={{display:"grid"}}>
+                    {/*<p>{eventDictionary.get(eventInfo.event.publicId).length}</p>*/}
+                    <div>
+                    <span className="material-icons" style={{float:"left"}}>event</span>
+                    <p style={{float:"left", margin:"3px 0 0 15px"}}>{eventDictionary.get(eventInfo.event.id).length}</p>
+                    </div>
+                    <div>
+                    <span className="material-icons" style={{float:"left"}}>timer</span>
+                    <p style={{float:"left", margin:"3px 0 0 15px"}}>1</p>
+                    </div>
+                    <div>
+                    <span className="material-icons" style={{float:"left"}}>flag</span>
+                    <p style={{float:"left", margin:"3px 0 0 15px"}}>1</p>
+                    </div>
                 </div>
             )
         }
     }
 
-    const getEventData = () => {
-        let mapOfEvents = new Map();
-        let listOfEvents : any[] = [];
-        let allEvents = project.events;
-
-        allEvents.forEach((event) =>
-            {
-                let startDate = new Date(event.startDate);
-                while (startDate <= new Date(event.endDate)) {
-                    listOfEvents.push({
-                        id: event.id,
-                        start: JSON.parse(JSON.stringify(startDate)),
-                        // allDay: !DatetimeUtils.hasTimeComponent(startDate),
-                    })
-                    if (mapOfEvents.has(JSON.parse(JSON.stringify(startDate.toISOString().slice(0,10))))) {
-                        const currentCount = (mapOfEvents.get(JSON.parse(JSON.stringify(startDate.toISOString().slice(0,10)))));
-                        mapOfEvents.set(JSON.parse(JSON.stringify(startDate.toISOString().slice(0,10))), currentCount + 1)
-                    } else {
-                        mapOfEvents.set(JSON.parse(JSON.stringify(startDate.toISOString().slice(0,10))), 1);
-                    }
-                    startDate.setDate(startDate.getDate() + 1);
-                }
-            }
-        )
-
-        mapOfEvents.forEach((val: any, key: any) => events.push({
-            id: key,
-            start: key,
-            end: key,
-            backgroundColor: "rgba(52, 52, 52, 0.0)",
-            // backgroundColor: "",
-            textColor: "black",
-            // description: {renderEventImage},
-            title: val,
-            allDay: true,
-        }))
-    }
-
-    const events = project.sprints.map(sprint => ({
-        id: sprint.id,
-        start: sprint.startDate,
-        end: sprint.endDate,
-        backgroundColor: sprint.colour,
-        textColor: "white",
-        // description: {renderEventImage},
-        title: `Sprint ${sprint.orderNumber}: ${sprint.name}`,
-        // This hides the time on the event and must be true for drag and drop resizing to be enabled
-        allDay: !DatetimeUtils.hasTimeComponent(sprint.startDate) && !DatetimeUtils.hasTimeComponent(sprint.endDate),
-    }))
-
-    getEventData();
-    console.log(events);
     return (
         <>
             <h3>{project.name}</h3>
@@ -149,7 +146,6 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
                 eventOverlap={false}
                 eventConstraint={projectRange}
                 eventChange={onSaveDatesCallback}
-
                 /* Calendar config */
                 validRange={projectRange}
                 height='100vh'
