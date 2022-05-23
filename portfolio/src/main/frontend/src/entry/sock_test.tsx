@@ -2,39 +2,67 @@ import * as polyfills from "../util/polyfill/socket_polyfill";
 import React, {useEffect} from "react";
 import ReactDOM from "react-dom";
 import {observer, useLocalObservable} from "mobx-react-lite";
-import SockJS from "sockjs-client";
-import {CompatClient, Message, Stomp} from "@stomp/stompjs";
-import {makeObservable, observable, runInAction} from "mobx";
+import {Client as StompClient, Message} from "@stomp/stompjs";
+import {action, makeObservable, observable, runInAction} from "mobx";
+import {
+    LoadingDone,
+    LoadingError,
+    LoadingNotYetAttempted,
+    LoadingPending,
+    LoadingStatus
+} from "../util/network/loading_status";
 
 class PingPageStore {
-    readonly socket: WebSocket
-    readonly stomp: CompatClient
+    socket: WebSocket
+    readonly stomp: StompClient
 
-    connected: boolean = false
+    connectStatus: LoadingStatus = new LoadingNotYetAttempted()
 
     pongArray: string[] = observable.array()
 
     constructor() {
         makeObservable(this, {
-            connected: observable,
+            socket: observable,
+            connectStatus: observable,
             pongArray: observable
         })
 
-        this.socket = new SockJS("/api/v1/socket")
-        this.stomp = Stomp.over(this.socket)
+        this.stomp = new StompClient({
+            webSocketFactory: () => {
+                runInAction(() => {
+                    this.socket = new WebSocket("ws://localhost:9000/gs-guide-websocket")
+                })
+                return this.socket
+            },
+            connectionTimeout: 10000,
+            heartbeatIncoming: 0,
+            heartbeatOutgoing: 0,
+            debug: (msg) => {
+                console.log(new Date(), msg)
+            }
+        })
 
         console.log("Created new PingPageStore.")
+    }
+
+    get connected(): boolean {
+        return this.connectStatus instanceof LoadingDone
     }
 
     sendPing() {
         console.log("Attempting to send ping...")
         if (this.connected) {
-            this.stomp.send("/api/v1/ping", {}, "test123")
+            this.stomp.publish({
+                destination: "/app/ping",
+                body: "test123"
+            })
         }
     }
 
     async start() {
-        await this.connect()
+        await new Promise<void>((res) => {
+            this.connect(res)
+        })
         if (this.connected) {
             this.subscribe()
         }
@@ -43,25 +71,48 @@ class PingPageStore {
         }
     }
 
-    protected async connect(): Promise<Message> {
-        return new Promise((res, rej) => {
-            this.stomp.connect({}, (frame: Message) => {
-                // Connected
-                console.log("Connected")
-                runInAction(() => {
-                    this.connected = true
-                })
+    protected connect(onConnected: VoidFunction): void {
+        if (this.connectStatus instanceof LoadingPending || this.connectStatus instanceof LoadingDone) {
+            console.warn("Cannot connect twice.")
+            onConnected()
+            return
+        }
 
-                res(frame);
-            }, (err: Message) => {
-                // Error
-                console.log("Error!")
-                runInAction(() => {
-                    this.connected = false
-                })
-                rej(err)
-            })
+        runInAction(() => {
+            this.connectStatus = new LoadingPending()
         })
+
+        this.stomp.onConnect = (frame: Message) => {
+            // Connected
+            console.log("Connected")
+            runInAction(() => {
+                this.connectStatus = new LoadingDone()
+            })
+
+            onConnected()
+        }
+        this.stomp.onStompError = (err: Message) => {
+            // Error
+            console.log("Error!")
+            runInAction(() => {
+                this.connectStatus = new LoadingError(err)
+            })
+        }
+        this.stomp.onWebSocketError = (evt) => {
+            // Error
+            console.log("Error!")
+            runInAction(() => {
+                this.connectStatus = new LoadingError(evt)
+            })
+        }
+        this.stomp.onWebSocketClose = (evt) => {
+            console.log("Socket closed!")
+            runInAction(() => {
+                this.connectStatus = new LoadingError(evt)
+            })
+        }
+
+        this.stomp.activate()
     }
 
     protected onReceivePong(frame: Message) {
@@ -70,9 +121,9 @@ class PingPageStore {
 
     protected subscribe(): void {
         console.log("Subscribing...")
-        /*this.stomp.subscribe("/topic/pongs", (frame: IFrame) => {
+        this.stomp.subscribe("/topic/pongs", (frame: Message) => {
             this.onReceivePong(frame)
-        })*/
+        })
     }
 }
 
@@ -80,16 +131,14 @@ const PingPage: React.FC = observer(() => {
     const store = useLocalObservable(() => new PingPageStore())
 
     useEffect(() => {
-        setTimeout(() => {
-            store.start().then(() => {
-                console.log("Start completed.")
-            })
-        }, 1000)
+        store.start().then(() => {
+            console.log("Start completed.")
+        })
     }, [store])
 
     return (
         <div>
-            <div>{(store.connected) ? 'Connected!' : 'Disconnected'}</div>
+            <div>{store.connectStatus.constructor.name}</div>
 
             <button onClick={() => store.sendPing()}>Send Ping</button>
 

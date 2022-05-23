@@ -93,7 +93,7 @@ public class LoginController {
                     response,
                     "lens-session-token",
                     loginReply.getToken(),
-                    true,
+                    !domain.startsWith("localhost"),
                     5 * 60 * 60, // Expires in 5 hours
                     domain.startsWith("localhost") ? null : domain
             );
