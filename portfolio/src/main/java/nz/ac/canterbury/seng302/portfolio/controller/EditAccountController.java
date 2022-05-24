@@ -62,6 +62,9 @@ public class EditAccountController {
 
   /**
    * Apply the cropping algorithm to the uploaded image and return the cropped image for previewing to the user.
+   *
+   * @param file to generate preview for
+   * @return cropped preview of the given image file
    */
   @PostMapping("/edit_account/preview_picture")
   public ResponseEntity<byte[]> generateCroppedPreview(
