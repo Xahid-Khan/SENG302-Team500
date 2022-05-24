@@ -1,10 +1,16 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import io.grpc.StatusRuntimeException;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import nz.ac.canterbury.seng302.portfolio.DTO.EditedUserValidation;
 import nz.ac.canterbury.seng302.portfolio.DTO.User;
-import nz.ac.canterbury.seng302.portfolio.service.*;
-import nz.ac.canterbury.seng302.shared.identityprovider.*;
+import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
+import nz.ac.canterbury.seng302.portfolio.service.PhotoCropService;
+import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
+import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
+import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.http.HttpStatus;
@@ -15,12 +21,13 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.UnsupportedMediaTypeStatusException;
-
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
 @Controller
 public class EditAccountController {
@@ -33,17 +40,17 @@ public class EditAccountController {
     binder.registerCustomEditor(String.class, new StringTrimmerEditor(false));
   }
 
-    @Autowired
-    private PhotoCropService photoCropService;
+  @Autowired
+  private PhotoCropService photoCropService;
 
-    @Autowired
-    private RegisterClientService registerClientService;
+  @Autowired
+  private RegisterClientService registerClientService;
 
-    @Autowired
-    private UserAccountService userAccountService;
+  @Autowired
+  private UserAccountService userAccountService;
 
-    @Autowired
-    private AuthStateService authStateService;
+  @Autowired
+  private AuthStateService authStateService;
 
   @GetMapping(value = "/edit_account")
   public String getPage(Model model, @AuthenticationPrincipal AuthState principal) {
@@ -61,7 +68,8 @@ public class EditAccountController {
   }
 
   /**
-   * Apply the cropping algorithm to the uploaded image and return the cropped image for previewing to the user.
+   * Apply the cropping algorithm to the uploaded image and return the cropped image for previewing
+   * to the user.
    *
    * @param file to generate preview for
    * @return cropped preview of the given image file
@@ -72,34 +80,36 @@ public class EditAccountController {
       @RequestParam(value = "image") MultipartFile file
   ) {
     if (file == null || file.isEmpty()) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No image found.".getBytes(StandardCharsets.UTF_8));
+      return ResponseEntity
+          .status(HttpStatus.BAD_REQUEST)
+          .body("No image found.".getBytes(StandardCharsets.UTF_8))
+          ;
     }
 
     if (MIN_PROFILE_PICTURE_SIZE > file.getSize() || file.getSize() > MAX_PROFILE_PICTURE_SIZE) {
       return ResponseEntity
-              .status(HttpStatus.BAD_REQUEST)
-              .body(
-                  String.format(
-                      "Image is too small or too large. Please provide an image of size between %d and %d bytes.",
-                      MIN_PROFILE_PICTURE_SIZE,
-                      MAX_PROFILE_PICTURE_SIZE
-                  ).getBytes(StandardCharsets.UTF_8)
-              );
+          .status(HttpStatus.BAD_REQUEST)
+          .body(
+              String.format(
+                  "Image is too small or too large. "
+                      + "Please provide an image of size between %d and %d bytes.",
+                  MIN_PROFILE_PICTURE_SIZE,
+                  MAX_PROFILE_PICTURE_SIZE
+              ).getBytes(StandardCharsets.UTF_8)
+          );
     }
 
     try {
       byte[] uploadImage = photoCropService.processImageFile(file);
       return ResponseEntity.ok(uploadImage);
-    }
-    catch (UnsupportedMediaTypeStatusException e) {
+    } catch (UnsupportedMediaTypeStatusException e) {
       return ResponseEntity
-              .status(HttpStatus.BAD_REQUEST)
-              .body("This file format is not supported.".getBytes(StandardCharsets.UTF_8));
-    }
-    catch (IOException e) {
+          .status(HttpStatus.BAD_REQUEST)
+          .body("This file format is not supported.".getBytes(StandardCharsets.UTF_8));
+    } catch (IOException e) {
       return ResponseEntity
-              .status(HttpStatus.BAD_REQUEST)
-              .body("Failed to read/write image.".getBytes(StandardCharsets.UTF_8));
+          .status(HttpStatus.BAD_REQUEST)
+          .body("Failed to read/write image.".getBytes(StandardCharsets.UTF_8));
     }
   }
 
