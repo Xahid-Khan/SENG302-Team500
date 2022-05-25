@@ -1,0 +1,36 @@
+.image-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.image-upload-button {
+    color: #fff;
+    cursor: pointer;
+    background-color: #43C0FE;
+    border: none;
+    padding: 8px 12px;
+    transition-duration: 0.4s;
+    font-size: 14px;
+}
+
+.image-upload-button:hover {
+    background-color: #0332D1;
+}
+
+.imagePreviewOverlayContainer {
+    display: inline-block;
+    position: relative;
+}
+
+.imagePreviewOverlayContainer > .imagePreviewOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: none;
+    background-color: white;
+}
