@@ -73,7 +73,7 @@ class MilestoneView {
         let html = "<label>Sprints in progress during this milestone: </label>";
         this.sprints.forEach(sprint => {
             if (this.milestone.startDate >= sprint.startDate && this.milestone.startDate <= sprint.endDate || this.milestone.endDate >= sprint.startDate && this.milestone.endDate <= sprint.endDate) {
-                html += `<div class="milestone-sprint-details"  style="color: ${sprint.colour}">   - <span>${sprint.name}: </span><span>${DatetimeUtils.localToUserDMY(sprint.startDate)}</span> - <span>${DatetimeUtils.localToUserDMY(sprint.endDate)}</span>`;
+                html += `<div class="milestone-sprint-details"  style="color: ${sprint.colour}">   - <span th:text="${sprint.name}: "></span><span>${DatetimeUtils.localToUserDMY(sprint.startDate)}</span> - <span>${DatetimeUtils.localToUserDMY(sprint.endDate)}</span>`;
             }
         });
         if (html === "<label>Sprints in progress during this milestone: </label>") {

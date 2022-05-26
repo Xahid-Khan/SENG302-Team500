@@ -73,14 +73,16 @@ class EventView {
     }
 
     getSprints() {
-        let html = "<label>Sprints in progress during this event: </label>";
+        let html = "";
         this.sprints.forEach(sprint => {
             if (this.event.startDate >= sprint.startDate && this.event.startDate <= sprint.endDate || this.event.endDate >= sprint.startDate && this.event.endDate <= sprint.endDate) {
-                html += `<div class="event-sprint-details" style="color: ${sprint.colour}">   - <span>${sprint.name}: </span><span>${DatetimeUtils.localToUserDMY(sprint.startDate)}</span> - <span>${DatetimeUtils.localToUserDMY(sprint.endDate)}</span>`;
+                html += `<div class="event-sprint-details" style="color: ${sprint.colour}">   - <span th:text="${sprint.name}: "></span><span>${DatetimeUtils.localToUserDMY(sprint.startDate)}</span> - <span>${DatetimeUtils.localToUserDMY(sprint.endDate)}</span>`;
             }
         });
-        if (html === "<label>Sprints in progress during this event: </label>") {
-            html += "<span>No sprints are overlapping with this event</span>"
+        if (html === "") {
+            html += "<label>No sprints are overlapping with this event</label>"
+        } else {
+            html = '<label>Sprints in progress during this event: </label>' + html
         }
         return html;
     }

@@ -75,7 +75,7 @@ class DeadlineView {
         let html = "<label>Sprints in progress during this deadline: </label>";
         this.sprints.forEach(sprint => {
             if (this.deadline.startDate >= sprint.startDate && this.deadline.startDate <= sprint.endDate || this.deadline.endDate >= sprint.startDate && this.deadline.endDate <= sprint.endDate) {
-                html += `<div class="deadline-sprint-details"  style="color: ${sprint.colour}">   - <span>${sprint.name}: </span><span>${DatetimeUtils.localToUserDMY(sprint.startDate)}</span> - <span>${DatetimeUtils.localToUserDMY(sprint.endDate)}</span>`;
+                html += `<div class="deadline-sprint-details"  style="color: ${sprint.colour}">   - <span th:text="${sprint.name}: "></span><span>${DatetimeUtils.localToUserDMY(sprint.startDate)}</span> - <span>${DatetimeUtils.localToUserDMY(sprint.endDate)}</span>`;
             }
         });
         if (html === "<label>Sprints in progress during this deadline: </label>") {
