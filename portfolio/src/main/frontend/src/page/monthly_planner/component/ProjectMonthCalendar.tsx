@@ -2,7 +2,7 @@ import React, {useCallback} from "react";
 import {observer} from "mobx-react-lite";
 import {useProjectStore} from "../store/ProjectStoreProvider";
 import {useToasterStore} from "../../../component/toast/internal/ToasterStoreProvider";
-import FullCalendar, {EventChangeArg} from "@fullcalendar/react";
+import FullCalendar, {EventChangeArg, EventSourceInput} from "@fullcalendar/react";
 import {Toast} from "../../../component/toast/Toast";
 import {ToastBase} from "../../../component/toast/ToastBase";
 import defaultToastTheme from "../../../component/toast/DefaultToast.module.css";
@@ -61,7 +61,7 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
     /**
      * This is an array of events
      */
-    const events = project.sprints.map(sprint => ({
+    const events: EventSourceInput = project.sprints.map(sprint => ({
         id: sprint.id,
         start: sprint.startDate,
         end: sprint.endDate,
