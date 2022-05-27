@@ -80,8 +80,12 @@ public class PhotoCropService {
    * @return Byte array of the data in the image
    * @throws UnsupportedMediaTypeStatusException when an illegal outputMimeType is specified
    */
-  public byte[] saveImageToByteArray(RenderedImage imageData, String outputMimeType,
-      boolean enableCompression, float quality) throws UnsupportedMediaTypeStatusException, IOException {
+  public byte[] saveImageToByteArray(
+      RenderedImage imageData,
+      String outputMimeType,
+      boolean enableCompression,
+      float quality
+  ) throws UnsupportedMediaTypeStatusException, IOException {
     var image = new IIOImage(imageData, null, null);
     var imageWriter = getImageWriterForMimeType(outputMimeType);
 
@@ -120,9 +124,17 @@ public class PhotoCropService {
    * @throws UnsupportedMediaTypeStatusException when an illegal outputMimeType is specified
    */
 
-  public byte[] saveImageToByteArray(RenderedImage imageData, String outputMimeType, boolean enableCompression)
-      throws UnsupportedMediaTypeStatusException, IOException {
-    return saveImageToByteArray(imageData, outputMimeType, enableCompression, DEFAULT_IMAGE_OUTPUT_QUALITY);
+  public byte[] saveImageToByteArray(
+      RenderedImage imageData,
+      String outputMimeType,
+      boolean enableCompression
+  ) throws UnsupportedMediaTypeStatusException, IOException {
+    return saveImageToByteArray(
+        imageData,
+        outputMimeType,
+        enableCompression,
+        DEFAULT_IMAGE_OUTPUT_QUALITY
+    );
   }
 
   /**
@@ -141,8 +153,11 @@ public class PhotoCropService {
    * @return Byte array of the data in the image
    * @throws UnsupportedMediaTypeStatusException when an illegal outputMimeType is specified
    */
-  public byte[] processImage(InputStream imageData, String outputMimeType, boolean enableCompression)
-      throws UnsupportedMediaTypeStatusException, IOException {
+  public byte[] processImage(
+      InputStream imageData,
+      String outputMimeType,
+      boolean enableCompression
+  ) throws UnsupportedMediaTypeStatusException, IOException {
     var image = ImageIO.read(imageData);
 
     if (image == null) {

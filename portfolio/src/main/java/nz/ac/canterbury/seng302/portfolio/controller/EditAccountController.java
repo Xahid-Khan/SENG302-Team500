@@ -101,7 +101,10 @@ public class EditAccountController {
     }
 
     try {
-      byte[] uploadImage = photoCropService.processImageFile(file, file.getSize() > MAX_UNCOMPRESSED_PROFILE_PICTURE_SIZE);
+      byte[] uploadImage = photoCropService.processImageFile(
+          file,
+          file.getSize() > MAX_UNCOMPRESSED_PROFILE_PICTURE_SIZE
+      );
       return ResponseEntity.ok(uploadImage);
     } catch (UnsupportedMediaTypeStatusException e) {
       return ResponseEntity
@@ -142,9 +145,15 @@ public class EditAccountController {
       Integer userId = authStateService.getId(principal);
       model.addAttribute("userId", userId);
       if (file != null && !file.isEmpty()) {
-        if (MIN_PROFILE_PICTURE_SIZE <= file.getSize() && file.getSize() <= MAX_PROFILE_PICTURE_SIZE) {
+        if (
+            MIN_PROFILE_PICTURE_SIZE <= file.getSize()
+                && file.getSize() <= MAX_PROFILE_PICTURE_SIZE
+        ) {
           try {
-            byte[] uploadImage = photoCropService.processImageFile(file, file.getSize() > MAX_UNCOMPRESSED_PROFILE_PICTURE_SIZE);
+            byte[] uploadImage = photoCropService.processImageFile(
+                file,
+                file.getSize() > MAX_UNCOMPRESSED_PROFILE_PICTURE_SIZE
+            );
 
             registerClientService.uploadUserPhoto(userId, file.getContentType(), uploadImage);
           }
