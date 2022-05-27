@@ -48,7 +48,7 @@
                     <!--    Submits a populated UserDTO to endpoint register -->
 
                     <!--    Submits a populated UserDTO to endpoint register -->
-                    <input id="newUploadedImage" type="file" name="image" accept="image/*" hidden>
+                    <input id="newUploadedImage" type="file" name="image" accept="image/jpeg,image/png,image/gif" hidden>
 
                     <label for="newUploadedImage" class="image-container">
                         <div class="imagePreviewOverlayContainer">
@@ -63,10 +63,17 @@
 
                             <canvas id="image-preview" class="imagePreviewOverlay" width="150" height="150"></canvas>
                         </div>
-                        <span class="image-upload-button">Choose profile picture</span>
-                    </label>
 
-                    <div id="image-preview-error" style="display: none; max-width: 400px;" class="form-error"></div>
+                        <span class="image-upload-button">Choose profile picture</span>
+
+                        <div class="image-upload-comment">
+                            <div>Please choose a JPEG, PNG, or GIF of less than 10MB size.</div>
+                            <div>Images above 5MB in size will be compressed.</div>
+                        </div>
+
+                        <div id="image-preview-warning" style="display: none; max-width: 400px; color: darkorange; margin-bottom: 8px" class="form-error"></div>
+                        <div id="image-preview-error" style="display: none; max-width: 400px;" class="form-error"></div>
+                    </label>
 
                     <th:block th:if="${imageError}">
                         <div class="form-error" id="errorMessageImage"><span th:text="${imageError}" aria-valuenow="test"></span></div>

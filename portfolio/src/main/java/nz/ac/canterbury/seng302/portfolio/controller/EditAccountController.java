@@ -33,7 +33,8 @@ import org.springframework.web.server.UnsupportedMediaTypeStatusException;
 public class EditAccountController {
 
   public static final int MIN_PROFILE_PICTURE_SIZE = 5 * 1024;
-  public static final int MAX_PROFILE_PICTURE_SIZE = 5 * 1024 * 1024;
+  public static final int MAX_UNCOMPRESSED_PROFILE_PICTURE_SIZE = 5 * 1024 * 1024;
+  public static final int MAX_PROFILE_PICTURE_SIZE = 10 * 1024 * 1024;
 
   @InitBinder
   public void initBinder(WebDataBinder binder) {
@@ -100,7 +101,7 @@ public class EditAccountController {
     }
 
     try {
-      byte[] uploadImage = photoCropService.processImageFile(file);
+      byte[] uploadImage = photoCropService.processImageFile(file, file.getSize() > MAX_UNCOMPRESSED_PROFILE_PICTURE_SIZE);
       return ResponseEntity.ok(uploadImage);
     } catch (UnsupportedMediaTypeStatusException e) {
       return ResponseEntity
@@ -143,7 +144,7 @@ public class EditAccountController {
       if (file != null && !file.isEmpty()) {
         if (MIN_PROFILE_PICTURE_SIZE <= file.getSize() && file.getSize() <= MAX_PROFILE_PICTURE_SIZE) {
           try {
-            byte[] uploadImage = photoCropService.processImageFile(file);
+            byte[] uploadImage = photoCropService.processImageFile(file, file.getSize() > MAX_UNCOMPRESSED_PROFILE_PICTURE_SIZE);
 
             registerClientService.uploadUserPhoto(userId, file.getContentType(), uploadImage);
           }

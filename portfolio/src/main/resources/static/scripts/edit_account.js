@@ -1,21 +1,49 @@
-const MAX_FILE_SIZE = 5 * 1024 * 1024;
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
+const MAX_UNCOMPRESSED_FILE_SIZE = 5 * 1024 * 1024;
 const IMAGE_SIZE = 150;
 
 (() => {
+    let blockFormSubmit = false;
+
+    const formEl = document.getElementById("form");
+    const submitBtnEl = document.getElementById("submit");
     const inputEl = document.getElementById("newUploadedImage");
+    const warningEl = document.getElementById("image-preview-warning");
     const errorEl = document.getElementById("image-preview-error");
     const imagePreviewEl = document.getElementById("image-preview");
 
     let fetchPreviewController = null;
 
+    formEl.addEventListener('submit', (evt) => {
+        if (blockFormSubmit) {
+            evt.preventDefault();
+            alert("Please choose a valid picture before proceeding.");
+        }
+    })
+
+    const showWarning = (message) => {
+        warningEl.style.display = 'block';
+        warningEl.innerText = message;
+    }
+
+    const hideWarning = () => {
+        warningEl.style.display = 'none';
+    }
+
     const showError = (message) => {
         errorEl.style.display = 'block';
         errorEl.innerText = message;
         showIllegalImage();
+
+        blockFormSubmit = true;
+        submitBtnEl.setAttribute("disabled", true);
     }
 
     const hideErrors = () => {
         errorEl.style.display = 'none';
+
+        blockFormSubmit = false;
+        submitBtnEl.removeAttribute("disabled");
     }
 
     const hideImagePreview = () => {
@@ -66,6 +94,8 @@ const IMAGE_SIZE = 150;
     }
 
     const fetchAndDisplayPreview = async () => {
+        hideWarning();
+
         if (!inputEl.files || inputEl.files.length === 0) {
             return;
         }
@@ -73,9 +103,13 @@ const IMAGE_SIZE = 150;
             showError("Please select a file with content.");
         }
         else if (inputEl.files[0].size > MAX_FILE_SIZE) {
-            showError("This file is too large. Please select a file of at most 5MB in size.");
+            showError("This file is too large. Please select a file of at most 10MB in size.");
         }
         else {
+            if (inputEl.files[0].size > MAX_UNCOMPRESSED_FILE_SIZE) {
+                showWarning("This file will be compressed. To avoid compression please choose a file less than 5MB in size.")
+            }
+
             // Let's try to generate a preview...
             try {
                 const formData = new FormData();

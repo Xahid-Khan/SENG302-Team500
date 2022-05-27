@@ -2,8 +2,9 @@
     width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 2px;
     cursor: pointer;
+    margin-bottom: 8px;
 }
 
 .image-upload-button {
@@ -14,10 +15,16 @@
     padding: 8px 12px;
     transition-duration: 0.4s;
     font-size: 14px;
+    margin-top: 6px;
 }
 
 .image-upload-button:hover {
     background-color: #0332D1;
+}
+
+.image-upload-comment {
+    font-size: 14px;
+    color: darkgrey;
 }
 
 .imagePreviewOverlayContainer {
