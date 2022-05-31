@@ -107,8 +107,9 @@ class RegistrationControllerTest {
     return this.mockMvc
         .perform(
             post(API_PATH).contentType(MediaType.APPLICATION_FORM_URLENCODED).content(postBody).header("Host", "localhost:8080"))
-//        .andExpect(status().is3xxRedirection())
             .andExpect(status().is2xxSuccessful())
+//        .andExpect(status().is3xxRedirection())
+//            .andExpect(status().is2xxSuccessful())
         .andReturn();
   }
 
@@ -535,7 +536,7 @@ class RegistrationControllerTest {
                     "Middle Names",
                     "LastName",
                     "Nickname",
-                    "Bio",
+                    bio,
                     "Pronouns",
                     "email%40email.com",
                     currentTimestamp()
