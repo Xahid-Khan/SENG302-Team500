@@ -18,7 +18,7 @@ public class RegisterServerServiceTest {
   @Autowired private UserRepository userRepository;
 
   // A basic request to be used for tests here
-  private UserRegisterRequest request =
+  private UserRegisterRequest.Builder request =
       UserRegisterRequest.newBuilder()
           .setUsername("Username")
           .setPassword("Password")
@@ -28,8 +28,7 @@ public class RegisterServerServiceTest {
           .setNickname("Nickname")
           .setBio("Bio")
           .setPersonalPronouns("Pronoun1/Pronoun2")
-          .setEmail("email@email.email")
-          .build();
+          .setEmail("email@email.email");
 
   @BeforeEach
   private void clearDatabase() {
@@ -39,7 +38,8 @@ public class RegisterServerServiceTest {
   /** Tests registering a completely valid user. */
   @Test
   public void registerValidUser() throws NoSuchAlgorithmException, InvalidKeySpecException {
-    var response = registerServerService.register(request);
+    // Register the valid request to ensure there is data in the database.
+    var response = registerServerService.register(request.build());
 
     // Ensures registration was a success
     assertTrue(response.getIsSuccess());
@@ -51,18 +51,23 @@ public class RegisterServerServiceTest {
     assertNotNull(userRepository.findByUsername("Username"));
   }
 
-  /** Runs a test by inputting the same user twice, which should cause a username error. */
+  /** Submits two users, the second one having the same username as the first. */
   @Test
   public void registerDuplicateUsername() throws NoSuchAlgorithmException, InvalidKeySpecException {
-    registerServerService.register(request);
-    var response = registerServerService.register(request);
+    // Register the valid request to ensure there is data in the database.
+    registerServerService.register(request.build());
+    // Sets the email differently for the second user,
+    //  such that a duplicate email error will not be raised
+    request.setEmail("notthesame@email.com");
+
+    var response = registerServerService.register(request.build());
 
     // Ensure only 1 user exists
     assertEquals(1, userRepository.count());
     // Ensure it failed
     assertFalse(response.getIsSuccess());
     // Ensure that the message is sent successfully
-    assertTrue(response.getMessage().contains("Username already in use"));
+    assertTrue(response.getValidationErrors(0).getErrorText().contains("Username already in use"));
   }
 
   /**
@@ -71,28 +76,37 @@ public class RegisterServerServiceTest {
   @Test
   public void registerDuplicateEmail() throws NoSuchAlgorithmException, InvalidKeySpecException {
     // Register the valid request to ensure there is data in the database.
-    registerServerService.register(request);
-
-    // Try register a user with a duplicate email address.
-    UserRegisterRequest duplicateEmailRequest =
-        UserRegisterRequest.newBuilder()
-            .setUsername("NotUsedUsername")
-            .setPassword("Password")
-            .setFirstName("FirstName")
-            .setMiddleName("Middle Names")
-            .setLastName("LastName")
-            .setNickname("Nickname")
-            .setBio("Bio")
-            .setPersonalPronouns("Pronoun1/Pronoun2")
-            .setEmail("email@email.email")
-            .build();
-    var response = registerServerService.register(duplicateEmailRequest);
+    registerServerService.register(request.build());
+    // Sets the username differently for the second user,
+    //  such that a duplicate username error will not be raised
+    request.setUsername("NotTheSameUsername");
+    var response = registerServerService.register(request.build());
 
     // Ensure only 1 user exists
     assertEquals(1, userRepository.count());
     // Ensure it failed
     assertFalse(response.getIsSuccess());
     // Ensure that the message is sent successfully
-    assertTrue(response.getMessage().contains("Email already in use"));
+    assertTrue(response.getValidationErrors(0).getErrorText().contains("Email already in use"));
+  }
+
+  /**
+   * Attempts to register a user with both a username and email already in use.
+   */
+  @Test
+  public void registerDuplicateUsernameAndDuplicateEmail()
+      throws NoSuchAlgorithmException, InvalidKeySpecException {
+    // Register the valid request to ensure there is data in the database.
+    registerServerService.register(request.build());
+
+    // Registers the same user, which should raise both errors.
+    var response = registerServerService.register(request.build());
+    // Ensure only 1 user exists
+    assertEquals(1, userRepository.count());
+    // Ensure it failed
+    assertFalse(response.getIsSuccess());
+    System.out.println(response.getValidationErrorsList());
+    // Ensures two validation error messages were sent
+    assertEquals(2, response.getValidationErrorsList().size());
   }
 }
