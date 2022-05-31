@@ -1,3 +1,9 @@
+/**
+A dropdown box style sheet.
+Displays a dropdown box that is displayed when an element is hovered.
+This element needs to be in the dropdown-box.
+ */
+
 /* The dropdown wrapper */
 .dropdown-box {
     float: right;
@@ -7,16 +13,13 @@
 /* The wrapper for the options */
 .dropdown-content {
     display: none;
+    flex-direction: column;
     position: absolute;
     background-color: #f9f9f9;
     min-width: 30px;
     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
     z-index: 1;
     right: 0;
-}
-
-.dropdown-content a {
-    color: black;
 }
 
 /* The options in the dropdown */
@@ -28,6 +31,8 @@
     display: block;
     text-align: left;
     font-size: 16px;
+    background-color: #f9f9f9;
+    width: 100%;
 }
 
 /* Add a grey background color to dropdown links on hover */
@@ -37,5 +42,5 @@
 
 /* Show the dropdown menu on hover */
 .dropdown-box:hover .dropdown-content {
-    display: block;
+    display: flex;
 }
