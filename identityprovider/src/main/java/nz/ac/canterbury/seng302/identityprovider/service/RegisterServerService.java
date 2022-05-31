@@ -62,6 +62,7 @@ public class RegisterServerService {
               .setFieldName("username")
               .setErrorText("Error: Username already in use")
               .build());
+      reply.setMessage("Error: Username already in use");
     }
 
     if (repository.findByEmail(request.getEmail()) != null) {
@@ -70,6 +71,7 @@ public class RegisterServerService {
               .setFieldName("email")
               .setErrorText("Error: Email already in use")
               .build());
+      reply.setMessage("Error: Email already in use");
     }
 
     if (validationErrors.isEmpty()) {
@@ -79,10 +81,10 @@ public class RegisterServerService {
           .setNewUserId(user.getId())
           .setMessage("Registered new user: " + user);
     } else {
-      reply
-          .setIsSuccess(false)
-          .setNewUserId(-1)
-          .setMessage("Error: Username or email already in use");
+      reply.setIsSuccess(false).setNewUserId(-1);
+      if (validationErrors.size() == 2) {
+        reply.setMessage("Error: Username and email already in use");
+      }
 
       for (ValidationError validationError : validationErrors) {
         reply.addValidationErrors(validationError);
