@@ -444,8 +444,8 @@ class RegistrationControllerTest {
    * Size 32 nickname, valid bio, valid personalPronouns <br>
    * Valid nickname, size 512 bio, valid personalPronouns <br>
    * Valid nickname, valid bio, size 50 personalPronouns <br>
-   * TODO: Since pronouns have changed, this should be replaced with more thorough checking of
-   *  TODO: pronouns
+   * TODO: Since pronouns have changed, this should be replaced with more thorough checking of TODO:
+   * pronouns
    *
    * @throws Exception if perform fails for some reason
    */
@@ -534,7 +534,11 @@ class RegistrationControllerTest {
    * @throws Exception if perform fails for some reason
    */
   @ParameterizedTest
-  @ValueSource(strings = {"Test", "!?.,#$%^&*()[]{};'<>:\\\"-=_+"})
+  @ValueSource(
+      strings = {
+        "Test",
+        "%21%3F.%2C%23%24%25%5E%26%2A%28%29%5B%5D%7B%7D%3B%27%3C%3E%3A%22-%3D_%2B"
+      })
   void registerValidBio(String bio) throws Exception {
     var validUser =
         new User(
