@@ -21,6 +21,10 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
     const project = useProjectStore()
     const toaster = useToasterStore()
 
+    const [selectedSprint, setSelectedSprint] = React.useState<string>(undefined)
+    const [editable, setEditable] = React.useState<boolean>(true)
+
+
     /**
      * Callback that is triggered when a calendar event is updated by the user. Saves the change to the store, managing
      * toasts to display the status of the operation to the user.
@@ -69,9 +73,32 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
         allDay: !DatetimeUtils.hasTimeComponent(sprint.startDate) && !DatetimeUtils.hasTimeComponent(sprint.endDate),
     }))
 
+    const eventClick = (eventClickInfo : any) => {
+        // alert('Event: ' + eventClickInfo .event.title);
+        // alert('Coordinates: ' + eventClickInfo .jsEvent.pageX + ',' + eventClickInfo .jsEvent.pageY);
+        // alert('View: ' + eventClickInfo .view.type);
+        // console.log(eventClickInfo.event.start)
+
+        // const sprintId = eventClickInfo.event.id
+        // const sprint = project.sprints.find((s) => s.id === sprintId)
+        // if (sprint !== undefined) {
+        //     console.log("click" + sprint.name)
+        //     setEditable(eventClickInfo.event.id as string === selectedSprint)
+        //     setSelectedSprint(sprint.id);
+        // }
+        //
+        // // change the border color just for fun
+        // eventClickInfo.el.style.borderColor = 'red';
+    }
+
+    const f = (info: any) => {
+        // const sprint = project.sprints.find((s) => s.id === info.event.id)
+        // console.log("drag" + sprint.name)
+    }
+
     return (
         <>
-            <h3>{project.name}</h3>
+            <h3>{project.name + ";" + selectedSprint}</h3>
             <FullCalendar
                 plugins={[dayGridPlugin, interactionPlugin]}
                 initialView="dayGridMonth"
@@ -79,11 +106,13 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
 
                 /* Drag and drop config */
                 //The origin of window comes from the Thymeleaf template of "monthly_planner.html".
-                editable={!project.sprintsSaving && (window as any) != null ? (window as any).userCanEdit : false} // We shouldn't allow sprints to be updated while we're still trying to save an earlier update, since this could lead to overlapping sprints.
+                editable={editable && (!project.sprintsSaving && (window as any) != null ? (window as any).userCanEdit : false)} // We shouldn't allow sprints to be updated while we're still trying to save an earlier update, since this could lead to overlapping sprints.
                 eventResizableFromStart
                 eventOverlap={false}
                 eventConstraint={projectRange}
                 eventChange={onSaveDatesCallback}
+                eventClick={eventClick}
+                eventDragStart={f}
 
                 /* Calendar config */
                 validRange={projectRange}
