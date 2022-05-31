@@ -54,9 +54,9 @@ public class ValidationService {
             return type + " name must not be more than 32 characters";
         }
 
-        if (description.length() > 1024) {
-            return type + " description must not be more than 1024 characters";
-        }
+//        if (description.length() > 1024) {
+//            return type + " description must not be more than 1024 characters";
+//        }
 
         if (end.isBefore(start)) {
             return type + " start date must be earlier than the end date";

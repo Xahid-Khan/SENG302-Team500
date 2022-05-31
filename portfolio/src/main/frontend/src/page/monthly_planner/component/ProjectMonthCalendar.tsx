@@ -22,7 +22,7 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
     const toaster = useToasterStore()
 
     const [selectedSprint, setSelectedSprint] = React.useState<string>(undefined)
-    const [editable, setEditable] = React.useState<boolean>(true)
+    const [editable, setEditable] = React.useState<boolean>(false)
 
 
     /**
@@ -74,26 +74,30 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
     }))
 
     const eventClick = (eventClickInfo : any) => {
-        // alert('Event: ' + eventClickInfo .event.title);
-        // alert('Coordinates: ' + eventClickInfo .jsEvent.pageX + ',' + eventClickInfo .jsEvent.pageY);
-        // alert('View: ' + eventClickInfo .view.type);
-        // console.log(eventClickInfo.event.start)
-
-        // const sprintId = eventClickInfo.event.id
-        // const sprint = project.sprints.find((s) => s.id === sprintId)
-        // if (sprint !== undefined) {
-        //     console.log("click" + sprint.name)
-        //     setEditable(eventClickInfo.event.id as string === selectedSprint)
-        //     setSelectedSprint(sprint.id);
-        // }
-        //
-        // // change the border color just for fun
-        // eventClickInfo.el.style.borderColor = 'red';
+        const sprintId = eventClickInfo.event.id
+        const sprint = project.sprints.find((s) => s.id === sprintId)
+        if (sprint !== undefined) {
+            console.log("click" + sprint.name)
+            // setEditable(eventClickInfo.event.id as string === selectedSprint)
+            setSelectedSprint(sprint.id);
+            eventClickInfo.el.style.borderColor = 'red';
+        }
     }
 
     const f = (info: any) => {
-        // const sprint = project.sprints.find((s) => s.id === info.event.id)
-        // console.log("drag" + sprint.name)
+        const sprint = project.sprints.find((s) => s.id === info.event.id)
+        console.log("drag" + sprint.name)
+    }
+
+    const me = (info: any) => {
+        const sprintId = info.event.id
+        info.event.el.style.borderColor = 'green'
+        const sprint = project.sprints.find((s) => s.id === sprintId)
+        if (sprint !== undefined) {
+            console.log("mouse enter" + sprint.name)
+            setEditable(info.event.id as string === selectedSprint)
+            // setSelectedSprint(sprint.id);
+        }
     }
 
     return (
@@ -113,6 +117,7 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
                 eventChange={onSaveDatesCallback}
                 eventClick={eventClick}
                 eventDragStart={f}
+                eventMouseEnter={me}
 
                 /* Calendar config */
                 validRange={projectRange}
