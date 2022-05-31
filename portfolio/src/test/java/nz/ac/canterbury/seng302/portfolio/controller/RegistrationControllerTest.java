@@ -506,21 +506,22 @@ class RegistrationControllerTest {
    *
    * @throws Exception if perform fails for some reason
    */
+
   @ParameterizedTest
   @ValueSource(strings = {"\uD83D\uDE97", "\uD83D\uDE02", "♪"})
-  void registerInvalidBio(String bio) throws Exception {
+  void registerInvalidBio() throws Exception {
     var user =
-        new User(
-            "username",
-            "Password1",
-            "FirstName",
-            "Middle Names",
-            "LastName",
-            "Nickname",
-            bio,
-            "He/Him",
-            "email%40email.com",
-            currentTimestamp());
+            new User(
+                    "Username",
+                    "Password1",
+                    "FirstName",
+                    "Middle Names",
+                    "LastName",
+                    "Nickname",
+                    "\uD83D\uDE97",
+                    "He/Him",
+                    "email%40email.com",
+                    currentTimestamp());
 
     var result = submitInvalidRegistration(user);
 
