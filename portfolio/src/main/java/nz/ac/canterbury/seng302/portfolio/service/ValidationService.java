@@ -54,7 +54,7 @@ public class ValidationService {
             return type + " name must not be more than 32 characters";
         }
 
-        if (description.length() > 1024) {
+        if (description != null && description.length() > 1024) {
             return type + " description must not be more than 1024 characters";
         }
 
