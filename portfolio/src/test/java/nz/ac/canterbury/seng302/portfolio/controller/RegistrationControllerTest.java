@@ -49,18 +49,17 @@ class RegistrationControllerTest {
   @BeforeEach
   public void beforeEach() {
     when(authService.authenticate(any(), any()))
-            .thenReturn(
-                    AuthenticateResponse.newBuilder()
-                      .setUserId(0)
-                      .setToken("test_token")
-                      .setUsername("test_user")
-                      .setFirstName("Test")
-                      .setLastName("User")
-                      .setEmail("test@example.com")
-                      .setSuccess(true)
-                      .setMessage("Login successful")
-                      .build()
-            );
+        .thenReturn(
+            AuthenticateResponse.newBuilder()
+                .setUserId(0)
+                .setToken("test_token")
+                .setUsername("test_user")
+                .setFirstName("Test")
+                .setLastName("User")
+                .setEmail("test@example.com")
+                .setSuccess(true)
+                .setMessage("Login successful")
+                .build());
   }
 
   private final String API_PATH = "/register";
@@ -106,32 +105,34 @@ class RegistrationControllerTest {
     // Performs the request to the /register endpoint
     return this.mockMvc
         .perform(
-            post(API_PATH).contentType(MediaType.APPLICATION_FORM_URLENCODED).content(postBody).header("Host", "localhost:8080"))
-            .andExpect(status().is2xxSuccessful())
-//        .andExpect(status().is3xxRedirection())
-//            .andExpect(status().is2xxSuccessful())
+            post(API_PATH)
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .content(postBody)
+                .header("Host", "localhost:8080"))
+        .andExpect(status().is3xxRedirection())
         .andReturn();
   }
 
-  // Helper function to submit a registration to a mock /register endpoint when posting invalid user.
+  // Helper function to submit a registration to a mock /register endpoint when posting invalid
+  // user.
   private MvcResult submitInvalidRegistration(User user) throws Exception {
     // Creates the Post Body to be sent to the mock /register endpoint
     var postBody = buildPostBody(user);
     // Creates a mock for the /register endpoint
     when(service.register(any()))
-            .thenReturn(
-                    UserRegisterResponse.newBuilder()
-                            .setIsSuccess(true)
-                            .setNewUserId(1)
-                            .setMessage("Mock executed successfully")
-                            .build());
+        .thenReturn(
+            UserRegisterResponse.newBuilder()
+                .setIsSuccess(true)
+                .setNewUserId(1)
+                .setMessage("Mock executed successfully")
+                .build());
 
     // Performs the request to the /register endpoint
     return this.mockMvc
-            .perform(
-                    post(API_PATH).contentType(MediaType.APPLICATION_FORM_URLENCODED).content(postBody))
-            .andExpect(status().is2xxSuccessful())
-            .andReturn();
+        .perform(
+            post(API_PATH).contentType(MediaType.APPLICATION_FORM_URLENCODED).content(postBody))
+        .andExpect(status().is2xxSuccessful())
+        .andReturn();
   }
 
   // Helper function for extrapolating if the request was invalid.
@@ -167,14 +168,13 @@ class RegistrationControllerTest {
             "LastName",
             "Nickname",
             "Bio",
-            "Pronouns",
+            "He/Him",
             "email%40email.com",
-                currentTimestamp()
-                );
+            currentTimestamp());
 
     var result = submitValidRegistration(validUser);
-    System.out.println(result.getResponse());
-//    assertFalse(wasError(result));
+
+    assertFalse(wasError(result));
   }
 
   /**
@@ -184,7 +184,8 @@ class RegistrationControllerTest {
    * @throws Exception if perform fails for some reason
    */
   @ParameterizedTest
-  @ValueSource(strings = {"", "AA", "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "Test!", "Test !", "Test$%"})
+  @ValueSource(
+      strings = {"", "AA", "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "Test!", "Test !", "Test$%"})
   void registerInvalidUsernames(String username) throws Exception {
     var user =
         new User(
@@ -195,9 +196,9 @@ class RegistrationControllerTest {
             "LastName",
             "Nickname",
             "Bio",
-            "Pronouns",
+            "He/Him",
             "email%40email.com",
-                currentTimestamp());
+            currentTimestamp());
 
     var result = submitInvalidRegistration(user);
 
@@ -221,9 +222,9 @@ class RegistrationControllerTest {
             "LastName",
             "Nickname",
             "Bio",
-            "Pronouns",
+            "He/Him",
             "email%40email.com",
-                currentTimestamp());
+            currentTimestamp());
 
     var result = submitValidRegistration(user);
 
@@ -234,17 +235,17 @@ class RegistrationControllerTest {
   @ValueSource(strings = {"Ẽzra", "1IfTest", "Jōhn", "李二二", "张二二"})
   void registerValidEdgeUsernames(String username) throws Exception {
     var user =
-            new User(
-                    username,
-                    "Password1",
-                    "FirstName",
-                    "Middle Names",
-                    "LastName",
-                    "Nickname",
-                    "Bio",
-                    "Pronouns",
-                    "email%40email.com",
-                    currentTimestamp());
+        new User(
+            username,
+            "Password1",
+            "FirstName",
+            "Middle Names",
+            "LastName",
+            "Nickname",
+            "Bio",
+            "He/Him",
+            "email%40email.com",
+            currentTimestamp());
 
     var result = submitValidRegistration(user);
 
@@ -268,9 +269,9 @@ class RegistrationControllerTest {
             "LastName",
             "Nickname",
             "Bio",
-            "Pronouns",
+            "He/Him",
             "email%40email.com",
-                currentTimestamp());
+            currentTimestamp());
 
     var result = submitInvalidRegistration(user);
 
@@ -293,9 +294,9 @@ class RegistrationControllerTest {
             "LastName",
             "Nickname",
             "Bio",
-            "Pronouns",
+            "He/Him",
             "email%40email.com",
-                currentTimestamp());
+            currentTimestamp());
 
     var result = submitValidRegistration(user);
 
@@ -304,11 +305,11 @@ class RegistrationControllerTest {
 
   /**
    * Tests (in order): <br>
-   *  Empty first name, valid middle name(s), valid last name <br>
-   *  Valid first name, valid middle name(s), empty last name <br>
-   *  Invalid first name (too long), valid middle name(s), valid last name <br>
-   *  Valid first name, invalid middle name(s) (too long), valid last name <br>
-   *  Valid first name, valid middle name(s), invalid last name (too long) <br>
+   * Empty first name, valid middle name(s), valid last name <br>
+   * Valid first name, valid middle name(s), empty last name <br>
+   * Invalid first name (too long), valid middle name(s), valid last name <br>
+   * Valid first name, invalid middle name(s) (too long), valid last name <br>
+   * Valid first name, valid middle name(s), invalid last name (too long) <br>
    *
    * @throws Exception if perform fails for some reason
    */
@@ -320,7 +321,8 @@ class RegistrationControllerTest {
     "FirstName,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA,LastName",
     "FirstName,Middle Names,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
   })
-  void registerInvalidNames(String firstName, String middleNames, String lastName) throws Exception {
+  void registerInvalidNames(String firstName, String middleNames, String lastName)
+      throws Exception {
     var user =
         new User(
             "Username",
@@ -330,9 +332,9 @@ class RegistrationControllerTest {
             lastName,
             "Nickname",
             "Bio",
-            "Pronouns",
+            "He/Him",
             "email%40email.com",
-                currentTimestamp());
+            currentTimestamp());
 
     var result = submitInvalidRegistration(user);
 
@@ -341,45 +343,13 @@ class RegistrationControllerTest {
 
   @ParameterizedTest
   @CsvSource({
-          "'Cody',Middle Names,LastName",
-          "John,Middle Names,'Smith-Jackson'",
-          "Mary-Jane,Middle Names,LastName",
-          "Smíth,Middle,Smith/Watson"
+    "'Cody',Middle Names,LastName",
+    "John,Middle Names,'Smith-Jackson'",
+    "Mary-Jane,Middle Names,LastName",
+    "Smíth,Middle,Smith/Watson"
   })
-  void registerValidEdgeNames(String firstName, String middleNames, String lastName) throws Exception {
-    var user =
-            new User(
-                    "Username",
-                    "Password",
-                    firstName,
-                    middleNames,
-                    lastName,
-                    "Nickname",
-                    "Bio",
-                    "Pronouns",
-                    "email%40email.com",
-                    currentTimestamp());
-
-    var result = submitValidRegistration(user);
-
-    assertFalse(wasError(result));
-  }
-
-  /**
-   * Tests (in order): <br>
-   *  Size 50 first name, valid middle name(s), valid last name <br>
-   *  Valid first name, Size 50 middle name(s), valid last name <br>
-   *  Valid first name, valid middle name(s), Size 50 last name <br>
-   *
-   * @throws Exception if perform fails for some reason
-   */
-  @ParameterizedTest
-  @CsvSource({
-      "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA,Middle Names,LastName",
-      "FirstName,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA,LastName",
-      "FirstName,Middle Names,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-  })
-  void registerBoundaryNames(String firstName, String middleNames, String lastName) throws Exception {
+  void registerValidEdgeNames(String firstName, String middleNames, String lastName)
+      throws Exception {
     var user =
         new User(
             "Username",
@@ -389,9 +359,9 @@ class RegistrationControllerTest {
             lastName,
             "Nickname",
             "Bio",
-            "Pronouns",
+            "He/Him",
             "email%40email.com",
-                currentTimestamp());
+            currentTimestamp());
 
     var result = submitValidRegistration(user);
 
@@ -400,19 +370,54 @@ class RegistrationControllerTest {
 
   /**
    * Tests (in order): <br>
-   *  Invalid nickname (too long), valid bio, valid personalPronouns <br>
-   *  Valid nickname, invalid bio (too long), valid personalPronouns <br>
-   *  Valid nickname, valid bio, invalid personalPronouns (too long) <br>
+   * Size 50 first name, valid middle name(s), valid last name <br>
+   * Valid first name, Size 50 middle name(s), valid last name <br>
+   * Valid first name, valid middle name(s), Size 50 last name <br>
    *
    * @throws Exception if perform fails for some reason
    */
   @ParameterizedTest
   @CsvSource({
-      "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA,bio,personalPronouns",
-      "nickname,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA,personalPronouns",
-      "nickname,bio,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA,Middle Names,LastName",
+    "FirstName,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA,LastName",
+    "FirstName,Middle Names,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
   })
-  void registerInvalidAdditionalInfo(String nickname, String bio, String personalPronouns) throws Exception {
+  void registerBoundaryNames(String firstName, String middleNames, String lastName)
+      throws Exception {
+    var user =
+        new User(
+            "Username",
+            "Password",
+            firstName,
+            middleNames,
+            lastName,
+            "Nickname",
+            "Bio",
+            "He/Him",
+            "email%40email.com",
+            currentTimestamp());
+
+    var result = submitValidRegistration(user);
+
+    assertFalse(wasError(result));
+  }
+
+  /**
+   * Tests (in order): <br>
+   * Invalid nickname (too long), valid bio, valid personalPronouns <br>
+   * Valid nickname, invalid bio (too long), valid personalPronouns <br>
+   * Valid nickname, valid bio, invalid personalPronouns (too long) <br>
+   *
+   * @throws Exception if perform fails for some reason
+   */
+  @ParameterizedTest
+  @CsvSource({
+    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA,bio,He/Him",
+    "nickname,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA,He/Him",
+    "nickname,bio,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+  })
+  void registerInvalidAdditionalInfo(String nickname, String bio, String personalPronouns)
+      throws Exception {
     var user =
         new User(
             "Username",
@@ -424,7 +429,7 @@ class RegistrationControllerTest {
             bio,
             personalPronouns,
             "email%40email.com",
-                currentTimestamp());
+            currentTimestamp());
 
     var result = submitInvalidRegistration(user);
 
@@ -433,25 +438,28 @@ class RegistrationControllerTest {
 
   /**
    * Tests (in order): <br>
-   *  Empty nickname, valid bio, valid personalPronouns <br>
-   *  Valid nickname, empty bio, valid personalPronouns <br>
-   *  Valid nickname, valid bio, empty personalPronouns <br>
-   *  Size 32 nickname, valid bio, valid personalPronouns <br>
-   *  Valid nickname, size 512 bio, valid personalPronouns <br>
-   *  Valid nickname, valid bio, size 50 personalPronouns <br>
+   * Empty nickname, valid bio, valid personalPronouns <br>
+   * Valid nickname, empty bio, valid personalPronouns <br>
+   * Valid nickname, valid bio, empty personalPronouns <br>
+   * Size 32 nickname, valid bio, valid personalPronouns <br>
+   * Valid nickname, size 512 bio, valid personalPronouns <br>
+   * Valid nickname, valid bio, size 50 personalPronouns <br>
+   * TODO: Since pronouns have changed, this should be replaced with more thorough checking of
+   *  TODO: pronouns
    *
    * @throws Exception if perform fails for some reason
    */
   @ParameterizedTest
   @CsvSource({
-      "'',bio,personalPronouns",
-      "nickname,'',personalPronouns",
-      "nickname,bio,''",
-      "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA,bio,personalPronouns",
-      "nickname,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA,personalPronouns",
-      "nickname,bio,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+    "'',bio,He/Him",
+    "nickname,'',He/Him",
+    "nickname,bio,''",
+    "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA,bio,He/Him",
+    "nickname,AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA,He/Him",
+    "nickname,bio,He/Him",
   })
-  void registerBoundaryAdditionalInfo(String nickname, String bio, String personalPronouns) throws Exception {
+  void registerBoundaryAdditionalInfo(String nickname, String bio, String personalPronouns)
+      throws Exception {
     var user =
         new User(
             "Username",
@@ -463,7 +471,7 @@ class RegistrationControllerTest {
             bio,
             personalPronouns,
             "email%40email.com",
-                currentTimestamp());
+            currentTimestamp());
 
     var result = submitValidRegistration(user);
 
@@ -472,7 +480,7 @@ class RegistrationControllerTest {
 
   /**
    * Tests a blank email. Unfortunately email is quite hard to test, so we have to assume that JavaX
-   *  has the correct regex for it. The valid email test falls under the valid user test.
+   * has the correct regex for it. The valid email test falls under the valid user test.
    */
   @Test
   void registerEmptyEmail() throws Exception {
@@ -485,7 +493,7 @@ class RegistrationControllerTest {
             "lastName",
             "nickname",
             "bio",
-            "personalPronouns",
+            "He/Him",
             "",
             currentTimestamp());
 
@@ -502,17 +510,17 @@ class RegistrationControllerTest {
   @ValueSource(strings = {"\uD83D\uDE97", "\uD83D\uDE02", "♪"})
   void registerInvalidBio(String bio) throws Exception {
     var user =
-            new User(
-                    "username",
-                    "Password1",
-                    "FirstName",
-                    "Middle Names",
-                    "LastName",
-                    "Nickname",
-                    bio,
-                    "Pronouns",
-                    "email%40email.com",
-                    currentTimestamp());
+        new User(
+            "username",
+            "Password1",
+            "FirstName",
+            "Middle Names",
+            "LastName",
+            "Nickname",
+            bio,
+            "He/Him",
+            "email%40email.com",
+            currentTimestamp());
 
     var result = submitInvalidRegistration(user);
 
@@ -520,42 +528,38 @@ class RegistrationControllerTest {
   }
 
   /**
-   * Tests using valid bios.
-   * In order, tests characters and the valid special characters.
+   * Tests using valid bios. In order, tests characters and the valid special characters.
+   *
    * @param bio Bio input
    * @throws Exception if perform fails for some reason
    */
   @ParameterizedTest
-  @ValueSource(strings = {"Test", "!?.,#$%^&*()[]{};'<>:\"-=_+"})
+  @ValueSource(strings = {"Test", "!?.,#$%^&*()[]{};'<>:\\\"-=_+"})
   void registerValidBio(String bio) throws Exception {
     var validUser =
-            new User(
-                    "Username",
-                    "Password",
-                    "FirstName",
-                    "Middle Names",
-                    "LastName",
-                    "Nickname",
-                    bio,
-                    "Pronouns",
-                    "email%40email.com",
-                    currentTimestamp()
-            );
+        new User(
+            "Username",
+            "Password",
+            "FirstName",
+            "Middle Names",
+            "LastName",
+            "Nickname",
+            bio,
+            "He/Him",
+            "email%40email.com",
+            currentTimestamp());
 
     var result = submitValidRegistration(validUser);
-    System.out.println(result);
+
     assertFalse(wasError(result));
   }
 
   /**
    * Creates the current timestamp
+   *
    * @return timestamp
    */
   public static Timestamp currentTimestamp() {
-    return Timestamp
-            .newBuilder()
-            .setSeconds(Instant.now().getEpochSecond())
-            .build();
+    return Timestamp.newBuilder().setSeconds(Instant.now().getEpochSecond()).build();
   }
-
 }
