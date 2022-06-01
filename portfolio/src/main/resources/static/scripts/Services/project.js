@@ -13,6 +13,8 @@ class Project {
 
         this.deleteLoadingStatus = LoadingStatus.NotYetAttempted;
         this.deleteCallback = deleteCallback;
+
+        this.edit = false;
     }
 
     /**
@@ -201,13 +203,15 @@ class Project {
      * Handles showing of project or sprint editor.
      */
     showEditor() {
+        this.edit = true
         this.currentView?.dispose();
         this.currentView = new Editor(this.containerElement,
             "Edit project details:",
             this.project,
             this.showViewer.bind(this),
             this.updateProject.bind(this),
-            Editor.makeProjectProjectDatesValidator(this.project));
+            Editor.makeProjectProjectDatesValidator(this.project),
+            this.project);
     }
 
     /**
@@ -216,6 +220,13 @@ class Project {
     showViewer() {
         this.currentView?.dispose();
         this.currentView = new ProjectView(this.containerElement, this.project, this.showEditor.bind(this), this.deleteProject.bind(this), this.deleteSprint.bind(this), this.onSprintUpdate.bind(this), this.deleteEvent.bind(this), this.onEventUpdate.bind(this), this.deleteDeadline.bind(this), this.onDeadlineUpdate.bind(this), this.deleteMilestone.bind(this), this.onMilestoneUpdate.bind(this), this.onEventEdit.bind(this), this.onDeadlineEdit.bind(this), this.onMilestoneEdit.bind(this));
+        if (this.edit) {
+            this.currentView.toggleSprints();
+            this.currentView.toggleMilestones();
+            this.currentView.toggleDeadlines();
+            this.currentView.toggleEvents();
+            this.edit = false
+        }
     }
 
     /**

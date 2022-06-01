@@ -20,7 +20,7 @@ class EventView {
     <div class="crud">
             <button class="icon-button event-controls" id="event-button-edit-${this.event.eventId}" data-privilege="teacher"><span class="material-icons" >edit</span></button>
             <button class="icon-button event-controls" id="event-button-delete-${this.event.eventId}" data-privilege="teacher"><span class="material-icons">clear</span></button>
-            <button class="icon-button toggle-event-details" id="toggle-event-details-${this.event.eventId}">+</button>
+            <button class="button visibility-button toggle-event-details" id="toggle-event-details-${this.event.eventId}"><span class='material-icons'>visibility_off</span></button>
     </div>
     <div class="events-title">
         <span id="event-title-text-${this.event.eventId}" style="font-style: italic;"></span> | <span id="start-date-${this.event.eventId}"></span> - <span id="end-date-${this.event.eventId}"></span>
@@ -41,6 +41,11 @@ class EventView {
         document.getElementById(`event-title-text-${this.event.eventId}`).innerText = this.event.name;
         this.description.innerText = "Description: " + this.event.description;
         this.eventSprints.innerHTML = this.getSprints();
+        this.sprints.forEach((sprint) => {
+            if (document.getElementById(`event-sprint-name-${sprint.id}`)) {
+                document.getElementById(`event-sprint-name-${sprint.id}`).innerText = sprint.name + ': '
+            }
+        })
         document.getElementById(`start-date-${this.event.eventId}`).innerText = DatetimeUtils.localToUserDMY(this.event.startDate);
         const displayedDate = new Date(this.event.endDate.valueOf());
         if (DatetimeUtils.getTimeStringIfNonZeroLocally(this.event.endDate) === null) {
@@ -55,11 +60,11 @@ class EventView {
     toggleExpandedView() {
         if (this.expandedView) {
             this.details.style.display = "none";
-            this.toggleButton.innerText = "+";
+            this.toggleButton.innerHTML = "<span class='material-icons'>visibility_off</span>";
         }
         else {
             this.details.style.display = "block";
-            this.toggleButton.innerText = "-";
+            this.toggleButton.innerHTML = "<span class='material-icons'>visibility</span>";
         }
 
         this.expandedView = !this.expandedView;
@@ -76,7 +81,7 @@ class EventView {
         let html = "";
         this.sprints.forEach(sprint => {
             if (this.event.startDate >= sprint.startDate && this.event.startDate <= sprint.endDate || this.event.endDate >= sprint.startDate && this.event.endDate <= sprint.endDate) {
-                html += `<div class="event-sprint-details" style="color: ${sprint.colour}">   - <span th:text="${sprint.name}: "></span><span>${DatetimeUtils.localToUserDMY(sprint.startDate)}</span> - <span>${DatetimeUtils.localToUserDMY(sprint.endDate)}</span>`;
+                html += `<div class="event-sprint-details" style="color: ${sprint.colour}">   - <span id="event-sprint-name-${sprint.id}"></span><span>${DatetimeUtils.localToUserDMY(sprint.startDate)}</span> - <span>${DatetimeUtils.localToUserDMY(sprint.endDate)}</span>`;
             }
         });
         if (html === "") {

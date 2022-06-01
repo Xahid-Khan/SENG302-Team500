@@ -20,7 +20,7 @@ class MilestoneView {
     <div class="crud">
         <button class="icon-button milestone-controls" id="milestone-button-edit-${this.milestone.milestoneId}" data-privilege="teacher"><span class="material-icons">edit</span></button>
         <button class="icon-button milestone-controls" id="milestone-button-delete-${this.milestone.milestoneId}" data-privilege="teacher"><span class="material-icons">clear</span></button>
-        <button class="icon-button toggle-milestone-details" id="toggle-milestone-details-${this.milestone.milestoneId}">+</i></button>
+        <button class="button visibility-button toggle-milestone-details" id="toggle-milestone-details-${this.milestone.milestoneId}"><span class='material-icons'>visibility_off</span></i></button>
     </div>
     <div class="events-title">
         <span id="milestone-title-text-${this.milestone.milestoneId}" style="font-style: italic;"></span> | <span id="start-date-${this.milestone.milestoneId}"></span> - <span id="end-date-${this.milestone.milestoneId}"></span>
@@ -41,6 +41,11 @@ class MilestoneView {
         document.getElementById(`milestone-title-text-${this.milestone.milestoneId}`).innerText = this.milestone.name;
         this.description.innerText = "Description: " + this.milestone.description;
         this.milestoneSprints.innerHTML = this.getSprints();
+        this.sprints.forEach((sprint) => {
+            if (document.getElementById(`milestone-sprint-name-${sprint.id}`)) {
+                document.getElementById(`milestone-sprint-name-${sprint.id}`).innerText = sprint.name + ': '
+            }
+        })
         document.getElementById(`start-date-${this.milestone.milestoneId}`).innerText = DatetimeUtils.localToUserDMY(this.milestone.startDate);
         const displayedDate = new Date(this.milestone.endDate.valueOf());
         displayedDate.setDate(displayedDate.getDate() - 1);
@@ -53,10 +58,10 @@ class MilestoneView {
     toggleExpandedView() {
         if (this.expandedView) {
             this.details.style.display = "none";
-            this.toggleButton.innerText = "+";
+            this.toggleButton.innerHtml = "<span class='material-icons'>visibility_off</span>";
         } else {
             this.details.style.display = "block";
-            this.toggleButton.innerText = "-";
+            this.toggleButton.innerHTML = "<span class='material-icons'>visibility</span>";
         }
 
         this.expandedView = !this.expandedView;
@@ -73,7 +78,7 @@ class MilestoneView {
         let html = "<label>Sprints in progress during this milestone: </label>";
         this.sprints.forEach(sprint => {
             if (this.milestone.startDate >= sprint.startDate && this.milestone.startDate <= sprint.endDate || this.milestone.endDate >= sprint.startDate && this.milestone.endDate <= sprint.endDate) {
-                html += `<div class="milestone-sprint-details"  style="color: ${sprint.colour}">   - <span th:text="${sprint.name}: "></span><span>${DatetimeUtils.localToUserDMY(sprint.startDate)}</span> - <span>${DatetimeUtils.localToUserDMY(sprint.endDate)}</span>`;
+                html += `<div class="milestone-sprint-details"  style="color: ${sprint.colour}">   - <span id="milestone-sprint-name-${sprint.id}"></span><span>${DatetimeUtils.localToUserDMY(sprint.startDate)}</span> - <span>${DatetimeUtils.localToUserDMY(sprint.endDate)}</span>`;
             }
         });
         if (html === "<label>Sprints in progress during this milestone: </label>") {

@@ -30,7 +30,7 @@ class SprintView {
         <span class="crud">
             <button class="icon-button sprint-controls" id="sprint-button-edit-${this.sprint.sprintId}" data-privilege="teacher"><span class="material-icons md-11">edit</span></button>
             <button class="icon-button sprint-controls" id="sprint-button-delete-${this.sprint.sprintId}" data-privilege="teacher"><span class="material-icons md-11">clear</span></button>
-            <button class="icon-button toggle-sprint-details" id="toggle-sprint-details-${this.sprint.sprintId}">+</button>
+            <button class="button visibility-button toggle-sprint-details" id="toggle-sprint-details-${this.sprint.sprintId}"><span class='material-icons'>visibility_off</span></button>
         </span>
     </div>
 
@@ -55,8 +55,23 @@ class SprintView {
         document.getElementById(`sprint-title-text-${this.sprint.sprintId}`).innerText = this.sprint.name;
         this.description.innerText = this.sprint.description;
         this.sprintEvents.innerHTML = this.getEvents();
+        this.events.forEach((event) => {
+            if (document.getElementById(`sprint-event-name-${event.eventId}`)) {
+                document.getElementById(`sprint-event-name-${event.eventId}`).innerText = event.name + ': '
+            }
+        })
         this.sprintDeadlines.innerHTML = this.getDeadlines();
+        this.deadlines.forEach((deadline) => {
+            if (document.getElementById(`sprint-deadline-name-${deadline.deadlineId}`)) {
+                document.getElementById(`sprint-deadline-name-${deadline.deadlineId}`).innerText = deadline.name + ': '
+            }
+        })
         this.sprintMilestones.innerHTML = this.getMilestones();
+        this.milestones.forEach((milestone) => {
+            if (document.getElementById(`sprint-milestone-name-${milestone.milestoneId}`)) {
+                document.getElementById(`sprint-milestone-name-${milestone.milestoneId}`).innerText = milestone.name + ': '
+            }
+        })
         this.colourBlock.style.background = this.sprint.colour;
         document.getElementById(`start-date-${this.sprint.sprintId}`).innerText = DatetimeUtils.localToUserDMY(this.sprint.startDate);
         const displayedDate = new Date(this.sprint.endDate.valueOf());
@@ -73,11 +88,11 @@ class SprintView {
     toggleExpandedView() {
         if (this.expandedView) {
             this.details.style.display = "none";
-            this.toggleButton.innerText = "+";
+            this.toggleButton.innerHTML = "<span class='material-icons'>visibility_off</span>";
         }
         else {
             this.details.style.display = "block";
-            this.toggleButton.innerText = "-";
+            this.toggleButton.innerHTML = "<span class='material-icons'>visibility</span>";
         }
 
         this.expandedView = !this.expandedView;
@@ -94,7 +109,7 @@ class SprintView {
         let html = "";
         this.events.forEach(event => {
             if (event.startDate >= this.sprint.startDate && event.startDate <= this.sprint.endDate || event.endDate >= this.sprint.startDate && event.endDate <= this.sprint.endDate) {
-                html += `<span class="material-icons">event</span> <span th:text="${event.name}: "></span>`
+                html += `<span class="material-icons">event</span> <span id="sprint-event-name-${event.eventId}"></span>`
                 if (event.startDate >= this.sprint.startDate && event.startDate <= this.sprint.endDate) {
                     html += `<span style="color: ${this.sprint.colour}">${DatetimeUtils.localToUserDMY(event.startDate)}</span> - `;
                 } else {
@@ -137,7 +152,7 @@ class SprintView {
         let html = "";
         this.deadlines.forEach(deadline => {
             if (deadline.startDate >= this.sprint.startDate && deadline.startDate <= this.sprint.endDate) {
-                html += `<span class="material-icons">timer</span> <span th:text="${deadline.name}: "></span> <span style="color: ${this.sprint.colour}">${DatetimeUtils.localToUserDMY(deadline.startDate)}</span>`;
+                html += `<span class="material-icons">timer</span> <span id="sprint-deadline-name-${deadline.deadlineId}"></span> <span style="color: ${this.sprint.colour}">${DatetimeUtils.localToUserDMY(deadline.startDate)}</span>`;
             }
         });
         if (html === "") {
@@ -152,7 +167,7 @@ class SprintView {
         let html = "";
         this.milestones.forEach(milestone => {
             if (milestone.startDate >= this.sprint.startDate && milestone.startDate <= this.sprint.endDate) {
-                html += `<span class="material-icons">flag</span> <span th:text="${milestone.name}: "></span> <span style="color: ${this.sprint.colour}">${DatetimeUtils.localToUserDMY(milestone.startDate)}</span><br>`;
+                html += `<span class="material-icons">flag</span> <span id="sprint-milestone-name-${milestone.milestoneId}"></span> <span style="color: ${this.sprint.colour}">${DatetimeUtils.localToUserDMY(milestone.startDate)}</span><br>`;
             }
         });
         if (html === "") {

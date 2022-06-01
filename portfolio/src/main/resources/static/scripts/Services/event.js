@@ -1,13 +1,11 @@
 class Event {
-    constructor(containerElement, data, project, deleteCallback, eventUpdateSavedCallback, eventEditCallback, loadEventsCallback) {
+    constructor(containerElement, data, project, deleteCallback, eventUpdateSavedCallback) {
         this.containerElement = containerElement;
         this.project = project;
         this.event = data;
         this.eventUpdateSavedCallback = eventUpdateSavedCallback;
         this.deleteCallback = deleteCallback;
-        this.eventEditCallback = eventEditCallback;
         this.updateEventLoadingStatus = LoadingStatus.NotYetAttempted;
-        this.loadEventsCallback = loadEventsCallback;
 
         this.currentView = null;
         this.showViewer();
@@ -59,7 +57,6 @@ class Event {
      * Shows event editing view.
      */
     showEditor() {
-        this.eventEditCallback();
         this.currentView?.dispose();
         this.currentView = new Editor(
             this.containerElement,
@@ -68,6 +65,7 @@ class Event {
             this.showViewer.bind(this),
             this.updateEvent.bind(this),
             Editor.makeProjectEventDatesValidator(this.project),
+            this.project,
             true
         );
     }
@@ -76,7 +74,6 @@ class Event {
      * Refreshes view, disposing of the previous view and reloading it.
      */
     showViewer() {
-        this.loadEventsCallback();
         this.currentView?.dispose();
         this.currentView = new EventView(this.containerElement, this.project.sprints, this.event, this.deleteEvent.bind(this), this.showEditor.bind(this));
     }

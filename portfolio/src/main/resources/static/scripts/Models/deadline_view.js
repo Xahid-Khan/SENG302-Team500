@@ -20,7 +20,7 @@ class DeadlineView {
     <div class="crud">
             <button class="icon-button deadline-controls" id="deadline-button-edit-${this.deadline.deadlineId}" data-privilege="teacher"><span class="material-icons">edit</span></button>
             <button class="icon-button deadline-controls" id="deadline-button-delete-${this.deadline.deadlineId}" data-privilege="teacher"><span class="material-icons">clear</span></button>
-            <button class="icon-button toggle-deadline-details" id="toggle-deadline-details-${this.deadline.deadlineId}">+</button>
+            <button class="button visibility-button toggle-deadline-details" id="toggle-deadline-details-${this.deadline.deadlineId}"><span class='material-icons'>visibility_off</span></button>
     </div>
     <div class="events-title">
         <span id="deadline-title-text-${this.deadline.deadlineId}" style="font-style: italic;"></span> | <span id="start-date-${this.deadline.deadlineId}"></span> - <span id="end-date-${this.deadline.deadlineId}"></span>
@@ -42,6 +42,11 @@ class DeadlineView {
         document.getElementById(`deadline-title-text-${this.deadline.deadlineId}`).innerText = this.deadline.name;
         this.description.innerText = "Description: " + this.deadline.description;
         this.deadlineSprints.innerHTML = this.getSprints();
+        this.sprints.forEach((sprint) => {
+            if (document.getElementById(`deadline-sprint-name-${sprint.id}`)) {
+                document.getElementById(`deadline-sprint-name-${sprint.id}`).innerText = sprint.name + ': '
+            }
+        })
         document.getElementById(`start-date-${this.deadline.deadlineId}`).innerText = DatetimeUtils.localToUserDMY(this.deadline.startDate);
         const displayedDate = new Date(this.deadline.endDate.valueOf());
         displayedDate.setDate(displayedDate.getDate() - 1);
@@ -54,11 +59,11 @@ class DeadlineView {
     toggleExpandedView() {
         if (this.expandedView) {
             this.details.style.display = "none";
-            this.toggleButton.innerText = "+";
+            this.toggleButton.innerHTML = "<span class='material-icons'>visibility_off</span>";
         }
         else {
             this.details.style.display = "block";
-            this.toggleButton.innerText = "-";
+            this.toggleButton.innerHTML = "<span class='material-icons'>visibility</span>";
         }
 
         this.expandedView = !this.expandedView;
@@ -75,7 +80,7 @@ class DeadlineView {
         let html = "<label>Sprints in progress during this deadline: </label>";
         this.sprints.forEach(sprint => {
             if (this.deadline.startDate >= sprint.startDate && this.deadline.startDate <= sprint.endDate || this.deadline.endDate >= sprint.startDate && this.deadline.endDate <= sprint.endDate) {
-                html += `<div class="deadline-sprint-details"  style="color: ${sprint.colour}">   - <span th:text="${sprint.name}: "></span><span>${DatetimeUtils.localToUserDMY(sprint.startDate)}</span> - <span>${DatetimeUtils.localToUserDMY(sprint.endDate)}</span>`;
+                html += `<div class="deadline-sprint-details"  style="color: ${sprint.colour}">   - <span id="deadline-sprint-name-${sprint.id}"></span><span>${DatetimeUtils.localToUserDMY(sprint.startDate)}</span> - <span>${DatetimeUtils.localToUserDMY(sprint.endDate)}</span>`;
             }
         });
         if (html === "<label>Sprints in progress during this deadline: </label>") {

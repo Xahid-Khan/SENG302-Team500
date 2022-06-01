@@ -1,14 +1,11 @@
 class Deadline {
-    constructor(containerElement, data, project, deleteCallback, deadlineUpdateSavedCallback, deadlineEditCallback, loadEventsCallback) {
+    constructor(containerElement, data, project, deleteCallback, deadlineUpdateSavedCallback) {
         this.containerElement = containerElement;
         this.project = project;
         this.deadline = data;
         this.deadlineUpdateSavedCallback = deadlineUpdateSavedCallback;
         this.deleteCallback = deleteCallback;
         this.updatedeadlineLoadingStatus = LoadingStatus.NotYetAttempted;
-        this.deadlineEditCallback = deadlineEditCallback;
-        this.loadEventsCallback = loadEventsCallback;
-
         this.currentView = null;
         this.showViewer();
     }
@@ -59,7 +56,6 @@ class Deadline {
      * Shows deadline editing view.
      */
     showEditor() {
-        this.deadlineEditCallback();
         this.currentView?.dispose();
         this.currentView = new Editor(
             this.containerElement,
@@ -67,7 +63,8 @@ class Deadline {
             this.deadline,
             this.showViewer.bind(this),
             this.updateDeadline.bind(this),
-            Editor.makeProjectDeadlineDatesValidator(this.project)
+            Editor.makeProjectDeadlineDatesValidator(this.project),
+            this.project
         );
     }
 
@@ -75,7 +72,6 @@ class Deadline {
      * Refreshes view, disposing of the previous view and reloading it.
      */
     showViewer() {
-        this.loadEventsCallback();
         this.currentView?.dispose();
         this.currentView = new DeadlineView(this.containerElement, this.project.sprints, this.deadline, this.deleteDeadline.bind(this), this.showEditor.bind(this));
     }

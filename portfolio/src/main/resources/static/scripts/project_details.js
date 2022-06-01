@@ -146,7 +146,7 @@ class Application {
 
     this.addProjectForm = {
       container: formContainerElement,
-      controller: new Editor(formContainerElement, "New project details:", defaultProject, this.closeAddProjectForm.bind(this), this.submitAddProjectForm.bind(this))
+      controller: new Editor(formContainerElement, "New project details:", defaultProject, this.closeAddProjectForm.bind(this), this.submitAddProjectForm.bind(this), defaultProject)
     };
   }
 

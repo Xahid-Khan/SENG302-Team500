@@ -1,13 +1,11 @@
 class Milestone {
-    constructor(containerElement, data, project, deleteCallback, milestoneUpdateSavedCallback, milestoneEditCallback, loadEventsCallback) {
+    constructor(containerElement, data, project, deleteCallback, milestoneUpdateSavedCallback) {
         this.containerElement = containerElement;
         this.project = project;
         this.milestone = data;
         this.milestoneUpdateSavedCallback = milestoneUpdateSavedCallback;
         this.deleteCallback = deleteCallback;
         this.updatemilestoneLoadingStatus = LoadingStatus.NotYetAttempted;
-        this.milestoneEditCallback = milestoneEditCallback;
-        this.loadEventsCallback = loadEventsCallback;
 
         this.currentView = null;
         this.showViewer();
@@ -59,7 +57,6 @@ class Milestone {
      * Shows milestone editing view.
      */
     showEditor() {
-        this.milestoneEditCallback();
         this.currentView?.dispose();
         this.currentView = new Editor(
             this.containerElement,
@@ -67,7 +64,8 @@ class Milestone {
             this.milestone,
             this.showViewer.bind(this),
             this.updateMilestone.bind(this),
-            Editor.makeProjectMilestoneDatesValidator(this.project)
+            Editor.makeProjectMilestoneDatesValidator(this.project),
+            this.project
         );
     }
 
@@ -75,7 +73,6 @@ class Milestone {
      * Refreshes view, disposing of the previous view and reloading it.
      */
     showViewer() {
-        this.loadEventsCallback();
         this.currentView?.dispose();
         this.currentView = new MilestoneView(this.containerElement, this.project.sprints, this.milestone, this.deleteMilestone.bind(this), this.showEditor.bind(this));
     }

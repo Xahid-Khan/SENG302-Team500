@@ -11,6 +11,8 @@ body {
     margin: 5px;
     width: 100%;
     display: none;
+    max-height: 750px;
+    overflow-y: auto;
 }
 
 .sprints {
@@ -29,19 +31,11 @@ body {
     padding-right: 5px;
 }
 
-.events-title span{
-    font-size: 16px;
-}
-
 .sprint-events-details {
     padding-left: 10px;
 }
 
 .sprint-events-details span {
-    font-size: 14px;
-}
-
-.crud span {
     font-size: 14px;
 }
 
@@ -65,13 +59,11 @@ body {
 }
 
 .icon-button {
-    background-color: #ededec;
+    background-color: transparent;
     color: black;
-    border: thin solid;
-    padding: 2px;
+    padding: 3px;
     border-radius: 6px;
     margin: 0;
-    font-size: 18px;
 }
 
 .icon-button:hover {
@@ -80,7 +72,7 @@ body {
 }
 
 .icon-button span {
-    font-size: 14px;
+    font-size: 20px;
 }
 
 .project-view {
@@ -149,17 +141,9 @@ body {
     padding: 0 84px 45px 45px;
 }
 
-.edit-project {
-    margin-right: 5px;
-}
-
 .toggle-view-controls {
     display: flex;
     justify-content: right;
-    margin-right: 5px;
-}
-
-.sprint-controls {
     margin-right: 5px;
 }
 
@@ -187,6 +171,15 @@ body {
     margin-bottom: 10px;
 }
 
+.date-input {
+    margin-bottom: 5px;
+    width: 182px;
+}
+
+.input-name {
+    width: 140px;
+}
+
 .crud {
     float: right;
     padding-left: 5px;
@@ -205,6 +198,10 @@ textarea {
     resize: none;
 }
 
+.input-length {
+    white-space: nowrap;
+}
+
 .edit-section-title {
     font-size: 25px;
     font-weight: bold;
@@ -217,10 +214,6 @@ textarea {
 
 .user-inputs {
     padding-left: 20px;
-}
-
-.user-inputs input {
-    width: 140px;
 }
 
 .save-buttons {
@@ -246,7 +239,47 @@ textarea {
     font-weight: bold;
 }
 
-@media only screen and (max-width: 1175px) {
+.input-end-time {
+    margin-bottom: 5px;
+}
+
+.visibility-button {
+    background-color: transparent;
+    color: black;
+    padding: 3px;
+}
+
+.visibility-button span {
+    font-size: 20px;
+}
+
+.visibility-button:hover {
+    background-color: transparent;
+}
+
+.toggle-project-details {
+    float: right;
+    padding: 2px;
+}
+
+.date-collisions p {
+    padding-left: 10px;
+    color: red;
+    margin: 5px 0;
+}
+
+@media only screen and (max-width: 1590px) {
+
+    .input-start-time {
+        margin-left: 92px;
+    }
+
+    .input-end-time {
+        margin-left: 87px;
+    }
+}
+
+@media only screen and (max-width: 1300px) {
 
     .project-events {
         display: block;
@@ -254,6 +287,10 @@ textarea {
 
     .events {
         width: 95%;
+    }
+
+    .input-start-time, .input-end-time {
+        margin-left: 0;
     }
 
 }

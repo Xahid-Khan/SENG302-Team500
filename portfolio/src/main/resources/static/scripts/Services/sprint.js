@@ -68,7 +68,8 @@ class Sprint {
             this.sprint,
             this.showViewer.bind(this),
             this.updateSprint.bind(this),
-            Editor.makeProjectSprintDatesValidator(this.project, this.sprint.sprintId)
+            Editor.makeProjectSprintDatesValidator(this.project, this.sprint.sprintId),
+            this.project
         );
     }
 
