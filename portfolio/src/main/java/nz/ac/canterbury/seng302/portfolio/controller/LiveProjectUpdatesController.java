@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -18,8 +19,8 @@ public class LiveProjectUpdatesController {
 
     @MessageMapping("/ping")
     @SendTo("/topic/pongs")
-    public String ping(@AuthenticationPrincipal Principal principal, String message) throws Exception {
-        var authState = (AuthState) ((PreAuthenticatedAuthenticationToken) principal).getPrincipal();
+    public String ping(@AuthenticationPrincipal PreAuthenticatedAuthenticationToken principal, String message) throws Exception {
+        var authState = (PortfolioPrincipal) principal.getPrincipal();
         return String.format("Pong %s (Also, hi %s!)", message, authState.getName());
     }
 }

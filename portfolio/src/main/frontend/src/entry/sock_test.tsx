@@ -11,11 +11,11 @@ import {
     LoadingStatus
 } from "../util/network/loading_status";
 import SockJS from "sockjs-client";
-import {Stomp} from "stompjs/lib/stomp";
+import {Stomp, CompatClient as StompClient, Message as StompMessage} from "@stomp/stompjs";
 
 class PingPageStore {
     socket: WebSocket
-    readonly stomp: Stomp.Client
+    readonly stomp: StompClient
 
     connectStatus: LoadingStatus = new LoadingNotYetAttempted()
 
@@ -36,7 +36,7 @@ class PingPageStore {
             start: action
         })
 
-        this.socket = new SockJS("socket");
+        this.socket = new WebSocket("ws://localhost:9000/socket");
         this.stomp = Stomp.over(this.socket)
 
         console.log("Created new PingPageStore.")
@@ -89,7 +89,7 @@ class PingPageStore {
 
         this.stomp.connect(
             {},
-            (frame: Stomp.Message) => {
+            (frame: StompMessage) => {
                 // Connected
                 console.log("Connected", frame)
                 runInAction(() => {
@@ -102,7 +102,7 @@ class PingPageStore {
         )
     }
 
-    protected onReceivePong(frame: Stomp.Message) {
+    protected onReceivePong(frame: StompMessage) {
         runInAction(() => {
             this.pongArray.push(frame.body)
         })
@@ -110,7 +110,7 @@ class PingPageStore {
 
     protected subscribe(): void {
         console.log("Subscribing...")
-        this.stomp.subscribe("/topic/pongs", (frame: Stomp.Message) => {
+        this.stomp.subscribe("/topic/pongs", (frame: StompMessage) => {
             this.onReceivePong(frame)
         })
     }
