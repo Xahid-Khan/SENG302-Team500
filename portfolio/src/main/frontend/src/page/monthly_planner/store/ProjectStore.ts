@@ -29,6 +29,9 @@ export class ProjectStore {
     constructor(project: ProjectContract) {
         makeObservable(this, {
             sprints: observable,
+            events: observable,
+            milesStones: observable,
+            deadlines: observable,
 
             sprintsSaving: computed,
 

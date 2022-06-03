@@ -85,7 +85,7 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
      * this method reads all the events and convert them into dictionary where key is the date and value is a list
      * of events
      */
-    const eventToDictionary = () => {
+    const eventsToDictionary = () => {
         project.events.map((event) => {
             let startDate = new Date(event.startDate);
             while (startDate <= new Date(event.endDate)) {
@@ -107,6 +107,7 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
                     backgroundColor: "rgba(52, 52, 52, 0.0)",
                     textColor: "black",
                     title: "",
+                    editable:false,
                     allDay: true,
                 }))
 
@@ -134,6 +135,7 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
             backgroundColor: "rgba(52, 52, 52, 0.0)",
             textColor: "black",
             title: "",
+            editable:false,
             allDay: true,
         }))
 
@@ -161,19 +163,20 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
             backgroundColor: "rgba(52, 52, 52, 0.0)",
             textColor: "black",
             title: "",
+            editable:false,
             allDay: true,
         }))
     }
 
     mileStonesToDictionary();
-    eventToDictionary();
+    eventsToDictionary();
     deadLinesToDictionary()
 
     /**
      * this method will get the event ID which is the date and see if we have any events / deadlines / milestones for that day.
      * there could be more than one kind of even on the same day to so distinguish between events each event id will have
      * "ES" / "DL" / "MS" suffix at the end of the id separated by "_".
-     * @param eventInfo id of the event can be retrieved from evetnInfo of the day.
+     * @param eventInfo id of the event can be retrieved from eventInfo of the day.
      */
     function renderEventIcons(eventInfo: any) {
         if (eventInfo.event.title.includes("Sprint")) {
@@ -200,7 +203,7 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
                     {
                         eventInfo.event.id.split("_")[1] === "MS"?
                         <div>
-                            <span className="material-icons" style={{float: "left"}}>timer</span>
+                            <span className="material-icons" style={{float: "left"}}>flag</span>
                             <p style={{float: "left", margin: "3px 0 0 15px"}}>
                                 {milestoneDictionary.get(eventInfo.event.id.split("_")[0]).length}
                             </p>
@@ -211,7 +214,7 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
                     {
                         eventInfo.event.id.split("_")[1] === "DL"?
                         <div>
-                            <span className="material-icons" style={{float: "left"}}>flag</span>
+                            <span className="material-icons" style={{float: "left"}}>timer</span>
                             <p style={{float: "left", margin: "3px 0 0 15px"}}>
                                 {deadlineDictionary.get(eventInfo.event.id.split("_")[0]).length}
                             </p>
@@ -237,7 +240,6 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
                 editable={!project.sprintsSaving && (window as any) != null ? (window as any).userCanEdit : false} // We shouldn't allow sprints to be updated while we're still trying to save an earlier update, since this could lead to overlapping sprints.
                 eventResizableFromStart
                 eventOverlap={false}
-                eventBorderColor={"transparent"}
                 eventConstraint={projectRange}
                 eventChange={onSaveDatesCallback}
                 /* Calendar config */
