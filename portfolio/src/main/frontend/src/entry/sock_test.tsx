@@ -13,6 +13,11 @@ import {
 import SockJS from "sockjs-client";
 import {Client as StompClient, Message as StompMessage} from "@stomp/stompjs";
 
+/**
+ * MobX-enabled store for the Ping/Socket Test page.
+ *
+ * This serves as a basic working model of how to use WebSockets with Spring Boot.
+ */
 class PingPageStore {
     readonly stomp: StompClient
 
