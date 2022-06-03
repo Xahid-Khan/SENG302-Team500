@@ -11,10 +11,9 @@ import {
     LoadingStatus
 } from "../util/network/loading_status";
 import SockJS from "sockjs-client";
-import {Stomp, CompatClient as StompClient, Message as StompMessage} from "@stomp/stompjs";
+import {Client as StompClient, Message as StompMessage} from "@stomp/stompjs";
 
 class PingPageStore {
-    socket: WebSocket
     readonly stomp: StompClient
 
     connectStatus: LoadingStatus = new LoadingNotYetAttempted()
@@ -24,7 +23,6 @@ class PingPageStore {
 
     constructor() {
         makeObservable(this, {
-            socket: observable,
             connectStatus: observable,
             pongArray: observable,
             nextPingValue: observable,
@@ -36,8 +34,11 @@ class PingPageStore {
             start: action
         })
 
-        this.socket = new WebSocket("ws://localhost:9000/socket");
-        this.stomp = Stomp.over(this.socket)
+        this.stomp = new StompClient({
+            webSocketFactory: () => new SockJS("/socket"),
+            connectionTimeout: 10000,
+            debug: (msg) => console.log(new Date(), msg)
+        })
 
         console.log("Created new PingPageStore.")
     }
@@ -53,7 +54,10 @@ class PingPageStore {
     sendPing() {
         console.log("Attempting to send ping...")
         if (this.connected) {
-            this.stomp.send("/app/ping", {}, this.nextPingValue)
+            this.stomp.publish({
+                destination: "/app/ping",
+                body: this.nextPingValue
+            })
         }
     }
 
@@ -61,19 +65,9 @@ class PingPageStore {
         await new Promise<void>((res) => {
             this.connect(res)
         })
-        if (this.connected) {
-            this.subscribe()
-        }
-        else {
+        if (!this.connected) {
             throw new Error("Connect resolved but we aren't connected yet!")
         }
-    }
-
-    protected onStompError(errorMaybe?: any) {
-        console.log("Error!")
-        runInAction(() => {
-            this.connectStatus = new LoadingError(errorMaybe)
-        })
     }
 
     protected connect(onConnected: VoidFunction): void {
@@ -83,23 +77,43 @@ class PingPageStore {
             return
         }
 
-        runInAction(() => {
-            this.connectStatus = new LoadingPending()
-        })
+        this.stomp.beforeConnect = () => {
+            runInAction(() => {
+                this.connectStatus = new LoadingPending()
+            })
+        }
+        this.stomp.onConnect = (frame: StompMessage) => {
+            // Connected
+            console.log("Connected")
+            runInAction(() => {
+                this.connectStatus = new LoadingDone()
+                this.subscribe()
+            })
 
-        this.stomp.connect(
-            {},
-            (frame: StompMessage) => {
-                // Connected
-                console.log("Connected", frame)
-                runInAction(() => {
-                    this.connectStatus = new LoadingDone()
-                })
+            onConnected()
+        }
+        this.stomp.onStompError = (err: StompMessage) => {
+            // Error
+            console.log("Error!")
+            runInAction(() => {
+                this.connectStatus = new LoadingError(err)
+            })
+        }
+        this.stomp.onWebSocketError = (evt) => {
+            // Error
+            console.log("Error!")
+            runInAction(() => {
+                this.connectStatus = new LoadingError(evt)
+            })
+        }
+        this.stomp.onWebSocketClose = (evt) => {
+            console.log("Socket closed!")
+            runInAction(() => {
+                this.connectStatus = new LoadingError(evt)
+            })
+        }
 
-                onConnected()
-            },
-            this.onStompError.bind(this)
-        )
+        this.stomp.activate()
     }
 
     protected onReceivePong(frame: StompMessage) {
@@ -128,6 +142,10 @@ const PingPage: React.FC = observer(() => {
     return (
         <div>
             <div>{store.connectStatus.constructor.name}</div>
+
+            {(store.connectStatus instanceof LoadingError) && (
+                <div>Error details: {JSON.stringify(store.connectStatus.error)}</div>
+            )}
 
             <input type='text' value={store.nextPingValue} onChange={(evt) => store.setNextPingValue(evt.target.value)} placeholder='Next Ping value'/>
             <button onClick={() => store.sendPing()}>Send Ping</button>
