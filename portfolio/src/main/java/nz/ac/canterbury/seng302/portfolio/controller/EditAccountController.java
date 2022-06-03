@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import io.grpc.StatusRuntimeException;
 import nz.ac.canterbury.seng302.portfolio.DTO.EditedUserValidation;
 import nz.ac.canterbury.seng302.portfolio.DTO.User;
+import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
 import nz.ac.canterbury.seng302.portfolio.service.UploadPhotoService;
@@ -40,7 +41,7 @@ public class EditAccountController {
     private AuthStateService authStateService;
 
   @GetMapping(value = "/edit_account")
-  public String getPage(Model model, @AuthenticationPrincipal AuthState principal) {
+  public String getPage(Model model, @AuthenticationPrincipal PortfolioPrincipal principal) {
 
     Integer userId = authStateService.getId(principal);
 
@@ -71,7 +72,7 @@ public class EditAccountController {
       @ModelAttribute @Validated(EditedUserValidation.class) User user,
       BindingResult bindingResult,
       Model model,
-      @AuthenticationPrincipal AuthState principal,
+      @AuthenticationPrincipal PortfolioPrincipal principal,
       @RequestParam(value = "image", required = false) MultipartFile file) {
 
     if (bindingResult.hasErrors()) {
@@ -112,7 +113,7 @@ public class EditAccountController {
      * @return a String to redirect the page to.
      */
     @PostMapping(value = "/edit_account/imageDelete")
-    public String deleteUserPhoto(@AuthenticationPrincipal AuthState principal, @ModelAttribute User user, Model model) {
+    public String deleteUserPhoto(@AuthenticationPrincipal PortfolioPrincipal principal, @ModelAttribute User user, Model model) {
 
         int userId = authStateService.getId(principal);
         registerClientService.deleteUserPhoto(userId);

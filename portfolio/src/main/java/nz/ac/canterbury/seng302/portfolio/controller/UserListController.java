@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.portfolio.model.GetPaginatedUsersOrderingElement;
 import nz.ac.canterbury.seng302.portfolio.model.entity.SortingParameterEntity;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
@@ -35,7 +36,7 @@ public class UserListController {
 
     @GetMapping("/user-list")
     public String listUsers(
-            @AuthenticationPrincipal AuthState principal,
+            @AuthenticationPrincipal PortfolioPrincipal principal,
             @RequestParam("page") Optional<Integer> pageMaybe,
             @RequestParam("sortBy") Optional<String> sortAttributeMaybe,
             @RequestParam("asc") Optional<Boolean> ascendingMaybe,
@@ -128,23 +129,23 @@ public class UserListController {
     }
 
     @PostMapping("/user-list")
-    public String addRole(@AuthenticationPrincipal AuthState principal,
+    public String addRole(@AuthenticationPrincipal PortfolioPrincipal principal,
                           Model model,
                           @RequestParam(name="id") Integer id,
                           @RequestParam(name="roleNumber") Integer roleNumber) {
 
-        modifyRole(principal, model, id, roleNumber, true);
+        modifyRole(principal.authState(), model, id, roleNumber, true);
 
         return listUsers(principal, Optional.empty(), Optional.empty(), Optional.empty(), model);
     }
 
     @DeleteMapping("/user-list")
-    public String deleteRole(@AuthenticationPrincipal AuthState principal,
+    public String deleteRole(@AuthenticationPrincipal PortfolioPrincipal principal,
                              Model model,
                              @RequestParam(name="id") Integer id,
                              @RequestParam(name="roleNumber") Integer roleNumber) {
 
-        modifyRole(principal, model, id, roleNumber, false);
+        modifyRole(principal.authState(), model, id, roleNumber, false);
 
         return listUsers(principal, Optional.empty(), Optional.empty(), Optional.empty(), model);
     }

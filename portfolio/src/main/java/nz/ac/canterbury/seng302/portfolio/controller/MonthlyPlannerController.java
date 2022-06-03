@@ -35,7 +35,7 @@ public class MonthlyPlannerController {
      * @return The monthly_planner html page
      */
     @GetMapping("/monthly-planner/{projectId}")
-    public String getMonthlyPlanner(@AuthenticationPrincipal AuthState principal, Model model) {
+    public String getMonthlyPlanner(@AuthenticationPrincipal PortfolioPrincipal principal, Model model) {
 
         Integer userId = authStateService.getId(principal);
 
