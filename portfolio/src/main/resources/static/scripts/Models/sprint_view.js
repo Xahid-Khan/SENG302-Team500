@@ -56,20 +56,20 @@ class SprintView {
         this.description.innerText = this.sprint.description;
         this.sprintEvents.innerHTML = this.getEvents();
         this.events.forEach((event) => {
-            if (document.getElementById(`sprint-event-name-${event.eventId}`)) {
-                document.getElementById(`sprint-event-name-${event.eventId}`).innerText = event.name + ': '
+            if (document.getElementById(`sprint-event-name-${this.sprint.sprintId}-${event.eventId}`)) {
+                document.getElementById(`sprint-event-name-${this.sprint.sprintId}-${event.eventId}`).innerText = event.name + ': '
             }
         })
         this.sprintDeadlines.innerHTML = this.getDeadlines();
         this.deadlines.forEach((deadline) => {
-            if (document.getElementById(`sprint-deadline-name-${deadline.deadlineId}`)) {
-                document.getElementById(`sprint-deadline-name-${deadline.deadlineId}`).innerText = deadline.name + ': '
+            if (document.getElementById(`sprint-deadline-name-${this.sprint.sprintId}-${deadline.deadlineId}`)) {
+                document.getElementById(`sprint-deadline-name-${this.sprint.sprintId}-${deadline.deadlineId}`).innerText = deadline.name + ': '
             }
         })
         this.sprintMilestones.innerHTML = this.getMilestones();
         this.milestones.forEach((milestone) => {
-            if (document.getElementById(`sprint-milestone-name-${milestone.milestoneId}`)) {
-                document.getElementById(`sprint-milestone-name-${milestone.milestoneId}`).innerText = milestone.name + ': '
+            if (document.getElementById(`sprint-milestone-name-${this.sprint.sprintId}-${milestone.milestoneId}`)) {
+                document.getElementById(`sprint-milestone-name-${this.sprint.sprintId}-${milestone.milestoneId}`).innerText = milestone.name + ': '
             }
         })
         this.colourBlock.style.background = this.sprint.colour;
@@ -109,7 +109,7 @@ class SprintView {
         let html = "";
         this.events.forEach(event => {
             if (event.startDate >= this.sprint.startDate && event.startDate <= this.sprint.endDate || event.endDate >= this.sprint.startDate && event.endDate <= this.sprint.endDate) {
-                html += `<span class="material-icons">event</span> <span id="sprint-event-name-${event.eventId}"></span>`
+                html += `<span class="material-icons">event</span> <span id="sprint-event-name-${this.sprint.id}-${event.eventId}"></span>`
                 if (event.startDate >= this.sprint.startDate && event.startDate <= this.sprint.endDate) {
                     html += `<span style="color: ${this.sprint.colour}">${DatetimeUtils.localToUserDMY(event.startDate)}</span> - `;
                 } else {
@@ -152,7 +152,7 @@ class SprintView {
         let html = "";
         this.deadlines.forEach(deadline => {
             if (deadline.startDate >= this.sprint.startDate && deadline.startDate <= this.sprint.endDate) {
-                html += `<span class="material-icons">timer</span> <span id="sprint-deadline-name-${deadline.deadlineId}"></span> <span style="color: ${this.sprint.colour}">${DatetimeUtils.localToUserDMY(deadline.startDate)}</span>`;
+                html += `<span class="material-icons">timer</span> <span id="sprint-deadline-name-${this.sprint.id}-${deadline.deadlineId}"></span> <span style="color: ${this.sprint.colour}">${DatetimeUtils.localToUserDMY(deadline.startDate)}</span>`;
             }
         });
         if (html === "") {
@@ -167,7 +167,7 @@ class SprintView {
         let html = "";
         this.milestones.forEach(milestone => {
             if (milestone.startDate >= this.sprint.startDate && milestone.startDate <= this.sprint.endDate) {
-                html += `<span class="material-icons">flag</span> <span id="sprint-milestone-name-${milestone.milestoneId}"></span> <span style="color: ${this.sprint.colour}">${DatetimeUtils.localToUserDMY(milestone.startDate)}</span><br>`;
+                html += `<span class="material-icons">flag</span> <span id="sprint-milestone-name-${this.sprint.sprintId}-${milestone.milestoneId}"></span> <span style="color: ${this.sprint.colour}">${DatetimeUtils.localToUserDMY(milestone.startDate)}</span><br>`;
             }
         });
         if (html === "") {

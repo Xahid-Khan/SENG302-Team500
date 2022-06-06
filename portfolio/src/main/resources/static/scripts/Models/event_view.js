@@ -42,8 +42,8 @@ class EventView {
         this.description.innerText = "Description: " + this.event.description;
         this.eventSprints.innerHTML = this.getSprints();
         this.sprints.forEach((sprint) => {
-            if (document.getElementById(`event-sprint-name-${sprint.id}`)) {
-                document.getElementById(`event-sprint-name-${sprint.id}`).innerText = sprint.name + ': '
+            if (document.getElementById(`event-sprint-name-${this.event.eventId}-${sprint.sprintId}`)) {
+                document.getElementById(`event-sprint-name-${this.event.eventId}-${sprint.sprintId}`).innerText = sprint.name + ': '
             }
         })
         document.getElementById(`start-date-${this.event.eventId}`).innerText = DatetimeUtils.localToUserDMY(this.event.startDate);
@@ -78,16 +78,16 @@ class EventView {
     }
 
     getSprints() {
-        let html = "";
+        let html = "<label>Sprints in progress during this event: </label>";
+        let foundSprints = false
         this.sprints.forEach(sprint => {
             if (this.event.startDate >= sprint.startDate && this.event.startDate <= sprint.endDate || this.event.endDate >= sprint.startDate && this.event.endDate <= sprint.endDate) {
-                html += `<div class="event-sprint-details" style="color: ${sprint.colour}">   - <span id="event-sprint-name-${sprint.id}"></span><span>${DatetimeUtils.localToUserDMY(sprint.startDate)}</span> - <span>${DatetimeUtils.localToUserDMY(sprint.endDate)}</span>`;
+                html += `<div class="event-sprint-details" style="color: ${sprint.colour}">   - <span id="event-sprint-name-${this.event.eventId}-${sprint.sprintId}"></span><span>${DatetimeUtils.localToUserDMY(sprint.startDate)}</span> - <span>${DatetimeUtils.localToUserDMY(sprint.endDate)}</span>`;
+                foundSprints = true
             }
         });
-        if (html === "") {
-            html += "<label>No sprints are overlapping with this event</label>"
-        } else {
-            html = '<label>Sprints in progress during this event: </label>' + html
+        if (!foundSprints) {
+            html = "<label>No sprints are overlapping with this event</label>"
         }
         return html;
     }

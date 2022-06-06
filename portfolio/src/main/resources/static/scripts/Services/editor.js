@@ -55,7 +55,10 @@ class Editor {
               <input type="color" name="colour" id="edit-colour-${this.entityId}"/>
               <br/>
               <div id="edit-project-date-error-${this.entityId}" class="form-error" style="display: none;"></div><br/>
-              <div id="date-collisions-${this.entityId}" class="date-collisions"></div>
+              <div id="start-date-collisions-${this.entityId}" class="date-collisions"></div>
+              <div id="start-date-collisions-list-${this.entityId}" class="date-collisions-list"></div>
+              <div id="end-date-collisions-${this.entityId}" class="date-collisions"></div>
+              <div id="end-date-collisions-list-${this.entityId}" class="date-collisions-list"></div>
               
               <p>* = Required field.</p>
           </form>
@@ -73,7 +76,10 @@ class Editor {
         this.endDateInput = document.getElementById(`edit-end-date-${this.entityId}`);
         this.startDateLabel  = document.getElementById(`start-date-label-${this.entityId}`);
         this.endDateLabel  = document.getElementById(`end-date-label-${this.entityId}`);
-        this.dateCollisions = document.getElementById(`date-collisions-${this.entityId}`);
+        this.startDateCollisions = document.getElementById(`start-date-collisions-${this.entityId}`);
+        this.endDateCollisions = document.getElementById(`end-date-collisions-${this.entityId}`);
+        this.startDateCollisionsList = document.getElementById(`start-date-collisions-list-${this.entityId}`);
+        this.endDateCollisionsList = document.getElementById(`end-date-collisions-list-${this.entityId}`);
 
         this.colourInput = document.getElementById(`edit-colour-${this.entityId}`);
         if (!(this.title === "New sprint details:") && !(this.title === "Edit sprint details:")) {
@@ -140,7 +146,7 @@ class Editor {
                 displayDate.setHours(displayDate.getHours() + 12)
             }
         }
-        this.startDateInput.value = (this.initialData.startDate) ? this.allowTimeInput ? DatetimeUtils.localToNetworkString(displayDate).slice(0, 19) : DatetimeUtils.toLocalYMD(this.initialData.startDate) : "";
+        this.startDateInput.value = (this.initialData.startDate) ? ( this.allowTimeInput ? DatetimeUtils.localToNetworkString(displayDate).slice(0, 19) : DatetimeUtils.toLocalYMD(this.initialData.startDate) ) : "";
         this.colourInput.value = this.initialData.colour ?? "#000000";
         if (this.initialData.endDate) {
             const displayedDate = new Date(this.initialData.endDate.valueOf());
@@ -305,70 +311,67 @@ class Editor {
     }
 
     getRelatedEvents() {
-        let found = false;
-        let returnString = ""
+        let startFound = false;
+        let endFound = false;
+        let startReturnString = ""
+        let endReturnString = ""
         const startDate = new Date(this.getStartDateInputValue().getFullYear(), this.getStartDateInputValue().getMonth(), this.getStartDateInputValue().getDate());
-        const endDate = new Date(this.getStartDateInputValue().getFullYear(), this.getStartDateInputValue().getMonth(), this.getStartDateInputValue().getDate());
-        if (this.title.includes("event")) {
-            this.project.milestones.forEach((milestone) => {
-                const milestoneNoTime = new Date(milestone.startDate.getFullYear(), milestone.startDate.getMonth(), milestone.startDate.getDate()).getTime();
-                if (milestoneNoTime === startDate.getTime()) {
-                    found = true;
-                    returnString += `<p> Milestone: ${milestone.name}</p>`
-                }
-            })
-            this.project.deadlines.forEach((deadline) => {
-                const deadlineNoTime = new Date(deadline.startDate.getFullYear(), deadline.startDate.getMonth(), deadline.startDate.getDate()).getTime();
-                if (deadlineNoTime === startDate.getTime()) {
-                    found = true;
-                    returnString += `<p> Deadline: ${deadline.name}</p>`
-                }
-            })
-        } else if (this.title.includes("milestone")) {
-            this.project.events.forEach((event) => {
-                const eventStartNoTime = new Date(event.startDate.getFullYear(), event.startDate.getMonth(), event.startDate.getDate()).getTime();
-                const eventEndNoTime = new Date(event.endDate.getFullYear(), event.endDate.getMonth(), event.endDate.getDate()).getTime();
-                if (eventStartNoTime === startDate.getTime()) {
-                    found = true;
-                    returnString += `<p> Event Start Date: ${event.name}</p>`
-                }
-                if (eventEndNoTime === startDate.getTime()) {
-                    found = true;
-                    returnString +=`<p> Event End Date: ${event.name}</p>`
-                }
-            })
-            this.project.deadlines.forEach((deadline) => {
-                const deadlineNoTime = new Date(deadline.startDate.getFullYear(), deadline.startDate.getMonth(), deadline.startDate.getDate()).getTime();
-                if (deadlineNoTime === startDate.getTime()) {
-                    found = true;
-                    returnString += `<p> Deadline: ${deadline.name}</p>`
-                }
-            })
-        } else if (this.title.includes("deadline")) {
-            this.project.events.forEach((event) => {
-                const eventStartNoTime = new Date(event.startDate.getFullYear(), event.startDate.getMonth(), event.startDate.getDate()).getTime();
-                const eventEndNoTime = new Date(event.endDate.getFullYear(), event.endDate.getMonth(), event.endDate.getDate()).getTime();
-                if (eventStartNoTime === startDate.getTime()) {
-                    found = true;
-                    returnString += `<p> Event Start Date: ${event.name}</p>`
-                }
-                if (eventEndNoTime === startDate.getTime()) {
-                    found = true;
-                    returnString +=`<p> Event End Date: ${event.name}</p>`
-                }
-            })
-            this.project.milestones.forEach((milestone) => {
-                const milestoneNoTime = new Date(milestone.startDate.getFullYear(), milestone.startDate.getMonth(), milestone.startDate.getDate()).getTime();
-                if (milestoneNoTime === startDate.getTime()) {
-                    found = true;
-                    returnString += `<p> Milestone: ${milestone.name}</p>`
-                }
-            })
+        const endDate = new Date(this.getEndDateInputValue().getFullYear(), this.getEndDateInputValue().getMonth(), this.getEndDateInputValue().getDate());
+
+        this.project.milestones.forEach((milestone) => {
+            const milestoneNoTime = new Date(milestone.startDate.getFullYear(), milestone.startDate.getMonth(), milestone.startDate.getDate()).getTime();
+            if (milestoneNoTime === startDate.getTime()) {
+                startFound = true;
+                startReturnString += `Milestone: ${milestone.name} \n`
+            }
+            if (endDate && milestoneNoTime === endDate.getTime()) {
+                endFound = true;
+                endReturnString += `Milestone: ${milestone.name} \n`
+            }
+        })
+        this.project.deadlines.forEach((deadline) => {
+            const deadlineNoTime = new Date(deadline.startDate.getFullYear(), deadline.startDate.getMonth(), deadline.startDate.getDate()).getTime();
+            if (deadlineNoTime === startDate.getTime()) {
+                startFound = true;
+                startReturnString += `Deadline: ${deadline.name} \n`
+            }
+            if (endDate && deadlineNoTime === endDate.getTime()) {
+                endFound = true;
+                endReturnString += `Deadline: ${deadline.name} \n`
+            }
+        })
+        this.project.events.forEach((event) => {
+            const eventStartNoTime = new Date(event.startDate.getFullYear(), event.startDate.getMonth(), event.startDate.getDate()).getTime();
+            const eventEndNoTime = new Date(event.endDate.getFullYear(), event.endDate.getMonth(), event.endDate.getDate()).getTime();
+            if (eventStartNoTime === startDate.getTime()) {
+                startFound = true;
+                startReturnString += `Event Start Date: ${event.name} \n`
+            }
+            if (eventEndNoTime === startDate.getTime()) {
+                startFound = true;
+                startReturnString += `Event End Date: ${event.name} \n`
+            }
+            if (endDate && eventStartNoTime === endDate.getTime()) {
+                endFound = true;
+                endReturnString += `Event Start Date: ${event.name} \n`
+            }
+            if (endDate && eventEndNoTime === endDate.getTime()) {
+                endFound = true;
+                endReturnString += `Event End Date: ${event.name} \n`
+            }
+        })
+
+        if (startFound) {
+            this.startDateCollisions.innerHTML = "<label>The following will occur on the start date selected: </label>"
+            this.startDateCollisionsList.innerText = startReturnString
         }
-        if (found) {
-            returnString = "<label>The following will occur on the dates selected: </label>" + returnString
+
+        if (endFound && this.title.includes("events")) {
+            this.endDateCollisions.innerHTML = "<br/><label>The following will occur on the end date selected: </label>"
+            this.endDateCollisionsList.innerText = endReturnString;
         }
-        this.dateCollisions.innerHTML = returnString;
+
+
     }
 
     dispose() {

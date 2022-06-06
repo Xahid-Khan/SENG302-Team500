@@ -72,7 +72,7 @@ class ProjectView {
     appendSprint(sprintData) {
         const sprintElement = document.createElement("div");
         sprintElement.classList.add("events-view", "raised-card");
-        sprintElement.id = `sprint-view`;
+        sprintElement.id = `sprint-view-${this.project.id}`;
 
         this.sprintContainer.appendChild(sprintElement);
 
@@ -677,8 +677,8 @@ class ProjectView {
     }
 
     showSprints() {
-        this.showingSprintDiv ? this.toggleSprintsButton.innerHTML = "<span class='material-icons'>visibility</span>" : this.toggleSprintsButton.innerHTML = "<span class='material-icons'>visibility_off</span>"
-        this.sprintDiv = document.getElementById('sprint-view')
+        this.toggleSprintsButton.innerHTML = this.showingSprintDiv ? "<span class='material-icons'>visibility</span>" : "<span class='material-icons'>visibility_off</span>"
+        this.sprintDiv = document.getElementById(`sprint-view-${this.project.id}`)
         if (this.sprintDiv) {
             this.sprintDiv.style.display === "none" ? this.sprintDiv.style.display = "block" : this.sprintDiv.style.display = "none"
         }
@@ -686,7 +686,7 @@ class ProjectView {
     }
 
     showEvents() {
-        this.showingEventDiv ? this.toggleEventsButton.innerHTML = "<span class='material-icons'>visibility</span>" : this.toggleEventsButton.innerHTML = "<span class='material-icons'>visibility_off</span>"
+         this.toggleEventsButton.innerHTML = this.showingEventDiv ? "<span class='material-icons'>visibility</span>" : "<span class='material-icons'>visibility_off</span>"
         this.eventDiv = document.getElementById('event-view')
         if (this.eventDiv) {
             this.eventDiv.style.display === "none" ? this.eventDiv.style.display = "block" : this.eventDiv.style.display = "none"
@@ -695,7 +695,7 @@ class ProjectView {
     }
 
     showDeadlines() {
-        this.showingDeadlineDiv ? this.toggleDeadlinesButton.innerHTML = "<span class='material-icons'>visibility</span>" : this.toggleDeadlinesButton.innerHTML = "<span class='material-icons'>visibility_off</span>"
+        this.toggleDeadlinesButton.innerHTML = this.showingDeadlineDiv ? "<span class='material-icons'>visibility</span>" : "<span class='material-icons'>visibility_off</span>"
         this.deadlineDiv = document.getElementById('deadline-view')
         if (this.deadlineDiv) {
             this.deadlineDiv.style.display === "none" ? this.deadlineDiv.style.display = "block" : this.deadlineDiv.style.display = "none"
@@ -704,7 +704,7 @@ class ProjectView {
     }
 
     showMilestones() {
-        this.showingMilestoneDiv ? this.toggleMilestonesButton.innerHTML = "<span class='material-icons'>visibility</span>" : this.toggleMilestonesButton.innerHTML = "<span class='material-icons'>visibility_off</span>"
+        this.toggleMilestonesButton.innerHTML = this.showingMilestoneDiv ? "<span class='material-icons'>visibility</span>" : "<span class='material-icons'>visibility_off</span>"
         this.milestoneDiv = document.getElementById('milestone-view')
         if (this.milestoneDiv) {
             this.milestoneDiv.style.display === "none" ? this.milestoneDiv.style.display = "block" : this.milestoneDiv.style.display = "none"
@@ -717,7 +717,7 @@ class ProjectView {
         this.toggleDeadlines();
         this.toggleSprints();
         this.toggleMilestones();
-        this.showingProjectDetails ? document.getElementById(`toggle-project-details-${this.project.id}`).innerHTML = "<span class='material-icons'>visibility</span>" : document.getElementById(`toggle-project-details-${this.project.id}`).innerHTML = "<span class='material-icons'>visibility_off</span>";
+        document.getElementById(`toggle-project-details-${this.project.id}`).innerHTML = this.showingProjectDetails ? "<span class='material-icons'>visibility</span>" : "<span class='material-icons'>visibility_off</span>";
         this.showingProjectDetails = !this.showingProjectDetails;
     }
 

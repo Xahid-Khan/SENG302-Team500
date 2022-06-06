@@ -42,8 +42,8 @@ class MilestoneView {
         this.description.innerText = "Description: " + this.milestone.description;
         this.milestoneSprints.innerHTML = this.getSprints();
         this.sprints.forEach((sprint) => {
-            if (document.getElementById(`milestone-sprint-name-${sprint.id}`)) {
-                document.getElementById(`milestone-sprint-name-${sprint.id}`).innerText = sprint.name + ': '
+            if (document.getElementById(`milestone-sprint-name-${this.milestone.milestoneId}-${sprint.sprintId}`)) {
+                document.getElementById(`milestone-sprint-name-${this.milestone.milestoneId}-${sprint.sprintId}`).innerText = sprint.name + ': '
             }
         })
         document.getElementById(`start-date-${this.milestone.milestoneId}`).innerText = DatetimeUtils.localToUserDMY(this.milestone.startDate);
@@ -76,12 +76,14 @@ class MilestoneView {
 
     getSprints() {
         let html = "<label>Sprints in progress during this milestone: </label>";
+        let foundSprints = false
         this.sprints.forEach(sprint => {
             if (this.milestone.startDate >= sprint.startDate && this.milestone.startDate <= sprint.endDate || this.milestone.endDate >= sprint.startDate && this.milestone.endDate <= sprint.endDate) {
-                html += `<div class="milestone-sprint-details"  style="color: ${sprint.colour}">   - <span id="milestone-sprint-name-${sprint.id}"></span><span>${DatetimeUtils.localToUserDMY(sprint.startDate)}</span> - <span>${DatetimeUtils.localToUserDMY(sprint.endDate)}</span>`;
+                html += `<div class="milestone-sprint-details"  style="color: ${sprint.colour}">   - <span id="milestone-sprint-name-${this.milestone.milestoneId}-${sprint.sprintId}"></span><span>${DatetimeUtils.localToUserDMY(sprint.startDate)}</span> - <span>${DatetimeUtils.localToUserDMY(sprint.endDate)}</span>`;
+                foundSprints = true
             }
         });
-        if (html === "<label>Sprints in progress during this milestone: </label>") {
+        if (foundSprints) {
             html += "<span>No sprints are overlapping with this milestone</span>"
         }
         return html;

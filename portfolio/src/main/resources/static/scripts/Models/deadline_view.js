@@ -43,8 +43,8 @@ class DeadlineView {
         this.description.innerText = "Description: " + this.deadline.description;
         this.deadlineSprints.innerHTML = this.getSprints();
         this.sprints.forEach((sprint) => {
-            if (document.getElementById(`deadline-sprint-name-${sprint.id}`)) {
-                document.getElementById(`deadline-sprint-name-${sprint.id}`).innerText = sprint.name + ': '
+            if (document.getElementById(`deadline-sprint-name-${this.deadline.deadlineId}-${sprint.sprintId}`)) {
+                document.getElementById(`deadline-sprint-name-${this.deadline.deadlineId}-${sprint.sprintId}`).innerText = sprint.name + ': '
             }
         })
         document.getElementById(`start-date-${this.deadline.deadlineId}`).innerText = DatetimeUtils.localToUserDMY(this.deadline.startDate);
@@ -78,13 +78,15 @@ class DeadlineView {
 
     getSprints() {
         let html = "<label>Sprints in progress during this deadline: </label>";
+        let foundSprints = false
         this.sprints.forEach(sprint => {
             if (this.deadline.startDate >= sprint.startDate && this.deadline.startDate <= sprint.endDate || this.deadline.endDate >= sprint.startDate && this.deadline.endDate <= sprint.endDate) {
-                html += `<div class="deadline-sprint-details"  style="color: ${sprint.colour}">   - <span id="deadline-sprint-name-${sprint.id}"></span><span>${DatetimeUtils.localToUserDMY(sprint.startDate)}</span> - <span>${DatetimeUtils.localToUserDMY(sprint.endDate)}</span>`;
+                html += `<div class="deadline-sprint-details"  style="color: ${sprint.colour}">   - <span id="deadline-sprint-name-${this.deadline.deadlineId}-${sprint.sprintId}"></span><span>${DatetimeUtils.localToUserDMY(sprint.startDate)}</span> - <span>${DatetimeUtils.localToUserDMY(sprint.endDate)}</span>`;
+                foundSprints = true
             }
         });
-        if (html === "<label>Sprints in progress during this deadline: </label>") {
-            html += "<span>No sprints are overlapping with this deadline</span>"
+        if (!foundSprints) {
+            html = "<label>No sprints are overlapping with this deadline</label>"
         }
         return html;
     }
