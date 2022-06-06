@@ -24,7 +24,7 @@ public class LiveProjectUpdatesController {
   @MessageMapping("/ping")
   @SendTo("/topic/pongs")
   public String ping(@AuthenticationPrincipal PreAuthenticatedAuthenticationToken principal,
-      String message) throws Exception {
+      String message) {
     var authState = (PortfolioPrincipal) principal.getPrincipal();
     return String.format("Pong %s (Also, hi %s!)", message, authState.getName());
   }
