@@ -19,18 +19,26 @@ class PortfolioNetworkError extends Error {
 class ErrorHandlerUtils {
   static async handleNetworkError(response, context) {
     const body = await response.text();
+    // Shows the errors element,
+    //  then locates the specific error element to update.
+    document.getElementById("errors").style.display = ""
+    const errorOutput = document.getElementById("error");
     if (body) {
-      alert(`An error occurred. Server responded: ${body}`);
+      errorOutput.textContent = `An error occurred. Server responded: ${body}`;
     }
     else {
-      alert(`An error occurred. Server responded: ${response.statusText} (${response.status}).`)
+      errorOutput.textContent = `An error occurred. Server responded: ${response.statusText} (${response.status}).`;
     }
 
     throw new PortfolioNetworkError(`A server error occurred when ${context}. Status: ${response.status} ${response.statusText}`);
   }
 
   static handleUnknownNetworkError(ex, context) {
-    alert(`An unknown error occurred. Please try again.\n\n${ex}`);
+    // Shows the errors element,
+    //  then locates the specific error element to update.
+    document.getElementById("errors").style.display = ""
+    const errorOutput = document.getElementById("error");
+    errorOutput.textContent = `An unknown error occurred. Please try again. ${ex}`
     throw new PortfolioNetworkError(`An unknown error occurred when ${context}. Status: ${response.status} ${response.statusText}`);
   }
 }

@@ -25,7 +25,7 @@ public class AuthenticateServerService extends AuthenticationServiceImplBase {
 
   @Autowired private PasswordService passwordService;
 
-  private JwtTokenUtil jwtTokenService = JwtTokenUtil.getInstance();
+  private final JwtTokenUtil jwtTokenService = JwtTokenUtil.getInstance();
 
   /** Attempts to authenticate a user with a given username and password. */
   @Override
@@ -60,18 +60,10 @@ public class AuthenticateServerService extends AuthenticationServiceImplBase {
             .setSuccess(true)
             .setToken(token);
       } else {
-        if (user == null) {
-          reply
-                  .setMessage("Username does not exist")
-                  .setSuccess(false)
-                  .setToken("");
-        }
-        else{
-          reply
-                  .setMessage("Log in attempt failed: username or password incorrect")
-                  .setSuccess(false)
-                  .setToken("");
-        }
+        reply
+            .setMessage("Log in attempt failed: username or password incorrect")
+            .setSuccess(false)
+            .setToken("");
       }
       responseObserver.onNext(reply.build());
       responseObserver.onCompleted();
