@@ -10,21 +10,12 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class AuthStateService {
-
-    /**
-     * The user's id from this AuthState
-     * @return The user's id from this AuthState
-     */
-    public Integer getId(AuthState authState){
-        return Integer.valueOf(getClaimByType(authState, "nameid", "-100"));
-    }
-
     /**
      * The user's id from this AuthState
      * @return The user's id from this AuthState
      */
     public Integer getId(PortfolioPrincipal principal){
-        return getId(principal.authState());
+        return Integer.valueOf(getClaimByType(principal.authState(), "nameid", "-100"));
     }
 
     /**

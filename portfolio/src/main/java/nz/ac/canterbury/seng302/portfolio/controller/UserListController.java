@@ -106,7 +106,7 @@ public class UserListController {
         return "user_list";
     }
 
-    private void modifyRole(AuthState principal, Model model, Integer id, Integer roleNumber, boolean adding) {
+    private void modifyRole(PortfolioPrincipal principal, Model model, Integer id, Integer roleNumber, boolean adding) {
         Integer userId = authStateService.getId(principal);
         UserResponse userDetails = userAccountService.getUserById(userId);
         List<UserRole> roles = userDetails.getRolesList();
@@ -134,7 +134,7 @@ public class UserListController {
                           @RequestParam(name="id") Integer id,
                           @RequestParam(name="roleNumber") Integer roleNumber) {
 
-        modifyRole(principal.authState(), model, id, roleNumber, true);
+        modifyRole(principal, model, id, roleNumber, true);
 
         return listUsers(principal, Optional.empty(), Optional.empty(), Optional.empty(), model);
     }
@@ -145,7 +145,7 @@ public class UserListController {
                              @RequestParam(name="id") Integer id,
                              @RequestParam(name="roleNumber") Integer roleNumber) {
 
-        modifyRole(principal.authState(), model, id, roleNumber, false);
+        modifyRole(principal, model, id, roleNumber, false);
 
         return listUsers(principal, Optional.empty(), Optional.empty(), Optional.empty(), model);
     }
