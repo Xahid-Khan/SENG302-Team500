@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import io.grpc.StatusRuntimeException;
 import nz.ac.canterbury.seng302.portfolio.DTO.Login;
 import nz.ac.canterbury.seng302.portfolio.authentication.CookieUtil;
+import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.portfolio.service.AuthenticateClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticateResponse;
@@ -35,7 +36,7 @@ public class LoginController {
      */
     @GetMapping(value = "/login")//Mapped to GET
     public String login(
-            @AuthenticationPrincipal AuthState principal,
+            @AuthenticationPrincipal PortfolioPrincipal principal,
             @RequestParam(name="error", required=false) String error,
             Model model
     ) {
@@ -93,7 +94,7 @@ public class LoginController {
                     response,
                     "lens-session-token",
                     loginReply.getToken(),
-                    true,
+                    !domain.startsWith("localhost"),
                     5 * 60 * 60, // Expires in 5 hours
                     domain.startsWith("localhost") ? null : domain
             );
@@ -111,7 +112,7 @@ public class LoginController {
      */
     @GetMapping("/")
     public String index(
-        @AuthenticationPrincipal AuthState principal,
+        @AuthenticationPrincipal PortfolioPrincipal principal,
         HttpServletRequest request,
         HttpServletResponse response,
         Model model

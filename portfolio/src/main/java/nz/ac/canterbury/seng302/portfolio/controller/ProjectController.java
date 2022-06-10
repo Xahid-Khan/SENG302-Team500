@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.portfolio.model.contract.BaseProjectContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.ProjectContract;
 import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
@@ -68,7 +69,7 @@ public class ProjectController {
      * @return a project contract (JSON) type of the newly created project.
      */
     @PostMapping(value = "/projects", produces = "application/json")
-    public ResponseEntity<?> addNewProject(@AuthenticationPrincipal AuthState principal, @RequestBody BaseProjectContract newProject) {
+    public ResponseEntity<?> addNewProject(@AuthenticationPrincipal PortfolioPrincipal principal, @RequestBody BaseProjectContract newProject) {
         ArrayList<String> roles = rolesService.getRolesByToken(principal);
         if (roles.contains("TEACHER") || roles.contains("COORDINATOR")) {
             try {
@@ -96,7 +97,7 @@ public class ProjectController {
      * @return a project contract (JSON) type of the project.
      */
     @DeleteMapping(value = "/projects/{id}", produces = "application/json")
-    public ResponseEntity<?> removeProject(@AuthenticationPrincipal AuthState principal, @PathVariable String id) {
+    public ResponseEntity<?> removeProject(@AuthenticationPrincipal PortfolioPrincipal principal, @PathVariable String id) {
         ArrayList<String> roles = rolesService.getRolesByToken(principal);
         if (roles.contains("TEACHER") || roles.contains("COORDINATOR")) {
             try {
@@ -118,7 +119,7 @@ public class ProjectController {
      * @return a project contract (JSON) type of the project.
      */
     @PutMapping(value = "/projects/{id}", produces = "application/json")
-    public ResponseEntity<?> updateProject(@AuthenticationPrincipal AuthState principal, @RequestBody ProjectContract updatedProject, @PathVariable String id) {
+    public ResponseEntity<?> updateProject(@AuthenticationPrincipal PortfolioPrincipal principal, @RequestBody ProjectContract updatedProject, @PathVariable String id) {
         ArrayList<String> roles = rolesService.getRolesByToken(principal);
         if (roles.contains("TEACHER") || roles.contains("COORDINATOR")) {
             try {
