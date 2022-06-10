@@ -29,7 +29,7 @@ class Editor {
         this.containerElement.innerHTML = `
       <div class="edit-project-section" id="edit-project-section-${this.entityId}">
           <p class="edit-section-title" id="edit-section-form-title-${this.entityId}">Edit Details:</p>
-          <form class="user-inputs" id="edit-project-section-form-${this.entityId}">
+          <form id="edit-project-section-form-${this.entityId}">
 
               <div class="name">
                 <label>Name*:</label>
@@ -315,27 +315,33 @@ class Editor {
         let endFound = false;
         let startReturnString = ""
         let endReturnString = ""
-        const startDate = new Date(this.getStartDateInputValue().getFullYear(), this.getStartDateInputValue().getMonth(), this.getStartDateInputValue().getDate());
-        const endDate = new Date(this.getEndDateInputValue().getFullYear(), this.getEndDateInputValue().getMonth(), this.getEndDateInputValue().getDate());
+        let startDate;
+        let endDate;
+        if (this.getStartDateInputValue()) {
+            startDate = new Date(this.getStartDateInputValue().getFullYear(), this.getStartDateInputValue().getMonth(), this.getStartDateInputValue().getDate()).getTime();
+        }
+        if (this.getEndDateInputValue()) {
+            endDate = new Date(this.getEndDateInputValue().getFullYear(), this.getEndDateInputValue().getMonth(), this.getEndDateInputValue().getDate()).getTime();
+        }
 
         this.project.milestones.forEach((milestone) => {
             const milestoneNoTime = new Date(milestone.startDate.getFullYear(), milestone.startDate.getMonth(), milestone.startDate.getDate()).getTime();
-            if (milestoneNoTime === startDate.getTime()) {
+            if (milestoneNoTime === startDate) {
                 startFound = true;
                 startReturnString += `Milestone: ${milestone.name} \n`
             }
-            if (endDate && milestoneNoTime === endDate.getTime()) {
+            if (endDate && milestoneNoTime === endDate) {
                 endFound = true;
                 endReturnString += `Milestone: ${milestone.name} \n`
             }
         })
         this.project.deadlines.forEach((deadline) => {
             const deadlineNoTime = new Date(deadline.startDate.getFullYear(), deadline.startDate.getMonth(), deadline.startDate.getDate()).getTime();
-            if (deadlineNoTime === startDate.getTime()) {
+            if (deadlineNoTime === startDate) {
                 startFound = true;
                 startReturnString += `Deadline: ${deadline.name} \n`
             }
-            if (endDate && deadlineNoTime === endDate.getTime()) {
+            if (endDate && deadlineNoTime === endDate) {
                 endFound = true;
                 endReturnString += `Deadline: ${deadline.name} \n`
             }
@@ -343,19 +349,19 @@ class Editor {
         this.project.events.forEach((event) => {
             const eventStartNoTime = new Date(event.startDate.getFullYear(), event.startDate.getMonth(), event.startDate.getDate()).getTime();
             const eventEndNoTime = new Date(event.endDate.getFullYear(), event.endDate.getMonth(), event.endDate.getDate()).getTime();
-            if (eventStartNoTime === startDate.getTime()) {
+            if (eventStartNoTime === startDate) {
                 startFound = true;
                 startReturnString += `Event Start Date: ${event.name} \n`
             }
-            if (eventEndNoTime === startDate.getTime()) {
+            if (eventEndNoTime === startDate) {
                 startFound = true;
                 startReturnString += `Event End Date: ${event.name} \n`
             }
-            if (endDate && eventStartNoTime === endDate.getTime()) {
+            if (endDate && eventStartNoTime === endDate) {
                 endFound = true;
                 endReturnString += `Event Start Date: ${event.name} \n`
             }
-            if (endDate && eventEndNoTime === endDate.getTime()) {
+            if (endDate && eventEndNoTime === endDate) {
                 endFound = true;
                 endReturnString += `Event End Date: ${event.name} \n`
             }

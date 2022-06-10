@@ -71,8 +71,7 @@ class ProjectView {
      */
     appendSprint(sprintData) {
         const sprintElement = document.createElement("div");
-        sprintElement.classList.add("events-view", "raised-card");
-        sprintElement.id = `sprint-view-${this.project.id}`;
+        sprintElement.classList.add("events-view", "raised-card", `sprint-view-${this.project.id}`);
 
         this.sprintContainer.appendChild(sprintElement);
 
@@ -87,8 +86,7 @@ class ProjectView {
 
     appendEvent(eventData) {
         const eventElement = document.createElement("div")
-        eventElement.classList.add("events-view", "raised-card");
-        eventElement.id = `event-view`;
+        eventElement.classList.add("events-view", "raised-card", `event-view-${this.project.id}`);
         this.eventContainer.appendChild(eventElement);
 
         console.log("Binding event");
@@ -100,8 +98,7 @@ class ProjectView {
 
     appendMilestone(milestoneData) {
         const milestoneElement = document.createElement("div")
-        milestoneElement.classList.add("events-view", "raised-card");
-        milestoneElement.id = `milestone-view`;
+        milestoneElement.classList.add("events-view", "raised-card", `milestone-view-${this.project.id}`);
         this.milestoneContainer.appendChild(milestoneElement);
 
         console.log("Binding milestone");
@@ -113,8 +110,7 @@ class ProjectView {
 
     appendDeadline(deadlineData) {
         const deadlineElement = document.createElement("div")
-        deadlineElement.classList.add("events-view", "raised-card");
-        deadlineElement.id = `deadline-view`;
+        deadlineElement.classList.add("events-view", "raised-card", `deadline-view-${this.project.id}`);
         this.deadlineContainer.appendChild(deadlineElement);
 
         console.log("Binding deadline");
@@ -678,36 +674,43 @@ class ProjectView {
 
     showSprints() {
         this.toggleSprintsButton.innerHTML = this.showingSprintDiv ? "<span class='material-icons'>visibility</span>" : "<span class='material-icons'>visibility_off</span>"
-        this.sprintDiv = document.getElementById(`sprint-view-${this.project.id}`)
+        this.sprintDiv = document.getElementsByClassName(`sprint-view-${this.project.id}`)
         if (this.sprintDiv) {
-            this.sprintDiv.style.display === "none" ? this.sprintDiv.style.display = "block" : this.sprintDiv.style.display = "none"
-        }
+            for (let i = 0; i < this.sprintDiv.length; i++) {
+                this.sprintDiv[i].style.display === "none" ? this.sprintDiv[i].style.display = "block" : this.sprintDiv[i].style.display = "none"
+            }        }
         this.showingSprintDiv = !this.showingSprintDiv
     }
 
     showEvents() {
          this.toggleEventsButton.innerHTML = this.showingEventDiv ? "<span class='material-icons'>visibility</span>" : "<span class='material-icons'>visibility_off</span>"
-        this.eventDiv = document.getElementById('event-view')
+        this.eventDiv = document.getElementsByClassName(`event-view-${this.project.id}`)
         if (this.eventDiv) {
-            this.eventDiv.style.display === "none" ? this.eventDiv.style.display = "block" : this.eventDiv.style.display = "none"
+            for (let i = 0; i < this.eventDiv.length; i++) {
+                this.eventDiv[i].style.display === "none" ? this.eventDiv[i].style.display = "block" : this.eventDiv[i].style.display = "none"
+            }
         }
         this.showingEventDiv = !this.showingEventDiv
     }
 
     showDeadlines() {
         this.toggleDeadlinesButton.innerHTML = this.showingDeadlineDiv ? "<span class='material-icons'>visibility</span>" : "<span class='material-icons'>visibility_off</span>"
-        this.deadlineDiv = document.getElementById('deadline-view')
+        this.deadlineDiv = document.getElementsByClassName(`deadline-view-${this.project.id}`)
         if (this.deadlineDiv) {
-            this.deadlineDiv.style.display === "none" ? this.deadlineDiv.style.display = "block" : this.deadlineDiv.style.display = "none"
+            for (let i = 0; i < this.deadlineDiv.length; i++) {
+                this.deadlineDiv[i].style.display === "none" ? this.deadlineDiv[i].style.display = "block" : this.deadlineDiv[i].style.display = "none"
+            }
         }
         this.showingDeadlineDiv = !this.showingDeadlineDiv
     }
 
     showMilestones() {
         this.toggleMilestonesButton.innerHTML = this.showingMilestoneDiv ? "<span class='material-icons'>visibility</span>" : "<span class='material-icons'>visibility_off</span>"
-        this.milestoneDiv = document.getElementById('milestone-view')
+        this.milestoneDiv = document.getElementsByClassName(`milestone-view-${this.project.id}`)
         if (this.milestoneDiv) {
-            this.milestoneDiv.style.display === "none" ? this.milestoneDiv.style.display = "block" : this.milestoneDiv.style.display = "none"
+            for (let i = 0; i < this.milestoneDiv.length; i++) {
+                this.milestoneDiv[i].style.display === "none" ? this.milestoneDiv[i].style.display = "block" : this.milestoneDiv[i].style.display = "none"
+            }
         }
         this.showingMilestoneDiv = !this.showingMilestoneDiv
     }

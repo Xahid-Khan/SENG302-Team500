@@ -212,10 +212,6 @@ textarea {
     padding-right: 5px;
 }
 
-.user-inputs {
-    padding-left: 20px;
-}
-
 .save-buttons {
     display: flex;
     justify-content: right;
