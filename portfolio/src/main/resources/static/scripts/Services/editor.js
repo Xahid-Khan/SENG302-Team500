@@ -143,7 +143,7 @@ class Editor {
         if (this.initialData.startDate) {
             displayDate = new Date(this.initialData.startDate.valueOf());
             if (this.allowTimeInput) {
-                displayDate.setHours(displayDate.getHours() + 12)
+                displayDate.setHours(displayDate.getHours() - (displayDate.getTimezoneOffset() / 60))
             }
         }
         this.startDateInput.value = (this.initialData.startDate) ? ( this.allowTimeInput ? DatetimeUtils.localToNetworkString(displayDate).slice(0, 19) : DatetimeUtils.toLocalYMD(this.initialData.startDate) ) : "";
@@ -154,7 +154,7 @@ class Editor {
                 // Only go back a day if there is no time specified and we don't allow time input
                 displayedDate.setDate(displayedDate.getDate() - 1);
             } else {
-                displayedDate.setHours(displayedDate.getHours() + 12)
+                displayedDate.setHours(displayedDate.getHours() - (displayedDate.getTimezoneOffset() / 60))
             }
             this.endDateInput.value = this.allowTimeInput ? DatetimeUtils.localToNetworkString(displayedDate).slice(0, 19) : DatetimeUtils.toLocalYMD(displayedDate);
         } else {
@@ -318,10 +318,10 @@ class Editor {
         let startDate;
         let endDate;
         if (this.getStartDateInputValue()) {
-            startDate = new Date(this.getStartDateInputValue().getFullYear(), this.getStartDateInputValue().getMonth(), this.getStartDateInputValue().getDate()).getTime();
+            startDate = DatetimeUtils.setTimeToZero(this.getStartDateInputValue());
         }
         if (this.getEndDateInputValue()) {
-            endDate = new Date(this.getEndDateInputValue().getFullYear(), this.getEndDateInputValue().getMonth(), this.getEndDateInputValue().getDate()).getTime();
+            endDate = DatetimeUtils.setTimeToZero(this.getEndDateInputValue());
         }
 
         this.project.milestones.forEach((milestone) => {
@@ -349,32 +349,40 @@ class Editor {
         this.project.events.forEach((event) => {
             const eventStartNoTime = new Date(event.startDate.getFullYear(), event.startDate.getMonth(), event.startDate.getDate()).getTime();
             const eventEndNoTime = new Date(event.endDate.getFullYear(), event.endDate.getMonth(), event.endDate.getDate()).getTime();
-            if (eventStartNoTime === startDate) {
-                startFound = true;
-                startReturnString += `Event Start Date: ${event.name} \n`
-            }
-            if (eventEndNoTime === startDate) {
-                startFound = true;
-                startReturnString += `Event End Date: ${event.name} \n`
-            }
-            if (endDate && eventStartNoTime === endDate) {
-                endFound = true;
-                endReturnString += `Event Start Date: ${event.name} \n`
-            }
-            if (endDate && eventEndNoTime === endDate) {
-                endFound = true;
-                endReturnString += `Event End Date: ${event.name} \n`
+            if (event.eventId !== this.initialData.eventId) {
+                if (eventStartNoTime === startDate) {
+                    startFound = true;
+                    startReturnString += `Event Start Date: ${event.name} \n`
+                }
+                if (eventEndNoTime === startDate) {
+                    startFound = true;
+                    startReturnString += `Event End Date: ${event.name} \n`
+                }
+                if (endDate && eventStartNoTime === endDate) {
+                    endFound = true;
+                    endReturnString += `Event Start Date: ${event.name} \n`
+                }
+                if (endDate && eventEndNoTime === endDate) {
+                    endFound = true;
+                    endReturnString += `Event End Date: ${event.name} \n`
+                }
             }
         })
 
         if (startFound) {
             this.startDateCollisions.innerHTML = "<label>The following will occur on the start date selected: </label>"
             this.startDateCollisionsList.innerText = startReturnString
+        } else {
+            this.startDateCollisions.innerHTML = ""
+            this.startDateCollisionsList.innerText = ""
         }
 
-        if (endFound && this.title.includes("events")) {
+        if (endFound && this.title.includes("event")) {
             this.endDateCollisions.innerHTML = "<br/><label>The following will occur on the end date selected: </label>"
-            this.endDateCollisionsList.innerText = endReturnString;
+            this.endDateCollisionsList.innerText = endReturnString
+        } else {
+            this.endDateCollisions.innerHTML = ""
+            this.endDateCollisionsList.innerText = ""
         }
 
 

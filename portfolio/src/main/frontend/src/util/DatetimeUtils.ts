@@ -99,4 +99,13 @@ export class DatetimeUtils {
     static areEqual(date1: Date, date2: Date) {
         return date1 <= date2 && date2 <= date1;
     }
+
+
+    /**
+     * Sets time to zero to check for all related events as it is only relevant for things that occur on the same day rather than the same time
+     * Setting time to zero ensures that dates will be equal and not offset by time
+    */
+    static setTimeToZero(fullDate: Date) {
+        return new Date(fullDate.getFullYear(), fullDate.getMonth(), fullDate.getDate()).getTime()
+    }
 }

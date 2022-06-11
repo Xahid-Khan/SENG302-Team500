@@ -83,7 +83,7 @@ class MilestoneView {
                 foundSprints = true
             }
         });
-        if (foundSprints) {
+        if (!foundSprints) {
             html += "<span>No sprints are overlapping with this milestone</span>"
         }
         return html;
