@@ -78,99 +78,51 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
     let eventDictionary = new Map();
     let milestoneDictionary = new Map();
     let allEventDates = new Set();
-    let allDeadlineDate = new Set();
-    let allMilestoneDate = new Set();
 
     /**
-     * this method reads all the events and convert them into dictionary where key is the date and value is a list
-     * of events
+     * This method reads all the events (Events, Milestones, and Deadlines) and create a dictionary where key is the date
+     * and value is a list of events on that day.
+     * @param iconEvents Events that we would like to count
+     * @param dict an empty dictionary where the results will be stored and updated.
+     * @param code code represents the type of events.
      */
-    const eventsToDictionary = () => {
-        project.events.map((event) => {
+    const iconDataToDictionary = (iconEvents: any[], dict: Map<String, any>, code: String) => {
+        iconEvents.map((event) => {
             let startDate = new Date(event.startDate);
-            while (startDate <= new Date(event.endDate)) {
-                startDate.setDate(startDate.getDate() + 1);
-                if (eventDictionary.has(JSON.parse(JSON.stringify(startDate.toISOString().slice(0,10))))) {
-                    const currentEvents = (eventDictionary.get(JSON.parse(JSON.stringify(startDate.toISOString().slice(0,10)))));
-                    eventDictionary.set(JSON.parse(JSON.stringify(startDate.toISOString().slice(0,10))), currentEvents.concat([event]))
+            let endDate = new Date();
+            code == "_ES" ? endDate = new Date(event.endDate) : endDate = new Date(event.startDate)
+
+            while (startDate <= endDate) {
+                const tempDate = startDate.toLocaleDateString().split("/")
+                let calendarDate = tempDate[2] +"-"+ tempDate[1] +"-"+ tempDate[0];
+
+                if (dict.has(JSON.parse(JSON.stringify(calendarDate)))) {
+                    const currentEvents = (dict.get(JSON.parse(JSON.stringify(calendarDate))));
+                    dict.set(JSON.parse(JSON.stringify(calendarDate)), currentEvents.concat([event]))
                 } else {
-                    eventDictionary.set(JSON.parse(JSON.stringify(startDate.toISOString().slice(0,10))), [event]);
+                    dict.set(JSON.parse(JSON.stringify(calendarDate)), [event]);
                 }
-                allEventDates.add(JSON.parse(JSON.stringify(startDate.toISOString().slice(0,10))))
+                allEventDates.add(JSON.parse(JSON.stringify(calendarDate)))
+                startDate.setDate(startDate.getDate() + 1);
             }
-
         })
-        allEventDates.forEach((eventDate: any) => events.push({
-                    id: eventDate + "_ES",
-                    start: eventDate,
-                    end: eventDate,
-                    backgroundColor: "rgba(52, 52, 52, 0.0)",
-                    textColor: "black",
-                    title: "",
-                    editable:false,
-                    allDay: true,
-                }))
-
     }
 
-    /**
-     * this method reads all the milestones and convert them into dictionary where key is the date and value is a list
-     * of milestones
-     */
-    const mileStonesToDictionary = () => {
-        project.milesStones.map((milestone) => {
-            if (milestoneDictionary.has(JSON.parse(JSON.stringify(milestone.endDate.toISOString().slice(0,10))))) {
-                const currentMS = (milestoneDictionary.get(JSON.parse(JSON.stringify(milestone.endDate.toISOString().slice(0,10)))));
-                milestoneDictionary.set(JSON.parse(JSON.stringify(milestone.endDate.toISOString().slice(0,10))), currentMS.concat([milestone]))
-            } else {
-                milestoneDictionary.set(JSON.parse(JSON.stringify(milestone.endDate.toISOString().slice(0,10))), [milestone]);
-            }
-            allMilestoneDate.add(JSON.parse(JSON.stringify(milestone.endDate.toISOString().slice(0,10))))
-        })
+    iconDataToDictionary(project.milesStones, milestoneDictionary, "_MS");
+    iconDataToDictionary(project.events, eventDictionary,"_ES");
+    iconDataToDictionary(project.deadlines, deadlineDictionary, "_DL");
 
-        allMilestoneDate.forEach((eventDate: any) => events.push({
-            id: eventDate + "_MS",
-            start: eventDate.toLocaleString(),
-            end: eventDate.toLocaleString(),
-            backgroundColor: "rgba(52, 52, 52, 0.0)",
-            textColor: "black",
-            title: "",
-            editable:false,
-            allDay: true,
-        }))
-
-    }
-
-    /**
-     * this method reads all the deadlines and convert them into dictionary where key is the date and value is a list
-     * of deadlines
-     */
-    const deadLinesToDictionary = () => {
-        project.deadlines.map((deadline) => {
-            if (deadlineDictionary.has(JSON.parse(JSON.stringify(deadline.endDate.toISOString().slice(0, 10))))) {
-                const currentEvents = (deadlineDictionary.get(JSON.parse(JSON.stringify(deadline.endDate.toISOString().slice(0, 10)))));
-                deadlineDictionary.set(JSON.parse(JSON.stringify(deadline.endDate.toISOString().slice(0, 10))), currentEvents.concat([deadline]))
-            } else {
-                deadlineDictionary.set(JSON.parse(JSON.stringify(deadline.endDate.toISOString().slice(0, 10))), [deadline]);
-            }
-            allDeadlineDate.add(JSON.parse(JSON.stringify(deadline.endDate.toISOString().slice(0,10))))
-        })
-        console.log(deadlineDictionary)
-        allDeadlineDate.forEach((eventDate: any) => events.push({
-            id: eventDate + "_DL",
-            start: eventDate,
-            end: eventDate,
-            backgroundColor: "rgba(52, 52, 52, 0.0)",
-            textColor: "black",
-            title: "",
-            editable:false,
-            allDay: true,
-        }))
-    }
-
-    mileStonesToDictionary();
-    eventsToDictionary();
-    deadLinesToDictionary()
+    allEventDates.forEach((eventDate: any) => events.push({
+        id: eventDate,
+        start: eventDate,
+        end: eventDate,
+        backgroundColor: "rgba(52, 52, 52, 0.0)",
+        textColor: "black",
+        title: "",
+        editable:false,
+        allDay: true,
+        borderColor: "transparent",
+    }))
 
     /**
      * this method will get the event ID which is the date and see if we have any events / deadlines / milestones for that day.
@@ -189,38 +141,38 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
             return (
                 <div style={{display:"grid"}}>
                     {
-                        eventInfo.event.id.split("_")[1] === "ES"?
-                        <div>
-                            <span className="material-icons" style={{float: "left"}}>event</span>
-                            <p style={{
-                                float: "left",
-                                margin: "3px 0 0 15px"
-                            }}>{eventDictionary.get(eventInfo.event.id.split("_")[0]).length}</p>
-                        </div>
+                        eventDictionary.has(eventInfo.event.id)?
+                            <div style={{margin:"3px 0 3px 0"}}>
+                                <span className="material-icons" style={{float: "left"}}>event</span>
+                                <p style={{
+                                    float: "left",
+                                    margin: "3px 0 0 15px"
+                                }}>{eventDictionary.get(eventInfo.event.id).length}</p>
+                            </div>
                             :
-                            ""
+                            <div style={{height:"25px", width:"20px", border:"none"}}></div>
                     }
                     {
-                        eventInfo.event.id.split("_")[1] === "MS"?
-                        <div>
-                            <span className="material-icons" style={{float: "left"}}>flag</span>
-                            <p style={{float: "left", margin: "3px 0 0 15px"}}>
-                                {milestoneDictionary.get(eventInfo.event.id.split("_")[0]).length}
-                            </p>
-                        </div>
+                        milestoneDictionary.has(eventInfo.event.id)?
+                            <div style={{margin:"3px 0 3px 0"}}>
+                                <span className="material-icons" style={{float: "left"}}>flag</span>
+                                <p style={{float: "left", margin: "3px 0 0 15px"}}>
+                                    {milestoneDictionary.get(eventInfo.event.id).length}
+                                </p>
+                            </div>
                             :
-                            ""
+                            <div style={{height:"25px", width:"20px", border:"none"}}></div>
                     }
                     {
-                        eventInfo.event.id.split("_")[1] === "DL"?
-                        <div>
-                            <span className="material-icons" style={{float: "left"}}>timer</span>
-                            <p style={{float: "left", margin: "3px 0 0 15px"}}>
-                                {deadlineDictionary.get(eventInfo.event.id.split("_")[0]).length}
-                            </p>
-                        </div>
+                        deadlineDictionary.has(eventInfo.event.id)?
+                            <div style={{margin:"3px 0 3px 0"}}>
+                                <span className="material-icons" style={{float: "left"}}>timer</span>
+                                <p style={{float: "left", margin: "3px 0 0 15px"}}>
+                                    {deadlineDictionary.get(eventInfo.event.id).length}
+                                </p>
+                            </div>
                             :
-                            ""
+                            <div style={{height:"25px", width:"20px", border:"none"}}></div>
                     }
                 </div>
             )
@@ -245,6 +197,7 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
                 /* Calendar config */
                 validRange={projectRange}
                 height='100vh'
+                nextDayThreshold={"00:00:01"}
             />
         </>
     )
