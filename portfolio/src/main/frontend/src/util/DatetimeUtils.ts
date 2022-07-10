@@ -19,6 +19,15 @@ export class DatetimeUtils {
     }
 
     /**
+     * Convert a JavaScript Date (in local timezone) to a network datetime string (in local timezone)
+     */
+    static localToNetworkStringWithTimezone(localDate: Date) {
+        let offsetDate = new Date(localDate)
+        offsetDate.setHours(offsetDate.getHours() - (offsetDate.getTimezoneOffset() / 60)) // Offsets date to nullify offset caused by toISOString(), leaving date in local time
+        return offsetDate.toISOString();
+    }
+
+    /**
      * Round a JavaScript Date (possibly including a time component) to the start of the day *in the local timezone*
      * and format it to a string of the format 'yyyy-mm-dd'
      */

@@ -137,29 +137,29 @@ class Editor {
      * Sets the initial defaults for the inputs.
      */
     fillDefaults() {
-        let displayDate
+
         this.nameInput.value = this.initialData.name ?? "";
         this.descriptionInput.value = this.initialData.description ?? "";
         if (this.initialData.startDate) {
-            displayDate = new Date(this.initialData.startDate.valueOf());
-            if (this.allowTimeInput) {
-                displayDate.setHours(displayDate.getHours() - (displayDate.getTimezoneOffset() / 60))
-            }
+            const inputLocalStartDate = new Date(this.initialData.startDate.valueOf());
+            this.startDateInput.value = this.allowTimeInput ? DatetimeUtils.localToNetworkStringWithTimezone(inputLocalStartDate).slice(0, 19) : DatetimeUtils.toLocalYMD(this.initialData.startDate);
+        } else {
+            this.startDateInput.value = "";
         }
-        this.startDateInput.value = (this.initialData.startDate) ? ( this.allowTimeInput ? DatetimeUtils.localToNetworkString(displayDate).slice(0, 19) : DatetimeUtils.toLocalYMD(this.initialData.startDate) ) : "";
-        this.colourInput.value = this.initialData.colour ?? "#000000";
         if (this.initialData.endDate) {
-            const displayedDate = new Date(this.initialData.endDate.valueOf());
-            if (!this.allowTimeInput && DatetimeUtils.getTimeStringIfNonZeroLocally(this.initialData.endDate) === null) {
-                // Only go back a day if there is no time specified and we don't allow time input
-                displayedDate.setDate(displayedDate.getDate() - 1);
-            } else {
-                displayedDate.setHours(displayedDate.getHours() - (displayedDate.getTimezoneOffset() / 60))
+            let offsetDate
+            const inputLocalEndDate = new Date(this.initialData.endDate.valueOf());
+            if (!this.allowTimeInput) {
+                offsetDate = new Date(this.initialData.endDate.valueOf());
+                offsetDate.setDate(offsetDate.getDate() - 1)
             }
-            this.endDateInput.value = this.allowTimeInput ? DatetimeUtils.localToNetworkString(displayedDate).slice(0, 19) : DatetimeUtils.toLocalYMD(displayedDate);
+            this.endDateInput.value = this.allowTimeInput ? DatetimeUtils.localToNetworkStringWithTimezone(inputLocalEndDate).slice(0, 19) : DatetimeUtils.toLocalYMD(offsetDate);
         } else {
             this.endDateInput.value = "";
         }
+        console.log(this.endDateInput.value)
+        console.log(this.startDateInput.value)
+        this.colourInput.value = this.initialData.colour ?? "#000000";
     }
 
     /**
