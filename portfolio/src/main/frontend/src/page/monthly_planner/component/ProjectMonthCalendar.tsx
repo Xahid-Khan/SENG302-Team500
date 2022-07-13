@@ -11,7 +11,7 @@ import {DatetimeUtils} from "../../../util/DatetimeUtils";
 import {getContrast} from "../../../util/TextColorUtil";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
-
+import ReactTooltip from "react-tooltip";
 
 /**
  * Component that displays a month calendar for the current project and its sprints.
@@ -124,6 +124,27 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
         borderColor: "transparent",
     }))
 
+    console.log(eventDictionary.get("2022-07-17"));
+    eventDictionary.get("2022-07-17").forEach((subTest: any) => {
+        console.log(subTest.name);
+        console.log(subTest.startDate);
+        console.log(subTest.endDate);
+    })
+
+    function getEventHoverData(date: any) {
+        return (
+            <>
+                {
+                    eventDictionary.get(date).forEach((subEvent: any) => {
+                        subEvent.name
+                        subEvent.startDate
+                        subEvent.endDate
+                    })
+                }
+            </>
+        )
+    }
+
     /**
      * this method will get the event ID which is the date and see if we have any events / deadlines / milestones for that day.
      * there could be more than one kind of even on the same day to so distinguish between events each event id will have
@@ -142,19 +163,31 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
                 <div style={{display:"grid"}}>
                     {
                         eventDictionary.has(eventInfo.event.id)?
-                            <div style={{margin:"3px 0 3px 0"}}>
-                                <span className="material-icons" style={{float: "left"}}>event</span>
-                                <p style={{
-                                    float: "left",
-                                    margin: "3px 0 0 15px"
-                                }}>{eventDictionary.get(eventInfo.event.id).length}</p>
-                            </div>
+                            <>
+                                <div style={{margin:"3px 0 3px 0"}}>
+                                    <span className="material-icons" style={{float: "left"}} data-tip data-for = "events">event</span>
+                                    <p style={{
+                                        float: "left",
+                                        margin: "3px 0 0 15px"
+                                    }}>{eventDictionary.get(eventInfo.event.id).length}</p>
+                                </div>
+
+                                <ReactTooltip id="events" place="right" effect="solid" html={true} getContent={
+                                    () => eventDictionary.get(eventInfo.event.id).map((subEvent: any) => {
+                                        subEvent.name.toString();
+                                        subEvent.startDate.toString();
+                                        subEvent.endDate.toString();
+                                    })
+                                }>
+
+                                </ReactTooltip>
+                            </>
                             :
                             <div style={{height:"25px", width:"20px", border:"none"}}></div>
                     }
                     {
                         milestoneDictionary.has(eventInfo.event.id)?
-                            <div style={{margin:"3px 0 3px 0"}}>
+                            <div style={{margin:"3px 0 3px 0"}} data-tip data-for = "milestones">
                                 <span className="material-icons" style={{float: "left"}}>flag</span>
                                 <p style={{float: "left", margin: "3px 0 0 15px"}}>
                                     {milestoneDictionary.get(eventInfo.event.id).length}
@@ -165,7 +198,7 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
                     }
                     {
                         deadlineDictionary.has(eventInfo.event.id)?
-                            <div style={{margin:"3px 0 3px 0"}}>
+                            <div style={{margin:"3px 0 3px 0"}} data-tip data-for = "deadlines">
                                 <span className="material-icons" style={{float: "left"}}>timer</span>
                                 <p style={{float: "left", margin: "3px 0 0 15px"}}>
                                     {deadlineDictionary.get(eventInfo.event.id).length}
