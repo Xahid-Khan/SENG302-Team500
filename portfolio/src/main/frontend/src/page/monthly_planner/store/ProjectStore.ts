@@ -6,6 +6,9 @@ import {action, computed, makeObservable, observable, reaction} from "mobx";
 import {SprintStore} from "./SprintStore";
 import {DatetimeUtils} from "../../../util/DatetimeUtils";
 import {LoadingPending} from "../../../util/network/loading_status";
+import {EventStore} from "./EventStore";
+import {MilestoneStore} from "./MilestoneStore";
+import {DeadlineStore} from "./DeadlineStore";
 
 
 /**
@@ -17,12 +20,18 @@ export class ProjectStore {
     readonly startDate: Date
     readonly endDate: Date
     readonly name: string
-    
+
     sprints: SprintStore[]
+    events : EventStore[]
+    milesStones : MilestoneStore[]
+    deadlines : DeadlineStore[]
 
     constructor(project: ProjectContract) {
         makeObservable(this, {
             sprints: observable,
+            events: observable,
+            milesStones: observable,
+            deadlines: observable,
 
             sprintsSaving: computed,
 
@@ -37,6 +46,21 @@ export class ProjectStore {
             const sprintStore = new SprintStore(sprint)
             sprintStore.setOrderNumberUpdateCallback(() => this.renumberSprintsFromUpdate(sprintStore))
             return sprintStore
+        }))
+
+        this.events = observable.array(project.events.map(event => {
+            const eventStore = new EventStore(event)
+            return eventStore
+        }))
+
+        this.milesStones = observable.array(project.milestones.map(milestone => {
+            const milestoneStore = new MilestoneStore(milestone)
+            return milestoneStore
+        }))
+
+        this.deadlines = observable.array(project.deadlines.map(deadline => {
+            const deadlineStore = new DeadlineStore(deadline)
+            return deadlineStore
         }))
     }
 
