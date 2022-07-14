@@ -130,19 +130,27 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
      * @param eventType this is a string reflecting type of event needed for that day - options are events, milestones, and deadlines
      */
     function getEventHoverData(date: any, eventType: string) {
-        let testResult: any[] = [];
-
+        let stringResult: any[] = [];
+        let dictionary = new Map();
         if (eventType == "events") {
-            eventDictionary.get(date).map((subEvent: any) => {
-                testResult.push("Name: &emsp;&emsp;" + subEvent.name + "<br />Start Date: " + subEvent.startDate.toLocaleString() + "<br />End Date:&nbsp;&ensp;" + subEvent.endDate.toLocaleString());
-            })
+            dictionary = eventDictionary;
+            stringResult.push("<p style='margin:0px; padding:0px; height: fit-content; width: fit-content'>Events:-</p>")
         } else if (eventType == "milestones") {
-            //TODO
+            dictionary = milestoneDictionary;
+            stringResult.push("<p style='margin:0px; padding:0px; height: fit-content; width: fit-content'>Milestones:-</p>")
         } else {
-            //TODO
+            dictionary = deadlineDictionary;
+            stringResult.push("<p style='margin:0px; padding:0px; height: fit-content; width: fit-content'>Deadlines:-</p>")
         }
+
+        dictionary.get(date).map((subEvent: any) => {
+            stringResult.push("<p style='margin:0px; padding:0px; height: fit-content; width: fit-content'>" +
+                "Name: &emsp;&emsp;" + subEvent.name + "<br />Start Date: " + subEvent.startDate.toLocaleString() +
+                "<br />End Date:&nbsp;&ensp;" + subEvent.endDate.toLocaleString() + "</p>");
+        })
+
         return (
-            testResult.join("<br /><br />")
+            stringResult.join("<br />")
         )
     }
 
@@ -165,7 +173,7 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
                     {
                         eventDictionary.has(eventInfo.event.id)?
                             <>
-                                <div style={{margin:"3px 0 3px 0", width:"30%"}} data-tip data-for = {"events"}>
+                                <div style={{margin:"3px 0 3px 0", width:"30%"}} data-tip data-for = {"events" + eventInfo.event.id.toString()}>
                                         <span className="material-icons" style={{float: "left"}} >event</span>
                                         <p style={{
                                             float: "left",
@@ -173,8 +181,7 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
                                         }}>{eventDictionary.get(eventInfo.event.id).length}</p>
                                 </div>
 
-
-                                <ReactTooltip id={"events"} place="right" effect="float" html={true} multiline={true}
+                                <ReactTooltip id={"events" + eventInfo.event.id.toString()} place="right" effect="float" html={true} multiline={true}
                                               getContent={() => getEventHoverData(eventInfo.event.id, "events")}
                                 >
                                 </ReactTooltip>
@@ -184,23 +191,37 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
                     }
                     {
                         milestoneDictionary.has(eventInfo.event.id)?
-                            <div style={{margin:"3px 0 3px 0", width:"50%"}} data-tip data-for = "milestones">
-                                <span className="material-icons" style={{float: "left"}}>flag</span>
-                                <p style={{float: "left", margin: "3px 0 0 15px"}}>
-                                    {milestoneDictionary.get(eventInfo.event.id).length}
-                                </p>
-                            </div>
+                            <>
+                                <div style={{margin:"3px 0 3px 0", width:"30%"}} data-tip data-for = {"milestones" + eventInfo.event.id.toString()}>
+                                    <span className="material-icons" style={{float: "left"}}>flag</span>
+                                    <p style={{float: "left", margin: "3px 0 0 15px"}}>
+                                        {milestoneDictionary.get(eventInfo.event.id).length}
+                                    </p>
+                                </div>
+
+                                <ReactTooltip id={"milestones" + eventInfo.event.id.toString()} place="right" effect="float" html={true} multiline={true}
+                                              getContent={() => getEventHoverData(eventInfo.event.id, "milestones")}
+                                >
+                                </ReactTooltip>
+                            </>
                             :
                             <div style={{height:"25px", width:"20px", border:"none"}}></div>
                     }
                     {
                         deadlineDictionary.has(eventInfo.event.id)?
-                            <div style={{margin:"3px 0 3px 0", width:"50%"}} data-tip data-for = "deadlines">
-                                <span className="material-icons" style={{float: "left"}}>timer</span>
-                                <p style={{float: "left", margin: "3px 0 0 15px"}}>
-                                    {deadlineDictionary.get(eventInfo.event.id).length}
-                                </p>
-                            </div>
+                            <>
+                                <div style={{margin:"3px 0 3px 0", width:"30%"}} data-tip data-for = {"deadlines" + eventInfo.event.id.toString()}>
+                                    <span className="material-icons" style={{float: "left"}}>timer</span>
+                                    <p style={{float: "left", margin: "3px 0 0 15px"}}>
+                                        {deadlineDictionary.get(eventInfo.event.id).length}
+                                    </p>
+                                </div>
+
+                                <ReactTooltip id={"deadlines" + eventInfo.event.id.toString()} place="right" effect="float" html={true} multiline={true}
+                                              getContent={() => getEventHoverData(eventInfo.event.id, "deadlines")}
+                                >
+                                </ReactTooltip>
+                            </>
                             :
                             <div style={{height:"25px", width:"20px", border:"none"}}></div>
                     }
