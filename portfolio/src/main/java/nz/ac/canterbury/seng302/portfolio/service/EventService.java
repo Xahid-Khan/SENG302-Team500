@@ -45,8 +45,8 @@ public class EventService {
      * @return The event contract with the event ID
      */
     public EventContract get(String eventId) {
-        var event= eventRepository.findById(eventId).orElseThrow(() -> new IllegalArgumentException("Invalid event ID"));
-        return eventMapper.toContract(event);
+        var event= eventRepository.findById(eventId).orElseThrow();
+        return eventMapper.toContract(event, event.getOrderNumber());
     }
 
     /**
@@ -60,11 +60,11 @@ public class EventService {
 
         var project = projectRepository.findById(projectId).orElseThrow(() -> new IllegalArgumentException("Invalid project ID"));
         var entity = eventMapper.toEntity(event);
-        project.newEvent(entity);
-        projectRepository.save(project);
+        project.addEvent(entity);
         eventRepository.save(entity);
+        projectRepository.save(project);
 
-        return eventMapper.toContract(entity);
+        return eventMapper.toContract(entity, entity.getOrderNumber());
     }
 
 

@@ -62,7 +62,8 @@ public class ProjectMapper {
 
         for (int i=0; i < eventEntities.size(); i++) {
             eventContracts.add(eventMapper.toContract(
-                    eventEntities.get(i)
+                    eventEntities.get(i),
+                    i+1
             ));
         }
 

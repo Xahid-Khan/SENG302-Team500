@@ -49,7 +49,7 @@ public class DeadlineService {
         var project = projectRepository.findById(projectId).orElseThrow(() -> new IllegalArgumentException("Invalid project ID"));
         var entity = deadlineMapper.toEntity(deadline);
 
-        project.newDeadline(entity);
+        project.addDeadline(entity);
         projectRepository.save(project);
         deadlineRepository.save(entity);
 

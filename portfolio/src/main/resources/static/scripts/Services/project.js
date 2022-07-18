@@ -39,6 +39,7 @@ class Project {
 
         // Insert the updated sprint.
         this.project.sprints.splice(sprint.orderNumber - 1, 0, sprint);
+        console.log("sprint: ", sprint.orderNumber)
 
         // Update the orderNumbers of sprints after this one in the list.
         for (let i=sprint.orderNumber; i < this.project.sprints.length; i++) {
@@ -78,6 +79,7 @@ class Project {
 
         // Insert the updated event.
         this.project.events.splice(event.orderNumber - 1, 0, event);
+        console.log("event: ", event)
 
         // Update the orderNumbers of events after this one in the list.
         for (let j=event.orderNumber; j < this.project.events.length; j++) {
