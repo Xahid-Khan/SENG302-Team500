@@ -13,6 +13,8 @@ import nz.ac.canterbury.seng302.portfolio.repository.SprintRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 
@@ -36,6 +38,9 @@ public class EventService {
     private String milestoneType = "milestone";
 
     private String deadlineType = "milestone";
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     /**
      * Get the event with the event ID
@@ -99,6 +104,7 @@ public class EventService {
         eventEntity.setEndDate(event.endDate());
 
         eventRepository.save(eventEntity);
+        entityManager.clear();
     }
 
 }
