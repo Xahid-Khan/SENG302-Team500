@@ -3,5 +3,7 @@
  * the TypeScript codebase.
  */
 import {DatetimeUtils} from "../util/DatetimeUtils";
+import {Socket} from "./socket_test";
 
 window.DatetimeUtils = DatetimeUtils;
+window.Socket = Socket;

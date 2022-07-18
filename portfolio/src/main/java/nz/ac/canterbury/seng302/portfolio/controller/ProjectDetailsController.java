@@ -13,6 +13,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 
 @Controller
 public class ProjectDetailsController {
@@ -44,6 +45,11 @@ public class ProjectDetailsController {
 
     return "project_details";
 
+  }
 
+  @ModelAttribute
+  public String liveUpdate(@ModelAttribute("update") String message) {
+    System.err.println("shit");
+    return "project_details";
   }
 }

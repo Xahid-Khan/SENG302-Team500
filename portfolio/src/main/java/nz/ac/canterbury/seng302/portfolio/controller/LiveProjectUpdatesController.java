@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -12,6 +13,9 @@ import org.springframework.stereotype.Controller;
  */
 @Controller
 public class LiveProjectUpdatesController {
+
+  @Autowired
+  private ProjectDetailsController projectDetailsController;
 
   /**
    * STOMP endpoint that receives a message string and echos it back with metadata attached.
@@ -26,6 +30,7 @@ public class LiveProjectUpdatesController {
   public String ping(@AuthenticationPrincipal PreAuthenticatedAuthenticationToken principal,
       String message) {
     var authState = (PortfolioPrincipal) principal.getPrincipal();
+    projectDetailsController.liveUpdate("it worked");
     return String.format("Pong %s (Also, hi %s!)", message, authState.getName());
   }
 }

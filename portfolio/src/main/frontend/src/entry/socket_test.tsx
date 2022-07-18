@@ -61,7 +61,7 @@ class PingPageStore {
         if (this.connected) {
             this.stomp.publish({
                 destination: "/app/ping",
-                body: this.nextPingValue
+                body: "Connected"
             })
         }
     }
@@ -135,39 +135,53 @@ class PingPageStore {
     }
 }
 
-const PingPage: React.FC = observer(() => {
-    const store = useLocalObservable(() => new PingPageStore())
+export class Socket {
+    private static store: PingPageStore = new PingPageStore();
 
-    useEffect(() => {
-        store.start().then(() => {
+    static start() {
+        this.store.start().then(() => {
             console.log("Start completed.")
         })
-    }, [store])
+    }
 
-    return (
-        <div>
-            <div>{store.connectStatus.constructor.name}</div>
+    static sendPing() {
+        this.store.sendPing();
+    }
+}
 
-            {(store.connectStatus instanceof LoadingError) && (
-                <div>Error details: {JSON.stringify(store.connectStatus.error)}</div>
-            )}
-
-            <input type='text' value={store.nextPingValue} onChange={(evt) => store.setNextPingValue(evt.target.value)} placeholder='Next Ping value'/>
-            <button onClick={() => store.sendPing()}>Send Ping</button>
-
-            <ol>
-                {store.pongArray.map((value, index) => (
-                    <li key={index}>{value}</li>
-                ))}
-            </ol>
-        </div>
-    )
-})
-
+// const PingPage: React.FC = observer(() => {
+//     const store = useLocalObservable(() => new PingPageStore())
+//
+//     useEffect(() => {
+//         store.start().then(() => {
+//             console.log("Start completed.")
+//         })
+//     }, [store])
+//
+//     return (
+//         <div>
+//             <div>{store.connectStatus.constructor.name}</div>
+//
+//             {(store.connectStatus instanceof LoadingError) && (
+//                 <div>Error details: {JSON.stringify(store.connectStatus.error)}</div>
+//             )}
+//
+//             <input type='text' value={store.nextPingValue} onChange={(evt) => store.setNextPingValue(evt.target.value)} placeholder='Next Ping value'/>
+//             <button onClick={() => store.sendPing()}>Send Ping</button>
+//
+//             <ol>
+//                 {store.pongArray.map((value, index) => (
+//                     <li key={index}>{value}</li>
+//                 ))}
+//             </ol>
+//         </div>
+//     )
+// })
+//
 polyfills.polyfill()
-ReactDOM.render(
-    <React.StrictMode>
-        <PingPage/>
-    </React.StrictMode>,
-    document.getElementById("react-root")
-)
+// ReactDOM.render(
+//     <React.StrictMode>
+//         <PingPage/>
+//     </React.StrictMode>,
+//     document.getElementById("react-root")
+// )
