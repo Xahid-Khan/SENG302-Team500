@@ -35,7 +35,7 @@ class PingPageStore {
             connected: computed,
 
             setNextPingValue: action,
-            sendPing: action,
+            showEdit: action,
             start: action
         })
 
@@ -56,12 +56,32 @@ class PingPageStore {
         this.nextPingValue = newValue
     }
 
-    sendPing() {
+    showEdit(location: string) {
         console.log("Attempting to send ping...")
         if (this.connected) {
             this.stomp.publish({
-                destination: "/app/ping",
-                body: "Connected"
+                destination: "/app/show",
+                body: location
+            })
+        }
+    }
+
+    cancelEdit(location: string) {
+        console.log("Attempting to send ping...")
+        if (this.connected) {
+            this.stomp.publish({
+                destination: "/app/cancel",
+                body: location
+            })
+        }
+    }
+
+    saveEdit(location: string) {
+        console.log("Attempting to send ping...")
+        if (this.connected) {
+            this.stomp.publish({
+                destination: "/app/save",
+                body: location
             })
         }
     }
@@ -124,6 +144,24 @@ class PingPageStore {
     protected onReceivePong(frame: StompMessage) {
         runInAction(() => {
             this.pongArray.push(frame.body)
+            const locAndName = frame.body.split("~");
+            console.log(frame)
+            if (locAndName[0] === "show") {
+                if (document.getElementById("event-form-" + locAndName[1])) {
+                    document.getElementById("event-form-" + locAndName[1]).innerText = locAndName[2] + " is currently editing"
+                } else {
+                    document.getElementById("editing-form-" + locAndName[1]).innerText = locAndName[2] + " is currently editing"
+                }
+            } else {
+                if (document.getElementById("event-form-" + locAndName[1])) {
+                    document.getElementById("event-form-" + locAndName[1]).innerText = "";
+                } else {
+                    document.getElementById("editing-form-" + locAndName[1]).innerText = "";
+                }
+                if (locAndName[0] === "save") {
+                    window.location.reload();
+                }
+            }
         })
     }
 
@@ -144,8 +182,16 @@ export class Socket {
         })
     }
 
-    static sendPing() {
-        this.store.sendPing();
+    static showEdit(location: string) {
+        this.store.showEdit(location);
+    }
+
+    static cancelEdit(location: string) {
+        this.store.cancelEdit(location);
+    }
+
+    static saveEdit(location: string) {
+        this.store.saveEdit(location);
     }
 }
 

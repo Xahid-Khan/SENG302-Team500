@@ -8,6 +8,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.stereotype.Controller;
 
+import java.util.List;
+
 /**
  * Controller for handling and dispatching live project update notifications.
  */
@@ -25,12 +27,27 @@ public class LiveProjectUpdatesController {
    *   is working as expected.
    * </p>
    */
-  @MessageMapping("/ping")
+  @MessageMapping("/show")
   @SendTo("/topic/pongs")
-  public String ping(@AuthenticationPrincipal PreAuthenticatedAuthenticationToken principal,
-      String message) {
+  public String show(@AuthenticationPrincipal PreAuthenticatedAuthenticationToken principal,
+                 String location) {
     var authState = (PortfolioPrincipal) principal.getPrincipal();
-    projectDetailsController.liveUpdate("it worked");
-    return String.format("Pong %s (Also, hi %s!)", message, authState.getName());
+    return "show~" + location + "~" + authState.getName();
+  }
+
+  @MessageMapping("/cancel")
+  @SendTo("/topic/pongs")
+  public String cancel(@AuthenticationPrincipal PreAuthenticatedAuthenticationToken principal,
+                     String location) {
+    var authState = (PortfolioPrincipal) principal.getPrincipal();
+    return "cancel~" + location + "~" + authState.getName();
+  }
+
+  @MessageMapping("/save")
+  @SendTo("/topic/pongs")
+  public String save(@AuthenticationPrincipal PreAuthenticatedAuthenticationToken principal,
+                     String location) {
+    var authState = (PortfolioPrincipal) principal.getPrincipal();
+    return "save~" + location + "~" + authState.getName();
   }
 }

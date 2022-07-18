@@ -293,7 +293,7 @@ class Application {
   }
 
   sendPing() {
-    Socket.sendPing();
+    // Socket.sendPing();
   }
 
 }
