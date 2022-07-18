@@ -17,18 +17,18 @@ class EventView {
      */
     constructView() {
         this.containerElement.innerHTML = `
-    <div class="event-title">
+    <div class="crud">
+            <button class="icon-button event-controls" id="event-button-edit-${this.event.eventId}" data-privilege="teacher"><span class="material-icons" >edit</span></button>
+            <button class="icon-button event-controls" id="event-button-delete-${this.event.eventId}" data-privilege="teacher"><span class="material-icons">clear</span></button>
+            <button class="button visibility-button toggle-event-details" id="toggle-event-details-${this.event.eventId}"><span class='material-icons'>visibility_off</span></button>
+    </div>
+    <div class="events-title">
         <span id="event-title-text-${this.event.eventId}" style="font-style: italic;"></span> | <span id="start-date-${this.event.eventId}"></span> - <span id="end-date-${this.event.eventId}"></span>
 
-        <span class="crud">
-            <button class="button event-controls" id="event-button-edit-${this.event.eventId}" data-privilege="teacher">Edit</button>
-            <button class="button event-controls" id="event-button-delete-${this.event.eventId}" data-privilege="teacher">Delete</button>
-            <button class="button toggle-event-details" id="toggle-event-details-${this.event.eventId}">+</button>
-        </span>
     </div>
-    <div class="event-details" id="event-details-${this.event.eventId}">
+    <div class="events-details" id="event-details-${this.event.eventId}">
         <div class="event-description" id="event-description-${this.event.eventId}"></div>
-        <div class="event-sprints" id="event-sprints-${this.event.eventId}"></div>
+        <div class="events-sprints" id="event-sprints-${this.event.eventId}"></div>
     </div>
     
     `;
@@ -41,6 +41,11 @@ class EventView {
         document.getElementById(`event-title-text-${this.event.eventId}`).innerText = this.event.name;
         this.description.innerText = "Description: " + this.event.description;
         this.eventSprints.innerHTML = this.getSprints();
+        this.sprints.forEach((sprint) => {
+            if (document.getElementById(`event-sprint-name-${this.event.eventId}-${sprint.sprintId}`)) {
+                document.getElementById(`event-sprint-name-${this.event.eventId}-${sprint.sprintId}`).innerText = sprint.name + ': '
+            }
+        })
         document.getElementById(`start-date-${this.event.eventId}`).innerText = DatetimeUtils.localToUserDMY(this.event.startDate);
         const displayedDate = new Date(this.event.endDate.valueOf());
         if (DatetimeUtils.getTimeStringIfNonZeroLocally(this.event.endDate) === null) {
@@ -55,11 +60,11 @@ class EventView {
     toggleExpandedView() {
         if (this.expandedView) {
             this.details.style.display = "none";
-            this.toggleButton.innerText = "+";
+            this.toggleButton.innerHTML = "<span class='material-icons'>visibility_off</span>";
         }
         else {
             this.details.style.display = "block";
-            this.toggleButton.innerText = "-";
+            this.toggleButton.innerHTML = "<span class='material-icons'>visibility</span>";
         }
 
         this.expandedView = !this.expandedView;
@@ -74,13 +79,15 @@ class EventView {
 
     getSprints() {
         let html = "<label>Sprints in progress during this event: </label>";
+        let foundSprints = false
         this.sprints.forEach(sprint => {
             if (this.event.startDate >= sprint.startDate && this.event.startDate <= sprint.endDate || this.event.endDate >= sprint.startDate && this.event.endDate <= sprint.endDate) {
-                html += `<div class="event-sprint-details">   - <span>${sprint.name}: </span><span>${DatetimeUtils.localToUserDMY(sprint.startDate)}</span> - <span>${DatetimeUtils.localToUserDMY(sprint.endDate)}</span>`;
+                html += `<div class="event-sprint-details" style="color: ${sprint.colour}">   - <span id="event-sprint-name-${this.event.eventId}-${sprint.sprintId}"></span><span>${DatetimeUtils.localToUserDMY(sprint.startDate)}</span> - <span>${DatetimeUtils.localToUserDMY(sprint.endDate)}</span>`;
+                foundSprints = true
             }
         });
-        if (html === "<label>Sprints in progress during this event: </label>") {
-            html += "<span>No sprints are overlapping with this event</span>"
+        if (!foundSprints) {
+            html = "<label>No sprints are overlapping with this event</label>"
         }
         return html;
     }
