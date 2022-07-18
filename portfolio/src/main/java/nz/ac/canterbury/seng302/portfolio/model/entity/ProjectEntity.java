@@ -149,7 +149,7 @@ public class ProjectEntity {
         sprint.setProject(null);
     }
 
-   public void newEvent(EventEntity event) {
+   public void addEvent(EventEntity event) {
         events.add(event);
         event.setProject(this);
     }
@@ -159,13 +159,12 @@ public class ProjectEntity {
         event.setProject(null);
     }
 
-    public void newDeadline(DeadlineEntity deadline) {
-        deadlines.add(deadline);
-        deadline.setProject(this);
-    }
-
     public void addDeadline(DeadlineEntity deadline) {
-        deadlines.add(deadline);
+        var index = Collections.binarySearch(deadlines, deadline, Comparator.comparing(DeadlineEntity::getStartDate));
+        if (index < 0) {
+            index = -index - 1;
+        }
+        deadlines.add(index, deadline);
         deadline.setProject(this);
     }
 
@@ -174,7 +173,7 @@ public class ProjectEntity {
         deadline.setProject(null);
     }
 
-    public void newMilestone(MilestoneEntity milestone) {
+    public void addMilestone(MilestoneEntity milestone) {
         milestones.add(milestone);
         milestone.setProject(this);
     }

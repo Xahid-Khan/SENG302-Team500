@@ -8,6 +8,5 @@ import java.time.Instant;
 public record BaseMilestoneContract(
         String name,
         String description,
-        Instant startDate,
-        Instant endDate
+        Instant startDate
 ) {}

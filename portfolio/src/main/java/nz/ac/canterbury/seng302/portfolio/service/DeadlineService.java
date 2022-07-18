@@ -35,8 +35,8 @@ public class DeadlineService {
      * @return The deadline contract with the deadline ID
      */
     public DeadlineContract get(String deadlineId) {
-        var deadline= deadlineRepository.findById(deadlineId).orElseThrow(() -> new IllegalArgumentException("Invalid deadline ID"));
-        return deadlineMapper.toContract(deadline);
+        var deadline= deadlineRepository.findById(deadlineId).orElseThrow();
+        return deadlineMapper.toContract(deadline, deadline.getOrderNumber());
     }
 
     /**
@@ -49,11 +49,11 @@ public class DeadlineService {
         var project = projectRepository.findById(projectId).orElseThrow(() -> new IllegalArgumentException("Invalid project ID"));
         var entity = deadlineMapper.toEntity(deadline);
 
-        project.newDeadline(entity);
-        projectRepository.save(project);
+        project.addDeadline(entity);
         deadlineRepository.save(entity);
+        projectRepository.save(project);
 
-        return deadlineMapper.toContract(entity);
+        return deadlineMapper.toContract(entity, entity.getOrderNumber());
     }
 
 
@@ -79,12 +79,11 @@ public class DeadlineService {
      * @param deadline to update, with the new values
      */
     public void update(String deadlineId, BaseDeadlineContract deadline) {
-        DeadlineEntity deadlineEntity = deadlineRepository.findById(deadlineId).orElseThrow(() -> new NoSuchElementException("Invalid deadline ID"));
+        DeadlineEntity deadlineEntity = deadlineRepository.findById(deadlineId).orElseThrow();
 
         deadlineEntity.setName(deadline.name());
         deadlineEntity.setDescription(deadline.description());
         deadlineEntity.setStartDate(deadline.startDate());
-        deadlineEntity.setEndDate(deadline.endDate());
 
         deadlineRepository.save(deadlineEntity);
     }

@@ -71,7 +71,8 @@ public class ProjectMapper {
 
         for (int i=0; i < deadlineEntities.size(); i++) {
             deadlineContracts.add(deadlineMapper.toContract(
-                    deadlineEntities.get(i)
+                    deadlineEntities.get(i),
+                    i+1
             ));
         }
 
