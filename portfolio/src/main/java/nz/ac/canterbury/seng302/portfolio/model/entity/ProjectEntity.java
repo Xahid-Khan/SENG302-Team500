@@ -182,7 +182,11 @@ public class ProjectEntity {
      * @param milestone to insert
      */
     public void addMilestone(MilestoneEntity milestone) {
-        milestones.add(milestone);
+        var index = Collections.binarySearch(milestones, milestone, Comparator.comparing(MilestoneEntity::getStartDate));
+        if (index < 0) {
+            index = -index - 1;
+        }
+        milestones.add(index, milestone);
         milestone.setProject(this);
     }
 
