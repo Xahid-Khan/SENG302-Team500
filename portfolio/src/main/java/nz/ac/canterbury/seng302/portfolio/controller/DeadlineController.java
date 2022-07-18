@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.portfolio.model.contract.BaseDeadlineContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.DeadlineContract;
 import nz.ac.canterbury.seng302.portfolio.service.DeadlineService;
@@ -77,7 +78,7 @@ public class DeadlineController {
      */
     @PostMapping(value = "/projects/{projectId}/deadlines", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> createDeadline(
-            @AuthenticationPrincipal AuthState principal,
+            @AuthenticationPrincipal PortfolioPrincipal principal,
             @PathVariable String projectId,
             @RequestBody BaseDeadlineContract deadline
     ) {
@@ -112,7 +113,7 @@ public class DeadlineController {
      */
     @PutMapping(value = "/deadlines/{id}")
     public ResponseEntity<?> updateDeadline(
-            @AuthenticationPrincipal AuthState principal,
+            @AuthenticationPrincipal PortfolioPrincipal principal,
             @PathVariable String id,
             @RequestBody BaseDeadlineContract deadline
     ) {
@@ -146,7 +147,7 @@ public class DeadlineController {
      */
     @DeleteMapping(value = "/deadlines/{id}")
     public ResponseEntity<Void> deleteDeadline(
-            @AuthenticationPrincipal AuthState principal,
+            @AuthenticationPrincipal PortfolioPrincipal principal,
             @PathVariable String id
     ) {
         ArrayList<String> roles = rolesService.getRolesByToken(principal);

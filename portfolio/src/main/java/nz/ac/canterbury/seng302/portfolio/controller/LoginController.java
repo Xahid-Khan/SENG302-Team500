@@ -22,25 +22,26 @@ import java.util.Optional;
 @Controller
 public class LoginController {
 
-  @Autowired private AuthenticateClientService authenticateClientService;
+  @Autowired
+  private AuthenticateClientService authenticateClientService;
 
-  /**
-   * GET /login provides the user with a GUI form. This form sends a POST request to /login
-   * containing the information from the form, running the login process.
-   *
-   * @param error If there is an error as a parameter within the URL, it will be rendered in the
-   *     HTML
-   * @param model Parameters sent to thymeleaf template to be rendered into HTML
-   * @return The login_form.html page // TODO: Change to login.html?
-   */
-  @GetMapping(value = "/login") // Mapped to GET
-  public String login(
-      @AuthenticationPrincipal AuthState principal,
-      @RequestParam(name = "error", required = false) String error,
-      Model model) {
-    if (principal != null && principal.getIsAuthenticated()) {
-      return "redirect:my_account";
-    }
+    /**
+     * GET /login provides the user with a GUI form. This form sends a POST request to /login containing the information
+     * from the form, running the login process.
+     *
+     * @param error If there is an error as a parameter within the URL, it will be rendered in the HTML
+     * @param model Parameters sent to thymeleaf template to be rendered into HTML
+     * @return      The login_form.html page // TODO: Change to login.html?
+     */
+    @GetMapping(value = "/login")//Mapped to GET
+    public String login(
+            @AuthenticationPrincipal PortfolioPrincipal principal,
+            @RequestParam(name="error", required=false) String error,
+            Model model
+    ) {
+        if (principal != null && principal.getIsAuthenticated()) {
+            return "redirect:my_account";
+        }
 
     model.addAttribute("login", new Login()); // creates the DTO object which captures the inpuitd
     model.addAttribute("error", error);
@@ -84,35 +85,41 @@ public class LoginController {
       return "login_form";
     }
 
-    if (loginReply.getSuccess()) {
-      var domain = request.getHeader("host");
-      CookieUtil.create(
-          response,
-          "lens-session-token",
-          loginReply.getToken(),
-          true,
-          5 * 60 * 60, // Expires in 5 hours
-          domain.startsWith("localhost") ? null : domain);
-      // Redirect user if login succeeds
-      redirectAttributes.addFlashAttribute("message", "Successfully logged in.");
-      return "redirect:my_account";
+        if (loginReply.getSuccess()) {
+            var domain = request.getHeader("host");
+            CookieUtil.create(
+                    response,
+                    "lens-session-token",
+                    loginReply.getToken(),
+                    !domain.startsWith("localhost"),
+                    5 * 60 * 60, // Expires in 5 hours
+                    domain.startsWith("localhost") ? null : domain
+            );
+            // Redirect user if login succeeds
+            redirectAttributes.addFlashAttribute("message", "Successfully logged in.");
+            return "redirect:my_account";
+        }
+
+        model.addAttribute("error", loginReply.getMessage());
+        return "login_form";
     }
 
-    model.addAttribute("error", loginReply.getMessage());
-    return "login_form";
-  }
-
-  /** Allows get requests to / to redirect to the login form */
-  @GetMapping("/")
-  public String index(
-      @AuthenticationPrincipal AuthState principal,
-      HttpServletRequest request,
-      HttpServletResponse response,
-      Model model) {
-    if (principal != null) {
-      return "redirect:my_account";
-    } else {
-      return "redirect:login";
+    /**
+     * Allows get requests to / to redirect to the login form
+     */
+    @GetMapping("/")
+    public String index(
+        @AuthenticationPrincipal PortfolioPrincipal principal,
+        HttpServletRequest request,
+        HttpServletResponse response,
+        Model model
+    ) {
+        if (principal != null) {
+            return "redirect:my_account";
+        }
+        else {
+            return "redirect:login";
+        }
     }
-  }
+
 }

@@ -35,6 +35,12 @@ button:hover {
   background-color: #0332D1;
 }
 
+button[disabled],
+button[disabled]:hover {
+  background-color: rgba(0,0,0,0.24);
+  cursor: not-allowed;
+}
+
 /* inputs */
 input, textarea {
   padding: 5px;
