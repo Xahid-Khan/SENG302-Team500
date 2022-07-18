@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.portfolio.model.contract.BaseEventContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.EventContract;
 import nz.ac.canterbury.seng302.portfolio.service.*;
@@ -74,7 +75,7 @@ public class EventController {
      */
     @PostMapping(value = "/projects/{projectId}/events", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> createEvent(
-            @AuthenticationPrincipal AuthState principal,
+            @AuthenticationPrincipal PortfolioPrincipal principal,
             @PathVariable String projectId,
             @RequestBody BaseEventContract event
     ) {
@@ -109,7 +110,7 @@ public class EventController {
      */
     @PutMapping(value = "/events/{id}")
     public ResponseEntity<?> updateEvent(
-            @AuthenticationPrincipal AuthState principal,
+            @AuthenticationPrincipal PortfolioPrincipal principal,
             @PathVariable String id,
             @RequestBody BaseEventContract event
     ) {
@@ -143,7 +144,7 @@ public class EventController {
      */
     @DeleteMapping(value = "/events/{id}")
     public ResponseEntity<Void> deleteEvent(
-            @AuthenticationPrincipal AuthState principal,
+            @AuthenticationPrincipal PortfolioPrincipal principal,
             @PathVariable String id
     ) {
         ArrayList<String> roles = rolesService.getRolesByToken(principal);

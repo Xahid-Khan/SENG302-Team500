@@ -2,15 +2,16 @@ import React, {useCallback} from "react";
 import {observer} from "mobx-react-lite";
 import {useProjectStore} from "../store/ProjectStoreProvider";
 import {useToasterStore} from "../../../component/toast/internal/ToasterStoreProvider";
-import FullCalendar, {EventChangeArg} from "@fullcalendar/react";
+import FullCalendar, {EventChangeArg, EventSourceInput} from "@fullcalendar/react";
 import {Toast} from "../../../component/toast/Toast";
 import {ToastBase} from "../../../component/toast/ToastBase";
 import defaultToastTheme from "../../../component/toast/DefaultToast.module.css";
 import {LoadingErrorPresenter} from "../../../component/error/LoadingErrorPresenter";
 import {DatetimeUtils} from "../../../util/DatetimeUtils";
-import {LoadingPending} from "../../../util/network/loading_status";
+import {getContrast} from "../../../util/TextColorUtil";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
+
 
 /**
  * Component that displays a month calendar for the current project and its sprints.
@@ -58,15 +59,125 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
         end: project.endDate
     }
 
-    const events = project.sprints.map(sprint => ({
+    /**
+     * This is an array of events
+     */
+    const events: EventSourceInput = project.sprints.map(sprint => ({
         id: sprint.id,
         start: sprint.startDate,
         end: sprint.endDate,
         backgroundColor: sprint.colour,
+        textColor: getContrast(sprint.colour),
         title: `Sprint ${sprint.orderNumber}: ${sprint.name}`,
         // This hides the time on the event and must be true for drag and drop resizing to be enabled
         allDay: !DatetimeUtils.hasTimeComponent(sprint.startDate) && !DatetimeUtils.hasTimeComponent(sprint.endDate),
     }))
+
+
+    let deadlineDictionary = new Map();
+    let eventDictionary = new Map();
+    let milestoneDictionary = new Map();
+    let allEventDates = new Set();
+
+    /**
+     * This method reads all the events (Events, Milestones, and Deadlines) and create a dictionary where key is the date
+     * and value is a list of events on that day.
+     * @param iconEvents Events that we would like to count
+     * @param dict an empty dictionary where the results will be stored and updated.
+     * @param code code represents the type of events.
+     */
+    const iconDataToDictionary = (iconEvents: any[], dict: Map<String, any>, code: String) => {
+        iconEvents.map((event) => {
+            let startDate = new Date(event.startDate);
+            let endDate = new Date();
+            code == "_ES" ? endDate = new Date(event.endDate) : endDate = new Date(event.startDate)
+
+            while (startDate <= endDate) {
+                const tempDate = startDate.toLocaleDateString().split("/")
+                let calendarDate = tempDate[2] +"-"+ tempDate[1] +"-"+ tempDate[0];
+
+                if (dict.has(JSON.parse(JSON.stringify(calendarDate)))) {
+                    const currentEvents = (dict.get(JSON.parse(JSON.stringify(calendarDate))));
+                    dict.set(JSON.parse(JSON.stringify(calendarDate)), currentEvents.concat([event]))
+                } else {
+                    dict.set(JSON.parse(JSON.stringify(calendarDate)), [event]);
+                }
+                allEventDates.add(JSON.parse(JSON.stringify(calendarDate)))
+                startDate.setDate(startDate.getDate() + 1);
+            }
+        })
+    }
+
+    iconDataToDictionary(project.milesStones, milestoneDictionary, "_MS");
+    iconDataToDictionary(project.events, eventDictionary,"_ES");
+    iconDataToDictionary(project.deadlines, deadlineDictionary, "_DL");
+
+    allEventDates.forEach((eventDate: any) => events.push({
+        id: eventDate,
+        start: eventDate,
+        end: eventDate,
+        backgroundColor: "rgba(52, 52, 52, 0.0)",
+        textColor: "black",
+        title: "",
+        editable:false,
+        allDay: true,
+        borderColor: "transparent",
+    }))
+
+    /**
+     * this method will get the event ID which is the date and see if we have any events / deadlines / milestones for that day.
+     * there could be more than one kind of even on the same day to so distinguish between events each event id will have
+     * "ES" / "DL" / "MS" suffix at the end of the id separated by "_".
+     * @param eventInfo id of the event can be retrieved from eventInfo of the day.
+     */
+    function renderEventIcons(eventInfo: any) {
+        if (eventInfo.event.title.includes("Sprint")) {
+            return (
+                <div>
+                    <p>{eventInfo.event.title}</p>
+                </div>
+            )
+        } else {
+            return (
+                <div style={{display:"grid"}}>
+                    {
+                        eventDictionary.has(eventInfo.event.id)?
+                            <div style={{margin:"3px 0 3px 0"}}>
+                                <span className="material-icons" style={{float: "left"}}>event</span>
+                                <p style={{
+                                    float: "left",
+                                    margin: "3px 0 0 15px"
+                                }}>{eventDictionary.get(eventInfo.event.id).length}</p>
+                            </div>
+                            :
+                            <div style={{height:"25px", width:"20px", border:"none"}}></div>
+                    }
+                    {
+                        milestoneDictionary.has(eventInfo.event.id)?
+                            <div style={{margin:"3px 0 3px 0"}}>
+                                <span className="material-icons" style={{float: "left"}}>flag</span>
+                                <p style={{float: "left", margin: "3px 0 0 15px"}}>
+                                    {milestoneDictionary.get(eventInfo.event.id).length}
+                                </p>
+                            </div>
+                            :
+                            <div style={{height:"25px", width:"20px", border:"none"}}></div>
+                    }
+                    {
+                        deadlineDictionary.has(eventInfo.event.id)?
+                            <div style={{margin:"3px 0 3px 0"}}>
+                                <span className="material-icons" style={{float: "left"}}>timer</span>
+                                <p style={{float: "left", margin: "3px 0 0 15px"}}>
+                                    {deadlineDictionary.get(eventInfo.event.id).length}
+                                </p>
+                            </div>
+                            :
+                            <div style={{height:"25px", width:"20px", border:"none"}}></div>
+                    }
+                </div>
+            )
+        }
+    }
 
     return (
         <>
@@ -75,7 +186,7 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
                 plugins={[dayGridPlugin, interactionPlugin]}
                 initialView="dayGridMonth"
                 events={events}
-
+                eventContent={renderEventIcons}
                 /* Drag and drop config */
                 //The origin of window comes from the Thymeleaf template of "monthly_planner.html".
                 editable={!project.sprintsSaving && (window as any) != null ? (window as any).userCanEdit : false} // We shouldn't allow sprints to be updated while we're still trying to save an earlier update, since this could lead to overlapping sprints.
@@ -83,10 +194,10 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
                 eventOverlap={false}
                 eventConstraint={projectRange}
                 eventChange={onSaveDatesCallback}
-
                 /* Calendar config */
                 validRange={projectRange}
                 height='100vh'
+                nextDayThreshold={"00:00:01"}
             />
         </>
     )
