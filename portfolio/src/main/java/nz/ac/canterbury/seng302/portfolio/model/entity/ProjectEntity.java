@@ -144,11 +144,22 @@ public class ProjectEntity {
         sprint.setProject(this);
     }
 
+    /**
+     * Removes sprint from sprints list
+     * @param sprint sprint to be deleted
+     */
     public void removeSprint(SprintEntity sprint) {
         sprints.remove(sprint);
         sprint.setProject(null);
     }
 
+    /**
+     * Inserts the given event to the events list, retaining sorted order.
+     *
+     * <p>Adapted from: https://stackoverflow.com/a/51893026</p>
+     *
+     * @param event to insert
+     */
    public void addEvent(EventEntity event) {
        var index = Collections.binarySearch(events, event, Comparator.comparing(EventEntity::getStartDate));
        if (index < 0) {
@@ -159,6 +170,10 @@ public class ProjectEntity {
        event.setProject(this);
     }
 
+    /**
+     * Removes sprint from sprints list
+     * @param event to be deleted
+     */
     public void removeEvent(EventEntity event) {
         events.remove(event);
         event.setProject(null);

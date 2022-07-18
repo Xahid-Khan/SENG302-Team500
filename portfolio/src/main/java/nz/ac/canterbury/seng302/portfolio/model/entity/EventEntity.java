@@ -105,7 +105,7 @@ public class EventEntity {
     /**
      * Calculates the orderNumber of this event entity by searching through its project.
      *
-     * @return the orderNumber of this sprint in the project
+     * @return the orderNumber of this event in the project
      */
     public int getOrderNumber() {
         var events = project.getEvents();
