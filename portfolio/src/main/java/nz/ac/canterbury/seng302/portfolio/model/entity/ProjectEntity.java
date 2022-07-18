@@ -159,6 +159,13 @@ public class ProjectEntity {
         event.setProject(null);
     }
 
+    /**
+     * Inserts the given deadline to the deadlines list, retaining sorted order.
+     *
+     * <p>Adapted from: https://stackoverflow.com/a/51893026</p>
+     *
+     * @param deadline to insert
+     */
     public void addDeadline(DeadlineEntity deadline) {
         var index = Collections.binarySearch(deadlines, deadline, Comparator.comparing(DeadlineEntity::getStartDate));
         if (index < 0) {
@@ -168,6 +175,10 @@ public class ProjectEntity {
         deadline.setProject(this);
     }
 
+    /**
+     * Removes deadline from deadlines list
+     * @param deadline to delete
+     */
     public void removeDeadline(DeadlineEntity deadline) {
         deadlines.remove(deadline);
         deadline.setProject(null);

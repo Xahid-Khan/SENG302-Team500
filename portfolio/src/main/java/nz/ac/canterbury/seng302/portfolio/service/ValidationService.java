@@ -256,6 +256,13 @@ public class ValidationService {
         return "Okay";
     }
 
+    /**
+     * Checks base fields for milestones and deadlines
+     * @param type milestone or deadline
+     * @param name of respective event
+     * @param description of respective event
+     * @return error message or Okay if everything is valid
+     */
     public String checkDeadlineMilestoneBaseFields(String type, String name, String description) {
         if (name.equals("")) {
             return type + " name must not be empty";

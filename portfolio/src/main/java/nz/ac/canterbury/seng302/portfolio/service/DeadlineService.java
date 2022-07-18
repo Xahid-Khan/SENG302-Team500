@@ -11,12 +11,12 @@ import nz.ac.canterbury.seng302.portfolio.repository.SprintRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.NoSuchElementException;
 
 @Service
 public class DeadlineService {
-    @Autowired
-    private SprintRepository sprintRepository;
 
     @Autowired
     private ProjectRepository projectRepository;
@@ -26,6 +26,9 @@ public class DeadlineService {
 
     @Autowired
     private DeadlineMapper deadlineMapper;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     /**
      * Get the deadline with the deadline ID
@@ -86,6 +89,7 @@ public class DeadlineService {
         deadlineEntity.setStartDate(deadline.startDate());
 
         deadlineRepository.save(deadlineEntity);
+        entityManager.clear();
     }
 
 }
