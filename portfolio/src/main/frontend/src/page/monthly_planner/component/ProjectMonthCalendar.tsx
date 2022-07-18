@@ -145,8 +145,8 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
 
         dictionary.get(date).map((subEvent: any) => {
             stringResult.push("<p style='margin:0px; padding:0px; height: fit-content; width: fit-content'>" +
-                "Name: &emsp;&emsp;" + subEvent.name + "<br />Start Date: " + subEvent.startDate.toLocaleString() +
-                "<br />End Date:&nbsp;&ensp;" + subEvent.endDate.toLocaleString() + "</p>");
+                subEvent.name + "<br />" +
+                "<h5 style='margin:0px; padding:0px'>" + subEvent.startDate.toLocaleString() + "&emsp;&emsp;" + subEvent.endDate.toLocaleString() + "</h5></p>");
         })
 
         return (
