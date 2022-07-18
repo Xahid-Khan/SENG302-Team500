@@ -340,13 +340,15 @@ class Editor {
         })
         this.project.deadlines.forEach((deadline) => {
             const deadlineNoTime = new Date(deadline.startDate.getFullYear(), deadline.startDate.getMonth(), deadline.startDate.getDate()).getTime();
-            if (deadlineNoTime === startDate) {
-                startFound = true;
-                startReturnString += `Deadline: ${deadline.name} \n`
-            }
-            if (endDate && deadlineNoTime === endDate) {
-                endFound = true;
-                endReturnString += `Deadline: ${deadline.name} \n`
+            if (deadline.deadlineId !== this.initialData.deadlineId) {
+                if (deadlineNoTime === startDate) {
+                    startFound = true;
+                    startReturnString += `Deadline: ${deadline.name} \n`
+                }
+                if (endDate && deadlineNoTime === endDate) {
+                    endFound = true;
+                    endReturnString += `Deadline: ${deadline.name} \n`
+                }
             }
         })
         this.project.events.forEach((event) => {
