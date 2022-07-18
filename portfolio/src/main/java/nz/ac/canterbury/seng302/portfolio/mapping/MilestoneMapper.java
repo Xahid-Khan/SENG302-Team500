@@ -32,14 +32,15 @@ public class MilestoneMapper {
      * @param entity a event entity that is retried from database
      * @return      returns a event and related events in JSON data type.
      */
-    public MilestoneContract toContract(MilestoneEntity entity) {
+    public MilestoneContract toContract(MilestoneEntity entity, long orderNumber) {
         return new MilestoneContract(
                 entity.getProject().getId(),
                 entity.getId(),
                 entity.getName(),
                 entity.getDescription(),
                 entity.getStartDate(),
-                entity.getEndDate()
+                entity.getEndDate(),
+                orderNumber
         );
     }
 }

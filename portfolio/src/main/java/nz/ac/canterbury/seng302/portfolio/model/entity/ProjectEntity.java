@@ -174,11 +174,22 @@ public class ProjectEntity {
         deadline.setProject(null);
     }
 
-    public void newMilestone(MilestoneEntity milestone) {
+    /**
+     * Inserts the given milestone to the milestones list, retaining sorted order.
+     *
+     * <p>Adapted from: https://stackoverflow.com/a/51893026</p>
+     *
+     * @param milestone to insert
+     */
+    public void addMilestone(MilestoneEntity milestone) {
         milestones.add(milestone);
         milestone.setProject(this);
     }
 
+    /**
+     * Removes milestone from milestones list
+     * @param milestone to delete
+     */
     public void removeMilestone(MilestoneEntity milestone) {
         milestones.remove(milestone);
         milestone.setProject(null);
