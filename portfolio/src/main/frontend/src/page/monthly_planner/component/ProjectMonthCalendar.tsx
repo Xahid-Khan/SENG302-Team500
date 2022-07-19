@@ -11,7 +11,7 @@ import {DatetimeUtils} from "../../../util/DatetimeUtils";
 import {getContrast} from "../../../util/TextColorUtil";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
-
+import ReactTooltip from "react-tooltip";
 
 /**
  * Component that displays a month calendar for the current project and its sprints.
@@ -125,6 +125,36 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
     }))
 
     /**
+     * this method will generate a string representation of all the events of on a single day.
+     * @param date the date we need the events for
+     * @param eventType this is a string reflecting type of event needed for that day - options are events, milestones, and deadlines
+     */
+    function getEventHoverData(date: any, eventType: string) {
+        let stringResult: any[] = [];
+        let dictionary = new Map();
+        if (eventType == "events") {
+            dictionary = eventDictionary;
+            stringResult.push("<p style='margin:0px; padding:0px; height: fit-content; width: fit-content'>Events:-</p>")
+        } else if (eventType == "milestones") {
+            dictionary = milestoneDictionary;
+            stringResult.push("<p style='margin:0px; padding:0px; height: fit-content; width: fit-content'>Milestones:-</p>")
+        } else {
+            dictionary = deadlineDictionary;
+            stringResult.push("<p style='margin:0px; padding:0px; height: fit-content; width: fit-content'>Deadlines:-</p>")
+        }
+
+        dictionary.get(date).map((subEvent: any) => {
+            stringResult.push("<p style='margin:0px; padding:0px; height: fit-content; width: fit-content'>" +
+                subEvent.name + "<br />" +
+                "<h5 style='margin:0px; padding:0px'>" + subEvent.startDate.toLocaleString() + "&emsp;&emsp;" + subEvent.endDate.toLocaleString() + "</h5></p>");
+        })
+
+        return (
+            stringResult.join("<br />")
+        )
+    }
+
+    /**
      * this method will get the event ID which is the date and see if we have any events / deadlines / milestones for that day.
      * there could be more than one kind of even on the same day to so distinguish between events each event id will have
      * "ES" / "DL" / "MS" suffix at the end of the id separated by "_".
@@ -142,35 +172,56 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
                 <div style={{display:"grid"}}>
                     {
                         eventDictionary.has(eventInfo.event.id)?
-                            <div style={{margin:"3px 0 3px 0"}}>
-                                <span className="material-icons" style={{float: "left"}}>event</span>
-                                <p style={{
-                                    float: "left",
-                                    margin: "3px 0 0 15px"
-                                }}>{eventDictionary.get(eventInfo.event.id).length}</p>
-                            </div>
+                            <>
+                                <div style={{margin:"3px 0 3px 0", width:"30%"}} data-tip data-for = {"events" + eventInfo.event.id.toString()}>
+                                        <span className="material-icons" style={{float: "left"}} >event</span>
+                                        <p style={{
+                                            float: "left",
+                                            margin: "3px 0 0 15px"
+                                        }}>{eventDictionary.get(eventInfo.event.id).length}</p>
+                                </div>
+
+                                <ReactTooltip id={"events" + eventInfo.event.id.toString()} place="right" effect="float" html={true} multiline={true}
+                                              getContent={() => getEventHoverData(eventInfo.event.id, "events")}
+                                >
+                                </ReactTooltip>
+                            </>
                             :
                             <div style={{height:"25px", width:"20px", border:"none"}}></div>
                     }
                     {
                         milestoneDictionary.has(eventInfo.event.id)?
-                            <div style={{margin:"3px 0 3px 0"}}>
-                                <span className="material-icons" style={{float: "left"}}>flag</span>
-                                <p style={{float: "left", margin: "3px 0 0 15px"}}>
-                                    {milestoneDictionary.get(eventInfo.event.id).length}
-                                </p>
-                            </div>
+                            <>
+                                <div style={{margin:"3px 0 3px 0", width:"30%"}} data-tip data-for = {"milestones" + eventInfo.event.id.toString()}>
+                                    <span className="material-icons" style={{float: "left"}}>flag</span>
+                                    <p style={{float: "left", margin: "3px 0 0 15px"}}>
+                                        {milestoneDictionary.get(eventInfo.event.id).length}
+                                    </p>
+                                </div>
+
+                                <ReactTooltip id={"milestones" + eventInfo.event.id.toString()} place="right" effect="float" html={true} multiline={true}
+                                              getContent={() => getEventHoverData(eventInfo.event.id, "milestones")}
+                                >
+                                </ReactTooltip>
+                            </>
                             :
                             <div style={{height:"25px", width:"20px", border:"none"}}></div>
                     }
                     {
                         deadlineDictionary.has(eventInfo.event.id)?
-                            <div style={{margin:"3px 0 3px 0"}}>
-                                <span className="material-icons" style={{float: "left"}}>timer</span>
-                                <p style={{float: "left", margin: "3px 0 0 15px"}}>
-                                    {deadlineDictionary.get(eventInfo.event.id).length}
-                                </p>
-                            </div>
+                            <>
+                                <div style={{margin:"3px 0 3px 0", width:"30%"}} data-tip data-for = {"deadlines" + eventInfo.event.id.toString()}>
+                                    <span className="material-icons" style={{float: "left"}}>timer</span>
+                                    <p style={{float: "left", margin: "3px 0 0 15px"}}>
+                                        {deadlineDictionary.get(eventInfo.event.id).length}
+                                    </p>
+                                </div>
+
+                                <ReactTooltip id={"deadlines" + eventInfo.event.id.toString()} place="right" effect="float" html={true} multiline={true}
+                                              getContent={() => getEventHoverData(eventInfo.event.id, "deadlines")}
+                                >
+                                </ReactTooltip>
+                            </>
                             :
                             <div style={{height:"25px", width:"20px", border:"none"}}></div>
                     }
