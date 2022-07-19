@@ -102,7 +102,7 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
 
     function arrayOfEvents(id: string){
         let events: any = []
-        if(id !== null){
+        if(id){
             events = project.sprints.map(sprint => ({
                 id: sprint.id,
                 start: sprint.startDate,
@@ -112,7 +112,7 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
                 borderColor: sprint.id === id ? 'black' : 'white',
                 title: `Sprint ${sprint.orderNumber}: ${sprint.name}`,
                 // This hides the time on the event and must be true for drag and drop resizing to be enabled
-                allDay: !DatetimeUtils.hasTimeComponent(sprint.startDate) && !DatetimeUtils.hasTimeComponent(sprint.endDate),
+                allDay: true,
                 editable: sprint.id === id,
 
             }))
@@ -126,7 +126,7 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
                 borderColor: 'white',
                 title: `Sprint ${sprint.orderNumber}: ${sprint.name}`,
                 // This hides the time on the event and must be true for drag and drop resizing to be enabled
-                allDay: !DatetimeUtils.hasTimeComponent(sprint.startDate) && !DatetimeUtils.hasTimeComponent(sprint.endDate),
+                allDay: true,
                 editable: false,
 
             }))
@@ -280,7 +280,7 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
                 /* Calendar config */
                 validRange={projectRange}
                 height='100vh'
-                nextDayThreshold={"00:00:01"}
+                // nextDayThreshold={"00:00:01"}
             />
         </>
     )
