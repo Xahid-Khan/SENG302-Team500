@@ -81,14 +81,24 @@ class EventView {
     getSprints() {
         let html = "<label>Sprints in progress during this event: </label>";
         let foundSprints = false
+
+        //Uses linear gradient to make the coloured line
+        var gradient = "linear-gradient(to right,"
         this.sprints.forEach(sprint => {
-            if (this.event.startDate >= sprint.startDate && this.event.startDate <= sprint.endDate || this.event.endDate >= sprint.startDate && this.event.endDate <= sprint.endDate) {
+            if (this.event.startDate >= sprint.startDate && this.event.startDate <= sprint.endDate || this.event.endDate >= sprint.startDate && this.event.endDate <= sprint.endDate
+            || this.event.startDate <= sprint.startDate && this.event.endDate >= sprint.endDate) {
                 html += `<div class="event-sprint-details" style="color: ${sprint.colour}">   - <span id="event-sprint-name-${this.event.eventId}-${sprint.sprintId}"></span><span>${DatetimeUtils.localToUserDMY(sprint.startDate)}</span> - <span>${DatetimeUtils.localToUserDMY(sprint.endDate)}</span>`;
                 foundSprints = true
-                this.colourBlock = document.getElementById(`event-colour-block-${this.event.eventId}`);
-                this.colourBlock.style.background = sprint.colour;
+                gradient+=sprint.colour+","
+
             }
-        });
+        }
+
+        );
+        //Splices the last comma out of the linear gradient so it compiles. Sets the line colour
+        gradient=gradient.slice(0, -1) + ')';
+        document.getElementById(`event-colour-block-${this.event.eventId}`).style.background=gradient;
+
         if (!foundSprints) {
             html = "<label>No sprints are overlapping with this event</label>"
         }
