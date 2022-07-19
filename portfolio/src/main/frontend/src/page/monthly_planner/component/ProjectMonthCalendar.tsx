@@ -109,7 +109,7 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
                 end: sprint.endDate,
                 backgroundColor: sprint.colour,
                 textColor: getContrast(sprint.colour),
-                borderColor: sprint.id === id ? 'black' : 'white',
+                borderColor: sprint.id === id ? '#2C3E50' : 'white',
                 title: `Sprint ${sprint.orderNumber}: ${sprint.name}`,
                 // This hides the time on the event and must be true for drag and drop resizing to be enabled
                 allDay: true,
@@ -272,7 +272,9 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
                 editable={!project.sprintsSaving && (window as any) != null ? (window as any).userCanEdit : false} // We shouldn't allow sprints to be updated while we're still trying to save an earlier update, since this could lead to overlapping sprints.
                 eventResizableFromStart
                 eventDurationEditable
-                eventOverlap={false}
+                eventOverlap={function(stillEvent, movingEvent) {
+                    return !(stillEvent.title.startsWith("Sprint ") && movingEvent.title.startsWith("Sprint "));
+                }}
                 eventConstraint={projectRange}
                 eventChange={onSaveDatesCallback}
                 eventClick={eventClick}
@@ -280,7 +282,6 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
                 /* Calendar config */
                 validRange={projectRange}
                 height='100vh'
-                // nextDayThreshold={"00:00:01"}
             />
         </>
     )
