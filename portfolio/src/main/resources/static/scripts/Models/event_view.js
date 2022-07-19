@@ -30,6 +30,7 @@ class EventView {
         <div class="event-description" id="event-description-${this.event.eventId}"></div>
         <div class="events-sprints" id="event-sprints-${this.event.eventId}"></div>
     </div>
+    <div class="colour-block" id="event-colour-block-${this.event.eventId}"></div>
     
     `;
 
@@ -37,6 +38,7 @@ class EventView {
         this.description = document.getElementById(`event-description-${this.event.eventId}`);
         this.details = document.getElementById(`event-details-${this.event.eventId}`);
         this.eventSprints = document.getElementById(`event-sprints-${this.event.eventId}`);
+
 
         document.getElementById(`event-title-text-${this.event.eventId}`).innerText = this.event.name;
         this.description.innerText = "Description: " + this.event.description;
@@ -52,6 +54,8 @@ class EventView {
             displayedDate.setDate(displayedDate.getDate() - 1);
         }
         document.getElementById(`end-date-${this.event.eventId}`).innerText = DatetimeUtils.localToUserDMY(displayedDate);
+
+
     }
 
     /**
@@ -84,6 +88,9 @@ class EventView {
             if (this.event.startDate >= sprint.startDate && this.event.startDate <= sprint.endDate || this.event.endDate >= sprint.startDate && this.event.endDate <= sprint.endDate) {
                 html += `<div class="event-sprint-details" style="color: ${sprint.colour}">   - <span id="event-sprint-name-${this.event.eventId}-${sprint.sprintId}"></span><span>${DatetimeUtils.localToUserDMY(sprint.startDate)}</span> - <span>${DatetimeUtils.localToUserDMY(sprint.endDate)}</span>`;
                 foundSprints = true
+                this.colourBlock = document.getElementById(`event-colour-block-${this.event.eventId}`);
+                //    set the colour block style
+                this.colourBlock.style.background= sprint.colour;
             }
         });
         if (!foundSprints) {
