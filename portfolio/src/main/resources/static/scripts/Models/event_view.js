@@ -30,6 +30,7 @@ class EventView {
         <div class="event-description" id="event-description-${this.event.eventId}"></div>
         <div class="events-sprints" id="event-sprints-${this.event.eventId}"></div>
     </div>
+    <div class="colour-block" id="event-colour-block-${this.event.eventId}"></div>
     
     `;
 
@@ -84,6 +85,8 @@ class EventView {
             if (this.event.startDate >= sprint.startDate && this.event.startDate <= sprint.endDate || this.event.endDate >= sprint.startDate && this.event.endDate <= sprint.endDate) {
                 html += `<div class="event-sprint-details" style="color: ${sprint.colour}">   - <span id="event-sprint-name-${this.event.eventId}-${sprint.sprintId}"></span><span>${DatetimeUtils.localToUserDMY(sprint.startDate)}</span> - <span>${DatetimeUtils.localToUserDMY(sprint.endDate)}</span>`;
                 foundSprints = true
+                this.colourBlock = document.getElementById(`event-colour-block-${this.event.eventId}`);
+                this.colourBlock.style.background = sprint.colour;
             }
         });
         if (!foundSprints) {
