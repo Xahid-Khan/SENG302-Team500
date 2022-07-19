@@ -19,7 +19,7 @@ export const MonthlyPlannerPage: React.FC = () => {
                 <PageLayout>
                     <div className={styles.monthlyPlannerPage}>
                         <h1>Welcome to the Monthly Planner page!</h1>
-
+                        <link rel="stylesheet" href="monthly_planner.css"/>
                         <div className="raised-card" style={{padding: 20}}>
                             <MonthlyPlannerPageContent/>
                         </div>
