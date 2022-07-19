@@ -83,7 +83,7 @@ class EventView {
         let foundSprints = false
 
         //Uses linear gradient to make the coloured line
-        var gradient = "linear-gradient(45deg,"
+        let gradient = "linear-gradient(45deg,"
         this.sprints.forEach(sprint => {
             if (this.event.startDate >= sprint.startDate && this.event.startDate <= sprint.endDate || this.event.endDate >= sprint.startDate && this.event.endDate <= sprint.endDate
             || this.event.startDate <= sprint.startDate && this.event.endDate >= sprint.endDate) {
