@@ -60,45 +60,6 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
         end: project.endDate
     }
 
-    const [events, setEvents] = React.useState(project.sprints.map(sprint => ({
-        id: sprint.id,
-        start: sprint.startDate,
-        end: sprint.endDate,
-        backgroundColor: sprint.colour,
-        textColor: getContrast(sprint.colour),
-        borderColor: 'white',
-        title: `Sprint ${sprint.orderNumber}: ${sprint.name}`,
-        // This hides the time on the event and must be true for drag and drop resizing to be enabled
-        allDay: !DatetimeUtils.hasTimeComponent(sprint.startDate) && !DatetimeUtils.hasTimeComponent(sprint.endDate),
-        editable: false,
-
-    })));
-
-
-
-    const eventClick = (info : any) => {
-        const sprintId = info.event.id;
-
-        if(sprintId) {
-            info.el.style.borderColor = 'red';
-        }
-
-        setEvents(project.sprints.map(sprint => ({
-            id: sprint.id,
-            start: sprint.startDate,
-            end: sprint.endDate,
-            backgroundColor: sprint.colour,
-            textColor: getContrast(sprint.colour),
-            borderColor: sprint.id === sprintId ? 'black' : 'white',
-            title: `Sprint ${sprint.orderNumber}: ${sprint.name}`,
-            // This hides the time on the event and must be true for drag and drop resizing to be enabled
-            allDay: !DatetimeUtils.hasTimeComponent(sprint.startDate) && !DatetimeUtils.hasTimeComponent(sprint.endDate),
-            editable: sprint.id === sprintId,
-
-        })))
-    }
-
-
     let deadlineDictionary = new Map();
     let eventDictionary = new Map();
     let milestoneDictionary = new Map();
@@ -137,17 +98,60 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
     iconDataToDictionary(project.events, eventDictionary,"_ES");
     iconDataToDictionary(project.deadlines, deadlineDictionary, "_DL");
 
-    allEventDates.forEach((eventDate: any) => events.push({
-        id: eventDate,
-        start: eventDate,
-        end: eventDate,
-        backgroundColor: "rgba(52, 52, 52, 0.0)",
-        textColor: "black",
-        title: "",
-        editable:false,
-        allDay: true,
-        borderColor: "transparent",
-    }))
+
+
+    function arrayOfEvents(id: string){
+        let events: any = []
+        if(id !== null){
+            events = project.sprints.map(sprint => ({
+                id: sprint.id,
+                start: sprint.startDate,
+                end: sprint.endDate,
+                backgroundColor: sprint.colour,
+                textColor: getContrast(sprint.colour),
+                borderColor: sprint.id === id ? 'black' : 'white',
+                title: `Sprint ${sprint.orderNumber}: ${sprint.name}`,
+                // This hides the time on the event and must be true for drag and drop resizing to be enabled
+                allDay: !DatetimeUtils.hasTimeComponent(sprint.startDate) && !DatetimeUtils.hasTimeComponent(sprint.endDate),
+                editable: sprint.id === id,
+
+            }))
+        } else {
+            events = project.sprints.map(sprint => ({
+                id: sprint.id,
+                start: sprint.startDate,
+                end: sprint.endDate,
+                backgroundColor: sprint.colour,
+                textColor: getContrast(sprint.colour),
+                borderColor: 'white',
+                title: `Sprint ${sprint.orderNumber}: ${sprint.name}`,
+                // This hides the time on the event and must be true for drag and drop resizing to be enabled
+                allDay: !DatetimeUtils.hasTimeComponent(sprint.startDate) && !DatetimeUtils.hasTimeComponent(sprint.endDate),
+                editable: false,
+
+            }))
+        }
+        allEventDates.forEach((eventDate: any) => events.push({
+            id: eventDate,
+            start: eventDate,
+            end: eventDate,
+            backgroundColor: "rgba(52, 52, 52, 0.0)",
+            textColor: "black",
+            title: "",
+            editable:false,
+            allDay: true,
+            borderColor: "transparent",
+        }))
+        return events
+    }
+
+    const [events, setEvents] = React.useState(arrayOfEvents(null));
+
+    const eventClick = (info : any) => {
+        const sprintId = info.event.id;
+        setEvents(arrayOfEvents(sprintId))
+    }
+
 
     /**
      * this method will generate a string representation of all the events of on a single day.
