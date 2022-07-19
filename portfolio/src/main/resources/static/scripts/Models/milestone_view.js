@@ -17,18 +17,18 @@ class MilestoneView {
      */
     constructView() {
         this.containerElement.innerHTML = `
-    <div class="milestone-title">
+    <div class="crud">
+        <button class="icon-button milestone-controls" id="milestone-button-edit-${this.milestone.milestoneId}" data-privilege="teacher"><span class="material-icons">edit</span></button>
+        <button class="icon-button milestone-controls" id="milestone-button-delete-${this.milestone.milestoneId}" data-privilege="teacher"><span class="material-icons">clear</span></button>
+        <button class="button visibility-button toggle-milestone-details" id="toggle-milestone-details-${this.milestone.milestoneId}"><span class='material-icons'>visibility_off</span></i></button>
+    </div>
+    <div class="events-title">
         <span id="milestone-title-text-${this.milestone.milestoneId}" style="font-style: italic;"></span> | <span id="start-date-${this.milestone.milestoneId}"></span> - <span id="end-date-${this.milestone.milestoneId}"></span>
 
-        <span class="crud">
-            <button class="button milestone-controls" id="milestone-button-edit-${this.milestone.milestoneId}" data-privilege="teacher">Edit</button>
-            <button class="button milestone-controls" id="milestone-button-delete-${this.milestone.milestoneId}" data-privilege="teacher">Delete</button>
-            <button class="button toggle-milestone-details" id="toggle-milestone-details-${this.milestone.milestoneId}">+</button>
-        </span>
     </div>
-    <div class="milestone-details" id="milestone-details-${this.milestone.milestoneId}">
+    <div class="events-details" id="milestone-details-${this.milestone.milestoneId}">
         <div class="milestone-description" id="milestone-description-${this.milestone.milestoneId}"></div>
-        <div class="milestone-sprints" id="milestone-sprints-${this.milestone.milestoneId}"></div>
+        <div class="events-sprints" id="milestone-sprints-${this.milestone.milestoneId}"></div>
     </div>
     
     `;
@@ -41,6 +41,11 @@ class MilestoneView {
         document.getElementById(`milestone-title-text-${this.milestone.milestoneId}`).innerText = this.milestone.name;
         this.description.innerText = "Description: " + this.milestone.description;
         this.milestoneSprints.innerHTML = this.getSprints();
+        this.sprints.forEach((sprint) => {
+            if (document.getElementById(`milestone-sprint-name-${this.milestone.milestoneId}-${sprint.sprintId}`)) {
+                document.getElementById(`milestone-sprint-name-${this.milestone.milestoneId}-${sprint.sprintId}`).innerText = sprint.name + ': '
+            }
+        })
         document.getElementById(`start-date-${this.milestone.milestoneId}`).innerText = DatetimeUtils.localToUserDMY(this.milestone.startDate);
         const displayedDate = new Date(this.milestone.endDate.valueOf());
         displayedDate.setDate(displayedDate.getDate() - 1);
@@ -53,10 +58,10 @@ class MilestoneView {
     toggleExpandedView() {
         if (this.expandedView) {
             this.details.style.display = "none";
-            this.toggleButton.innerText = "+";
+            this.toggleButton.innerHtml = "<span class='material-icons'>visibility_off</span>";
         } else {
             this.details.style.display = "block";
-            this.toggleButton.innerText = "-";
+            this.toggleButton.innerHTML = "<span class='material-icons'>visibility</span>";
         }
 
         this.expandedView = !this.expandedView;
@@ -71,12 +76,14 @@ class MilestoneView {
 
     getSprints() {
         let html = "<label>Sprints in progress during this milestone: </label>";
+        let foundSprints = false
         this.sprints.forEach(sprint => {
             if (this.milestone.startDate >= sprint.startDate && this.milestone.startDate <= sprint.endDate || this.milestone.endDate >= sprint.startDate && this.milestone.endDate <= sprint.endDate) {
-                html += `<div class="milestone-sprint-details">   - <span>${sprint.name}: </span><span>${DatetimeUtils.localToUserDMY(sprint.startDate)}</span> - <span>${DatetimeUtils.localToUserDMY(sprint.endDate)}</span>`;
+                html += `<div class="milestone-sprint-details"  style="color: ${sprint.colour}">   - <span id="milestone-sprint-name-${this.milestone.milestoneId}-${sprint.sprintId}"></span><span>${DatetimeUtils.localToUserDMY(sprint.startDate)}</span> - <span>${DatetimeUtils.localToUserDMY(sprint.endDate)}</span>`;
+                foundSprints = true
             }
         });
-        if (html === "<label>Sprints in progress during this milestone: </label>") {
+        if (!foundSprints) {
             html += "<span>No sprints are overlapping with this milestone</span>"
         }
         return html;

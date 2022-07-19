@@ -19,32 +19,6 @@ class Milestone {
         if (this.updatemilestoneLoadingStatus === LoadingStatus.Pending) {
             return;
         }
-        else if (
-            newValue.name === this.milestone.name
-            && newValue.description === this.milestone.description
-            && DatetimeUtils.areEqual(newValue.startDate, this.milestone.startDate)
-            && DatetimeUtils.areEqual(newValue.endDate, this.milestone.endDate)
-        ) {
-            // Nothing has changed
-
-            const showingSprints = this.currentView.showingSprints;
-            const showingEvents = this.currentView.showingEvents;
-            const showingDeadlines = this.currentView.showingDeadlines;
-
-            this.showViewer();
-            this.currentView.toggleMilestones();
-            if (showingSprints) {
-                this.currentView.toggleSprints();
-            }
-            if (showingEvents) {
-                this.currentView.toggleEvents();
-            }
-            if (showingDeadlines) {
-                this.currentView.toggleDeadlines()
-            }
-
-            return;
-        }
 
         this.updatemilestoneLoadingStatus = LoadingStatus.Pending;
 
@@ -90,7 +64,8 @@ class Milestone {
             this.milestone,
             this.showViewer.bind(this),
             this.updateMilestone.bind(this),
-            Editor.makeProjectMilestoneDatesValidator(this.project)
+            Editor.makeProjectMilestoneDatesValidator(this.project),
+            this.project
         );
     }
 

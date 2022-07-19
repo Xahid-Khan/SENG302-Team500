@@ -44,7 +44,7 @@
         </div>
         <div class="account">
             <div class="dropdown">
-                <button class="dropbutton"><div class="username" th:text="${username}"></div>
+                <button class="button dropbutton"><div class="username" th:text="${username}"></div>
                     <div style="width: 46px;height: 46px;object-fit: cover;overflow: clip;">
                         <img th:src="'//' + ${globalImagePath} + ${userId}"
                              onerror="this.onerror=null;this.src='https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png'"
@@ -108,14 +108,14 @@
                                         <input type="hidden" th:name="id" th:value="${user.id}"/>
                                         <input type="hidden" th:name="roleNumber" th:value="${role.number}"/>
                                         <span class="label" th:text="${delegate.formatUserRole(role)}"/>
-                                        <button class="remove-button" onclick="this.parentElement.style.display='none'" type="submit">
+                                        <button class="button remove-button" onclick="this.parentElement.style.display='none'" type="submit">
                                             &times;
                                         </button>
                                     </form>
                                 </div>
                             </div>
                             <div class="dropdown-box" th:with="roles=${delegate.getAvailableRoles(user)}">
-                                <button class="add-button" th:disabled="${isAdmin==false or user.id==userId or roles.size()==0}">
+                                <button class="button add-button" th:disabled="${isAdmin==false or user.id==userId or roles.size()==0}">
                                     +
                                 </button>
                                 <div class="dropdown-content">

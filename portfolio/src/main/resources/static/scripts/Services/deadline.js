@@ -6,7 +6,6 @@ class Deadline {
         this.deadlineUpdateSavedCallback = deadlineUpdateSavedCallback;
         this.deleteCallback = deleteCallback;
         this.updatedeadlineLoadingStatus = LoadingStatus.NotYetAttempted;
-
         this.currentView = null;
         this.showViewer();
     }
@@ -17,34 +16,6 @@ class Deadline {
      */
     async updateDeadline(newValue) {
         if (this.updatedeadlineLoadingStatus === LoadingStatus.Pending) {
-            return;
-        }
-        else if (
-            newValue.name === this.deadline.name
-            && newValue.description === this.deadline.description
-            && DatetimeUtils.areEqual(newValue.startDate, this.deadline.startDate)
-            && DatetimeUtils.areEqual(newValue.endDate, this.deadline.endDate)
-        ) {
-            // Nothing has changed
-
-            const showingSprints = this.currentView.showingSprints;
-            const showingEvents = this.currentView.showingEvents;
-            const showingMilestones = this.currentView.showingMilestones;
-
-            this.showViewer();
-
-            if (showingSprints) {
-                this.currentView.toggleSprints();
-            }
-            if (showingEvents) {
-                this.currentView.toggleEvents()
-            }
-            if (showingMilestones) {
-                this.currentView.toggleMilestones()
-            }
-
-            this.currentView.toggleDeadlines();
-
             return;
         }
 
@@ -92,7 +63,8 @@ class Deadline {
             this.deadline,
             this.showViewer.bind(this),
             this.updateDeadline.bind(this),
-            Editor.makeProjectDeadlineDatesValidator(this.project)
+            Editor.makeProjectDeadlineDatesValidator(this.project),
+            this.project
         );
     }
 

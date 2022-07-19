@@ -27,12 +27,19 @@ button {
   background-color: #43C0FE;
   border: none;
   padding: 8px 12px;
+  margin: 0 3px;
   transition-duration: 0.4s;
   font-size: 14px;
 }
 
 button:hover {
   background-color: #0332D1;
+}
+
+button[disabled],
+button[disabled]:hover {
+  background-color: rgba(0,0,0,0.24);
+  cursor: not-allowed;
 }
 
 /* inputs */

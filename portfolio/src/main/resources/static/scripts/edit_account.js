@@ -1,25 +1,58 @@
-const MAX_FILE_SIZE = 5 * 1024 * 1024;
+// Size of the largest file that can be uploaded to the server (in bytes).
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
+
+// Size of the largest file that can be uploaded to the server and saved **without our compression being applied to it**.
+const FILE_COMPRESSION_THRESHOLD = 5 * 1024 * 1024;
+
+// Size of the (square) image element in pixels.
 const IMAGE_SIZE = 150;
 
 (() => {
-    const inputEl = document.getElementById("newUploadedImage");
-    const errorEl = document.getElementById("image-preview-error");
-    const imagePreviewEl = document.getElementById("image-preview");
+    let blockFormSubmit = false;
+
+    const formElement = document.getElementById("form");
+    const submitBtnElement = document.getElementById("submit");
+    const inputElement = document.getElementById("newUploadedImage");
+    const warningElement = document.getElementById("image-preview-warning");
+    const errorElement = document.getElementById("image-preview-error");
+    const imagePreviewElement = document.getElementById("image-preview");
 
     let fetchPreviewController = null;
 
+    formElement.addEventListener('submit', (evt) => {
+        if (blockFormSubmit) {
+            evt.preventDefault();
+            alert("Please choose a valid picture before proceeding.");
+        }
+    })
+
+    const showWarning = (message) => {
+        warningElement.style.display = 'block';
+        warningElement.innerText = message;
+    }
+
+    const hideWarning = () => {
+        warningElement.style.display = 'none';
+    }
+
     const showError = (message) => {
-        errorEl.style.display = 'block';
-        errorEl.innerText = message;
+        errorElement.style.display = 'block';
+        errorElement.innerText = message;
         showIllegalImage();
+
+        blockFormSubmit = true;
+        submitBtnElement.setAttribute("disabled", true);
     }
 
     const hideErrors = () => {
-        errorEl.style.display = 'none';
+        errorElement.style.display = 'none';
+
+        blockFormSubmit = false;
+        submitBtnElement.removeAttribute("disabled");
     }
 
     const hideImagePreview = () => {
-        imagePreviewEl.style.display = "none"
+        imagePreviewElement.style.display = "none"
     }
 
     const showImagePreview = async (imageData) => {
@@ -32,13 +65,13 @@ const IMAGE_SIZE = 150;
             return;
         }
 
-        const ctx = imagePreviewEl.getContext('2d');
+        const ctx = imagePreviewElement.getContext('2d');
         ctx.clearRect(0, 0, IMAGE_SIZE, IMAGE_SIZE);
         ctx.drawImage(image, 0, 0);
     }
 
     const showLoadingImage = () => {
-        const ctx = imagePreviewEl.getContext('2d');
+        const ctx = imagePreviewElement.getContext('2d');
         ctx.clearRect(0, 0, IMAGE_SIZE, IMAGE_SIZE);
 
         ctx.fillStyle = "black";
@@ -48,7 +81,7 @@ const IMAGE_SIZE = 150;
     }
 
     const showIllegalImage = () => {
-        const ctx = imagePreviewEl.getContext('2d');
+        const ctx = imagePreviewElement.getContext('2d');
 
         ctx.clearRect(0, 0, IMAGE_SIZE, IMAGE_SIZE);
 
@@ -66,20 +99,26 @@ const IMAGE_SIZE = 150;
     }
 
     const fetchAndDisplayPreview = async () => {
-        if (!inputEl.files || inputEl.files.length === 0) {
+        hideWarning();
+
+        if (!inputElement.files || inputElement.files.length === 0) {
             return;
         }
-        else if (inputEl.files[0].size === 0) {
+        else if (inputElement.files[0].size === 0) {
             showError("Please select a file with content.");
         }
-        else if (inputEl.files[0].size > MAX_FILE_SIZE) {
-            showError("This file is too large. Please select a file of at most 5MB in size.");
+        else if (inputElement.files[0].size > MAX_FILE_SIZE) {
+            showError("This file is too large. Please select a file of at most 10MB in size.");
         }
         else {
+            if (inputElement.files[0].size > FILE_COMPRESSION_THRESHOLD) {
+                showWarning("This file will be compressed. To avoid compression please choose a file less than 5MB in size.")
+            }
+
             // Let's try to generate a preview...
             try {
                 const formData = new FormData();
-                formData.append("image", inputEl.files[0], inputEl.files[0].name);
+                formData.append("image", inputElement.files[0], inputElement.files[0].name);
 
                 fetchPreviewController = new AbortController();
 
@@ -146,9 +185,9 @@ const IMAGE_SIZE = 150;
         }
     }
 
-    inputEl.addEventListener('change', () => {
+    inputElement.addEventListener('change', () => {
         // File selected
-        imagePreviewEl.style.display = "inline-block";
+        imagePreviewElement.style.display = "inline-block";
 
         cancelCurrentPreviewFetchIfNeccessary();
         showLoadingImage();

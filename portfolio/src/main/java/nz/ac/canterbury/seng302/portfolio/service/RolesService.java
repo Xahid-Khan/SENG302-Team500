@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
+import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import org.springframework.stereotype.Service;
@@ -19,7 +20,7 @@ public class RolesService {
      * @param principal Authentication principal of type AuthState
      * @return Array of roles
      */
-    public ArrayList<String> getRolesByToken(AuthState principal) {
+    public ArrayList<String> getRolesByToken(PortfolioPrincipal principal) {
         String role = principal.getClaimsList().stream()
                 .filter(claim -> claim.getType().equals("role"))
                 .findFirst()
