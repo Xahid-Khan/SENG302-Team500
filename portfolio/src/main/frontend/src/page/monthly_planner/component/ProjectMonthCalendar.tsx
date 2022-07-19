@@ -12,6 +12,7 @@ import {getContrast} from "../../../util/TextColorUtil";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import ReactTooltip from "react-tooltip";
+import {SprintStore} from "../store/SprintStore";
 
 /**
  * Component that displays a month calendar for the current project and its sprints.
@@ -59,21 +60,6 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
         end: project.endDate
     }
 
-    /**
-     * This is an array of events
-     */
-    const events: EventSourceInput = project.sprints.map(sprint => ({
-        id: sprint.id,
-        start: sprint.startDate,
-        end: sprint.endDate,
-        backgroundColor: sprint.colour,
-        textColor: getContrast(sprint.colour),
-        title: `Sprint ${sprint.orderNumber}: ${sprint.name}`,
-        // This hides the time on the event and must be true for drag and drop resizing to be enabled
-        allDay: !DatetimeUtils.hasTimeComponent(sprint.startDate) && !DatetimeUtils.hasTimeComponent(sprint.endDate),
-    }))
-
-
     let deadlineDictionary = new Map();
     let eventDictionary = new Map();
     let milestoneDictionary = new Map();
@@ -112,17 +98,57 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
     iconDataToDictionary(project.events, eventDictionary,"_ES");
     iconDataToDictionary(project.deadlines, deadlineDictionary, "_DL");
 
-    allEventDates.forEach((eventDate: any) => events.push({
-        id: eventDate,
-        start: eventDate,
-        end: eventDate,
-        backgroundColor: "rgba(52, 52, 52, 0.0)",
-        textColor: "black",
-        title: "",
-        editable:false,
-        allDay: true,
-        borderColor: "transparent",
-    }))
+    function arrayOfEvents(id: string){
+        let events: any = []
+        if(id){
+            events = project.sprints.map(sprint => ({
+                id: sprint.id,
+                start: sprint.startDate,
+                end: sprint.endDate,
+                backgroundColor: sprint.colour,
+                textColor: getContrast(sprint.colour),
+                borderColor: sprint.id === id ? '#2C3E50' : 'white',
+                title: `Sprint ${sprint.orderNumber}: ${sprint.name}`,
+                // This hides the time on the event and must be true for drag and drop resizing to be enabled
+                allDay: true,
+                editable: sprint.id === id,
+
+            }))
+        } else {
+            events = project.sprints.map(sprint => ({
+                id: sprint.id,
+                start: sprint.startDate,
+                end: sprint.endDate,
+                backgroundColor: sprint.colour,
+                textColor: getContrast(sprint.colour),
+                borderColor: 'white',
+                title: `Sprint ${sprint.orderNumber}: ${sprint.name}`,
+                // This hides the time on the event and must be true for drag and drop resizing to be enabled
+                allDay: true,
+                editable: false,
+
+            }))
+        }
+        allEventDates.forEach((eventDate: any) => events.push({
+            id: eventDate,
+            start: eventDate,
+            end: eventDate,
+            backgroundColor: "rgba(52, 52, 52, 0.0)",
+            textColor: "black",
+            title: "",
+            editable:false,
+            allDay: true,
+            borderColor: "transparent",
+        }))
+        return events
+    }
+
+    const [events, setEvents] = React.useState(arrayOfEvents(null));
+
+    const eventClick = (info : any) => {
+        const sprintId = info.event.id;
+        setEvents(arrayOfEvents(sprintId))
+    }
 
     /**
      * this method will generate a string representation of all the events of on a single day.
@@ -152,6 +178,13 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
         return (
             stringResult.join("<br />")
         )
+    }
+
+    /**
+     * Checks if events can overlap or not. Sprints can not overlap with each other, but any other pair can
+     */
+    function canOverlap(stillEvent: any, movingEvent: any) {
+        return !(stillEvent.title.startsWith("Sprint ") && movingEvent.title.startsWith("Sprint "));
     }
 
     /**
@@ -242,13 +275,15 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
                 //The origin of window comes from the Thymeleaf template of "monthly_planner.html".
                 editable={!project.sprintsSaving && (window as any) != null ? (window as any).userCanEdit : false} // We shouldn't allow sprints to be updated while we're still trying to save an earlier update, since this could lead to overlapping sprints.
                 eventResizableFromStart
-                eventOverlap={false}
+                eventDurationEditable
+                eventOverlap={canOverlap}
                 eventConstraint={projectRange}
                 eventChange={onSaveDatesCallback}
+                eventClick={eventClick}
+
                 /* Calendar config */
                 validRange={projectRange}
                 height='100vh'
-                nextDayThreshold={"00:00:01"}
             />
         </>
     )
