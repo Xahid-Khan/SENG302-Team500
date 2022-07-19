@@ -25,6 +25,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * Class to test the DeadlineController.class
+ * This class handles all functionality to do with deadlines
+ */
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
 public class DeadlineControllerTest {
@@ -40,6 +44,11 @@ public class DeadlineControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    /**
+     * Clear both repositories and set the role of the user to teacher, so they can use crud functionality
+     * without permission issues. Clean slate on repositories allows for no unintended bugs with old
+     * test objects in the repositories
+     */
     @BeforeEach
     public void beforeEach() {
         deadlineRepository.deleteAll();
@@ -48,6 +57,10 @@ public class DeadlineControllerTest {
         AuthorisationParamsHelper.setParams("role", "TEACHER");
     }
 
+    /**
+     * Test getting a deadline that does not exist, and with an invalid ID
+     * @throws Exception thrown due to invalid ID
+     */
     @Test
     public void getWithInvalidId() throws Exception {
         this.mockMvc.perform(get("/api/v1/deadlines/1"))
@@ -57,6 +70,11 @@ public class DeadlineControllerTest {
                 .andExpect(status().is4xxClientError());
     }
 
+    /**
+     * Test getting an deadline with a valid ID. First adds deadline and relevant project to database, then fetches
+     * the deadline and checks all the details are correct
+     * @throws Exception thrown by method getting object from database
+     */
     @Test
     public void getById() throws Exception {
         AuthorisationParamsHelper.setParams("role", "STUDENT");
@@ -82,6 +100,11 @@ public class DeadlineControllerTest {
         assertEquals(Instant.ofEpochSecond(120), decodedResponse.startDate());
     }
 
+    /**
+     * Test getting all deadlines related to a project. First adds deadlines and relevant project to database, then fetches
+     * the deadline and checks all the details are correct
+     * @throws Exception thrown by method getting object from database
+     */
     @Test
     public void getManyByProjectId() throws Exception {
         AuthorisationParamsHelper.setParams("role", "STUDENT");
@@ -118,6 +141,10 @@ public class DeadlineControllerTest {
         assertEquals(Instant.ofEpochSecond(420), receivedDeadline2.startDate());
     }
 
+    /**
+     * Tries to get all deadlines from a project that does not exist
+     * @throws Exception thrown by method getting object from database
+     */
     @Test
     public void getManyByNonExistentProjectId() throws Exception {
         AuthorisationParamsHelper.setParams("role", "STUDENT");
@@ -127,6 +154,11 @@ public class DeadlineControllerTest {
                 .andExpect(status().isNotFound());
     }
 
+    /**
+     * Creates new valid deadline and posts it in order to add it to the database. Ensures all details are
+     * added correctly from the response.
+     * @throws Exception thrown by method getting object from database
+     */
     @Test
     public void createNew() throws Exception {
         var project = new ProjectEntity("test project", null, Instant.parse("2022-12-01T10:15:30.00Z"), Instant.parse("2023-01-20T10:15:30.00Z"));
@@ -158,6 +190,10 @@ public class DeadlineControllerTest {
         assertEquals(Instant.parse("2023-01-01T10:00:00.00Z"), decodedResponse.startDate());
     }
 
+    /**
+     * Tries to create an deadline with an invalid project that does not exist.
+     * @throws Exception thrown by method getting object from database
+     */
     @Test
     public void createNewInvalidProject() throws Exception {
         var body = """
@@ -176,6 +212,10 @@ public class DeadlineControllerTest {
                 .andExpect(status().isNotFound());
     }
 
+    /**
+     * Creates a new valid deadline with no description, as description is not required
+     * @throws Exception thrown by method getting object from database
+     */
     @Test
     public void createNewNoDescription() throws Exception {
         var project = new ProjectEntity("test project", null, Instant.parse("2022-12-01T10:15:30.00Z"), Instant.parse("2023-01-20T10:15:30.00Z"));
@@ -206,6 +246,10 @@ public class DeadlineControllerTest {
         assertEquals(Instant.parse("2023-01-01T10:00:00.00Z"), decodedResponse.startDate());
     }
 
+    /**
+     * Tries to update a deadline that does not exist
+     * @throws Exception thrown by method getting object from database
+     */
     @Test
     public void updateInvalidDeadline() throws Exception {
         var body = """
@@ -224,6 +268,10 @@ public class DeadlineControllerTest {
                 .andExpect(status().is4xxClientError());
     }
 
+    /**
+     * Updates an deadline with valid information. Tests to ensure all fields are correctly updated
+     * @throws Exception thrown by method getting object from database
+     */
     @Test
     public void updateValidDeadline() throws Exception {
         var project = new ProjectEntity("test project", null, Instant.parse("2022-12-01T10:15:30.00Z"), Instant.parse("2023-01-20T10:15:30.00Z"));
@@ -265,12 +313,20 @@ public class DeadlineControllerTest {
         assertEquals(Instant.parse("2023-01-04T10:00:00.00Z"), decodedResponse.startDate());
     }
 
+    /**
+     * Tries to delete a deadline that does not exist
+     * @throws Exception thrown by method getting object from database
+     */
     @Test
     public void deleteInvalidDeadline() throws Exception {
         this.mockMvc.perform(delete("/api/v1/deadlines/fake_deadline"))
                 .andExpect(status().isNotFound());
     }
 
+    /**
+     * Deletes a deadline from the database, ensures that the deadline has been deleted
+     * @throws Exception thrown by method getting object from database
+     */
     @Test
     public void deleteValidDeadline() throws Exception {
         var project = new ProjectEntity("test project", null, Instant.EPOCH, Instant.parse("2007-12-03T10:15:30.00Z"));
@@ -289,6 +345,11 @@ public class DeadlineControllerTest {
                 .andExpect(status().isNotFound());
     }
 
+    /**
+     * Tries to create a valid deadline with invalid permissions, as the user needs to be a teacher or
+     * course admin to create.
+     * @throws Exception thrown by method getting object from database
+     */
     @Test
     public void tryCreateNewAsStudent() throws Exception {
         AuthorisationParamsHelper.setParams("role", "STUDENT");
@@ -312,6 +373,11 @@ public class DeadlineControllerTest {
                 .andExpect(status().isForbidden());
     }
 
+    /**
+     * Tries to update a valid deadline with invalid permissions, as the user needs to be a teacher or
+     * course admin to update.
+     * @throws Exception thrown by method getting object from database
+     */
     @Test
     public void tryUpdateValidDeadlineAsStudent() throws Exception {
         AuthorisationParamsHelper.setParams("role", "STUDENT");
@@ -341,6 +407,11 @@ public class DeadlineControllerTest {
 
     }
 
+    /**
+     * Tries to delete a valid deadline with invalid permissions, as the user needs to be a teacher or
+     * course admin to delete.
+     * @throws Exception thrown by method getting object from database
+     */
     @Test
     public void tryDeleteDeadlineAsStudent() throws Exception {
         AuthorisationParamsHelper.setParams("role", "STUDENT");
