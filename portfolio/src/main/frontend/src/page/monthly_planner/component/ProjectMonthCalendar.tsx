@@ -98,8 +98,6 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
     iconDataToDictionary(project.events, eventDictionary,"_ES");
     iconDataToDictionary(project.deadlines, deadlineDictionary, "_DL");
 
-
-
     function arrayOfEvents(id: string){
         let events: any = []
         if(id){
@@ -152,7 +150,6 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
         setEvents(arrayOfEvents(sprintId))
     }
 
-
     /**
      * this method will generate a string representation of all the events of on a single day.
      * @param date the date we need the events for
@@ -181,6 +178,13 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
         return (
             stringResult.join("<br />")
         )
+    }
+
+    /**
+     * Checks if events can overlap or not. Sprints can not overlap with each other, but any other pair can
+     */
+    function canOverlap(stillEvent: any, movingEvent: any) {
+        return !(stillEvent.title.startsWith("Sprint ") && movingEvent.title.startsWith("Sprint "));
     }
 
     /**
@@ -272,9 +276,7 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
                 editable={!project.sprintsSaving && (window as any) != null ? (window as any).userCanEdit : false} // We shouldn't allow sprints to be updated while we're still trying to save an earlier update, since this could lead to overlapping sprints.
                 eventResizableFromStart
                 eventDurationEditable
-                eventOverlap={function(stillEvent, movingEvent) {
-                    return !(stillEvent.title.startsWith("Sprint ") && movingEvent.title.startsWith("Sprint "));
-                }}
+                eventOverlap={canOverlap}
                 eventConstraint={projectRange}
                 eventChange={onSaveDatesCallback}
                 eventClick={eventClick}
