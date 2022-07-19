@@ -2,15 +2,17 @@ import React, {useCallback} from "react";
 import {observer} from "mobx-react-lite";
 import {useProjectStore} from "../store/ProjectStoreProvider";
 import {useToasterStore} from "../../../component/toast/internal/ToasterStoreProvider";
-import FullCalendar, {EventChangeArg} from "@fullcalendar/react";
+import FullCalendar, {EventChangeArg, EventSourceInput} from "@fullcalendar/react";
 import {Toast} from "../../../component/toast/Toast";
 import {ToastBase} from "../../../component/toast/ToastBase";
 import defaultToastTheme from "../../../component/toast/DefaultToast.module.css";
 import {LoadingErrorPresenter} from "../../../component/error/LoadingErrorPresenter";
+import {DatetimeUtils} from "../../../util/DatetimeUtils";
 import {getContrast} from "../../../util/TextColorUtil";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import ReactTooltip from "react-tooltip";
+import {SprintStore} from "../store/SprintStore";
 
 /**
  * Component that displays a month calendar for the current project and its sprints.
@@ -270,7 +272,9 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
                 editable={!project.sprintsSaving && (window as any) != null ? (window as any).userCanEdit : false} // We shouldn't allow sprints to be updated while we're still trying to save an earlier update, since this could lead to overlapping sprints.
                 eventResizableFromStart
                 eventDurationEditable
-                eventOverlap={true}
+                eventOverlap={function(stillEvent, movingEvent) {
+                    return !(stillEvent.title.startsWith("Sprint ") && movingEvent.title.startsWith("Sprint "));
+                }}
                 eventConstraint={projectRange}
                 eventChange={onSaveDatesCallback}
                 eventClick={eventClick}
@@ -278,7 +282,6 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
                 /* Calendar config */
                 validRange={projectRange}
                 height='100vh'
-                // nextDayThreshold={"00:00:01"}
             />
         </>
     )
