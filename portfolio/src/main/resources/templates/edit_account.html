@@ -23,7 +23,7 @@
         </div>
         <div class="account">
             <div class="dropdown">
-                <button class="dropbutton"><div class="username" th:text="${username}"></div>
+                <button class="button dropbutton"><div class="username" th:text="${username}"></div>
                     <div style="width: 46px;height: 46px;object-fit: cover;overflow: clip;">
                         <img th:src="'//' + ${globalImagePath} + ${userId}"
                              onerror="this.onerror=null;this.src='https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png'"
@@ -48,9 +48,9 @@
                     <!--    Submits a populated UserDTO to endpoint register -->
 
                     <!--    Submits a populated UserDTO to endpoint register -->
-                    <input id="newUploadedImage" type="file" name="image" accept="image/*" hidden>
+                    <input id="newUploadedImage" type="file" name="image" accept="image/jpeg,image/png,image/gif" hidden>
 
-                    <label for="newUploadedImage" class="image-container">
+                    <div class="image-container">
                         <div class="imagePreviewOverlayContainer">
                             <img
                                 class="current-image"
@@ -63,10 +63,19 @@
 
                             <canvas id="image-preview" class="imagePreviewOverlay" width="150" height="150"></canvas>
                         </div>
-                        <span class="image-upload-button">Choose profile picture</span>
-                    </label>
 
-                    <div id="image-preview-error" style="display: none; max-width: 400px;" class="form-error"></div>
+                        <label for="newUploadedImage">
+                            <span class="image-upload-button">Choose profile picture</span>
+                        </label>
+
+                        <div class="image-upload-comment">
+                            <div>Please choose a JPEG, PNG, or GIF of less than 10MB size.</div>
+                            <div>Images above 5MB in size will be compressed.</div>
+                        </div>
+
+                        <div id="image-preview-warning" style="display: none; max-width: 400px; color: darkorange; margin-bottom: 8px" class="form-error"></div>
+                        <div id="image-preview-error" style="display: none; max-width: 400px;" class="form-error"></div>
+                    </div>
 
                     <th:block th:if="${imageError}">
                         <div class="form-error" id="errorMessageImage"><span th:text="${imageError}" aria-valuenow="test"></span></div>

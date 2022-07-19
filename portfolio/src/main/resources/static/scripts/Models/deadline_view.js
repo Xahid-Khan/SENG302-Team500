@@ -17,18 +17,19 @@ class DeadlineView {
      */
     constructView() {
         this.containerElement.innerHTML = `
-    <div class="deadline-title">
+    <div class="crud">
+            <button class="icon-button deadline-controls" id="deadline-button-edit-${this.deadline.deadlineId}" data-privilege="teacher"><span class="material-icons">edit</span></button>
+            <button class="icon-button deadline-controls" id="deadline-button-delete-${this.deadline.deadlineId}" data-privilege="teacher"><span class="material-icons">clear</span></button>
+            <button class="button visibility-button toggle-deadline-details" id="toggle-deadline-details-${this.deadline.deadlineId}"><span class='material-icons'>visibility_off</span></button>
+    </div>
+    <div class="events-title">
         <span id="deadline-title-text-${this.deadline.deadlineId}" style="font-style: italic;"></span> | <span id="start-date-${this.deadline.deadlineId}"></span> - <span id="end-date-${this.deadline.deadlineId}"></span>
 
-        <span class="crud">
-            <button class="button deadline-controls" id="deadline-button-edit-${this.deadline.deadlineId}" data-privilege="teacher">Edit</button>
-            <button class="button deadline-controls" id="deadline-button-delete-${this.deadline.deadlineId}" data-privilege="teacher">Delete</button>
-            <button class="button toggle-deadline-details" id="toggle-deadline-details-${this.deadline.deadlineId}">+</button>
-        </span>
+        
     </div>
-    <div class="deadline-details" id="deadline-details-${this.deadline.deadlineId}">
+    <div class="events-details" id="deadline-details-${this.deadline.deadlineId}">
         <div class="deadline-description" id="deadline-description-${this.deadline.deadlineId}"></div>
-        <div class="deadline-sprints" id="deadline-sprints-${this.deadline.deadlineId}"></div>
+        <div class="events-sprints" id="deadline-sprints-${this.deadline.deadlineId}"></div>
     </div>
     
     `;
@@ -41,6 +42,11 @@ class DeadlineView {
         document.getElementById(`deadline-title-text-${this.deadline.deadlineId}`).innerText = this.deadline.name;
         this.description.innerText = "Description: " + this.deadline.description;
         this.deadlineSprints.innerHTML = this.getSprints();
+        this.sprints.forEach((sprint) => {
+            if (document.getElementById(`deadline-sprint-name-${this.deadline.deadlineId}-${sprint.sprintId}`)) {
+                document.getElementById(`deadline-sprint-name-${this.deadline.deadlineId}-${sprint.sprintId}`).innerText = sprint.name + ': '
+            }
+        })
         document.getElementById(`start-date-${this.deadline.deadlineId}`).innerText = DatetimeUtils.localToUserDMY(this.deadline.startDate);
         const displayedDate = new Date(this.deadline.endDate.valueOf());
         displayedDate.setDate(displayedDate.getDate() - 1);
@@ -53,11 +59,11 @@ class DeadlineView {
     toggleExpandedView() {
         if (this.expandedView) {
             this.details.style.display = "none";
-            this.toggleButton.innerText = "+";
+            this.toggleButton.innerHTML = "<span class='material-icons'>visibility_off</span>";
         }
         else {
             this.details.style.display = "block";
-            this.toggleButton.innerText = "-";
+            this.toggleButton.innerHTML = "<span class='material-icons'>visibility</span>";
         }
 
         this.expandedView = !this.expandedView;
@@ -72,13 +78,15 @@ class DeadlineView {
 
     getSprints() {
         let html = "<label>Sprints in progress during this deadline: </label>";
+        let foundSprints = false
         this.sprints.forEach(sprint => {
             if (this.deadline.startDate >= sprint.startDate && this.deadline.startDate <= sprint.endDate || this.deadline.endDate >= sprint.startDate && this.deadline.endDate <= sprint.endDate) {
-                html += `<div class="deadline-sprint-details">   - <span>${sprint.name}: </span><span>${DatetimeUtils.localToUserDMY(sprint.startDate)}</span> - <span>${DatetimeUtils.localToUserDMY(sprint.endDate)}</span>`;
+                html += `<div class="deadline-sprint-details"  style="color: ${sprint.colour}">   - <span id="deadline-sprint-name-${this.deadline.deadlineId}-${sprint.sprintId}"></span><span>${DatetimeUtils.localToUserDMY(sprint.startDate)}</span> - <span>${DatetimeUtils.localToUserDMY(sprint.endDate)}</span>`;
+                foundSprints = true
             }
         });
-        if (html === "<label>Sprints in progress during this deadline: </label>") {
-            html += "<span>No sprints are overlapping with this deadline</span>"
+        if (!foundSprints) {
+            html = "<label>No sprints are overlapping with this deadline</label>"
         }
         return html;
     }

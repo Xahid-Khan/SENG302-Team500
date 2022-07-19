@@ -19,34 +19,6 @@ class Event {
         if (this.updateEventLoadingStatus === LoadingStatus.Pending) {
             return;
         }
-        else if (
-            newValue.name === this.event.name
-            && newValue.description === this.event.description
-            && DatetimeUtils.areEqual(newValue.startDate, this.event.startDate)
-            && DatetimeUtils.areEqual(newValue.endDate, this.event.endDate)
-        ) {
-            // Nothing has changed
-
-            const showingSprints = this.currentView.showingSprints;
-            const showingMilestones = this.currentView.showingMilestones;
-            const showingDeadlines = this.currentView.showingDeadlines;
-
-            this.showViewer();
-
-            this.currentView.toggleEvents()
-
-            if (showingSprints) {
-                this.currentView.toggleSprints();
-            }
-            if (showingMilestones) {
-                this.currentView.toggleMilestones();
-            }
-            if (showingDeadlines) {
-                this.currentView.toggleDeadlines()
-            }
-
-            return;
-        }
 
         this.updateEventLoadingStatus = LoadingStatus.Pending;
 
@@ -93,6 +65,7 @@ class Event {
             this.showViewer.bind(this),
             this.updateEvent.bind(this),
             Editor.makeProjectEventDatesValidator(this.project),
+            this.project,
             true
         );
     }
