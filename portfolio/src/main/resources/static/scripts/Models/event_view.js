@@ -100,10 +100,7 @@ class EventView {
         );
         //Splices the last comma out of the linear gradient so it compiles. Sets the line colour
         gradient=gradient.slice(0, -1) + ')';
-
         document.getElementById(`event-colour-block-${this.event.eventId}`).style.background=gradient;
-
-        console.log(gradient)
 
         if (!foundSprints) {
             html = "<label>No sprints are overlapping with this event</label>"
