@@ -22,28 +22,6 @@ class Sprint {
         if (this.updateSprintLoadingStatus === LoadingStatus.Pending) {
             return;
         }
-        else if (
-            newValue.name === this.sprint.name
-            && newValue.description === this.sprint.description
-            && DatetimeUtils.areEqual(newValue.startDate, this.sprint.startDate)
-            && DatetimeUtils.areEqual(newValue.endDate, this.sprint.endDate)
-            && newValue.colour === this.sprint.colour
-        ) {
-            // Nothing has changed
-            const showingEvents = this.currentView.showingEvents;
-            const showingMilestones = this.currentView.showingMilestones;
-
-            this.showViewer();
-            this.currentView.toggleSprints();
-            if (showingEvents) {
-                this.currentView.toggleEvents();
-            }
-
-            if (showingMilestones) {
-                this.currentView.toggleMilestones();
-            }
-            return;
-        }
 
         this.updateSprintLoadingStatus = LoadingStatus.Pending;
 
@@ -90,7 +68,8 @@ class Sprint {
             this.sprint,
             this.showViewer.bind(this),
             this.updateSprint.bind(this),
-            Editor.makeProjectSprintDatesValidator(this.project, this.sprint.sprintId)
+            Editor.makeProjectSprintDatesValidator(this.project, this.sprint.sprintId),
+            this.project
         );
     }
 

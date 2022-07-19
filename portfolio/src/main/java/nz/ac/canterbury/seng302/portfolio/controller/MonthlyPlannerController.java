@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
@@ -34,7 +35,7 @@ public class MonthlyPlannerController {
      * @return The monthly_planner html page
      */
     @GetMapping("/monthly-planner/{projectId}")
-    public String getMonthlyPlanner(@AuthenticationPrincipal AuthState principal, Model model) {
+    public String getMonthlyPlanner(@AuthenticationPrincipal PortfolioPrincipal principal, Model model) {
 
         Integer userId = authStateService.getId(principal);
 
@@ -46,5 +47,12 @@ public class MonthlyPlannerController {
         model.addAttribute("username", userDetails.getUsername());
 
         return "monthly_planner";
+    }
+
+    @GetMapping("/socket_test")
+    public String socketTest(@AuthenticationPrincipal PortfolioPrincipal principal) {
+        System.out.println(principal.toString());
+        System.out.println(principal.getName());
+        return "socket_test";
     }
 }

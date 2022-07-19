@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import nz.ac.canterbury.seng302.portfolio.DTO.EditedUserValidation;
 import nz.ac.canterbury.seng302.portfolio.DTO.User;
+import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
 import nz.ac.canterbury.seng302.portfolio.service.PhotoCropService;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
@@ -33,7 +34,8 @@ import org.springframework.web.server.UnsupportedMediaTypeStatusException;
 public class EditAccountController {
 
   public static final int MIN_PROFILE_PICTURE_SIZE = 5 * 1024;
-  public static final int MAX_PROFILE_PICTURE_SIZE = 5 * 1024 * 1024;
+  public static final int PROFILE_PICTURE_COMPRESSION_THRESHOLD = 5 * 1024 * 1024;
+  public static final int MAX_PROFILE_PICTURE_SIZE = 10 * 1024 * 1024;
 
   @InitBinder
   public void initBinder(WebDataBinder binder) {
@@ -53,7 +55,7 @@ public class EditAccountController {
   private AuthStateService authStateService;
 
   @GetMapping(value = "/edit_account")
-  public String getPage(Model model, @AuthenticationPrincipal AuthState principal) {
+  public String getPage(Model model, @AuthenticationPrincipal PortfolioPrincipal principal) {
 
     Integer userId = authStateService.getId(principal);
 
@@ -100,7 +102,10 @@ public class EditAccountController {
     }
 
     try {
-      byte[] uploadImage = photoCropService.processImageFile(file);
+      byte[] uploadImage = photoCropService.processImageFile(
+          file,
+          file.getSize() > PROFILE_PICTURE_COMPRESSION_THRESHOLD
+      );
       return ResponseEntity.ok(uploadImage);
     } catch (UnsupportedMediaTypeStatusException e) {
       return ResponseEntity
@@ -130,7 +135,7 @@ public class EditAccountController {
       @ModelAttribute @Validated(EditedUserValidation.class) User user,
       BindingResult bindingResult,
       Model model,
-      @AuthenticationPrincipal AuthState principal,
+      @AuthenticationPrincipal PortfolioPrincipal principal,
       @RequestParam(value = "image", required = false) MultipartFile file) {
 
     if (bindingResult.hasErrors()) {
@@ -141,9 +146,15 @@ public class EditAccountController {
       Integer userId = authStateService.getId(principal);
       model.addAttribute("userId", userId);
       if (file != null && !file.isEmpty()) {
-        if (MIN_PROFILE_PICTURE_SIZE <= file.getSize() && file.getSize() <= MAX_PROFILE_PICTURE_SIZE) {
+        if (
+            MIN_PROFILE_PICTURE_SIZE <= file.getSize()
+                && file.getSize() <= MAX_PROFILE_PICTURE_SIZE
+        ) {
           try {
-            byte[] uploadImage = photoCropService.processImageFile(file);
+            byte[] uploadImage = photoCropService.processImageFile(
+                file,
+                file.getSize() > PROFILE_PICTURE_COMPRESSION_THRESHOLD
+            );
 
             registerClientService.uploadUserPhoto(userId, file.getContentType(), uploadImage);
           }
@@ -180,7 +191,7 @@ public class EditAccountController {
      * @return a String to redirect the page to.
      */
     @PostMapping(value = "/edit_account/imageDelete")
-    public String deleteUserPhoto(@AuthenticationPrincipal AuthState principal, @ModelAttribute User user, Model model) {
+    public String deleteUserPhoto(@AuthenticationPrincipal PortfolioPrincipal principal, @ModelAttribute User user, Model model) {
 
         int userId = authStateService.getId(principal);
         registerClientService.deleteUserPhoto(userId);

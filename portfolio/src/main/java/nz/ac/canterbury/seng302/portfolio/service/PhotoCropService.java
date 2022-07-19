@@ -74,18 +74,24 @@ public class PhotoCropService {
    *
    * @param imageData      to compress and then save
    * @param outputMimeType describing the image format to use
-   * @param quality        of the compressed image output
+   * @param enableCompression flag determines whether or not to use compression if available
+   * @param quality        of the compressed image output.
+   *                       Ignored if compression is disabled or unavailable.
    * @return Byte array of the data in the image
    * @throws UnsupportedMediaTypeStatusException when an illegal outputMimeType is specified
    */
-  public byte[] compressAndSaveImageToByteArray(RenderedImage imageData, String outputMimeType,
-      float quality) throws UnsupportedMediaTypeStatusException, IOException {
+  public byte[] saveImageToByteArray(
+      RenderedImage imageData,
+      String outputMimeType,
+      boolean enableCompression,
+      float quality
+  ) throws UnsupportedMediaTypeStatusException, IOException {
     var image = new IIOImage(imageData, null, null);
     var imageWriter = getImageWriterForMimeType(outputMimeType);
 
     // Configure compression options
     var writerParams = imageWriter.getDefaultWriteParam();
-    if (writerParams.canWriteCompressed()) {
+    if (enableCompression && writerParams.canWriteCompressed()) {
       writerParams.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
       writerParams.setCompressionType(writerParams.getCompressionTypes()[0]);
       writerParams.setCompressionQuality(quality);
@@ -118,9 +124,17 @@ public class PhotoCropService {
    * @throws UnsupportedMediaTypeStatusException when an illegal outputMimeType is specified
    */
 
-  public byte[] compressAndSaveImageToByteArray(RenderedImage imageData, String outputMimeType)
-      throws UnsupportedMediaTypeStatusException, IOException {
-    return compressAndSaveImageToByteArray(imageData, outputMimeType, DEFAULT_IMAGE_OUTPUT_QUALITY);
+  public byte[] saveImageToByteArray(
+      RenderedImage imageData,
+      String outputMimeType,
+      boolean enableCompression
+  ) throws UnsupportedMediaTypeStatusException, IOException {
+    return saveImageToByteArray(
+        imageData,
+        outputMimeType,
+        enableCompression,
+        DEFAULT_IMAGE_OUTPUT_QUALITY
+    );
   }
 
   /**
@@ -135,11 +149,15 @@ public class PhotoCropService {
    *
    * @param imageData      for the image to process
    * @param outputMimeType describing the image format to use
+   * @param enableCompression flag that enables image compression (cropping to square always occurs)
    * @return Byte array of the data in the image
    * @throws UnsupportedMediaTypeStatusException when an illegal outputMimeType is specified
    */
-  public byte[] processImage(InputStream imageData, String outputMimeType)
-      throws UnsupportedMediaTypeStatusException, IOException {
+  public byte[] processImage(
+      InputStream imageData,
+      String outputMimeType,
+      boolean enableCompression
+  ) throws UnsupportedMediaTypeStatusException, IOException {
     var image = ImageIO.read(imageData);
 
     if (image == null) {
@@ -151,7 +169,7 @@ public class PhotoCropService {
 
     var croppedImage = cropCenterSquare(image);
 
-    return compressAndSaveImageToByteArray(croppedImage, outputMimeType);
+    return saveImageToByteArray(croppedImage, outputMimeType, enableCompression);
   }
 
   /**
@@ -165,16 +183,17 @@ public class PhotoCropService {
    * </ol>
    *
    * @param file containing the image data and mime-type
+   * @param enableCompression flag that enables image compression (cropping to square always occurs)
    * @return Byte array of the data in the image
    * @throws UnsupportedMediaTypeStatusException when an illegal outputMimeType is specified
    */
-  public byte[] processImageFile(MultipartFile file)
+  public byte[] processImageFile(MultipartFile file, boolean enableCompression)
       throws UnsupportedMediaTypeStatusException, IOException {
     String contentType = file.getContentType();
     if (contentType == null) {
       throw new UnsupportedMediaTypeStatusException("A media type is required.");
     }
 
-    return processImage(file.getInputStream(), contentType);
+    return processImage(file.getInputStream(), contentType, enableCompression);
   }
 }

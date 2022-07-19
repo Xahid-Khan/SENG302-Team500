@@ -18,7 +18,7 @@ await esbuild.build({
     entryPoints: entryPointPaths,
     outdir: targetBuildDirectory,
     bundle: true,
-    minify: true,
+    //minify: true,
     platform: "browser",
     sourcemap: "linked",
     plugins: [

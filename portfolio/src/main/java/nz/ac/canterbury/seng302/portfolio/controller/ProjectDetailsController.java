@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import java.util.ArrayList;
+import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.portfolio.service.RolesService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
@@ -27,7 +28,7 @@ public class ProjectDetailsController {
 
   @GetMapping("/project-details")
   public String projectDetails(
-      @AuthenticationPrincipal AuthState principal,
+      @AuthenticationPrincipal PortfolioPrincipal principal,
       Model model
   ) {
     ArrayList<String> roles = rolesService.getRolesByToken(principal);
