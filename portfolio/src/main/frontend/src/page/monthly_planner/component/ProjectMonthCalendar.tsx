@@ -2,7 +2,7 @@ import React, {useCallback} from "react";
 import {observer} from "mobx-react-lite";
 import {useProjectStore} from "../store/ProjectStoreProvider";
 import {useToasterStore} from "../../../component/toast/internal/ToasterStoreProvider";
-import FullCalendar, {EventChangeArg} from "@fullcalendar/react";
+import FullCalendar, {EventChangeArg, EventSourceInput} from "@fullcalendar/react";
 import {Toast} from "../../../component/toast/Toast";
 import {ToastBase} from "../../../component/toast/ToastBase";
 import defaultToastTheme from "../../../component/toast/DefaultToast.module.css";
@@ -11,6 +11,7 @@ import {DatetimeUtils} from "../../../util/DatetimeUtils";
 import {getContrast} from "../../../util/TextColorUtil";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
+import {SprintStore} from "../store/SprintStore";
 
 /**
  * Component that displays a month calendar for the current project and its sprints.
@@ -20,9 +21,6 @@ import interactionPlugin from "@fullcalendar/interaction";
 export const ProjectMonthCalendar: React.FC = observer(() => {
     const project = useProjectStore()
     const toaster = useToasterStore()
-
-    const [selectedSprint, setSelectedSprint] = React.useState<string>(undefined)
-    const [editable, setEditable] = React.useState<boolean>(false)
 
 
     /**
@@ -62,47 +60,47 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
         end: project.endDate
     }
 
-    const events = project.sprints.map(sprint => ({
+    const [events, setEvents] = React.useState(project.sprints.map(sprint => ({
         id: sprint.id,
         start: sprint.startDate,
         end: sprint.endDate,
         backgroundColor: sprint.colour,
         textColor: getContrast(sprint.colour),
+        borderColor: 'white',
         title: `Sprint ${sprint.orderNumber}: ${sprint.name}`,
         // This hides the time on the event and must be true for drag and drop resizing to be enabled
         allDay: !DatetimeUtils.hasTimeComponent(sprint.startDate) && !DatetimeUtils.hasTimeComponent(sprint.endDate),
-    }))
+        editable: false,
 
-    const eventClick = (eventClickInfo : any) => {
-        const sprintId = eventClickInfo.event.id
-        const sprint = project.sprints.find((s) => s.id === sprintId)
-        if (sprint !== undefined) {
-            console.log("click" + sprint.name)
-            // setEditable(eventClickInfo.event.id as string === selectedSprint)
-            setSelectedSprint(sprint.id);
-            eventClickInfo.el.style.borderColor = 'red';
+    })));
+
+
+
+    const eventClick = (info : any) => {
+        const sprintId = info.event.id;
+
+        if(sprintId) {
+            info.el.style.borderColor = 'red';
         }
-    }
 
-    const f = (info: any) => {
-        const sprint = project.sprints.find((s) => s.id === info.event.id)
-        console.log("drag" + sprint.name)
-    }
+        setEvents(project.sprints.map(sprint => ({
+            id: sprint.id,
+            start: sprint.startDate,
+            end: sprint.endDate,
+            backgroundColor: sprint.colour,
+            textColor: getContrast(sprint.colour),
+            borderColor: sprint.id === sprintId ? 'black' : 'white',
+            title: `Sprint ${sprint.orderNumber}: ${sprint.name}`,
+            // This hides the time on the event and must be true for drag and drop resizing to be enabled
+            allDay: !DatetimeUtils.hasTimeComponent(sprint.startDate) && !DatetimeUtils.hasTimeComponent(sprint.endDate),
+            editable: sprint.id === sprintId,
 
-    const me = (info: any) => {
-        const sprintId = info.event.id
-        info.event.el.style.borderColor = 'green'
-        const sprint = project.sprints.find((s) => s.id === sprintId)
-        if (sprint !== undefined) {
-            console.log("mouse enter" + sprint.name)
-            setEditable(info.event.id as string === selectedSprint)
-            // setSelectedSprint(sprint.id);
-        }
+        })))
     }
 
     return (
         <>
-            <h3>{project.name + ";" + selectedSprint}</h3>
+            <h3>{project.name}</h3>
             <FullCalendar
                 plugins={[dayGridPlugin, interactionPlugin]}
                 initialView="dayGridMonth"
@@ -110,14 +108,13 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
 
                 /* Drag and drop config */
                 //The origin of window comes from the Thymeleaf template of "monthly_planner.html".
-                editable={editable && (!project.sprintsSaving && (window as any) != null ? (window as any).userCanEdit : false)} // We shouldn't allow sprints to be updated while we're still trying to save an earlier update, since this could lead to overlapping sprints.
+                editable={(!project.sprintsSaving && (window as any) != null ? (window as any).userCanEdit : false)} // We shouldn't allow sprints to be updated while we're still trying to save an earlier update, since this could lead to overlapping sprints.
                 eventResizableFromStart
+                eventDurationEditable
                 eventOverlap={false}
                 eventConstraint={projectRange}
                 eventChange={onSaveDatesCallback}
                 eventClick={eventClick}
-                eventDragStart={f}
-                eventMouseEnter={me}
 
                 /* Calendar config */
                 validRange={projectRange}
