@@ -5,6 +5,8 @@ stages:
   - test
   - predeploy
   - sonarqube
+  - deploystaging
+  - postdeploystaging
   - deploy
 
 ##### TAG CHECKING #####
@@ -74,9 +76,9 @@ sonarqube-report:
     - cd ../portfolio
     - ./gradlew sonarqube
 
-##### DEPLOY #####
+##### DEPLOY STAGING #####
 deploy-staging-identityprovider:
-  stage: deploy
+  stage: deploystaging
   script:
     - cd identityprovider
     - ./gradlew bootJar
@@ -93,7 +95,7 @@ deploy-staging-identityprovider:
     - dev
 
 deploy-staging-portfolio:
-  stage: deploy
+  stage: deploystaging
   script:
     - cd portfolio
     - ./gradlew bootJar
@@ -109,6 +111,14 @@ deploy-staging-portfolio:
   only:
     - dev
 
+##### POST DEPLOY STAGING ######
+postdeploy-staging-user-test:
+  stage: postdeploystaging
+  script:
+    - python3 post_deploy.py
+
+
+##### DEPLOY #####
 deploy-production-identityprovider:
   stage: deploy
   script:
