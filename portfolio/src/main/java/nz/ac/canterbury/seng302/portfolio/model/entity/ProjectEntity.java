@@ -144,24 +144,39 @@ public class ProjectEntity {
         sprint.setProject(this);
     }
 
+    /**
+     * Removes sprint from sprints list
+     * @param sprint sprint to be deleted
+     */
     public void removeSprint(SprintEntity sprint) {
         sprints.remove(sprint);
         sprint.setProject(null);
     }
 
-   public void newEvent(EventEntity event) {
-        events.add(event);
-        event.setProject(this);
+    /**
+     * Inserts the given event to the events list, retaining sorted order.
+     *
+     * <p>Adapted from: https://stackoverflow.com/a/51893026</p>
+     *
+     * @param event to insert
+     */
+   public void addEvent(EventEntity event) {
+       var index = Collections.binarySearch(events, event, Comparator.comparing(EventEntity::getStartDate));
+       if (index < 0) {
+           index = -index - 1;
+       }
+
+       events.add(index, event);
+       event.setProject(this);
     }
 
+    /**
+     * Removes sprint from sprints list
+     * @param event to be deleted
+     */
     public void removeEvent(EventEntity event) {
         events.remove(event);
         event.setProject(null);
-    }
-
-    public void newDeadline(DeadlineEntity deadline) {
-        deadlines.add(deadline);
-        deadline.setProject(this);
     }
 
     public void addDeadline(DeadlineEntity deadline) {
@@ -174,7 +189,7 @@ public class ProjectEntity {
         deadline.setProject(null);
     }
 
-    public void newMilestone(MilestoneEntity milestone) {
+    public void addMilestone(MilestoneEntity milestone) {
         milestones.add(milestone);
         milestone.setProject(this);
     }

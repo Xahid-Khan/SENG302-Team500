@@ -49,7 +49,7 @@ public class MilestoneService {
 
         var project = projectRepository.findById(projectId).orElseThrow(() -> new IllegalArgumentException("Invalid project ID"));
         var milestone = milestoneMapper.toEntity(milestoneContract);
-        project.newMilestone(milestone);
+        project.addMilestone(milestone);
         projectRepository.save(project);
         milestoneRepository.save(milestone);
 

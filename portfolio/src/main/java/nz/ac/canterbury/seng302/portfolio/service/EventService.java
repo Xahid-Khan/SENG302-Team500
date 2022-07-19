@@ -13,6 +13,8 @@ import nz.ac.canterbury.seng302.portfolio.repository.SprintRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 
@@ -24,20 +26,20 @@ public class EventService {
 
   @Autowired private EventMapper eventMapper;
 
-  /**
-   * Get the event with the event ID
-   *
-   * @param eventId The event ID
-   * @throws IllegalArgumentException If the event ID is invalid
-   * @return The event contract with the event ID
-   */
-  public EventContract get(String eventId) {
-    var event =
-        eventRepository
-            .findById(eventId)
-            .orElseThrow(() -> new IllegalArgumentException("Invalid event ID"));
-    return eventMapper.toContract(event);
-  }
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    /**
+     * Get the event with the event ID
+     *
+     * @param eventId The event ID
+     * @throws IllegalArgumentException If the event ID is invalid
+     * @return The event contract with the event ID
+     */
+    public EventContract get(String eventId) {
+        var event= eventRepository.findById(eventId).orElseThrow();
+        return eventMapper.toContract(event, event.getOrderNumber());
+    }
 
   /**
    * Creates an event within a project and puts it in a sprint if it falls within the sprint's start
@@ -47,17 +49,15 @@ public class EventService {
    */
   public EventContract createEvent(String projectId, BaseEventContract event) {
 
-    var project =
-        projectRepository
-            .findById(projectId)
-            .orElseThrow(() -> new IllegalArgumentException("Invalid project ID"));
-    var entity = eventMapper.toEntity(event);
-    project.newEvent(entity);
-    projectRepository.save(project);
-    eventRepository.save(entity);
 
-    return eventMapper.toContract(entity);
-  }
+        var project = projectRepository.findById(projectId).orElseThrow(() -> new IllegalArgumentException("Invalid project ID"));
+        var entity = eventMapper.toEntity(event);
+        project.addEvent(entity);
+        eventRepository.save(entity);
+        projectRepository.save(project);
+
+        return eventMapper.toContract(entity, entity.getOrderNumber());
+    }
 
   /**
    * Deletes an event, including removing it from its parent project.
@@ -95,6 +95,8 @@ public class EventService {
     eventEntity.setStartDate(event.startDate());
     eventEntity.setEndDate(event.endDate());
 
-    eventRepository.save(eventEntity);
-  }
+        eventRepository.save(eventEntity);
+        entityManager.clear();
+    }
+
 }
