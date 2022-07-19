@@ -73,8 +73,8 @@ public class EventService {
     var project = event.getProject();
 
     project.removeEvent(event);
-    projectRepository.save(project);
     eventRepository.deleteById(eventId);
+    projectRepository.save(project);
   }
 
   /**
