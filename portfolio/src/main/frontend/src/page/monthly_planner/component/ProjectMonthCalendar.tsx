@@ -270,7 +270,7 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
                 editable={!project.sprintsSaving && (window as any) != null ? (window as any).userCanEdit : false} // We shouldn't allow sprints to be updated while we're still trying to save an earlier update, since this could lead to overlapping sprints.
                 eventResizableFromStart
                 eventDurationEditable
-                eventOverlap={false}
+                eventOverlap={true}
                 eventConstraint={projectRange}
                 eventChange={onSaveDatesCallback}
                 eventClick={eventClick}
