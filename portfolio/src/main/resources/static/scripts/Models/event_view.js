@@ -30,7 +30,7 @@ class EventView {
         <div class="event-description" id="event-description-${this.event.eventId}"></div>
         <div class="events-sprints" id="event-sprints-${this.event.eventId}"></div>
     </div>
-    <div class="colour-block" id="event-colour-block-${this.event.eventId}"></div>
+    <div class="colour-block" id="event-colour-block-${this.event.eventId}" style="display: none;"></div>
     
     `;
 
@@ -83,21 +83,27 @@ class EventView {
         let foundSprints = false
 
         //Uses linear gradient to make the coloured line
-        var gradient = "linear-gradient(to right,"
+        var gradient = "linear-gradient(45deg,"
         this.sprints.forEach(sprint => {
             if (this.event.startDate >= sprint.startDate && this.event.startDate <= sprint.endDate || this.event.endDate >= sprint.startDate && this.event.endDate <= sprint.endDate
             || this.event.startDate <= sprint.startDate && this.event.endDate >= sprint.endDate) {
                 html += `<div class="event-sprint-details" style="color: ${sprint.colour}">   - <span id="event-sprint-name-${this.event.eventId}-${sprint.sprintId}"></span><span>${DatetimeUtils.localToUserDMY(sprint.startDate)}</span> - <span>${DatetimeUtils.localToUserDMY(sprint.endDate)}</span>`;
                 foundSprints = true
-                gradient+=sprint.colour+","
 
+                //Done twice to handle cases of single sprint. Displays block if a sprint contains the event
+                gradient+=sprint.colour+","
+                gradient+=sprint.colour+","
+                document.getElementById(`event-colour-block-${this.event.eventId}`).style.display="block";
             }
         }
 
         );
         //Splices the last comma out of the linear gradient so it compiles. Sets the line colour
         gradient=gradient.slice(0, -1) + ')';
+
         document.getElementById(`event-colour-block-${this.event.eventId}`).style.background=gradient;
+
+        console.log(gradient)
 
         if (!foundSprints) {
             html = "<label>No sprints are overlapping with this event</label>"
