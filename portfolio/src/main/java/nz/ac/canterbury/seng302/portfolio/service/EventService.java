@@ -38,7 +38,7 @@ public class EventService {
      */
     public EventContract get(String eventId) {
         var event= eventRepository.findById(eventId).orElseThrow();
-        return eventMapper.toContract(event);
+        return eventMapper.toContract(event, event.getOrderNumber());
     }
 
   /**
