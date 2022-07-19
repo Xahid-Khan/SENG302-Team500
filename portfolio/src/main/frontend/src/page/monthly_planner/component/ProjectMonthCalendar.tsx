@@ -2,17 +2,15 @@ import React, {useCallback} from "react";
 import {observer} from "mobx-react-lite";
 import {useProjectStore} from "../store/ProjectStoreProvider";
 import {useToasterStore} from "../../../component/toast/internal/ToasterStoreProvider";
-import FullCalendar, {EventChangeArg, EventSourceInput} from "@fullcalendar/react";
+import FullCalendar, {EventChangeArg} from "@fullcalendar/react";
 import {Toast} from "../../../component/toast/Toast";
 import {ToastBase} from "../../../component/toast/ToastBase";
 import defaultToastTheme from "../../../component/toast/DefaultToast.module.css";
 import {LoadingErrorPresenter} from "../../../component/error/LoadingErrorPresenter";
-import {DatetimeUtils} from "../../../util/DatetimeUtils";
 import {getContrast} from "../../../util/TextColorUtil";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import ReactTooltip from "react-tooltip";
-import {SprintStore} from "../store/SprintStore";
 
 /**
  * Component that displays a month calendar for the current project and its sprints.
