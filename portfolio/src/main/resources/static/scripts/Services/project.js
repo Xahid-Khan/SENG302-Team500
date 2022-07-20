@@ -2,9 +2,10 @@
  * Handles switching between the editor and view screens.
  */
 class Project {
-    constructor(containerElement, data, deleteCallback) {
+    constructor(containerElement, data, deleteCallback, pingCallback) {
         this.containerElement = containerElement;
         this.project = data;
+        this.pingCallback = pingCallback;
 
         this.currentView = null;
         this.showViewer();
@@ -13,6 +14,8 @@ class Project {
 
         this.deleteLoadingStatus = LoadingStatus.NotYetAttempted;
         this.deleteCallback = deleteCallback;
+
+        this.currentlyEditing = false;
     }
 
     /**
@@ -45,6 +48,7 @@ class Project {
 
         const showingEvents = this.currentView.showingEvents;
         const showingMilestones = this.currentView.showingMilestones;
+        const showingDeadlines = this.currentView.showingDeadlines
 
         // Refresh the view
         this.showViewer();
@@ -54,6 +58,9 @@ class Project {
         }
         if (showingMilestones) {
             this.currentView.toggleMilestones();
+        }
+        if (showingDeadlines) {
+            this.currentView.toggleDeadlines()
         }
         this.currentView.toggleSprints();
     }
@@ -107,7 +114,6 @@ class Project {
                 break;
             }
         }
-
         // Insert the updated milestone.
         this.project.milestones.splice(milestone.orderNumber - 1, 0, milestone);
 
@@ -140,7 +146,7 @@ class Project {
         // Delete the outdated event from the events array.
         // NB: Since this method is sometimes called with new events, a deletion is not guaranteed to occur here.
         for (let j=0; j < this.project.deadlines.length; j++) {
-            if (this.project.deadlines[j].eventId === deadline.eventId) {
+            if (this.project.deadlines[j].deadlineId === deadline.deadlineId) {
                 this.project.deadlines.splice(j, 1);
                 break;
             }
@@ -172,6 +178,21 @@ class Project {
         this.currentView.toggleDeadlines();
     }
 
+    onEventEdit() {
+        this.currentView.deadlinesContainer.style.display = "none";
+        this.currentView.milestonesContainer.style.display = "none";
+    }
+
+    onDeadlineEdit() {
+        this.currentView.eventsContainer.style.display = "none";
+        this.currentView.milestonesContainer.style.display = "none";
+    }
+
+    onMilestoneEdit() {
+        this.currentView.deadlinesContainer.style.display = "none";
+        this.currentView.eventsContainer.style.display = "none";
+    }
+
     /**
      * Gets the project to explicitly destroy itself .
      */
@@ -179,17 +200,23 @@ class Project {
         this.currentView.dispose();
     }
 
+    pingCallbackCallback() {
+        this.pingCallback();
+    }
+
     /**
      * Handles showing of project or sprint editor.
      */
     showEditor() {
+        this.currentlyEditing = true
         this.currentView?.dispose();
         this.currentView = new Editor(this.containerElement,
             "Edit project details:",
             this.project,
             this.showViewer.bind(this),
             this.updateProject.bind(this),
-            Editor.makeProjectProjectDatesValidator(this.project));
+            Editor.makeProjectProjectDatesValidator(this.project),
+            this.project);
     }
 
     /**
@@ -197,7 +224,14 @@ class Project {
      */
     showViewer() {
         this.currentView?.dispose();
-        this.currentView = new ProjectView(this.containerElement, this.project, this.showEditor.bind(this), this.deleteProject.bind(this), this.deleteSprint.bind(this), this.onSprintUpdate.bind(this), this.deleteEvent.bind(this), this.onEventUpdate.bind(this), this.deleteDeadline.bind(this), this.onDeadlineUpdate.bind(this), this.deleteMilestone.bind(this), this.onMilestoneUpdate.bind(this));
+        this.currentView = new ProjectView(this.containerElement, this.project, this.pingCallbackCallback.bind(this), this.showEditor.bind(this), this.deleteProject.bind(this), this.deleteSprint.bind(this), this.onSprintUpdate.bind(this), this.deleteEvent.bind(this), this.onEventUpdate.bind(this), this.deleteDeadline.bind(this), this.onDeadlineUpdate.bind(this), this.deleteMilestone.bind(this), this.onMilestoneUpdate.bind(this), this.onEventEdit.bind(this), this.onDeadlineEdit.bind(this), this.onMilestoneEdit.bind(this));
+        if (this.currentlyEditing) {
+            this.currentView.toggleSprints();
+            this.currentView.toggleMilestones();
+            this.currentView.toggleDeadlines();
+            this.currentView.toggleEvents();
+            this.currentlyEditing = false
+        }
     }
 
     /**

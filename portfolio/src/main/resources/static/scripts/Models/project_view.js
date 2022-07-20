@@ -24,10 +24,11 @@ class ProjectView {
     addMilestoneForm = null
     addMilestoneLoadingStatus = LoadingStatus.NotYetAttempted;
 
-    constructor(containerElement, project, editCallback, deleteCallback, sprintDeleteCallback, sprintUpdateCallback, eventDeleteCallback, eventUpdateCallback, deadlineDeleteCallback, deadlineUpdateCallback, milestoneDeleteCallback, milestoneUpdateCallback) {
+    constructor(containerElement, project, pingCallback, editCallback, deleteCallback, sprintDeleteCallback, sprintUpdateCallback, eventDeleteCallback, eventUpdateCallback, deadlineDeleteCallback, deadlineUpdateCallback, milestoneDeleteCallback, milestoneUpdateCallback, eventEditCallback, deadlineEditCallback, milestoneEditCallback) {
         console.log("project", project)
         this.containerElement = containerElement;
         this.project = project;
+        this.pingCallback = pingCallback;
         this.sprintContainer = null;
         this.sprints = new Map();
         this.eventContainer = null;
@@ -47,7 +48,20 @@ class ProjectView {
         this.deadlineDeleteCallback = deadlineDeleteCallback;
         this.deadlineUpdateCallback = deadlineUpdateCallback
         this.milestoneDeleteCallback = milestoneDeleteCallback;
-        this.milestoneUpdateCallback = milestoneUpdateCallback
+        this.milestoneUpdateCallback = milestoneUpdateCallback;
+        this.eventEditCallback = eventEditCallback;
+        this.deadlineEditCallback = deadlineEditCallback;
+        this.milestoneEditCallback = milestoneEditCallback;
+
+        this.eventDiv = null;
+        this.showingEventDiv = false;
+        this.milestoneDiv = null;
+        this.showingMilestoneDiv = false;
+        this.deadlineDiv = null;
+        this.showingDeadlineDiv = false;
+        this.sprintDiv = null;
+        this.showingSprintDiv = false;
+        this.showingProjectDetails = false;
 
         this.constructAndPopulateView();
         this.wireView();
@@ -58,8 +72,7 @@ class ProjectView {
      */
     appendSprint(sprintData) {
         const sprintElement = document.createElement("div");
-        sprintElement.classList.add("sprint-view", "raised-card");
-        sprintElement.id = `sprint-view-${sprintElement.id}`;
+        sprintElement.classList.add("events-view", "raised-card", `sprint-view-${this.project.id}`);
 
         this.sprintContainer.appendChild(sprintElement);
 
@@ -74,39 +87,39 @@ class ProjectView {
 
     appendEvent(eventData) {
         const eventElement = document.createElement("div")
-        eventElement.classList.add("event-view", "raised-card");
-        eventElement.id = `event-view-${eventElement.id}`;
+        eventElement.classList.add("events-view", "raised-card", `event-view-${this.project.id}`);
+        eventElement.id = eventData.eventId;
         this.eventContainer.appendChild(eventElement);
 
         console.log("Binding event");
 
-        this.events.set(eventData.eventId, new Event(eventElement, eventData, this.project, this.eventDeleteCallback, this.eventUpdateCallback));
+        this.events.set(eventData.eventId, new Event(eventElement, eventData, this.project, this.eventDeleteCallback, this.eventUpdateCallback, this.eventEditCallback));
 
         console.log("Event bound");
     }
 
     appendMilestone(milestoneData) {
         const milestoneElement = document.createElement("div")
-        milestoneElement.classList.add("milestone-view", "raised-card");
-        milestoneElement.id = `milestone-view-${milestoneElement.id}`;
+        milestoneElement.classList.add("events-view", "raised-card", `milestone-view-${this.project.id}`);
+        milestoneElement.id = milestoneData.milestoneId;
         this.milestoneContainer.appendChild(milestoneElement);
 
         console.log("Binding milestone");
 
-        this.milestones.set(milestoneData.milestoneId, new Milestone(milestoneElement, milestoneData, this.project, this.milestoneDeleteCallback, this.milestoneUpdateCallback));
+        this.milestones.set(milestoneData.milestoneId, new Milestone(milestoneElement, milestoneData, this.project, this.milestoneDeleteCallback, this.milestoneUpdateCallback, this.milestoneEditCallback));
 
         console.log("Milestone bound");
     }
 
     appendDeadline(deadlineData) {
         const deadlineElement = document.createElement("div")
-        deadlineElement.classList.add("deadline-view", "raised-card");
-        deadlineElement.id = `deadline-view-${deadlineElement.id}`;
+        deadlineElement.classList.add("events-view", "raised-card", `deadline-view-${this.project.id}`);
+        deadlineElement.id = deadlineData.deadlineId;
         this.deadlineContainer.appendChild(deadlineElement);
 
         console.log("Binding deadline");
 
-        this.deadlines.set(deadlineData.deadlineId, new Deadline(deadlineElement, deadlineData, this.project, this.deadlineDeleteCallback, this.deadlineUpdateCallback));
+        this.deadlines.set(deadlineData.deadlineId, new Deadline(deadlineElement, deadlineData, this.project, this.deadlineDeleteCallback, this.deadlineUpdateCallback, this.deadlineEditCallback));
 
         console.log("Deadline bound");
     }
@@ -116,46 +129,72 @@ class ProjectView {
      */
     constructAndPopulateView() {
         this.containerElement.innerHTML = `
-      <div class="project-title">
-          <span class="project-title-text">
-            <span id="project-title-text-${this.project.id}"></span> | <span id="project-startDate-${this.project.id}"></span> - <span id="project-endDate-${this.project.id}"></span>
-          </span>   
-          <span class="monthly-planner-redirect">
-                  <button class="button monthly-planner-redirect-button" id="monthly-planner-redirect-button-${this.project.id}">View Monthly Planner</button>
-          </span> 
-          <span class="crud">
-                  <button class="button edit-project" id="project-edit-button-${this.project.id}" data-privilege="teacher">Edit</button>
-                  <button class="button" id="project-delete-button-${this.project.id}" data-privilege="teacher">Delete</button>
-          </span>
-      </div>
-      <div>
-          <div class="project-description" id="project-description-${this.project.id}"></div>
-          <div class="add-view-controls">
-              <button class="button add-sprint" id="add-sprint-button-${this.project.id}" data-privilege="teacher"> Add Sprint</button>
-              <button class="button add-event" id="add-event-button-${this.project.id}" data-privilege="teacher"> Add Event</button>
-              <button class="button add-milestone" id="add-milestone-button-${this.project.id}" data-privilege="teacher"> Add Milestone</button>
-              <button class="button add-deadline" id="add-deadline-button-${this.project.id}" data-privilege="teacher"> Add Deadline</button>
-          </div>
-          <div class="toggle-view-controls">
-              <button class="button toggle-sprints" id="toggle-sprint-button-${this.project.id}"> Show Sprints</button>
-              <button class="button toggle-events" id="toggle-event-button-${this.project.id}"> Show Events</button>
-              <button class="button toggle-milestones" id="toggle-milestone-button-${this.project.id}"> Show Milestones</button>
-              <button class="button toggle-deadlines" id="toggle-deadline-button-${this.project.id}"> Show Deadlines</button>
-          </div>    
-      </div>
-      <div class="events raised-card" id="events-container-${this.project.id}">
-        <h1 class="event-section-title">Events:</h1>
-      </div>
-      <div class="deadlines raised-card" id="deadlines-container-${this.project.id}">
-        <h1 class="deadline-section-title">Deadlines:</h1>
-      </div>
-      <div class="milestones raised-card" id="milestones-container-${this.project.id}">
-        <h1 class="milestone-section-title">Milestones:</h1>
-      </div>
-      <div class="sprints raised-card" id="sprints-container-${this.project.id}">
-        <h1 class="event-section-title">Sprints:</h1>
-      </div>
-    `;
+              <div class="project-title">
+                  <span class="project-title-text">
+                    <span id="project-title-text-${this.project.id}"></span> | <span id="project-startDate-${this.project.id}"></span> - <span id="project-endDate-${this.project.id}"></span>
+                  </span>   
+                  <span class="monthly-planner-redirect">
+                      <button class="button monthly-planner-redirect-button" id="monthly-planner-redirect-button-${this.project.id}">View Monthly Planner</button>
+                  </span>
+                  <span class="crud">
+                      <button class="button icon-button edit-project" id="project-edit-button-${this.project.id}" data-privilege="teacher"><span class="material-icons">edit</span></button>
+                      <button class="button icon-button" id="project-delete-button-${this.project.id}" data-privilege="teacher"><span class="material-icons">clear</span></button>
+                  </span>
+                  <span>
+                      <button class="button visibility-button toggle-project-details" id="toggle-project-details-${this.project.id}"><span class='material-icons'>visibility</span></button>
+                  </span>
+              </div>
+              <div>
+                  <div class="project-description" id="project-description-${this.project.id}"></div>
+              </div>
+              <div class="project-events">
+                  <div class="events raised-card" id="events-container-${this.project.id}">
+                  <div class="events-header">
+                     <div class="events-section-title">
+                        <span class="material-icons">event</span>
+                        Events:
+                     </div>
+                     <div class="add-events">
+                         <button class="button toggle-view-controls toggle-events visibility-button" id="toggle-event-button-${this.project.id}"><span class="material-icons">visibility</span></button>
+                         <button class="button" id="add-event-button-${this.project.id}" data-privilege="teacher"> Add Event</button>
+                     </div>
+                  </div>
+                  </div>
+                  <div class="events raised-card" id="deadlines-container-${this.project.id}">
+                    <div class="events-header">
+                        <div class="events-section-title">
+                            <span class="material-icons">timer</span>
+                            Deadlines:
+                        </div>
+                        <div class="add-events">
+                            <button class="button toggle-deadlines visibility-button" id="toggle-deadline-button-${this.project.id}"><span class='material-icons'>visibility</span></button>
+                            <button class="button" id="add-deadline-button-${this.project.id}" data-privilege="teacher"> Add Deadline</button>
+                        </div>
+                    </div>
+                  </div>
+                  <div class="events raised-card" id="milestones-container-${this.project.id}">
+                      <div class="events-header">
+                        <div class="events-section-title"> 
+                            <span class="material-icons">flag</span>
+                            Milestones:
+                        </div>
+                        <div class="add-events">
+                            <button class="button toggle-milestones visibility-button" id="toggle-milestone-button-${this.project.id}"><span class='material-icons'>visibility</span></button>
+                            <button class="button" id="add-milestone-button-${this.project.id}" data-privilege="teacher"> Add Milestone</button>
+                        </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="sprints raised-card" id="sprints-container-${this.project.id}">
+                <div class="events-header">
+                    <div class="events-section-title">Sprints:</div>
+                    <div class="add-events">
+                        <button class="button toggle-sprints visibility-button" id="toggle-sprint-button-${this.project.id}"><span class='material-icons'>visibility</span></button>
+                        <button class="button" id="add-sprint-button-${this.project.id}" data-privilege="teacher"> Add Sprint</button>
+                    </div>
+                </div>
+              </div>
+            `;
 
         document.getElementById(`project-title-text-${this.project.id}`).innerText = this.project.name;
         document.getElementById(`project-description-${this.project.id}`).innerText = this.project.description;
@@ -201,18 +240,20 @@ class ProjectView {
         }
     }
 
+    callPing() {
+        this.pingCallback();
+    }
+
     /**
      * Toggles hiding and showing of the sprints.
      */
     toggleSprints() {
         if (this.showingSprints) {
             // Hide the sprints
-            this.toggleSprintsButton.innerText = "Show Sprints";
             this.sprintsContainer.style.display = "none";
         }
         else {
             // Show the sprints
-            this.toggleSprintsButton.innerText = "Hide Sprints";
             this.sprintsContainer.style.display = "block";
         }
 
@@ -222,12 +263,10 @@ class ProjectView {
     toggleEvents() {
         if (this.showingEvents) {
             // Hide the sprints
-            this.toggleEventsButton.innerText = "Show Events";
             this.eventsContainer.style.display = "none";
         }
         else {
             // Show the events
-            this.toggleEventsButton.innerText = "Hide Events";
             this.eventContainer.style.display = "block";
         }
 
@@ -237,12 +276,10 @@ class ProjectView {
     toggleMilestones() {
         if (this.showingMilestones) {
             // Hide the sprints
-            this.toggleMilestonesButton.innerText = "Show Milestones";
             this.milestonesContainer.style.display = "none";
         }
         else {
             // Show the events
-            this.toggleMilestonesButton.innerText = "Hide Milestones";
             this.milestonesContainer.style.display = "block";
         }
 
@@ -251,19 +288,18 @@ class ProjectView {
 
     toggleDeadlines() {
         if (this.showingDeadlines) {
+
             // Hide the sprints
-            this.toggleDeadlinesButton.innerText = "Show Deadlines";
             this.deadlinesContainer.style.display = "none";
         }
         else {
             // Show the events
-            this.toggleDeadlinesButton.innerText = "Hide Deadlines";
             this.deadlinesContainer.style.display = "block";
         }
 
         this.showingDeadlines = !this.showingDeadlines;
     }
-
+    
     /**
      * Opens the add sprint form.
      */
@@ -273,7 +309,7 @@ class ProjectView {
         }
 
         const formContainerElement = document.createElement("div");
-        formContainerElement.classList.add("sprint-view", "raised-card");
+        formContainerElement.classList.add("events-view", "raised-card");
         formContainerElement.id = `create-sprint-form-container-${this.project.id}`;
         this.sprintsContainer.append(this.sprintsContainer.firstChild, formContainerElement);
 
@@ -284,7 +320,7 @@ class ProjectView {
             defaultName = this.project.sprints[(this.project.sprints.length - 1)].orderNumber + 1;
             defaultStartDate = new Date(this.project.sprints[(this.project.sprints.length - 1)].endDate.valueOf());
         }
-
+        
         const defaultEndDate = new Date(defaultStartDate.valueOf());
         defaultEndDate.setDate(defaultEndDate.getDate() + 22);
 
@@ -307,7 +343,8 @@ class ProjectView {
                 defaultSprint,
                 this.closeAddSprintForm.bind(this),
                 this.submitAddSprintForm.bind(this),
-                Editor.makeProjectSprintDatesValidator(this.project, null)
+                Editor.makeProjectSprintDatesValidator(this.project, null),
+                this.project
             )
         };
 
@@ -378,7 +415,7 @@ class ProjectView {
         }
 
         const formContainerElement = document.createElement("div");
-        formContainerElement.classList.add("event-view", "raised-card");
+        formContainerElement.classList.add("events-view", "raised-card");
         formContainerElement.id = `create-event-form-container-${this.project.id}`;
         this.eventContainer.append(this.eventsContainer.firstChild, formContainerElement)
 
@@ -399,6 +436,7 @@ class ProjectView {
                 this.closeAddEventForm.bind(this),
                 this.submitAddEventForm.bind(this),
                 Editor.makeProjectEventDatesValidator(this.project),
+                this.project,
                 true
             )
         };
@@ -468,7 +506,7 @@ class ProjectView {
         }
 
         const formContainerElement = document.createElement("div");
-        formContainerElement.classList.add("milestone-view", "raised-card");
+        formContainerElement.classList.add("events-view", "raised-card");
         formContainerElement.id = `create-milestone-form-container-${this.project.id}`;
         this.milestoneContainer.append(this.milestonesContainer.firstChild, formContainerElement)
 
@@ -488,7 +526,8 @@ class ProjectView {
                 defaultMilestone,
                 this.closeAddMilestoneForm.bind(this),
                 this.submitAddMilestoneForm.bind(this),
-                Editor.makeProjectEventDatesValidator(this.project)
+                Editor.makeProjectMilestoneDatesValidator(this.project),
+                this.project
             )
         };
 
@@ -557,7 +596,7 @@ class ProjectView {
         }
 
         const formContainerElement = document.createElement("div");
-        formContainerElement.classList.add("deadline-view", "raised-card");
+        formContainerElement.classList.add("events-view", "raised-card");
         formContainerElement.id = `create-deadline-form-container-${this.project.id}`;
         this.deadlineContainer.append(this.deadlinesContainer.firstChild, formContainerElement)
 
@@ -577,7 +616,10 @@ class ProjectView {
                 defaultDeadline,
                 this.closeAddDeadlineForm.bind(this),
                 this.submitAddDeadlineForm.bind(this),
-                Editor.makeProjectEventDatesValidator(this.project)
+                Editor.makeProjectDeadlineDatesValidator(this.project),
+                this.project,
+                true,
+                false
             )
         };
 
@@ -640,21 +682,74 @@ class ProjectView {
         }
     }
 
+    showSprints() {
+        this.toggleSprintsButton.innerHTML = this.showingSprintDiv ? "<span class='material-icons'>visibility</span>" : "<span class='material-icons'>visibility_off</span>"
+        this.sprintDiv = document.getElementsByClassName(`sprint-view-${this.project.id}`)
+        if (this.sprintDiv) {
+            for (let i = 0; i < this.sprintDiv.length; i++) {
+                this.sprintDiv[i].style.display === "none" ? this.sprintDiv[i].style.display = "block" : this.sprintDiv[i].style.display = "none"
+            }        }
+        this.showingSprintDiv = !this.showingSprintDiv
+    }
+
+    showEvents() {
+         this.toggleEventsButton.innerHTML = this.showingEventDiv ? "<span class='material-icons'>visibility</span>" : "<span class='material-icons'>visibility_off</span>"
+        this.eventDiv = document.getElementsByClassName(`event-view-${this.project.id}`)
+        if (this.eventDiv) {
+            for (let i = 0; i < this.eventDiv.length; i++) {
+                this.eventDiv[i].style.display === "none" ? this.eventDiv[i].style.display = "block" : this.eventDiv[i].style.display = "none"
+            }
+        }
+        this.showingEventDiv = !this.showingEventDiv
+    }
+
+    showDeadlines() {
+        this.toggleDeadlinesButton.innerHTML = this.showingDeadlineDiv ? "<span class='material-icons'>visibility</span>" : "<span class='material-icons'>visibility_off</span>"
+        this.deadlineDiv = document.getElementsByClassName(`deadline-view-${this.project.id}`)
+        if (this.deadlineDiv) {
+            for (let i = 0; i < this.deadlineDiv.length; i++) {
+                this.deadlineDiv[i].style.display === "none" ? this.deadlineDiv[i].style.display = "block" : this.deadlineDiv[i].style.display = "none"
+            }
+        }
+        this.showingDeadlineDiv = !this.showingDeadlineDiv
+    }
+
+    showMilestones() {
+        this.toggleMilestonesButton.innerHTML = this.showingMilestoneDiv ? "<span class='material-icons'>visibility</span>" : "<span class='material-icons'>visibility_off</span>"
+        this.milestoneDiv = document.getElementsByClassName(`milestone-view-${this.project.id}`)
+        if (this.milestoneDiv) {
+            for (let i = 0; i < this.milestoneDiv.length; i++) {
+                this.milestoneDiv[i].style.display === "none" ? this.milestoneDiv[i].style.display = "block" : this.milestoneDiv[i].style.display = "none"
+            }
+        }
+        this.showingMilestoneDiv = !this.showingMilestoneDiv
+    }
+
+    toggleProjectDetails() {
+        this.toggleEvents();
+        this.toggleDeadlines();
+        this.toggleSprints();
+        this.toggleMilestones();
+        document.getElementById(`toggle-project-details-${this.project.id}`).innerHTML = this.showingProjectDetails ? "<span class='material-icons'>visibility</span>" : "<span class='material-icons'>visibility_off</span>";
+        this.showingProjectDetails = !this.showingProjectDetails;
+    }
+
     monthlyPlannerRedirect(projectId) {
         window.location.href = `monthly-planner/${projectId}`
     }
 
     wireView() {
         document.getElementById(`project-edit-button-${this.project.id}`).addEventListener("click", () => this.editCallback());
+        document.getElementById(`toggle-project-details-${this.project.id}`).addEventListener("click", () => {this.toggleProjectDetails(); this.callPing()})
         document.getElementById(`project-delete-button-${this.project.id}`).addEventListener("click", () => this.deleteCallback());
         document.getElementById(`monthly-planner-redirect-button-${this.project.id}`).addEventListener("click", () => this.monthlyPlannerRedirect(this.project.id));
-        this.toggleSprintsButton.addEventListener('click', this.toggleSprints.bind(this));
+        this.toggleSprintsButton.addEventListener('click', this.showSprints.bind(this));
         this.addSprintButton.addEventListener('click', this.openAddSprintForm.bind(this));
-        this.toggleEventsButton.addEventListener('click', this.toggleEvents.bind(this));
+        this.toggleEventsButton.addEventListener('click', this.showEvents.bind(this));
         this.addEventButton.addEventListener('click', this.openAddEventForm.bind(this));
-        this.toggleMilestonesButton.addEventListener('click', this.toggleMilestones.bind(this));
+        this.toggleMilestonesButton.addEventListener('click', this.showMilestones.bind(this));
         this.addMilestoneButton.addEventListener('click', this.openAddMilestoneForm.bind(this));
-        this.toggleDeadlinesButton.addEventListener('click', this.toggleDeadlines.bind(this));
+        this.toggleDeadlinesButton.addEventListener('click', this.showDeadlines.bind(this));
         this.addDeadlineButton.addEventListener('click', this.openAddDeadlineForm.bind(this));
     }
 

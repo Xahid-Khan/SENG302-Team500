@@ -1,7 +1,5 @@
 import * as polyfills from "../util/polyfill/socket_polyfill";
-import React, {useEffect} from "react";
-import ReactDOM from "react-dom";
-import {observer, useLocalObservable} from "mobx-react-lite";
+import React from "react";
 import {action, computed, makeObservable, observable, runInAction} from "mobx";
 import {
     LoadingDone,
@@ -35,7 +33,7 @@ class PingPageStore {
             connected: computed,
 
             setNextPingValue: action,
-            sendPing: action,
+            showEdit: action,
             start: action
         })
 
@@ -56,12 +54,32 @@ class PingPageStore {
         this.nextPingValue = newValue
     }
 
-    sendPing() {
+    showEdit(location: string) {
         console.log("Attempting to send ping...")
         if (this.connected) {
             this.stomp.publish({
-                destination: "/app/ping",
-                body: this.nextPingValue
+                destination: "/app/show",
+                body: location
+            })
+        }
+    }
+
+    cancelEdit(location: string) {
+        console.log("Attempting to send ping...")
+        if (this.connected) {
+            this.stomp.publish({
+                destination: "/app/cancel",
+                body: location
+            })
+        }
+    }
+
+    saveEdit(location: string) {
+        console.log("Attempting to send ping...")
+        if (this.connected) {
+            this.stomp.publish({
+                destination: "/app/save",
+                body: location
             })
         }
     }
@@ -124,6 +142,24 @@ class PingPageStore {
     protected onReceivePong(frame: StompMessage) {
         runInAction(() => {
             this.pongArray.push(frame.body)
+            const locAndName = frame.body.split("~");
+            console.log(frame)
+            if (locAndName[0] === "show") {
+                if (document.getElementById("event-form-" + locAndName[1])) {
+                    document.getElementById("event-form-" + locAndName[1]).innerText = locAndName[2] + " is currently editing"
+                } else {
+                    document.getElementById("editing-form-" + locAndName[1]).innerText = locAndName[2] + " is currently editing"
+                }
+            } else {
+                if (locAndName[0] === "save") {
+                    window.location.reload();
+                }
+                if (document.getElementById("event-form-" + locAndName[1])) {
+                    document.getElementById("event-form-" + locAndName[1]).innerText = "";
+                } else {
+                    document.getElementById("editing-form-" + locAndName[1]).innerText = "";
+                }
+            }
         })
     }
 
@@ -135,39 +171,26 @@ class PingPageStore {
     }
 }
 
-const PingPage: React.FC = observer(() => {
-    const store = useLocalObservable(() => new PingPageStore())
+export class Socket {
+    private static store: PingPageStore = new PingPageStore();
 
-    useEffect(() => {
-        store.start().then(() => {
+    static start() {
+        this.store.start().then(() => {
             console.log("Start completed.")
         })
-    }, [store])
+    }
 
-    return (
-        <div>
-            <div>{store.connectStatus.constructor.name}</div>
+    static showEdit(location: string) {
+        this.store.showEdit(location);
+    }
 
-            {(store.connectStatus instanceof LoadingError) && (
-                <div>Error details: {JSON.stringify(store.connectStatus.error)}</div>
-            )}
+    static cancelEdit(location: string) {
+        this.store.cancelEdit(location);
+    }
 
-            <input type='text' value={store.nextPingValue} onChange={(evt) => store.setNextPingValue(evt.target.value)} placeholder='Next Ping value'/>
-            <button onClick={() => store.sendPing()}>Send Ping</button>
-
-            <ol>
-                {store.pongArray.map((value, index) => (
-                    <li key={index}>{value}</li>
-                ))}
-            </ol>
-        </div>
-    )
-})
+    static saveEdit(location: string) {
+        this.store.saveEdit(location);
+    }
+}
 
 polyfills.polyfill()
-ReactDOM.render(
-    <React.StrictMode>
-        <PingPage/>
-    </React.StrictMode>,
-    document.getElementById("react-root")
-)

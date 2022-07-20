@@ -154,7 +154,7 @@ class Application {
 
     this.addProjectForm = {
       container: formContainerElement,
-      controller: new Editor(formContainerElement, "New project details:", defaultProject, this.closeAddProjectForm.bind(this), this.submitAddProjectForm.bind(this))
+      controller: new Editor(formContainerElement, "New project details:", defaultProject, this.closeAddProjectForm.bind(this), this.submitAddProjectForm.bind(this), defaultProject)
     };
   }
 
@@ -216,7 +216,7 @@ class Application {
     }
 
     console.log("Binding project");
-    this.projects.set(projectData.id, new Project(projectElement, projectData, this.deleteProject.bind(this)));
+    this.projects.set(projectData.id, new Project(projectElement, projectData, this.deleteProject.bind(this), this.sendPing.bind(this)));
 
     console.log("Project bound");
 
@@ -292,10 +292,15 @@ class Application {
     this.projects.delete(projectId);
   }
 
+  sendPing() {
+    // Socket.sendPing();
+  }
+
 }
 
 (() => {
   // Start
   const application = new Application(document.getElementById("project-list"));
+  Socket.start();
   application.fetchProjects();
 })()
