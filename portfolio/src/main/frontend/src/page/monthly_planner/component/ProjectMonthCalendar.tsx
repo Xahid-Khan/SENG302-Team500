@@ -7,12 +7,11 @@ import {Toast} from "../../../component/toast/Toast";
 import {ToastBase} from "../../../component/toast/ToastBase";
 import defaultToastTheme from "../../../component/toast/DefaultToast.module.css";
 import {LoadingErrorPresenter} from "../../../component/error/LoadingErrorPresenter";
-import {DatetimeUtils} from "../../../util/DatetimeUtils";
 import {getContrast} from "../../../util/TextColorUtil";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import ReactTooltip from "react-tooltip";
-import {SprintStore} from "../store/SprintStore";
+import {Socket} from "../../../entry/live_updating";
 
 /**
  * Component that displays a month calendar for the current project and its sprints.
@@ -22,6 +21,7 @@ import {SprintStore} from "../store/SprintStore";
 export const ProjectMonthCalendar: React.FC = observer(() => {
     const project = useProjectStore()
     const toaster = useToasterStore()
+    Socket.start()
 
     /**
      * Callback that is triggered when a calendar event is updated by the user. Saves the change to the store, managing
@@ -165,11 +165,19 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
             stringResult.push("<p style='margin:0px; padding:0px; height: fit-content; width: fit-content'>Deadlines:-</p>")
         }
 
-        dictionary.get(date).map((subEvent: any) => {
-            stringResult.push("<p style='margin:0px; padding:0px; height: fit-content; width: fit-content'>" +
-                subEvent.name + "<br />" +
-                "<h5 style='margin:0px; padding:0px'>" + subEvent.startDate.toLocaleString() + "&emsp;&emsp;" + subEvent.endDate.toLocaleString() + "</h5></p>");
-        })
+        if (eventType == "events") {
+            dictionary.get(date).map((subEvent: any) => {
+                stringResult.push("<p style='margin:0px; padding:0px; height: fit-content; width: fit-content'>" +
+                    subEvent.name + "<br />" +
+                    "<h5 style='margin:0px; padding:0px'>" + subEvent.startDate.toLocaleString() + "&emsp;&emsp;" + subEvent.endDate.toLocaleString() + "</h5></p>");
+            })
+        } else {
+            dictionary.get(date).map((subEvent: any) => {
+                stringResult.push("<p style='margin:0px; padding:0px; height: fit-content; width: fit-content'>" +
+                    subEvent.name + "<br />" +
+                    "<h5 style='margin:0px; padding:0px'>" + subEvent.startDate.toLocaleString() + "</h5></p>");
+            })
+        }
 
         return (
             stringResult.join("<br />")
