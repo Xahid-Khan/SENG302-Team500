@@ -165,19 +165,11 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
             stringResult.push("<p style='margin:0px; padding:0px; height: fit-content; width: fit-content'>Deadlines:-</p>")
         }
 
-        if (eventType == "events") {
-            dictionary.get(date).map((subEvent: any) => {
-                stringResult.push("<p style='margin:0px; padding:0px; height: fit-content; width: fit-content'>" +
-                    subEvent.name + "<br />" +
-                    "<h5 style='margin:0px; padding:0px'>" + subEvent.startDate.toLocaleString() + "&emsp;&emsp;" + subEvent.endDate.toLocaleString() + "</h5></p>");
-            })
-        } else {
-            dictionary.get(date).map((subEvent: any) => {
-                stringResult.push("<p style='margin:0px; padding:0px; height: fit-content; width: fit-content'>" +
-                    subEvent.name + "<br />" +
-                    "<h5 style='margin:0px; padding:0px'>" + subEvent.startDate.toLocaleString() + "</h5></p>");
-            })
-        }
+        dictionary.get(date).map((subEvent: any) => {
+            stringResult.push("<p style='margin:0px; padding:0px; height: fit-content; width: fit-content'>" +
+                subEvent.name + "<br />" +
+                "<h5 style='margin:0px; padding:0px'>" + subEvent.startDate.toLocaleString() + "&emsp;&emsp;" + eventType == "events" ? subEvent.endDate.toLocaleString() : "" + "</h5></p>");
+        })
 
         return (
             stringResult.join("<br />")
