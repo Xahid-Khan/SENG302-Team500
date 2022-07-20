@@ -40,10 +40,6 @@ public class MilestoneEntity {
     @Column(name = "start_date")
     private Instant startDate;
 
-    @NotNull
-    @Column(name = "end_date")
-    private Instant endDate;
-
     public String getId() {
         return id;
     }
@@ -58,14 +54,6 @@ public class MilestoneEntity {
 
     public void setProject(ProjectEntity project) {
         this.project = project;
-    }
-
-    public @NotNull Instant getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(@NotNull Instant endDate) {
-        this.endDate = endDate;
     }
 
     public @NotNull Instant getStartDate() {
@@ -94,11 +82,10 @@ public class MilestoneEntity {
 
     protected MilestoneEntity() {}
 
-    public MilestoneEntity(String name, String description, @NotNull Instant startDate, @NotNull Instant endDate) {
+    public MilestoneEntity(String name, String description, @NotNull Instant startDate) {
         this.name = name;
         this.description = description;
         this.startDate = startDate;
-        this.endDate = endDate;
     }
 
     /**

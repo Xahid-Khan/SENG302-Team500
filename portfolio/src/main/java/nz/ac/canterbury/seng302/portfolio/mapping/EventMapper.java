@@ -29,14 +29,15 @@ public class EventMapper {
      * @param entity a event entity that is retried from database
      * @return      returns a event and related events in JSON data type.
      */
-    public EventContract toContract(EventEntity entity) {
+    public EventContract toContract(EventEntity entity, long orderNumber) {
             return new EventContract(
                     entity.getProject().getId(),
                     entity.getId(),
                     entity.getName(),
                     entity.getDescription(),
                     entity.getStartDate(),
-                    entity.getEndDate()
+                    entity.getEndDate(),
+                    orderNumber
             );
         }
 }

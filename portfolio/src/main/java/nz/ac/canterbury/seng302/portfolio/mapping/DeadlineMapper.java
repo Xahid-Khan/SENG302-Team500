@@ -19,8 +19,7 @@ public class DeadlineMapper {
         return new DeadlineEntity(
                 contract.name(),
                 contract.description(),
-                contract.startDate(),
-                contract.endDate()
+                contract.startDate()
         );
     }
     /**
@@ -29,14 +28,14 @@ public class DeadlineMapper {
      * @param entity a deadline entity that is retried from database
      * @return      returns a deadline and related deadlines in JSON data type.
      */
-    public DeadlineContract toContract(DeadlineEntity entity) {
+    public DeadlineContract toContract(DeadlineEntity entity, long orderNumber) {
         return new DeadlineContract(
                 entity.getProject().getId(),
                 entity.getId(),
                 entity.getName(),
                 entity.getDescription(),
                 entity.getStartDate(),
-                entity.getEndDate()
+                orderNumber
         );
     }
 }

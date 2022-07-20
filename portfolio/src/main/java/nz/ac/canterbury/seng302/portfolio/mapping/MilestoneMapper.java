@@ -22,8 +22,7 @@ public class MilestoneMapper {
         return new MilestoneEntity(
                 contract.name(),
                 contract.description(),
-                contract.startDate(),
-                contract.endDate()
+                contract.startDate()
         );
     }
     /**
@@ -39,7 +38,6 @@ public class MilestoneMapper {
                 entity.getName(),
                 entity.getDescription(),
                 entity.getStartDate(),
-                entity.getEndDate(),
                 orderNumber
         );
     }

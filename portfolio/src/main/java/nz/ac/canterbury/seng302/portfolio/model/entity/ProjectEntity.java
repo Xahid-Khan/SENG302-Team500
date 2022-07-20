@@ -144,31 +144,61 @@ public class ProjectEntity {
         sprint.setProject(this);
     }
 
+    /**
+     * Removes sprint from sprints list
+     * @param sprint sprint to be deleted
+     */
     public void removeSprint(SprintEntity sprint) {
         sprints.remove(sprint);
         sprint.setProject(null);
     }
 
-   public void newEvent(EventEntity event) {
-        events.add(event);
-        event.setProject(this);
+    /**
+     * Inserts the given event to the events list, retaining sorted order.
+     *
+     * <p>Adapted from: https://stackoverflow.com/a/51893026</p>
+     *
+     * @param event to insert
+     */
+   public void addEvent(EventEntity event) {
+       var index = Collections.binarySearch(events, event, Comparator.comparing(EventEntity::getStartDate));
+       if (index < 0) {
+           index = -index - 1;
+       }
+
+       events.add(index, event);
+       event.setProject(this);
     }
 
+    /**
+     * Removes sprint from sprints list
+     * @param event to be deleted
+     */
     public void removeEvent(EventEntity event) {
         events.remove(event);
         event.setProject(null);
     }
 
-    public void newDeadline(DeadlineEntity deadline) {
-        deadlines.add(deadline);
-        deadline.setProject(this);
-    }
-
+    /**
+     * Inserts the given deadline to the deadlines list, retaining sorted order.
+     *
+     * <p>Adapted from: https://stackoverflow.com/a/51893026</p>
+     *
+     * @param deadline to insert
+     */
     public void addDeadline(DeadlineEntity deadline) {
-        deadlines.add(deadline);
+        var index = Collections.binarySearch(deadlines, deadline, Comparator.comparing(DeadlineEntity::getStartDate));
+        if (index < 0) {
+            index = -index - 1;
+        }
+        deadlines.add(index, deadline);
         deadline.setProject(this);
     }
 
+    /**
+     * Removes deadline from deadlines list
+     * @param deadline to delete
+     */
     public void removeDeadline(DeadlineEntity deadline) {
         deadlines.remove(deadline);
         deadline.setProject(null);

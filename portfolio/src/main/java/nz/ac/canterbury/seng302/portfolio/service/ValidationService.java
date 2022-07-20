@@ -54,9 +54,9 @@ public class ValidationService {
       return type + " name must not be more than 32 characters";
     }
 
-    if (description != null && description.length() > 1024) {
-      return type + " description must not be more than 1024 characters";
-    }
+        if (description != null && description.length() > 1024) {
+            return type + " description must not be more than 1024 characters";
+        }
 
     if (end.isBefore(start)) {
       return type + " start date must be earlier than the end date";
@@ -171,18 +171,18 @@ public class ValidationService {
    */
   public String checkUpdateEvent(String eventId, BaseEventContract eventContract) {
 
-    try {
-      EventContract event = eventService.get(eventId);
-      try {
-        ProjectContract project = projectService.getById(event.projectId());
-        String response = checkEventDetails(project, eventContract.startDate(), eventContract.endDate());
-        if (!response.equals("Okay")) {
-          return response;
-        }
-        response = checkBaseFields("Event", eventContract.name(), eventContract.description(), eventContract.startDate(), eventContract.endDate());
-        if (!response.equals("Okay")) {
-          return response;
-        }
+        try {
+            EventContract event = eventService.get(eventId);
+            try {
+                ProjectContract project = projectService.getById(event.projectId());
+                String response = checkEventDetails(project, eventContract.startDate(), eventContract.endDate());
+                if (!response.equals("Okay")) {
+                    return response;
+                }
+                response = checkBaseFields("Event", eventContract.name(), eventContract.description(), eventContract.startDate(), eventContract.endDate());
+                if (!response.equals("Okay")) {
+                    return response;
+                }
 
       } catch (NoSuchElementException error) {
         return "Project ID does not exist";
@@ -198,90 +198,106 @@ public class ValidationService {
     return "Okay";
   }
 
+    /**
+     * Checks sprint date details and returns respective messages.
+     */
+    public String checkSprintDetails(ProjectContract project, String sprintId, Instant start, Instant end, String colour) {
+        if (colour == null) {
+            return "Sprint requires a colour";
+        }
+        else if (!colour.toUpperCase().matches("^#((\\d|[A-F]){6})$")) {
+            return "Sprint colour must be in the format #RRGGBB";
+        }
+        if (start.isBefore(project.startDate())) {
+            return "Sprint cannot start before project start date";
+        }
+        if (end.isAfter(project.endDate())) {
+            return "Sprint cannot end after project end date";
+        }
+        for (SprintContract sprint: project.sprints()) {
+            if (start.isBefore(sprint.endDate()) && end.isAfter(sprint.startDate()) && !sprintId.equals(sprint.sprintId())) {
+                return "Sprint cannot begin while another sprint is still in progress";
+            }
+        }
+        return "Okay";
 
-  /**
-   * Checks sprint date details and returns respective messages.
-   */
-  public String checkSprintDetails(ProjectContract project, String sprintId, Instant start, Instant end, String colour) {
-    if (colour == null) {
-      return "Sprint requires a colour";
     }
-    else if (!colour.toUpperCase().matches("^#((\\d|[A-F]){6})$")) {
-      return "Sprint colour must be in the format #RRGGBB";
-    }
-    if (start.isBefore(project.startDate())) {
-      return "Sprint cannot start before project start date";
-    }
-    if (end.isAfter(project.endDate())) {
-      return "Sprint cannot end after project end date";
-    }
-    for (SprintContract sprint: project.sprints()) {
-      if (start.isBefore(sprint.endDate()) && end.isAfter(sprint.startDate()) && !sprintId.equals(sprint.sprintId())) {
-        return "Sprint cannot begin while another sprint is still in progress";
-      }
-    }
-    return "Okay";
-
-  }
 
   /**
    * Checks event date details and returns respective messages.
    */
   public String checkEventDetails(ProjectContract project, Instant start, Instant end) {
 
-    if (start.isBefore(project.startDate())) {
-      return "Sprint cannot start before project start date";
-    }
-    if (end.isAfter(project.endDate())) {
-      return "Sprint cannot end after project end date";
-    }
+        if (start.isBefore(project.startDate())) {
+            return "Sprint cannot start before project start date";
+        }
+        if (end.isAfter(project.endDate())) {
+            return "Sprint cannot end after project end date";
+        }
 
-    return "Okay";
+        return "Okay";
 
-  }
-
-  /**
-   * Checks deadline or milestone date details and returns respective messages.
-   */
-  public String checkDeadlineMilestoneDetails(ProjectContract project, Instant start) {
-
-    if (start.isBefore(project.startDate())) {
-      return "Cannot start before the project has started";
     }
 
-    if (start.isAfter(project.endDate())) {
-      return "Cannot start after the project has ended";
+    /**
+     * Checks deadline or milestone date details and returns respective messages.
+     */
+    public String checkDeadlineMilestoneDetails(ProjectContract project, Instant start) {
+
+        if (start.isBefore(project.startDate())) {
+            return "Cannot start before the project has started";
+        }
+
+        if (start.isAfter(project.endDate())) {
+            return "Cannot start after the project has ended";
+        }
+
+        return "Okay";
     }
 
-    return "Okay";
-  }
+    /**
+     * Checks base fields for milestones and deadlines
+     * @param type milestone or deadline
+     * @param name of respective event
+     * @param description of respective event
+     * @return error message or Okay if everything is valid
+     */
+    public String checkDeadlineMilestoneBaseFields(String type, String name, String description) {
+        if (name.equals("")) {
+            return type + " name must not be empty";
+        }
+        if (name.trim().equals("")) {
+            return type + " name must not contain only whitespaces";
+        }
 
-  /**
-   * Checks base fields for milestones and deadlines
-   * @param type milestone or deadline
-   * @param name of respective event
-   * @param description of respective event
-   * @return error message or Okay if everything is valid
-   */
-  public String checkDeadlineMilestoneBaseFields(String type, String name, String description) {
-    if (name.equals("")) {
-      return type + " name must not be empty";
+        if (name.length() > 32) {
+            return type + " name must not be more than 32 characters";
+        }
+
+        if (description != null && description.length() > 1024) {
+            return type + " description must not be more than 1024 characters";
+        }
+
+        return "Okay";
     }
-    if (name.trim().equals("")) {
-      return type + " name must not contain only whitespaces";
+
+    /**
+     * Checks milestone inputs when a milestone is added.
+     */
+    public String checkAddMilestone(String projectId, BaseMilestoneContract milestoneContract) {
+        try {
+            ProjectContract project = projectService.getById(projectId);
+            String response = checkDeadlineMilestoneDetails(project, milestoneContract.startDate());
+            if (!response.equals("Okay")) {
+                return response;
+            }
+        } catch (NoSuchElementException error) {
+            return "Project ID does not exist";
+        }
+        return checkDeadlineMilestoneBaseFields("Milestone",
+                milestoneContract.name(),
+                milestoneContract.description());
     }
-
-    if (name.length() > 32) {
-      return type + " name must not be more than 32 characters";
-    }
-
-    if (description != null && description.length() > 1024) {
-      return type + " description must not be more than 1024 characters";
-    }
-
-    return "Okay";
-  }
-
   /**
    * Checks milestone inputs when a milestone is added.
    */
@@ -332,23 +348,23 @@ public class ValidationService {
     return "Okay";
   }
 
-  /**
-   * Checks deadline inputs when a milestone is added.
-   */
-  public String checkAddDeadline(String projectId, BaseDeadlineContract deadlineContract) {
-    try {
-      ProjectContract project = projectService.getById(projectId);
-      String response = checkDeadlineMilestoneDetails(project, deadlineContract.startDate());
-      if (!response.equals("Okay")) {
-        return response;
-      }
-    } catch (NoSuchElementException error) {
-      return "Project ID does not exist";
+    /**
+     * Checks deadline inputs when a milestone is added.
+     */
+    public String checkAddDeadline(String projectId, BaseDeadlineContract deadlineContract) {
+        try {
+            ProjectContract project = projectService.getById(projectId);
+            String response = checkDeadlineMilestoneDetails(project, deadlineContract.startDate());
+            if (!response.equals("Okay")) {
+                return response;
+            }
+        } catch (NoSuchElementException error) {
+            return "Project ID does not exist";
+        }
+        return checkDeadlineMilestoneBaseFields("Deadline",
+                deadlineContract.name(),
+                deadlineContract.description());
     }
-    return checkDeadlineMilestoneBaseFields("Deadline",
-            deadlineContract.name(),
-            deadlineContract.description());
-  }
 
 
   /**
@@ -356,18 +372,18 @@ public class ValidationService {
    */
   public String checkUpdateDeadline(String deadlineId, BaseDeadlineContract deadlineContract) {
 
-    try {
-      DeadlineContract deadline = deadlineService.get(deadlineId);
-      try {
-        ProjectContract project = projectService.getById(deadline.projectId());
-        String response = checkDeadlineMilestoneDetails(project, deadline.startDate());
-        if (!response.equals("Okay")) {
-          return response;
-        }
-        response = checkDeadlineMilestoneBaseFields("Deadline", deadlineContract.name(), deadlineContract.description());
-        if (!response.equals("Okay")) {
-          return response;
-        }
+        try {
+            DeadlineContract deadline = deadlineService.get(deadlineId);
+            try {
+                ProjectContract project = projectService.getById(deadline.projectId());
+                String response = checkDeadlineMilestoneDetails(project, deadline.startDate());
+                if (!response.equals("Okay")) {
+                    return response;
+                }
+                response = checkDeadlineMilestoneBaseFields("Deadline", deadlineContract.name(), deadlineContract.description());
+                if (!response.equals("Okay")) {
+                    return response;
+                }
 
       } catch (NoSuchElementException error) {
         return "Project ID does not exist";
@@ -380,8 +396,8 @@ public class ValidationService {
     }
 
 
-    return "Okay";
-  }
+        return "Okay";
+    }
 
 }
 

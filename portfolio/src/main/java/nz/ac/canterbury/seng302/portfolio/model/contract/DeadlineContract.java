@@ -11,7 +11,6 @@ import java.time.Instant;
  * @param name The name of the deadline.
  * @param description The description of the deadline.
  * @param startDate The start date of the deadline.
- * @param endDate The end date of the deadline.
  */
 public record  DeadlineContract (
         String projectId,
@@ -19,5 +18,5 @@ public record  DeadlineContract (
         String name,
         String description,
         Instant startDate,
-        Instant endDate
+        Long orderNumber
 ) {}
