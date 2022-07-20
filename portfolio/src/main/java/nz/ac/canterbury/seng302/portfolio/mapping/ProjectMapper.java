@@ -82,7 +82,8 @@ public class ProjectMapper {
 
         for (int i=0; i < milestoneEntities.size(); i++) {
             milestoneContracts.add(milestoneMapper.toContract(
-                    milestoneEntities.get(i)
+                    milestoneEntities.get(i),
+                    i+1
             ));
         }
 

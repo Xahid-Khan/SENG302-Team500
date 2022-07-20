@@ -88,4 +88,20 @@ public class MilestoneEntity {
         this.startDate = startDate;
     }
 
+    /**
+     * Calculates the orderNumber of this milestone entity by searching through its project.
+     *
+     * @return the orderNumber of this milestone in the project
+     */
+    public int getOrderNumber() {
+        var milestones = project.getMilestones();
+        for (int i=0; i < milestones.size(); i++) {
+            if (milestones.get(i).getId().equals(this.id)) {
+                return i + 1;
+            }
+        }
+
+        throw new IllegalStateException("this.project does not contain this event, so getOrderNumber is impossible.");
+    }
+
 }

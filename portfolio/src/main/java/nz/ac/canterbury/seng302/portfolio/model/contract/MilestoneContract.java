@@ -17,5 +17,6 @@ public record  MilestoneContract (
         String milestoneId,
         String name,
         String description,
-        Instant startDate
+        Instant startDate,
+        Long orderNumber
 ) {}

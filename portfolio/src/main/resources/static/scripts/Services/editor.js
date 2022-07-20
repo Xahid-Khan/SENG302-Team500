@@ -326,16 +326,17 @@ class Editor {
         if (this.getEndDateInputValue()) {
             endDate = DatetimeUtils.setTimeToZero(this.getEndDateInputValue());
         }
-
         this.project.milestones.forEach((milestone) => {
             const milestoneNoTime = new Date(milestone.startDate.getFullYear(), milestone.startDate.getMonth(), milestone.startDate.getDate()).getTime();
-            if (milestoneNoTime === startDate) {
-                startFound = true;
-                startReturnString += `Milestone: ${milestone.name} \n`
-            }
-            if (endDate && milestoneNoTime === endDate) {
-                endFound = true;
-                endReturnString += `Milestone: ${milestone.name} \n`
+            if (milestone.milestoneId !== this.initialData.milestoneId) {
+                if (milestoneNoTime === startDate) {
+                    startFound = true;
+                    startReturnString += `Milestone: ${milestone.name} \n`
+                }
+                if (endDate && milestoneNoTime === endDate) {
+                    endFound = true;
+                    endReturnString += `Milestone: ${milestone.name} \n`
+                }
             }
         })
         this.project.deadlines.forEach((deadline) => {
