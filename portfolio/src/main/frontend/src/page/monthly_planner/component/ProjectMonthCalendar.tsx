@@ -13,6 +13,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import ReactTooltip from "react-tooltip";
 import {SprintStore} from "../store/SprintStore";
+import {Socket} from "../../../entry/live_updating";
 
 /**
  * Component that displays a month calendar for the current project and its sprints.
@@ -22,6 +23,8 @@ import {SprintStore} from "../store/SprintStore";
 export const ProjectMonthCalendar: React.FC = observer(() => {
     const project = useProjectStore()
     const toaster = useToasterStore()
+
+    Socket.start()
 
     /**
      * Callback that is triggered when a calendar event is updated by the user. Saves the change to the store, managing
