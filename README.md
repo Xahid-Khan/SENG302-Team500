@@ -2,9 +2,6 @@
 
 Basic project template using `gradle`, `Spring Boot`, `Thymeleaf` and `Gitlab CI`.
 
-> This should be your project's README (renamed to `README.md`) that your team will continually update as your team progresses throughout the year.
->
-> Update this document as necessary.
 
 ## Basic Project Structure
 
@@ -89,21 +86,6 @@ username: TheAdministrator
 
 password: password
 
-
-
-## Todo (Sprint 1)
-
-- Add team name into `build.gradle`
-- Update this README title
-- Update this README contributors
-
-## Todo (Sprint 2)
-
-- Update team name into `build.gradle`
-- Update this README title
-- Update this README contributors
-- Set up Gitlab CI server (refer to the student guide on learn)
-- Decide on a LICENSE
 
 ## Contributors
 
