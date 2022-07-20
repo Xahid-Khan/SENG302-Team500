@@ -19,15 +19,6 @@ export class DatetimeUtils {
     }
 
     /**
-     * Convert a JavaScript Date (in local timezone) to a network datetime string (in local timezone)
-     */
-    static localToNetworkStringWithTimezone(localDate: Date) {
-        let offsetDate = new Date(localDate)
-        offsetDate.setHours(offsetDate.getHours() - (offsetDate.getTimezoneOffset() / 60)) // Offsets date to nullify offset caused by toISOString(), leaving date in local time
-        return offsetDate.toISOString();
-    }
-
-    /**
      * Round a JavaScript Date (possibly including a time component) to the start of the day *in the local timezone*
      * and format it to a string of the format 'yyyy-mm-dd'
      */
@@ -103,25 +94,9 @@ export class DatetimeUtils {
     }
 
     /**
-     * Format a JavaScript Date to a date string suitable for presentation to the user without time.
-     */
-    static localToUserDMYWithoutTime(localDate: Date) {
-        return `${localDate.getDate()} ${localDate.toLocaleString('default', {month: 'long'})} ${localDate.getFullYear()}`;
-    }
-
-    /**
      * Checks whether the given dates are equal.
      */
     static areEqual(date1: Date, date2: Date) {
         return date1 <= date2 && date2 <= date1;
-    }
-
-
-    /**
-     * Sets time to zero to check for all related events as it is only relevant for things that occur on the same day rather than the same time
-     * Setting time to zero ensures that dates will be equal and not offset by time
-    */
-    static setTimeToZero(fullDate: Date) {
-        return new Date(fullDate.getFullYear(), fullDate.getMonth(), fullDate.getDate()).getTime()
     }
 }

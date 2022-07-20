@@ -1,6 +1,5 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.portfolio.model.contract.BaseMilestoneContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.MilestoneContract;
 import nz.ac.canterbury.seng302.portfolio.service.MilestoneService;
@@ -78,7 +77,7 @@ public class MilestoneController {
      */
     @PostMapping(value = "/projects/{projectId}/milestones", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> createMilestone(
-            @AuthenticationPrincipal PortfolioPrincipal principal,
+            @AuthenticationPrincipal AuthState principal,
             @PathVariable String projectId,
             @RequestBody BaseMilestoneContract milestone
     ) {
@@ -113,7 +112,7 @@ public class MilestoneController {
      */
     @PutMapping(value = "/milestones/{id}")
     public ResponseEntity<?> updateMilestone(
-            @AuthenticationPrincipal PortfolioPrincipal principal,
+            @AuthenticationPrincipal AuthState principal,
             @PathVariable String id,
             @RequestBody BaseMilestoneContract milestone
     ) {
@@ -147,7 +146,7 @@ public class MilestoneController {
      */
     @DeleteMapping(value = "/milestones/{id}")
     public ResponseEntity<Void> deleteMilestone(
-            @AuthenticationPrincipal PortfolioPrincipal principal,
+            @AuthenticationPrincipal AuthState principal,
             @PathVariable String id
     ) {
         ArrayList<String> roles = rolesService.getRolesByToken(principal);

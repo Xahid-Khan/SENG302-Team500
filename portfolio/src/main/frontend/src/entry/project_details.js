@@ -3,7 +3,5 @@
  * the TypeScript codebase.
  */
 import {DatetimeUtils} from "../util/DatetimeUtils";
-import {Socket} from "./live_updating";
 
 window.DatetimeUtils = DatetimeUtils;
-window.Socket = Socket;

@@ -1,6 +1,5 @@
 package nz.ac.canterbury.seng302.portfolio;
 
-import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import org.mockito.Mockito;
@@ -34,8 +33,7 @@ public class AuthorisationParamsHelper {
         SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_GLOBAL);
         SecurityContextHolder.setContext(securityContext);
 
-        AuthState authState = newState.build();
-        PortfolioPrincipal principal = new PortfolioPrincipal(authState);
+        AuthState principal = newState.build();
         Mockito.when(authentication.getPrincipal()).thenReturn(principal);
 
     }

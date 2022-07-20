@@ -1,13 +1,14 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
+import java.util.stream.Collectors;
 import nz.ac.canterbury.seng302.portfolio.model.GetPaginatedUsersOrderingElement;
 import nz.ac.canterbury.seng302.portfolio.model.entity.SortingParameterEntity;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
+import nz.ac.canterbury.seng302.portfolio.service.RolesService;
 import nz.ac.canterbury.seng302.portfolio.service.SortingParametersService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
@@ -36,7 +37,7 @@ public class UserListController {
 
     @GetMapping("/user-list")
     public String listUsers(
-            @AuthenticationPrincipal PortfolioPrincipal principal,
+            @AuthenticationPrincipal AuthState principal,
             @RequestParam("page") Optional<Integer> pageMaybe,
             @RequestParam("sortBy") Optional<String> sortAttributeMaybe,
             @RequestParam("asc") Optional<Boolean> ascendingMaybe,
@@ -49,7 +50,10 @@ public class UserListController {
         UserResponse userDetails = userAccountService.getUserById(userId);
         List<UserRole> roles = userDetails.getRolesList();
 
-        model.addAttribute("isAdmin", hasAdmin(roles));
+        if ((roles.contains(UserRole.COURSE_ADMINISTRATOR) || roles.contains(UserRole.TEACHER))) {
+            model.addAttribute("isAdmin", true);
+        }
+
 
         String sortAttributeString;
         boolean ascending = ascendingMaybe.orElse(true);
@@ -106,49 +110,50 @@ public class UserListController {
         return "user_list";
     }
 
-    private void modifyRole(PortfolioPrincipal principal, Model model, Integer id, Integer roleNumber, boolean adding) {
+    @PostMapping("/user-list")
+    public String updateRoles(@AuthenticationPrincipal AuthState principal,
+                              Model model,
+                              @RequestParam(name="action") String action,
+                              @RequestParam(name="id") Integer id,
+                              @RequestParam(name="roleNumber") Integer roleNumber) {
         Integer userId = authStateService.getId(principal);
         UserResponse userDetails = userAccountService.getUserById(userId);
         List<UserRole> roles = userDetails.getRolesList();
+
         model.addAttribute("roleMessageTarget", id);
 
-        if (hasAdmin(roles)) {
-            if (!userId.equals(id)) {
-                UserRoleChangeResponse response = adding ?
-                        userAccountService.addRole(id, UserRole.forNumber(roleNumber)) :
-                        userAccountService.removeRole(id, UserRole.forNumber(roleNumber));
-                if (!response.getIsSuccess()) {
-                    model.addAttribute("roleMessage", response.getMessage());
-                }
-            } else {
-                model.addAttribute("roleMessage", "Cannot modify roles for yourself");
+        if (roles.contains(UserRole.TEACHER) || roles.contains(UserRole.COURSE_ADMINISTRATOR)) {
+
+            if (userId.equals(id)) {
+                model.addAttribute("roleMessage", "Cannot add roles for yourself");
             }
-        } else {
-            model.addAttribute("roleMessage", "Error: insufficient permission");
+
+            if (action.equals("remove")) {
+                if (userId.equals(id)) {
+                    model.addAttribute("roleMessage", "Cannot remove roles for yourself");
+                }
+                try {
+                    UserRoleChangeResponse response = userAccountService.removeRole(id, UserRole.forNumber(roleNumber));
+                    if (!response.getIsSuccess()) {
+                        model.addAttribute("roleMessage", "Error adding role");
+                    }
+                } catch (Exception e) { // TODO: Fix this Exception to be IrremovableRoleException
+                    model.addAttribute("roleMessage", "User must have at least one role");
+                }
+            } else if (action.equals("add")) {
+                UserRoleChangeResponse response = userAccountService.addRole(id, UserRole.forNumber(roleNumber));
+                if (!response.getIsSuccess()) {
+                    model.addAttribute("roleMessage", "Error adding role");
+                }
+            }
         }
-    }
-
-    @PostMapping("/user-list")
-    public String addRole(@AuthenticationPrincipal PortfolioPrincipal principal,
-                          Model model,
-                          @RequestParam(name="id") Integer id,
-                          @RequestParam(name="roleNumber") Integer roleNumber) {
-
-        modifyRole(principal, model, id, roleNumber, true);
 
         return listUsers(principal, Optional.empty(), Optional.empty(), Optional.empty(), model);
+
+
     }
 
-    @DeleteMapping("/user-list")
-    public String deleteRole(@AuthenticationPrincipal PortfolioPrincipal principal,
-                             Model model,
-                             @RequestParam(name="id") Integer id,
-                             @RequestParam(name="roleNumber") Integer roleNumber) {
 
-        modifyRole(principal, model, id, roleNumber, false);
-
-        return listUsers(principal, Optional.empty(), Optional.empty(), Optional.empty(), model);
-    }
 
     public String formatUrl(int page, String sortBy, boolean sortDir) {
         return String.format("?page=%d&sortBy=%s&asc=%b", page, sortBy, sortDir);
@@ -171,9 +176,5 @@ public class UserListController {
             }
         }
         return list;
-    }
-
-    private boolean hasAdmin(List<UserRole> roles){
-        return (roles.contains(UserRole.COURSE_ADMINISTRATOR) || roles.contains(UserRole.TEACHER));
     }
 }

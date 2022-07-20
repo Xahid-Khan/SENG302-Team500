@@ -10,12 +10,12 @@ import nz.ac.canterbury.seng302.portfolio.repository.SprintRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.util.NoSuchElementException;
 
 @Service
 public class MilestoneService {
+    @Autowired
+    private SprintRepository sprintRepository;
 
     @Autowired
     private ProjectRepository projectRepository;
@@ -26,9 +26,6 @@ public class MilestoneService {
     @Autowired
     private MilestoneMapper milestoneMapper;
 
-    @PersistenceContext
-    private EntityManager entityManager;
-
 
     /**
      * Get the milestone with the milestone ID
@@ -38,8 +35,8 @@ public class MilestoneService {
      * @return The milestone contract with the milestone ID
      */
     public MilestoneContract get(String milestoneId) {
-        var milestone= milestoneRepository.findById(milestoneId).orElseThrow();
-        return milestoneMapper.toContract(milestone, milestone.getOrderNumber());
+        var milestone= milestoneRepository.findById(milestoneId).orElseThrow(() -> new IllegalArgumentException("Invalid milestone ID"));
+        return milestoneMapper.toContract(milestone);
     }
 
     /**
@@ -50,13 +47,13 @@ public class MilestoneService {
      */
     public MilestoneContract createMilestone(String projectId, BaseMilestoneContract milestoneContract) {
 
-        var project = projectRepository.findById(projectId).orElseThrow();
+        var project = projectRepository.findById(projectId).orElseThrow(() -> new IllegalArgumentException("Invalid project ID"));
         var milestone = milestoneMapper.toEntity(milestoneContract);
-        project.addMilestone(milestone);
-        milestoneRepository.save(milestone);
+        project.newMilestone(milestone);
         projectRepository.save(project);
+        milestoneRepository.save(milestone);
 
-        return milestoneMapper.toContract(milestone, milestone.getOrderNumber());
+        return milestoneMapper.toContract(milestone);
     }
 
 
@@ -87,9 +84,9 @@ public class MilestoneService {
         milestoneEntity.setName(milestone.name());
         milestoneEntity.setDescription(milestone.description());
         milestoneEntity.setStartDate(milestone.startDate());
+        milestoneEntity.setEndDate(milestone.endDate());
 
         milestoneRepository.save(milestoneEntity);
-        entityManager.clear();
     }
 
 

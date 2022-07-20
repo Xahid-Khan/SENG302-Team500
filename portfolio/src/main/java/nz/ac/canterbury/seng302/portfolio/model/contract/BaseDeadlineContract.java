@@ -7,5 +7,6 @@ import java.time.Instant;
 public record BaseDeadlineContract( 
         String name,
         String description,
-        Instant startDate
+        Instant startDate,
+        Instant endDate
 ) {}

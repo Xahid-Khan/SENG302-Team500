@@ -56,12 +56,12 @@
             <div>
                 <form id="deletePhotoForm" action="#" th:action="@{/edit_account/imageDelete}" th:object="${user}" method="post"
                     style="float:right; margin-left: 4px">
-                    <button class="button">
+                    <button>
                         Delete Photo
                     </button>
                 </form>
-                <button class="button" onclick="location.href='edit_account'" type="button">Edit Details</button>
-                <button class="button" onclick="location.href='edit_password'" type="button">Edit Password</button>
+                <button onclick="location.href='edit_account'" type="button">Edit Details</button>
+                <button onclick="location.href='edit_password'" type="button">Edit Password</button>
             </div>
             <div class="edit-message" th:if="${editMessage != null}" th:text="${editMessage}">
 
