@@ -73,22 +73,18 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
      * @param code code represents the type of events.
      */
     const iconDataToDictionary = (iconEvents: any[], dict: Map<String, any>, code: String) => {
-        iconEvents.map((event) => {
+        iconEvents.forEach((event) => {
             let startDate = new Date(event.startDate);
-            let endDate = new Date();
+            let endDate: Date;
             code == "_ES" ? endDate = new Date(event.endDate) : endDate = new Date(event.startDate)
-
             while (startDate <= endDate) {
-                const tempDate = startDate.toLocaleDateString().split("/")
-                let calendarDate = tempDate[2] +"-"+ tempDate[1] +"-"+ tempDate[0];
-
-                if (dict.has(JSON.parse(JSON.stringify(calendarDate)))) {
-                    const currentEvents = (dict.get(JSON.parse(JSON.stringify(calendarDate))));
-                    dict.set(JSON.parse(JSON.stringify(calendarDate)), currentEvents.concat([event]))
+                if (dict.has(JSON.parse(JSON.stringify(startDate.toLocaleDateString())))) {
+                    const currentEvents = (dict.get(startDate.toLocaleDateString()));
+                    dict.set(JSON.parse(JSON.stringify(startDate.toLocaleDateString())), currentEvents.concat([event]))
                 } else {
-                    dict.set(JSON.parse(JSON.stringify(calendarDate)), [event]);
+                    dict.set(JSON.parse(JSON.stringify(startDate.toLocaleDateString())), [event]);
                 }
-                allEventDates.add(JSON.parse(JSON.stringify(calendarDate)))
+                allEventDates.add(JSON.parse(JSON.stringify(startDate.toLocaleDateString())))
                 startDate.setDate(startDate.getDate() + 1);
             }
         })
@@ -107,7 +103,7 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
                 end: sprint.endDate,
                 backgroundColor: sprint.colour,
                 textColor: getContrast(sprint.colour),
-                borderColor: sprint.id === id ? '#2C3E50' : 'white',
+                borderColor: sprint.id === id ? 'black' : 'white',
                 title: `Sprint ${sprint.orderNumber}: ${sprint.name}`,
                 // This hides the time on the event and must be true for drag and drop resizing to be enabled
                 allDay: true,
@@ -131,8 +127,8 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
         }
         allEventDates.forEach((eventDate: any) => events.push({
             id: eventDate,
-            start: eventDate,
-            end: eventDate,
+            start: new Date(eventDate),
+            end: new Date(eventDate),
             backgroundColor: "rgba(52, 52, 52, 0.0)",
             textColor: "black",
             title: "",
