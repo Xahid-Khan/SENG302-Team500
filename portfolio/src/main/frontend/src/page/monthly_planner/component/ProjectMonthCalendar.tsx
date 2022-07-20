@@ -2,17 +2,15 @@ import React, {useCallback} from "react";
 import {observer} from "mobx-react-lite";
 import {useProjectStore} from "../store/ProjectStoreProvider";
 import {useToasterStore} from "../../../component/toast/internal/ToasterStoreProvider";
-import FullCalendar, {EventChangeArg, EventSourceInput} from "@fullcalendar/react";
+import FullCalendar, {EventChangeArg} from "@fullcalendar/react";
 import {Toast} from "../../../component/toast/Toast";
 import {ToastBase} from "../../../component/toast/ToastBase";
 import defaultToastTheme from "../../../component/toast/DefaultToast.module.css";
 import {LoadingErrorPresenter} from "../../../component/error/LoadingErrorPresenter";
-import {DatetimeUtils} from "../../../util/DatetimeUtils";
 import {getContrast} from "../../../util/TextColorUtil";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import ReactTooltip from "react-tooltip";
-import {SprintStore} from "../store/SprintStore";
 import {Socket} from "../../../entry/live_updating";
 
 /**
@@ -23,7 +21,6 @@ import {Socket} from "../../../entry/live_updating";
 export const ProjectMonthCalendar: React.FC = observer(() => {
     const project = useProjectStore()
     const toaster = useToasterStore()
-
     Socket.start()
 
     /**
@@ -171,7 +168,7 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
         dictionary.get(date).map((subEvent: any) => {
             stringResult.push("<p style='margin:0px; padding:0px; height: fit-content; width: fit-content'>" +
                 subEvent.name + "<br />" +
-                "<h5 style='margin:0px; padding:0px'>" + subEvent.startDate.toLocaleString() + "&emsp;&emsp;" + subEvent.endDate.toLocaleString() + "</h5></p>");
+                "<h5 style='margin:0px; padding:0px'>" + subEvent.startDate.toLocaleString() + "&emsp;&emsp;" + eventType == "events" ? subEvent.endDate.toLocaleString() : "" + "</h5></p>");
         })
 
         return (
