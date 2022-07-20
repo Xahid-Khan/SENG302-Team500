@@ -5,8 +5,9 @@ class Editor {
     startDateEdited = false
     endDateEdited = false
 
-    constructor(containerElement, title, entityData, cancelCallback, submitCallback, customDatesValidator, project, allowTimeInput = false) {
+    constructor(containerElement, title, entityData, cancelCallback, submitCallback, customDatesValidator, project, allowTimeInput = false, allowEndDateInput = true) {
         this.allowTimeInput = allowTimeInput;
+        this.allowEndDateInput = allowEndDateInput;
         this.containerElement = containerElement;
         this.title = title;
         this.initialData = entityData;
@@ -82,7 +83,7 @@ class Editor {
         this.endDateCollisionsList = document.getElementById(`end-date-collisions-list-${this.entityId}`);
 
         this.colourInput = document.getElementById(`edit-colour-${this.entityId}`);
-        if (!(this.title === "New sprint details:") && !(this.title === "Edit sprint details:")) {
+        if (this.title !== "New sprint details:" && this.title !== "Edit sprint details:") {
             this.colourInput.outerHTML = "";
             document.getElementById(`color-label-${this.entityId}`).outerHTML = "";
         }
@@ -153,12 +154,12 @@ class Editor {
                 offsetDate = new Date(this.initialData.endDate.valueOf());
                 offsetDate.setDate(offsetDate.getDate() - 1)
             }
-            this.endDateInput.value = this.allowTimeInput ? DatetimeUtils.localToNetworkStringWithTimezone(inputLocalEndDate).slice(0, 19) : DatetimeUtils.toLocalYMD(offsetDate);
+            if (!isNaN(this.initialData.endDate.valueOf())) {
+                this.endDateInput.value = this.allowTimeInput ? DatetimeUtils.localToNetworkStringWithTimezone(inputLocalEndDate).slice(0, 19) : DatetimeUtils.toLocalYMD(offsetDate);
+            }
         } else {
             this.endDateInput.value = "";
         }
-        console.log(this.endDateInput.value)
-        console.log(this.startDateInput.value)
         this.colourInput.value = this.initialData.colour ?? "#000000";
     }
 
@@ -233,10 +234,12 @@ class Editor {
      */
     validateDates() {
         const startDate = this.getStartDateInputValue();
+
         const endDate = this.getEndDateInputValue();
 
-        if (startDate === null || endDate === null) {
-            this.setDateError("The date fields are required.");
+
+        if (startDate === null || ( this.allowEndDateInput && endDate === null)) {
+            this.setDateError("The date and time fields are required.");
             return false;
         } else {
             if (endDate < startDate) {
@@ -337,13 +340,15 @@ class Editor {
         })
         this.project.deadlines.forEach((deadline) => {
             const deadlineNoTime = new Date(deadline.startDate.getFullYear(), deadline.startDate.getMonth(), deadline.startDate.getDate()).getTime();
-            if (deadlineNoTime === startDate) {
-                startFound = true;
-                startReturnString += `Deadline: ${deadline.name} \n`
-            }
-            if (endDate && deadlineNoTime === endDate) {
-                endFound = true;
-                endReturnString += `Deadline: ${deadline.name} \n`
+            if (deadline.deadlineId !== this.initialData.deadlineId) {
+                if (deadlineNoTime === startDate) {
+                    startFound = true;
+                    startReturnString += `Deadline: ${deadline.name} \n`
+                }
+                if (endDate && deadlineNoTime === endDate) {
+                    endFound = true;
+                    endReturnString += `Deadline: ${deadline.name} \n`
+                }
             }
         })
         this.project.events.forEach((event) => {

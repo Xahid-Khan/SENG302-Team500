@@ -47,7 +47,7 @@ public class MilestoneService {
      */
     public MilestoneContract createMilestone(String projectId, BaseMilestoneContract milestoneContract) {
 
-        var project = projectRepository.findById(projectId).orElseThrow(() -> new IllegalArgumentException("Invalid project ID"));
+        var project = projectRepository.findById(projectId).orElseThrow();
         var milestone = milestoneMapper.toEntity(milestoneContract);
         project.addMilestone(milestone);
         projectRepository.save(project);
@@ -84,7 +84,6 @@ public class MilestoneService {
         milestoneEntity.setName(milestone.name());
         milestoneEntity.setDescription(milestone.description());
         milestoneEntity.setStartDate(milestone.startDate());
-        milestoneEntity.setEndDate(milestone.endDate());
 
         milestoneRepository.save(milestoneEntity);
     }

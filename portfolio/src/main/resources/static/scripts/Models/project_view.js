@@ -518,7 +518,7 @@ class ProjectView {
                 defaultMilestone,
                 this.closeAddMilestoneForm.bind(this),
                 this.submitAddMilestoneForm.bind(this),
-                Editor.makeProjectEventDatesValidator(this.project),
+                Editor.makeProjectMilestoneDatesValidator(this.project),
                 this.project
             )
         };
@@ -608,8 +608,10 @@ class ProjectView {
                 defaultDeadline,
                 this.closeAddDeadlineForm.bind(this),
                 this.submitAddDeadlineForm.bind(this),
-                Editor.makeProjectEventDatesValidator(this.project),
-                this.project
+                Editor.makeProjectDeadlineDatesValidator(this.project),
+                this.project,
+                true,
+                false
             )
         };
 
