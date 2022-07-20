@@ -152,7 +152,7 @@ class SprintView {
         let html = "";
         this.deadlines.forEach(deadline => {
             if (deadline.startDate >= this.sprint.startDate && deadline.startDate <= this.sprint.endDate) {
-                html += `<span class="material-icons">timer</span> <span id="sprint-deadline-name-${this.sprint.id}-${deadline.deadlineId}"></span> <span style="color: ${this.sprint.colour}">${DatetimeUtils.localToUserDMY(deadline.startDate)}</span>`;
+                html += `<span class="material-icons">timer</span> <span id="sprint-deadline-name-${this.sprint.id}-${deadline.deadlineId}"></span> <span style="color: ${this.sprint.colour}">${DatetimeUtils.localToUserDMY(deadline.startDate)}</span><br>`;
             }
         });
         if (html === "") {

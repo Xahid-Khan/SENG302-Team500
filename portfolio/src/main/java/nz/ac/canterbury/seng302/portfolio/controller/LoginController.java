@@ -112,10 +112,10 @@ public class LoginController {
      */
     @GetMapping("/")
     public String index(
-        @AuthenticationPrincipal PortfolioPrincipal principal,
-        HttpServletRequest request,
-        HttpServletResponse response,
-        Model model
+            @AuthenticationPrincipal PortfolioPrincipal principal,
+            HttpServletRequest request,
+            HttpServletResponse response,
+            Model model
     ) {
         if (principal != null) {
             return "redirect:my_account";

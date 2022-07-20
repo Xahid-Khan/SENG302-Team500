@@ -11,13 +11,11 @@ import java.time.Instant;
  * @param name The name of the milestone.
  * @param description The description of the milestone.
  * @param startDate The start date of the milestone.
- * @param endDate The end date of the milestone.
  */
 public record  MilestoneContract (
         String projectId,
         String milestoneId,
         String name,
         String description,
-        Instant startDate,
-        Instant endDate
+        Instant startDate
 ) {}

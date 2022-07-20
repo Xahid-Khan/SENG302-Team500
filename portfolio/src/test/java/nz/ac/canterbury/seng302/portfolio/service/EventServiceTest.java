@@ -75,7 +75,7 @@ public class EventServiceTest {
     }
 
     @Test
-    public void testDeleteEvent() throws Exception {
+    public void testDeleteEvent() {
         // Create a project
         var project = new ProjectEntity("testproject", null,
                 Instant.parse("2022-12-01T10:15:30.00Z"), Instant.parse("2023-01-20T10:15:30.00Z"));
@@ -99,7 +99,7 @@ public class EventServiceTest {
         assertEquals(event1.getId(), project1.getEvents().get(0).getId());
 
         //deletes it
-        var idToDelete = eventRepository.findAll().iterator().next().getId();
+        var idToDelete = event1.getId();
         eventService.delete(idToDelete);
 
         //Check the event is deleted

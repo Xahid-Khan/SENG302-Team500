@@ -146,7 +146,7 @@ class Project {
         // Delete the outdated event from the events array.
         // NB: Since this method is sometimes called with new events, a deletion is not guaranteed to occur here.
         for (let j=0; j < this.project.deadlines.length; j++) {
-            if (this.project.deadlines[j].eventId === deadline.eventId) {
+            if (this.project.deadlines[j].deadlineId === deadline.deadlineId) {
                 this.project.deadlines.splice(j, 1);
                 break;
             }
