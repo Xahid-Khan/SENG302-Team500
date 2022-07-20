@@ -81,7 +81,7 @@ class EventView {
     getSprints() {
         let html = "<label>Sprints in progress during this event: </label>";
         let foundSprints = false
-
+        document.getElementById(`event-colour-block-${this.event.eventId}`).style.display="none";
         //Uses linear gradient to make the coloured line
         let gradient = "linear-gradient(45deg,"
         this.sprints.forEach(sprint => {
