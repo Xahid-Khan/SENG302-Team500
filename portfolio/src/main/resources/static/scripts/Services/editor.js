@@ -275,7 +275,6 @@ class Editor {
 
         console.log(`hasErrors: ${hasErrors}`);
         if (!hasErrors) {
-            Socket.saveEdit(this.containerElement.id);
             try {
                 this.saveButton.innerText = "loading...";
                 this.saveButton.setAttribute("disabled", "true");
@@ -287,6 +286,7 @@ class Editor {
                     endDate: this.getEndDateInputValue(),
                     colour: this.getColour()
                 })
+                Socket.saveEdit(this.containerElement.id);
             } finally {
                 this.saveButton.innerText = "Save";
                 this.saveButton.setAttribute("disabled", "false");
