@@ -286,6 +286,7 @@ class Editor {
                     endDate: this.getEndDateInputValue(),
                     colour: this.getColour()
                 })
+                Socket.saveEdit(this.containerElement.id);
             } finally {
                 this.saveButton.innerText = "Save";
                 this.saveButton.setAttribute("disabled", "false");
@@ -298,7 +299,7 @@ class Editor {
      * Attach listeners to input fields.
      */
     wireView() {
-        this.saveButton.addEventListener('click', () => {this.validateAndSubmit(); Socket.saveEdit(this.containerElement.id);});
+        this.saveButton.addEventListener('click', () => this.validateAndSubmit());
         document.getElementById(`edit-project-section-form-${this.entityId}`).addEventListener('submit', (evt) => {
             evt.preventDefault();
             this.validateAndSubmit();
