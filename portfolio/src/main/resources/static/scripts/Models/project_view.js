@@ -24,10 +24,11 @@ class ProjectView {
     addMilestoneForm = null
     addMilestoneLoadingStatus = LoadingStatus.NotYetAttempted;
 
-    constructor(containerElement, project, editCallback, deleteCallback, sprintDeleteCallback, sprintUpdateCallback, eventDeleteCallback, eventUpdateCallback, deadlineDeleteCallback, deadlineUpdateCallback, milestoneDeleteCallback, milestoneUpdateCallback, eventEditCallback, deadlineEditCallback, milestoneEditCallback) {
+    constructor(containerElement, project, pingCallback, editCallback, deleteCallback, sprintDeleteCallback, sprintUpdateCallback, eventDeleteCallback, eventUpdateCallback, deadlineDeleteCallback, deadlineUpdateCallback, milestoneDeleteCallback, milestoneUpdateCallback, eventEditCallback, deadlineEditCallback, milestoneEditCallback) {
         console.log("project", project)
         this.containerElement = containerElement;
         this.project = project;
+        this.pingCallback = pingCallback;
         this.sprintContainer = null;
         this.sprints = new Map();
         this.eventContainer = null;
@@ -87,6 +88,7 @@ class ProjectView {
     appendEvent(eventData) {
         const eventElement = document.createElement("div")
         eventElement.classList.add("events-view", "raised-card", `event-view-${this.project.id}`);
+        eventElement.id = eventData.eventId;
         this.eventContainer.appendChild(eventElement);
 
         console.log("Binding event");
@@ -99,6 +101,7 @@ class ProjectView {
     appendMilestone(milestoneData) {
         const milestoneElement = document.createElement("div")
         milestoneElement.classList.add("events-view", "raised-card", `milestone-view-${this.project.id}`);
+        milestoneElement.id = milestoneData.milestoneId;
         this.milestoneContainer.appendChild(milestoneElement);
 
         console.log("Binding milestone");
@@ -111,6 +114,7 @@ class ProjectView {
     appendDeadline(deadlineData) {
         const deadlineElement = document.createElement("div")
         deadlineElement.classList.add("events-view", "raised-card", `deadline-view-${this.project.id}`);
+        deadlineElement.id = deadlineData.deadlineId;
         this.deadlineContainer.appendChild(deadlineElement);
 
         console.log("Binding deadline");
@@ -234,6 +238,10 @@ class ProjectView {
         for (let k = 0; k < this.project.deadlines.length; k++) {
             this.appendDeadline(this.project.deadlines[k]);
         }
+    }
+
+    callPing() {
+        this.pingCallback();
     }
 
     /**
@@ -518,7 +526,7 @@ class ProjectView {
                 defaultMilestone,
                 this.closeAddMilestoneForm.bind(this),
                 this.submitAddMilestoneForm.bind(this),
-                Editor.makeProjectEventDatesValidator(this.project),
+                Editor.makeProjectMilestoneDatesValidator(this.project),
                 this.project
             )
         };
@@ -608,8 +616,10 @@ class ProjectView {
                 defaultDeadline,
                 this.closeAddDeadlineForm.bind(this),
                 this.submitAddDeadlineForm.bind(this),
-                Editor.makeProjectEventDatesValidator(this.project),
-                this.project
+                Editor.makeProjectDeadlineDatesValidator(this.project),
+                this.project,
+                true,
+                false
             )
         };
 
@@ -730,7 +740,7 @@ class ProjectView {
 
     wireView() {
         document.getElementById(`project-edit-button-${this.project.id}`).addEventListener("click", () => this.editCallback());
-        document.getElementById(`toggle-project-details-${this.project.id}`).addEventListener("click", () => {this.toggleProjectDetails()})
+        document.getElementById(`toggle-project-details-${this.project.id}`).addEventListener("click", () => {this.toggleProjectDetails(); this.callPing()})
         document.getElementById(`project-delete-button-${this.project.id}`).addEventListener("click", () => this.deleteCallback());
         document.getElementById(`monthly-planner-redirect-button-${this.project.id}`).addEventListener("click", () => this.monthlyPlannerRedirect(this.project.id));
         this.toggleSprintsButton.addEventListener('click', this.showSprints.bind(this));

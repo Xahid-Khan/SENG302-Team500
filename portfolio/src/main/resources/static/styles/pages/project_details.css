@@ -274,12 +274,17 @@ textarea {
 
 .date-collisions-list {
     padding-left: 10px;
-    color: red;
+    color: darkslateblue;
     margin: 5px 0;
 }
 
 .date-collisions {
     font-weight: bold;
+}
+
+.editing-live-update {
+    color: darkslateblue;
+    padding-bottom: 5px;
 }
 
 @media only screen and (max-width: 1590px) {

@@ -22,10 +22,9 @@ class DeadlineView {
             <button class="icon-button deadline-controls" id="deadline-button-delete-${this.deadline.deadlineId}" data-privilege="teacher"><span class="material-icons">clear</span></button>
             <button class="button visibility-button toggle-deadline-details" id="toggle-deadline-details-${this.deadline.deadlineId}"><span class='material-icons'>visibility_off</span></button>
     </div>
+    <div class="editing-live-update" id="event-form-${this.deadline.deadlineId}"></div>
     <div class="events-title">
-        <span id="deadline-title-text-${this.deadline.deadlineId}" style="font-style: italic;"></span> | <span id="start-date-${this.deadline.deadlineId}"></span> - <span id="end-date-${this.deadline.deadlineId}"></span>
-
-        
+        <span id="deadline-title-text-${this.deadline.deadlineId}" style="font-style: italic;"></span> | <span id="start-date-${this.deadline.deadlineId}"></span>
     </div>
     <div class="events-details" id="deadline-details-${this.deadline.deadlineId}">
         <div class="deadline-description" id="deadline-description-${this.deadline.deadlineId}"></div>
@@ -50,7 +49,6 @@ class DeadlineView {
         document.getElementById(`start-date-${this.deadline.deadlineId}`).innerText = DatetimeUtils.localToUserDMY(this.deadline.startDate);
         const displayedDate = new Date(this.deadline.endDate.valueOf());
         displayedDate.setDate(displayedDate.getDate() - 1);
-        document.getElementById(`end-date-${this.deadline.deadlineId}`).innerText = DatetimeUtils.localToUserDMY(displayedDate);
     }
 
     /**
@@ -71,7 +69,7 @@ class DeadlineView {
 
     wireView() {
         document.getElementById(`deadline-button-edit-${this.deadline.deadlineId}`).addEventListener('click', () => this.editCallback());
-        document.getElementById(`deadline-button-delete-${this.deadline.deadlineId}`).addEventListener("click", () => this.deleteCallback());
+        document.getElementById(`deadline-button-delete-${this.deadline.deadlineId}`).addEventListener("click", () => {this.deleteCallback(); Socket.saveEdit(this.deadline.deadlineId)});
 
         this.toggleButton.addEventListener('click', this.toggleExpandedView.bind(this));
     }

@@ -22,8 +22,9 @@ class MilestoneView {
         <button class="icon-button milestone-controls" id="milestone-button-delete-${this.milestone.milestoneId}" data-privilege="teacher"><span class="material-icons">clear</span></button>
         <button class="button visibility-button toggle-milestone-details" id="toggle-milestone-details-${this.milestone.milestoneId}"><span class='material-icons'>visibility_off</span></i></button>
     </div>
+    <div class="editing-live-update" id="event-form-${this.milestone.milestoneId}"></div>
     <div class="events-title">
-        <span id="milestone-title-text-${this.milestone.milestoneId}" style="font-style: italic;"></span> | <span id="start-date-${this.milestone.milestoneId}"></span> - <span id="end-date-${this.milestone.milestoneId}"></span>
+        <span id="milestone-title-text-${this.milestone.milestoneId}" style="font-style: italic;"></span> | <span id="start-date-${this.milestone.milestoneId}"></span>
 
     </div>
     <div class="events-details" id="milestone-details-${this.milestone.milestoneId}">
@@ -46,10 +47,7 @@ class MilestoneView {
                 document.getElementById(`milestone-sprint-name-${this.milestone.milestoneId}-${sprint.sprintId}`).innerText = sprint.name + ': '
             }
         })
-        document.getElementById(`start-date-${this.milestone.milestoneId}`).innerText = DatetimeUtils.localToUserDMY(this.milestone.startDate);
-        const displayedDate = new Date(this.milestone.endDate.valueOf());
-        displayedDate.setDate(displayedDate.getDate() - 1);
-        document.getElementById(`end-date-${this.milestone.milestoneId}`).innerText = DatetimeUtils.localToUserDMY(displayedDate);
+        document.getElementById(`start-date-${this.milestone.milestoneId}`).innerText = DatetimeUtils.localToUserDMYWithoutTime(this.milestone.startDate);
     }
 
     /**
@@ -69,7 +67,7 @@ class MilestoneView {
 
     wireView() {
         document.getElementById(`milestone-button-edit-${this.milestone.milestoneId}`).addEventListener('click', () => this.editCallback());
-        document.getElementById(`milestone-button-delete-${this.milestone.milestoneId}`).addEventListener("click", () => this.deleteCallback());
+        document.getElementById(`milestone-button-delete-${this.milestone.milestoneId}`).addEventListener("click", () => {this.deleteCallback(); Socket.saveEdit(this.milestone.milestoneId)});
 
         this.toggleButton.addEventListener('click', this.toggleExpandedView.bind(this));
     }

@@ -102,5 +102,21 @@ public class EventEntity {
         this.endDate = endDate;
     }
 
+    /**
+     * Calculates the orderNumber of this event entity by searching through its project.
+     *
+     * @return the orderNumber of this event in the project
+     */
+    public int getOrderNumber() {
+        var events = project.getEvents();
+        for (int i=0; i < events.size(); i++) {
+            if (events.get(i).getId().equals(this.id)) {
+                return i + 1;
+            }
+        }
+
+        throw new IllegalStateException("this.project does not contain this event, so getOrderNumber is impossible.");
+    }
+
 }
 

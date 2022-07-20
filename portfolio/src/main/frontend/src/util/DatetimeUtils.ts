@@ -103,6 +103,13 @@ export class DatetimeUtils {
     }
 
     /**
+     * Format a JavaScript Date to a date string suitable for presentation to the user without time.
+     */
+    static localToUserDMYWithoutTime(localDate: Date) {
+        return `${localDate.getDate()} ${localDate.toLocaleString('default', {month: 'long'})} ${localDate.getFullYear()}`;
+    }
+
+    /**
      * Checks whether the given dates are equal.
      */
     static areEqual(date1: Date, date2: Date) {

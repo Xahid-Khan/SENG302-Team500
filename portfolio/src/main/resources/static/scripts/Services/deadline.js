@@ -64,7 +64,9 @@ class Deadline {
             this.showViewer.bind(this),
             this.updateDeadline.bind(this),
             Editor.makeProjectDeadlineDatesValidator(this.project),
-            this.project
+            this.project,
+            true,
+            false
         );
     }
 

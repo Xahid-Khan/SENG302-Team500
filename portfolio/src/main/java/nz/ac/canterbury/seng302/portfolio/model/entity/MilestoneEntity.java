@@ -40,10 +40,6 @@ public class MilestoneEntity {
     @Column(name = "start_date")
     private Instant startDate;
 
-    @NotNull
-    @Column(name = "end_date")
-    private Instant endDate;
-
     public String getId() {
         return id;
     }
@@ -58,14 +54,6 @@ public class MilestoneEntity {
 
     public void setProject(ProjectEntity project) {
         this.project = project;
-    }
-
-    public @NotNull Instant getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(@NotNull Instant endDate) {
-        this.endDate = endDate;
     }
 
     public @NotNull Instant getStartDate() {
@@ -94,11 +82,26 @@ public class MilestoneEntity {
 
     protected MilestoneEntity() {}
 
-    public MilestoneEntity(String name, String description, @NotNull Instant startDate, @NotNull Instant endDate) {
+    public MilestoneEntity(String name, String description, @NotNull Instant startDate) {
         this.name = name;
         this.description = description;
         this.startDate = startDate;
-        this.endDate = endDate;
+    }
+
+    /**
+     * Calculates the orderNumber of this milestone entity by searching through its project.
+     *
+     * @return the orderNumber of this milestone in the project
+     */
+    public int getOrderNumber() {
+        var milestones = project.getMilestones();
+        for (int i=0; i < milestones.size(); i++) {
+            if (milestones.get(i).getId().equals(this.id)) {
+                return i + 1;
+            }
+        }
+
+        throw new IllegalStateException("this.project does not contain this event, so getOrderNumber is impossible.");
     }
 
 }

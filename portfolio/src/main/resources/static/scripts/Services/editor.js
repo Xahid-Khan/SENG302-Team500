@@ -5,17 +5,24 @@ class Editor {
     startDateEdited = false
     endDateEdited = false
 
-    constructor(containerElement, title, entityData, cancelCallback, submitCallback, customDatesValidator, project, allowTimeInput = false) {
+    constructor(containerElement, title, entityData, cancelCallback, submitCallback, customDatesValidator, project, allowTimeInput = false, allowEndDateInput = true) {
         this.allowTimeInput = allowTimeInput;
+        this.allowEndDateInput = allowEndDateInput;
         this.containerElement = containerElement;
         this.title = title;
         this.initialData = entityData;
-        this.entityId = entityData.id ?? entityData.sprintId;
+        this.entityId = entityData.id ?? entityData.sprintId ?? entityData.eventId ?? entityData.milestoneId ?? entityData.deadlineId;
         this.project = project;
 
         this.cancelCallback = cancelCallback;
         this.submitCallback = submitCallback;
         this.customDatesValidator = customDatesValidator ?? function() {return null;};
+
+        console.log(this.containerElement)
+
+        if (this.containerElement.id && !this.title.includes("New")) {
+            Socket.showEdit(this.containerElement.id)
+        }
 
         this.constructView();
         this.fillDefaults();
@@ -29,8 +36,9 @@ class Editor {
         this.containerElement.innerHTML = `
       <div class="edit-project-section" id="edit-project-section-${this.entityId}">
           <p class="edit-section-title" id="edit-section-form-title-${this.entityId}">Edit Details:</p>
+          <div class="editing-live-update" id="editing-form-${this.entityId}"></div>
           <form id="edit-project-section-form-${this.entityId}">
-
+             
               <div class="name">
                 <label>Name*:</label>
                 <input type="text" name="project-name" class="input-name" id="edit-project-name-${this.entityId}" maxlength="32" oninput="displayCharactersRemaining(this, 32)" />
@@ -46,10 +54,10 @@ class Editor {
                   <br><br>
               </div>
               <label id="start-date-label-${this.entityId}">Start Date*:</label>
-              <input type=${this.allowTimeInput ? "datetime-local" : "date"} name="start-date" class="date-input" id="edit-start-date-${this.entityId}">
+              <input type=${this.allowTimeInput ? "datetime-local" : "date"} name="start-date" class="date-input" id="edit-start-date-${this.entityId}" min=${this.project.startDate.toISOString().split(".")[0]} max=${this.project.endDate.toISOString().split(".")[0]}>
                 <br/>
               <label id="end-date-label-${this.entityId}">End Date*:</label>
-              <input type=${this.allowTimeInput ? "datetime-local" : "date"} name="end-date" class="date-input" id="edit-end-date-${this.entityId}">
+              <input type=${this.allowTimeInput ? "datetime-local" : "date"} name="end-date" class="date-input" id="edit-end-date-${this.entityId}" min=${this.project.startDate.toISOString().split(".")[0]} max=${this.project.endDate.toISOString().split(".")[0]}>
                 <br/>
               <label id="color-label-${this.entityId}">Colour*:</label>
               <input type="color" name="colour" id="edit-colour-${this.entityId}"/>
@@ -82,7 +90,7 @@ class Editor {
         this.endDateCollisionsList = document.getElementById(`end-date-collisions-list-${this.entityId}`);
 
         this.colourInput = document.getElementById(`edit-colour-${this.entityId}`);
-        if (!(this.title === "New sprint details:") && !(this.title === "Edit sprint details:")) {
+        if (this.title !== "New sprint details:" && this.title !== "Edit sprint details:") {
             this.colourInput.outerHTML = "";
             document.getElementById(`color-label-${this.entityId}`).outerHTML = "";
         }
@@ -153,12 +161,12 @@ class Editor {
                 offsetDate = new Date(this.initialData.endDate.valueOf());
                 offsetDate.setDate(offsetDate.getDate() - 1)
             }
-            this.endDateInput.value = this.allowTimeInput ? DatetimeUtils.localToNetworkStringWithTimezone(inputLocalEndDate).slice(0, 19) : DatetimeUtils.toLocalYMD(offsetDate);
+            if (!isNaN(this.initialData.endDate.valueOf())) {
+                this.endDateInput.value = this.allowTimeInput ? DatetimeUtils.localToNetworkStringWithTimezone(inputLocalEndDate).slice(0, 19) : DatetimeUtils.toLocalYMD(offsetDate);
+            }
         } else {
             this.endDateInput.value = "";
         }
-        console.log(this.endDateInput.value)
-        console.log(this.startDateInput.value)
         this.colourInput.value = this.initialData.colour ?? "#000000";
     }
 
@@ -233,10 +241,12 @@ class Editor {
      */
     validateDates() {
         const startDate = this.getStartDateInputValue();
+
         const endDate = this.getEndDateInputValue();
 
-        if (startDate === null || endDate === null) {
-            this.setDateError("The date fields are required.");
+
+        if (startDate === null || ( this.allowEndDateInput && endDate === null)) {
+            this.setDateError("The date and time fields are required.");
             return false;
         } else {
             if (endDate < startDate) {
@@ -288,12 +298,12 @@ class Editor {
      * Attach listeners to input fields.
      */
     wireView() {
-        this.saveButton.addEventListener('click', () => this.validateAndSubmit());
+        this.saveButton.addEventListener('click', () => {this.validateAndSubmit(); Socket.saveEdit(this.containerElement.id);});
         document.getElementById(`edit-project-section-form-${this.entityId}`).addEventListener('submit', (evt) => {
             evt.preventDefault();
             this.validateAndSubmit();
         });
-        document.getElementById(`edit-cancel-button-${this.entityId}`).addEventListener('click', () => this.cancelCallback());
+        document.getElementById(`edit-cancel-button-${this.entityId}`).addEventListener('click', () => {this.cancelCallback(); Socket.cancelEdit(this.containerElement.id)});
 
         this.nameInput.addEventListener('change', this.validateName.bind(this));  // Is only called after the text field loses focus.
         this.nameInput.addEventListener('input', this.validateName.bind(this));  // Ensure that the validator is called as the user types to provide real-time feedback.
@@ -323,27 +333,30 @@ class Editor {
         if (this.getEndDateInputValue()) {
             endDate = DatetimeUtils.setTimeToZero(this.getEndDateInputValue());
         }
-
         this.project.milestones.forEach((milestone) => {
             const milestoneNoTime = new Date(milestone.startDate.getFullYear(), milestone.startDate.getMonth(), milestone.startDate.getDate()).getTime();
-            if (milestoneNoTime === startDate) {
-                startFound = true;
-                startReturnString += `Milestone: ${milestone.name} \n`
-            }
-            if (endDate && milestoneNoTime === endDate) {
-                endFound = true;
-                endReturnString += `Milestone: ${milestone.name} \n`
+            if (milestone.milestoneId !== this.initialData.milestoneId) {
+                if (milestoneNoTime === startDate) {
+                    startFound = true;
+                    startReturnString += `Milestone: ${milestone.name} \n`
+                }
+                if (endDate && milestoneNoTime === endDate) {
+                    endFound = true;
+                    endReturnString += `Milestone: ${milestone.name} \n`
+                }
             }
         })
         this.project.deadlines.forEach((deadline) => {
             const deadlineNoTime = new Date(deadline.startDate.getFullYear(), deadline.startDate.getMonth(), deadline.startDate.getDate()).getTime();
-            if (deadlineNoTime === startDate) {
-                startFound = true;
-                startReturnString += `Deadline: ${deadline.name} \n`
-            }
-            if (endDate && deadlineNoTime === endDate) {
-                endFound = true;
-                endReturnString += `Deadline: ${deadline.name} \n`
+            if (deadline.deadlineId !== this.initialData.deadlineId) {
+                if (deadlineNoTime === startDate) {
+                    startFound = true;
+                    startReturnString += `Deadline: ${deadline.name} \n`
+                }
+                if (endDate && deadlineNoTime === endDate) {
+                    endFound = true;
+                    endReturnString += `Deadline: ${deadline.name} \n`
+                }
             }
         })
         this.project.events.forEach((event) => {
