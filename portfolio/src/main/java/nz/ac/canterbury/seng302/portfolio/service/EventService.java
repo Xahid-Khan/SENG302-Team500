@@ -60,8 +60,7 @@ public class EventService {
 
         var project = projectRepository.findById(projectId).orElseThrow(() -> new IllegalArgumentException("Invalid project ID"));
         var entity = eventMapper.toEntity(event);
-        project.newEvent(entity);
-        projectRepository.save(project);
+        project.addEvent(entity);
         eventRepository.save(entity);
 
         return eventMapper.toContract(entity);
