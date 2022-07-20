@@ -49,10 +49,4 @@ public class MonthlyPlannerController {
         return "monthly_planner";
     }
 
-    @GetMapping("/socket_test")
-    public String socketTest(@AuthenticationPrincipal PortfolioPrincipal principal) {
-        System.out.println(principal.toString());
-        System.out.println(principal.getName());
-        return "socket_test";
-    }
 }
