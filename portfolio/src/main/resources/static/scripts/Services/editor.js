@@ -11,12 +11,18 @@ class Editor {
         this.containerElement = containerElement;
         this.title = title;
         this.initialData = entityData;
-        this.entityId = entityData.id ?? entityData.sprintId;
+        this.entityId = entityData.id ?? entityData.sprintId ?? entityData.eventId ?? entityData.milestoneId ?? entityData.deadlineId;
         this.project = project;
 
         this.cancelCallback = cancelCallback;
         this.submitCallback = submitCallback;
         this.customDatesValidator = customDatesValidator ?? function() {return null;};
+
+        console.log(this.containerElement)
+
+        if (this.containerElement.id && !this.title.includes("New")) {
+            Socket.showEdit(this.containerElement.id)
+        }
 
         this.constructView();
         this.fillDefaults();
@@ -30,8 +36,9 @@ class Editor {
         this.containerElement.innerHTML = `
       <div class="edit-project-section" id="edit-project-section-${this.entityId}">
           <p class="edit-section-title" id="edit-section-form-title-${this.entityId}">Edit Details:</p>
+          <div class="editing-live-update" id="editing-form-${this.entityId}"></div>
           <form id="edit-project-section-form-${this.entityId}">
-
+             
               <div class="name">
                 <label>Name*:</label>
                 <input type="text" name="project-name" class="input-name" id="edit-project-name-${this.entityId}" maxlength="32" oninput="displayCharactersRemaining(this, 32)" />
@@ -291,12 +298,12 @@ class Editor {
      * Attach listeners to input fields.
      */
     wireView() {
-        this.saveButton.addEventListener('click', () => this.validateAndSubmit());
+        this.saveButton.addEventListener('click', () => {this.validateAndSubmit(); Socket.saveEdit(this.containerElement.id);});
         document.getElementById(`edit-project-section-form-${this.entityId}`).addEventListener('submit', (evt) => {
             evt.preventDefault();
             this.validateAndSubmit();
         });
-        document.getElementById(`edit-cancel-button-${this.entityId}`).addEventListener('click', () => this.cancelCallback());
+        document.getElementById(`edit-cancel-button-${this.entityId}`).addEventListener('click', () => {this.cancelCallback(); Socket.cancelEdit(this.containerElement.id)});
 
         this.nameInput.addEventListener('change', this.validateName.bind(this));  // Is only called after the text field loses focus.
         this.nameInput.addEventListener('input', this.validateName.bind(this));  // Ensure that the validator is called as the user types to provide real-time feedback.

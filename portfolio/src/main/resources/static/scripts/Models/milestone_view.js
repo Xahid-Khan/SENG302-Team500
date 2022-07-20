@@ -22,6 +22,7 @@ class MilestoneView {
         <button class="icon-button milestone-controls" id="milestone-button-delete-${this.milestone.milestoneId}" data-privilege="teacher"><span class="material-icons">clear</span></button>
         <button class="button visibility-button toggle-milestone-details" id="toggle-milestone-details-${this.milestone.milestoneId}"><span class='material-icons'>visibility_off</span></i></button>
     </div>
+    <div class="editing-live-update" id="event-form-${this.milestone.milestoneId}"></div>
     <div class="events-title">
         <span id="milestone-title-text-${this.milestone.milestoneId}" style="font-style: italic;"></span> | <span id="start-date-${this.milestone.milestoneId}"></span>
 
@@ -66,7 +67,7 @@ class MilestoneView {
 
     wireView() {
         document.getElementById(`milestone-button-edit-${this.milestone.milestoneId}`).addEventListener('click', () => this.editCallback());
-        document.getElementById(`milestone-button-delete-${this.milestone.milestoneId}`).addEventListener("click", () => this.deleteCallback());
+        document.getElementById(`milestone-button-delete-${this.milestone.milestoneId}`).addEventListener("click", () => {this.deleteCallback(); Socket.saveEdit(this.milestone.milestoneId)});
 
         this.toggleButton.addEventListener('click', this.toggleExpandedView.bind(this));
     }

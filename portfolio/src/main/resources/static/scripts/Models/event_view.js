@@ -22,6 +22,7 @@ class EventView {
             <button class="icon-button event-controls" id="event-button-delete-${this.event.eventId}" data-privilege="teacher"><span class="material-icons">clear</span></button>
             <button class="button visibility-button toggle-event-details" id="toggle-event-details-${this.event.eventId}"><span class='material-icons'>visibility_off</span></button>
     </div>
+    <div class="editing-live-update" id="event-form-${this.event.eventId}"></div>
     <div class="events-title">
         <span id="event-title-text-${this.event.eventId}" style="font-style: italic;"></span> | <span id="start-date-${this.event.eventId}"></span> - <span id="end-date-${this.event.eventId}"></span>
 
@@ -72,7 +73,7 @@ class EventView {
 
     wireView() {
         document.getElementById(`event-button-edit-${this.event.eventId}`).addEventListener('click', () => this.editCallback());
-        document.getElementById(`event-button-delete-${this.event.eventId}`).addEventListener("click", () => this.deleteCallback());
+        document.getElementById(`event-button-delete-${this.event.eventId}`).addEventListener("click", () => {this.deleteCallback(); Socket.saveEdit(this.event.eventId)});
 
         this.toggleButton.addEventListener('click', this.toggleExpandedView.bind(this));
     }
