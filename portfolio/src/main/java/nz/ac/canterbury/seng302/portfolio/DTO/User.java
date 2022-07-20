@@ -12,6 +12,10 @@ import javax.validation.constraints.Size;
  * A user in the context of the portfolio is used for validation and transportation to the IDP.
  * This record stores all attributes about the user, validates them using Javax.validation, and
  *  sends them off to the IDP to put in the database.
+ *
+ *  New features as of 16/05/2022 now use react with custom validation classes. Javax.validation is no longer used, but
+ *  as it still functions here and would consume time to update this old feature, we have decided to leave it until it
+ *  needs updating in the future.
  */
 public record User(
     @Pattern(regexp = "[\\p{L}\\p{N}]*", message = "Username must only contain alphabetical characters or numbers, with no spaces", groups = RegisteredUserValidation.class)
