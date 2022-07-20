@@ -151,13 +151,13 @@ class PingPageStore {
                     document.getElementById("editing-form-" + locAndName[1]).innerText = locAndName[2] + " is currently editing"
                 }
             } else {
+                if (locAndName[0] === "save") {
+                    window.location.reload();
+                }
                 if (document.getElementById("event-form-" + locAndName[1])) {
                     document.getElementById("event-form-" + locAndName[1]).innerText = "";
                 } else {
                     document.getElementById("editing-form-" + locAndName[1]).innerText = "";
-                }
-                if (locAndName[0] === "save") {
-                    window.location.reload();
                 }
             }
         })

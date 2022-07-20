@@ -86,7 +86,6 @@ class ProjectView {
     }
 
     appendEvent(eventData) {
-        console.log("shit ", eventData)
         const eventElement = document.createElement("div")
         eventElement.classList.add("events-view", "raised-card", `event-view-${this.project.id}`);
         eventElement.id = eventData.eventId;

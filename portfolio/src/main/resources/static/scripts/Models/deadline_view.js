@@ -72,7 +72,7 @@ class DeadlineView {
 
     wireView() {
         document.getElementById(`deadline-button-edit-${this.deadline.deadlineId}`).addEventListener('click', () => this.editCallback());
-        document.getElementById(`deadline-button-delete-${this.deadline.deadlineId}`).addEventListener("click", () => this.deleteCallback());
+        document.getElementById(`deadline-button-delete-${this.deadline.deadlineId}`).addEventListener("click", () => {this.deleteCallback(); Socket.saveEdit(this.deadline.deadlineId)});
 
         this.toggleButton.addEventListener('click', this.toggleExpandedView.bind(this));
     }

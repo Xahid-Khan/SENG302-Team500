@@ -73,7 +73,7 @@ class EventView {
 
     wireView() {
         document.getElementById(`event-button-edit-${this.event.eventId}`).addEventListener('click', () => this.editCallback());
-        document.getElementById(`event-button-delete-${this.event.eventId}`).addEventListener("click", () => this.deleteCallback());
+        document.getElementById(`event-button-delete-${this.event.eventId}`).addEventListener("click", () => {this.deleteCallback(); Socket.saveEdit(this.event.eventId)});
 
         this.toggleButton.addEventListener('click', this.toggleExpandedView.bind(this));
     }

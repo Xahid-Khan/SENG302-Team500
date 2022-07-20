@@ -70,7 +70,7 @@ class MilestoneView {
 
     wireView() {
         document.getElementById(`milestone-button-edit-${this.milestone.milestoneId}`).addEventListener('click', () => this.editCallback());
-        document.getElementById(`milestone-button-delete-${this.milestone.milestoneId}`).addEventListener("click", () => this.deleteCallback());
+        document.getElementById(`milestone-button-delete-${this.milestone.milestoneId}`).addEventListener("click", () => {this.deleteCallback(); Socket.saveEdit(this.milestone.milestoneId)});
 
         this.toggleButton.addEventListener('click', this.toggleExpandedView.bind(this));
     }
