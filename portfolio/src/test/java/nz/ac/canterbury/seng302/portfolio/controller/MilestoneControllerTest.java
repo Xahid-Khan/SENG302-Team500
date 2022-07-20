@@ -79,7 +79,7 @@ public class MilestoneControllerTest {
     public void getById() throws Exception {
         AuthorisationParamsHelper.setParams("role", "STUDENT");
         var project = new ProjectEntity("test project", null, Instant.EPOCH, Instant.parse("2007-12-03T10:15:30.00Z"));
-        var milestone = new MilestoneEntity("test milestone", "test description", Instant.ofEpochSecond(120), Instant.ofEpochSecond(360));
+        var milestone = new MilestoneEntity("testmilestone", "test description", Instant.ofEpochSecond(120));
         project.addMilestone(milestone);
         projectRepository.save(project);
         milestoneRepository.save(milestone);
@@ -95,10 +95,9 @@ public class MilestoneControllerTest {
         var decodedResponse = objectMapper.readValue(stringContent, MilestoneContract.class);
 
         assertEquals(1, decodedResponse.orderNumber());
-        assertEquals("test milestone" , decodedResponse.name());
+        assertEquals("testmilestone" , decodedResponse.name());
         assertEquals("test description", decodedResponse.description());
         assertEquals(Instant.ofEpochSecond(120), decodedResponse.startDate());
-        assertEquals(Instant.ofEpochSecond(360), decodedResponse.endDate());
     }
 
     /**
@@ -110,8 +109,8 @@ public class MilestoneControllerTest {
     public void getManyByProjectId() throws Exception {
         AuthorisationParamsHelper.setParams("role", "STUDENT");
         var project = new ProjectEntity("test project", null, Instant.EPOCH, Instant.parse("2007-12-03T10:15:30.00Z"));
-        var milestone = new MilestoneEntity("milestone", "test description", Instant.ofEpochSecond(120), Instant.ofEpochSecond(360));
-        var milestone2 = new MilestoneEntity("testmilestone", "test description 2", Instant.ofEpochSecond(420), Instant.ofEpochSecond(480));
+        var milestone = new MilestoneEntity("milestone", "test description", Instant.ofEpochSecond(120));
+        var milestone2 = new MilestoneEntity("testmilestone", "test description 2", Instant.ofEpochSecond(420));
         project.addMilestone(milestone);
         project.addMilestone(milestone2);
         projectRepository.save(project);
@@ -135,13 +134,11 @@ public class MilestoneControllerTest {
         assertEquals("milestone" , receivedMilestone1.name());
         assertEquals("test description", receivedMilestone1.description());
         assertEquals(Instant.ofEpochSecond(120), receivedMilestone1.startDate());
-        assertEquals(Instant.ofEpochSecond(360), receivedMilestone1.endDate());
 
         assertEquals(2, receivedMilestone2.orderNumber());
         assertEquals("testmilestone" , receivedMilestone2.name());
         assertEquals("test description 2", receivedMilestone2.description());
         assertEquals(Instant.ofEpochSecond(420), receivedMilestone2.startDate());
-        assertEquals(Instant.ofEpochSecond(480), receivedMilestone2.endDate());
     }
 
     /**
@@ -151,7 +148,7 @@ public class MilestoneControllerTest {
     @Test
     public void getManyByNonExistentProjectId() throws Exception {
         AuthorisationParamsHelper.setParams("role", "STUDENT");
-        this.mockMvc.perform(
+        var result = this.mockMvc.perform(
                         get("/api/v1/projects/fake_project/milestones")
                 )
                 .andExpect(status().isNotFound());
@@ -170,9 +167,8 @@ public class MilestoneControllerTest {
         var apiPath = String.format("/api/v1/projects/%s/milestones", project.getId());
         var body = """
             {
-                "name": "test milestone",
+                "name": "testmilestone",
                 "startDate": "2023-01-01T10:00:00.00Z",
-                "endDate": "2023-01-15T10:00:00.00Z",
                 "description": "test description"
             }
             """;
@@ -189,10 +185,9 @@ public class MilestoneControllerTest {
         var stringContent = result.getResponse().getContentAsString();
         var decodedResponse = objectMapper.readValue(stringContent, MilestoneContract.class);
 
-        assertEquals("test milestone" , decodedResponse.name());
+        assertEquals("testmilestone" , decodedResponse.name());
         assertEquals("test description", decodedResponse.description());
         assertEquals(Instant.parse("2023-01-01T10:00:00.00Z"), decodedResponse.startDate());
-        assertEquals(Instant.parse("2023-01-15T10:00:00.00Z"), decodedResponse.endDate());
     }
 
     /**
@@ -203,9 +198,8 @@ public class MilestoneControllerTest {
     public void createNewInvalidProject() throws Exception {
         var body = """
             {
-                "name": "test milestone",
+                "name": "testmilestone",
                 "startDate": "2023-01-01T10:00:00.00Z",
-                "endDate": "2023-01-15T10:00:00.00Z",
                 "description": "test description"
             }
             """;
@@ -231,8 +225,7 @@ public class MilestoneControllerTest {
         var body = """
             {
                 "name": "testmilestone",
-                "startDate": "2023-01-01T10:00:00.00Z",
-                "endDate": "2023-01-15T10:00:00.00Z"
+                "startDate": "2023-01-01T10:00:00.00Z"
             }
             """;
 
@@ -251,7 +244,6 @@ public class MilestoneControllerTest {
         assertEquals("testmilestone" , decodedResponse.name());
         assertNull(decodedResponse.description());
         assertEquals(Instant.parse("2023-01-01T10:00:00.00Z"), decodedResponse.startDate());
-        assertEquals(Instant.parse("2023-01-15T10:00:00.00Z"), decodedResponse.endDate());
     }
 
     /**
@@ -262,9 +254,8 @@ public class MilestoneControllerTest {
     public void updateInvalidMilestone() throws Exception {
         var body = """
             {
-                "name": "test milestone",
-                "startDate": "2023-01-01T10:00:00.00Z",
-                "endDate": "2023-01-15T10:00:00.00Z",
+                "name": "testmilestone",
+                "startDate": "2023-01-01T10:00:00.00Z"
                 "description": "test description"
             }
             """;
@@ -274,7 +265,7 @@ public class MilestoneControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(body)
                 )
-                .andExpect(status().isNotFound());
+                .andExpect(status().is4xxClientError());
     }
 
     /**
@@ -284,7 +275,7 @@ public class MilestoneControllerTest {
     @Test
     public void updateValidMilestone() throws Exception {
         var project = new ProjectEntity("test project", null, Instant.parse("2022-12-01T10:15:30.00Z"), Instant.parse("2023-01-20T10:15:30.00Z"));
-        var milestone = new MilestoneEntity("milestone", "pre-test description", Instant.parse("2023-01-01T10:15:30.00Z"), Instant.parse("2023-01-03T10:15:30.00Z"));
+        var milestone = new MilestoneEntity("preedittestmilestone", "pre-test description", Instant.parse("2023-01-02T10:00:00.00Z"));
         project.addMilestone(milestone);
         projectRepository.save(project);
         milestoneRepository.save(milestone);
@@ -296,8 +287,7 @@ public class MilestoneControllerTest {
                 "projectId": "%s",
                 "milestoneId": "%s",
                 "name": "postedittestmilestone",
-                "startDate": "2023-01-04T10:00:00.00Z",
-                "endDate": "2023-01-15T10:00:00.00Z"
+                "startDate": "2023-01-04T10:00:00.00Z"
             }
             """, projectId, milestoneId);
         this.mockMvc.perform(
@@ -321,7 +311,6 @@ public class MilestoneControllerTest {
         assertEquals("postedittestmilestone" , decodedResponse.name());
         assertNull(decodedResponse.description());
         assertEquals(Instant.parse("2023-01-04T10:00:00.00Z"), decodedResponse.startDate());
-        assertEquals(Instant.parse("2023-01-15T10:00:00.00Z"), decodedResponse.endDate());
     }
 
     /**
@@ -341,7 +330,7 @@ public class MilestoneControllerTest {
     @Test
     public void deleteValidMilestone() throws Exception {
         var project = new ProjectEntity("test project", null, Instant.EPOCH, Instant.parse("2007-12-03T10:15:30.00Z"));
-        var milestone = new MilestoneEntity("milestone", "pre-test description", Instant.EPOCH, Instant.parse("2007-12-03T10:15:30.00Z"));
+        var milestone = new MilestoneEntity("preedittestmilestone", "pre-test description", Instant.parse("2007-12-03T10:15:30.00Z"));
         project.addMilestone(milestone);
         projectRepository.save(project);
         milestoneRepository.save(milestone);
@@ -371,9 +360,8 @@ public class MilestoneControllerTest {
         var apiPath = String.format("/api/v1/projects/%s/milestones", project.getId());
         var body = """
             {
-                "name": "test milestone",
-                "startDate": "2023-01-01T10:00:00.00Z",
-                "endDate": "2023-01-15T10:00:00.00Z"
+                "name": "testmilestone",
+                "startDate": "2023-01-01T10:00:00.00Z"
             }
             """;
 
@@ -395,7 +383,7 @@ public class MilestoneControllerTest {
         AuthorisationParamsHelper.setParams("role", "STUDENT");
 
         var project = new ProjectEntity("test project", null, Instant.parse("2022-12-01T10:15:30.00Z"), Instant.parse("2023-01-20T10:15:30.00Z"));
-        var milestone = new MilestoneEntity("milestone", "pre-test description", Instant.parse("2023-01-01T10:15:30.00Z"), Instant.parse("2023-01-03T10:15:30.00Z"));
+        var milestone = new MilestoneEntity("preedittestmilestone", "pre-test description", Instant.parse("2023-01-03T10:15:30.00Z"));
         project.addMilestone(milestone);
         projectRepository.save(project);
         milestoneRepository.save(milestone);
@@ -406,9 +394,8 @@ public class MilestoneControllerTest {
             {
                 "projectId": "%s",
                 "milestoneId": "%s",
-                "name": "post-edit test milestone",
-                "startDate": "2023-01-04T10:00:00.00Z",
-                "endDate": "2023-01-15T10:00:00.00Z"
+                "name": "postedittestmilestone",
+                "startDate": "2023-01-04T10:00:00.00Z"
             }
             """, projectId, milestoneId);
         this.mockMvc.perform(
@@ -429,7 +416,7 @@ public class MilestoneControllerTest {
     public void tryDeleteMilestoneAsStudent() throws Exception {
         AuthorisationParamsHelper.setParams("role", "STUDENT");
         var project = new ProjectEntity("test project", null, Instant.EPOCH, Instant.parse("2007-12-03T10:15:30.00Z"));
-        var milestone = new MilestoneEntity("testmilestone", "pre-test description", Instant.EPOCH, Instant.parse("2007-12-03T10:15:30.00Z"));
+        var milestone = new MilestoneEntity("preedittestmilestone", "pre-test description", Instant.parse("2007-12-03T10:15:30.00Z"));
         project.addMilestone(milestone);
         projectRepository.save(project);
         milestoneRepository.save(milestone);
@@ -439,5 +426,4 @@ public class MilestoneControllerTest {
         this.mockMvc.perform(delete(apiPath))
                 .andExpect(status().isForbidden());
     }
-
 }
