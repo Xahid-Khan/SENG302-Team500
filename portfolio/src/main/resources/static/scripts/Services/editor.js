@@ -275,6 +275,7 @@ class Editor {
 
         console.log(`hasErrors: ${hasErrors}`);
         if (!hasErrors) {
+            Socket.saveEdit(this.containerElement.id);
             try {
                 this.saveButton.innerText = "loading...";
                 this.saveButton.setAttribute("disabled", "true");
@@ -298,7 +299,7 @@ class Editor {
      * Attach listeners to input fields.
      */
     wireView() {
-        this.saveButton.addEventListener('click', () => {this.validateAndSubmit(); Socket.saveEdit(this.containerElement.id);});
+        this.saveButton.addEventListener('click', () => this.validateAndSubmit());
         document.getElementById(`edit-project-section-form-${this.entityId}`).addEventListener('submit', (evt) => {
             evt.preventDefault();
             this.validateAndSubmit();
