@@ -2,7 +2,7 @@ import React, {useCallback} from "react";
 import {observer} from "mobx-react-lite";
 import {useProjectStore} from "../store/ProjectStoreProvider";
 import {useToasterStore} from "../../../component/toast/internal/ToasterStoreProvider";
-import FullCalendar, {EventChangeArg, EventSourceInput} from "@fullcalendar/react";
+import FullCalendar, {EventChangeArg} from "@fullcalendar/react";
 import {Toast} from "../../../component/toast/Toast";
 import {ToastBase} from "../../../component/toast/ToastBase";
 import defaultToastTheme from "../../../component/toast/DefaultToast.module.css";
