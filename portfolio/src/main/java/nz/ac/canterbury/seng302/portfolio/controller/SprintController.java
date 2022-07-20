@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.portfolio.model.contract.BaseSprintContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.SprintContract;
 import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
@@ -88,7 +89,7 @@ public class SprintController {
      */
     @PostMapping(value = "/projects/{projectId}/sprints", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> createSprint(
-        @AuthenticationPrincipal AuthState principal,
+        @AuthenticationPrincipal PortfolioPrincipal principal,
         @PathVariable String projectId,
         @RequestBody BaseSprintContract sprint
     ) {
@@ -123,7 +124,7 @@ public class SprintController {
      */
     @PutMapping(value = "/sprints/{id}")
     public ResponseEntity<?> updateSprint(
-        @AuthenticationPrincipal AuthState principal,
+        @AuthenticationPrincipal PortfolioPrincipal principal,
         @PathVariable String id,
         @RequestBody BaseSprintContract sprint
     ) {
@@ -157,7 +158,7 @@ public class SprintController {
      */
     @DeleteMapping(value = "/sprints/{id}")
     public ResponseEntity<Void> deleteSprint(
-        @AuthenticationPrincipal AuthState principal,
+        @AuthenticationPrincipal PortfolioPrincipal principal,
         @PathVariable String id
     ) {
         ArrayList<String> roles = rolesService.getRolesByToken(principal);

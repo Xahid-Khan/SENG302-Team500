@@ -6,39 +6,86 @@ body {
     min-height: 100vh;
 }
 
+.errors {
+    justify-content: center;
+    padding: 0 142px 20px 100px;
+    display: none;
+}
+
+.error {
+    padding: 20px;
+    margin-bottom: 40px;
+    width: 100%;
+    color: red;
+}
+
 .events {
     padding: 20px;
-    margin-top: 10px;
-}
-
-.milestones {
-    padding: 20px;
-    margin-top: 10px;
-}
-
-.deadlines {
-    padding: 20px;
-    margin-top: 10px;
+    margin: 5px;
+    width: 100%;
+    display: none;
+    max-height: 750px;
+    overflow-y: auto;
 }
 
 .sprints {
     margin-top: 10px;
     padding: 20px;
+    display: none;
 }
 
-.event-section-title {
+.events-section-title {
     font-size: 20px;
+    font-weight: bold;
+    display: flex;
+}
+
+.events-section-title span {
+    padding-right: 5px;
+}
+
+.sprint-events-details {
+    padding-left: 10px;
+}
+
+.sprint-events-details span {
+    font-size: 14px;
+}
+
+.sprint-details label {
     font-weight: bold;
 }
 
-.milestone-section-title {
-    font-size: 20px;
-    font-weight: bold;
+.sprint-details div {
+    padding-top: 10px;
 }
 
-.deadline-section-title {
+.events-header {
+    display: flex;
+    align-items: center;
+}
+
+.add-events {
+    justify-content: right;
+    flex: 1;
+    display: flex;
+}
+
+.icon-button {
+    background-color: transparent;
+    color: black;
+    padding: 3px;
+    border-radius: 6px;
+    margin: 0;
+}
+
+.icon-button:hover {
+    cursor: pointer;
+    background-color: #7f7e82;
+}
+
+.icon-button span {
     font-size: 20px;
-    font-weight: bold;
 }
 
 .project-view {
@@ -47,34 +94,14 @@ body {
     padding: 20px;
 }
 
-.sprint-details {
-    display: none;
-    overflow: hidden;
-    padding-left: 10px;
-}
-
-.event-details {
+.events-details {
     display: none;
     overflow: hidden;
     font-size: 14px;
     padding-left: 10px;
 }
 
-.milestone-details {
-    display: none;
-    overflow: hidden;
-    font-size: 14px;
-    padding-left: 10px;
-}
-
-.deadline-details {
-    display: none;
-    overflow: hidden;
-    font-size: 14px;
-    padding-left: 10px;
-}
-
-.event-sprints {
+.events-sprints {
     padding-top: 5px;
 }
 
@@ -82,15 +109,8 @@ body {
     display: block;
     width: 100%;
     height: 6px;
+    box-shadow: 2px 5px 8px 1px black;
     margin-top: 12px;
-}
-
-.toggle-sprint-details {
-    padding: 8px 12px;
-}
-
-.toggle-sprint-details:hover {
-    background-color: #0332D1;
 }
 
 .navbar-items {
@@ -123,7 +143,7 @@ body {
 .add-project {
     display: flex;
     justify-content: right;
-    padding-right: 100px;
+    padding-right: 50px;
 }
 
 .add-project-button {
@@ -132,17 +152,7 @@ body {
 
 .projects {
     justify-content: center;
-    padding: 0 142px 100px 100px;
-}
-
-.edit-project {
-    margin-right: 5px;
-}
-
-.add-view-controls {
-    display: flex;
-    justify-content: right;
-    margin-right: 5px;
+    padding: 0 84px 45px 45px;
 }
 
 .toggle-view-controls {
@@ -151,52 +161,15 @@ body {
     margin-right: 5px;
 }
 
-.sprint-controls {
-    margin-right: 5px;
-}
-
-.sprint-view {
+.events-view {
     padding: 20px;
     margin-top: 15px
 }
 
-.event-view {
-    padding: 20px;
-    margin-top: 15px
-}
-
-.milestone-view {
-    padding: 20px;
-    margin-top: 15px
-}
-
-.deadline-view {
-    padding: 20px;
-    margin-top: 15px
-}
-
-.sprint-title {
-    font-size: 18px;
+.events-title {
+    font-size: 16px;
     font-weight: bold;
-    padding-bottom: 20px;
-}
-
-.event-title {
-    font-size: 18px;
-    font-weight: bold;
-    padding-bottom: 20px;
-}
-
-.milestone-title {
-    font-size: 18px;
-    font-weight: bold;
-    padding-bottom: 20px;
-}
-
-.deadline-title {
-    font-size: 18px;
-    font-weight: bold;
-    padding-bottom: 20px;
+    padding-bottom: 12px;
 }
 
 .project-title {
@@ -212,20 +185,18 @@ body {
     margin-bottom: 10px;
 }
 
-.toggle-sprints {
-    margin-left: 10px;
+.date-input {
+    margin-bottom: 5px;
+    width: 182px;
 }
 
-.sprints {
-    display: none;
-}
-
-.events {
-    display: none;
+.input-name {
+    width: 140px;
 }
 
 .crud {
     float: right;
+    padding-left: 5px;
 }
 
 .monthly-planner-redirect {
@@ -233,7 +204,17 @@ body {
     padding-left: 12px;
 }
 
-.edit-project-section {}
+.project-events {
+    display: flex;
+}
+
+textarea {
+    resize: none;
+}
+
+.input-length {
+    white-space: nowrap;
+}
 
 .edit-section-title {
     font-size: 25px;
@@ -245,23 +226,12 @@ body {
     padding-right: 5px;
 }
 
-.user-inputs {
-    padding-left: 20px;
-}
-
-.user-inputs input {
-    width: 140px;
-}
-
-::-webkit-calendar-picker-indicator {
-    filter: invert(1);
-}
-
 .save-buttons {
     display: flex;
     justify-content: right;
     padding-right: 15px;
 }
+
 .save-buttons > button:not(:last-child) {
     margin-right: 10px;
 }
@@ -275,10 +245,83 @@ body {
     vertical-align: top;
 }
 
+.events-details label {
+    font-weight: bold;
+}
+
+.input-end-time {
+    margin-bottom: 5px;
+}
+
+.visibility-button {
+    background-color: transparent;
+    color: black;
+    padding: 3px;
+}
+
+.visibility-button span {
+    font-size: 20px;
+}
+
+.visibility-button:hover {
+    background-color: transparent;
+}
+
+.toggle-project-details {
+    float: right;
+    padding: 2px;
+}
+
+.date-collisions-list {
+    padding-left: 10px;
+    color: darkslateblue;
+    margin: 5px 0;
+}
+
+.date-collisions {
+    font-weight: bold;
+}
+
+.editing-live-update {
+    color: darkslateblue;
+    padding-bottom: 5px;
+}
+
+@media only screen and (max-width: 1590px) {
+
+    .input-start-time {
+        margin-left: 92px;
+    }
+
+    .input-end-time {
+        margin-left: 87px;
+    }
+}
+
+@media only screen and (max-width: 1300px) {
+
+    .project-events {
+        display: block;
+    }
+
+    .events {
+        width: 95%;
+    }
+
+    .input-start-time, .input-end-time {
+        margin-left: 0;
+    }
+
+}
+
 @media only screen and (max-width: 960px) {
 
     .projects {
         padding: 0 75px 50px 30px;
+    }
+
+    .errors {
+        padding: 0 75px 20px 30px;
     }
 
     .project-view {
@@ -295,17 +338,12 @@ body {
         font-size: 22px;
     }
 
-    .sprint-view {
+    .events-view {
         margin-bottom: 10px;
         padding: 15px;
     }
 
-    .event-view {
-        margin-bottom: 10px;
-        padding: 15px;
-    }
-
-    button {
+    .button {
         margin: 3px;
         font-size: 12px;
     }
@@ -314,11 +352,7 @@ body {
         margin-right: 0;
     }
 
-    .sprint-title {
-        padding-bottom: 10px;
-    }
-
-    .event-title {
+    .events-title {
         padding-bottom: 10px;
     }
 
@@ -326,7 +360,7 @@ body {
         margin-right: 0;
     }
 
-    .add-sprint {
+    .add-events {
         margin-right: 5px;
     }
 
@@ -339,6 +373,10 @@ body {
 
     .projects {
         padding: 0 40px 30px 20px;
+    }
+
+    .errors {
+        padding: 0 40px 20px 20px;
     }
 
     .project-title {
@@ -356,17 +394,12 @@ body {
         margin-bottom: 10px;
     }
 
-    .sprint-view {
+    .events-view {
         margin-bottom: 10px;
         padding: 10px;
     }
 
-    .event-view {
-        margin-bottom: 10px;
-        padding: 10px;
-    }
-
-    button {
+    .button {
         padding: 4px 6px;
         font-size: 10px;
     }
@@ -376,12 +409,7 @@ body {
         padding-right: 120px;
     }
 
-    .sprint-title {
-        font-size: 13px;
-        padding-bottom: 5px;
-    }
-
-    .event-title {
+    .events-title {
         font-size: 13px;
         padding-bottom: 5px;
     }
@@ -401,12 +429,16 @@ body {
         padding: 0 30px 20px 15px;
     }
 
+    .errors {
+        padding: 0 30px 20px 15px;
+    }
+
     .project-view {
         padding: 8px;
         margin-bottom: 15px;
     }
 
-    button {
+    .button {
         font-size: 9px;
         margin: 1px;
     }
@@ -427,23 +459,15 @@ body {
         padding-right: 100px;
     }
 
-    .sprint-title {
+    .events-title {
         font-size: 10px;
     }
 
-    .event-title {
-        font-size: 10px;
-    }
-
-    .sprint-view {
+    .events-view {
         padding: 8px;
     }
 
-    .event-view {
-        padding: 8px;
-    }
-
-    .add-sprint {
+    .add-events {
         margin-right: 3px;
     }
 
@@ -466,7 +490,7 @@ body {
         font-size: 7px;
     }
 
-    button {
+    .button {
         font-size: 7px;
     }
 
@@ -480,11 +504,7 @@ body {
         padding-left: 0;
     }
 
-    .sprint-title {
-        font-size: 7px;
-    }
-
-    .event-title {
+    .events-title {
         font-size: 7px;
     }
     
