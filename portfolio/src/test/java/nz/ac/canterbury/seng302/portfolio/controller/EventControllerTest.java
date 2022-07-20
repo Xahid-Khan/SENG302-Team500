@@ -25,6 +25,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * Class to test the EventController.class
+ * This class handles all functionality to do with events
+ */
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
 public class EventControllerTest {
@@ -40,6 +44,11 @@ public class EventControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    /**
+     * Clear both repositories and set the role of the user to teacher, so they can use crud functionality
+     * without permission issues. Clean slate on repositories allows for no unintended bugs with old
+     * test objects in the repositories
+     */
     @BeforeEach
     public void beforeEach() {
         eventRepository.deleteAll();
@@ -48,6 +57,10 @@ public class EventControllerTest {
         AuthorisationParamsHelper.setParams("role", "TEACHER");
     }
 
+    /**
+     * Test getting an event that does not exist, and with an invalid ID
+     * @throws Exception thrown due to invalid ID
+     */
     @Test
     public void getWithInvalidId() throws Exception {
         this.mockMvc.perform(get("/api/v1/events/1"))
@@ -57,6 +70,11 @@ public class EventControllerTest {
                 .andExpect(status().is4xxClientError());
     }
 
+    /**
+     * Test getting an event with a valid ID. First adds event and relevant project to database, then fetches
+     * the event and checks all the details are correct
+     * @throws Exception thrown by method getting object from database
+     */
     @Test
     public void getById() throws Exception {
         AuthorisationParamsHelper.setParams("role", "STUDENT");
@@ -83,6 +101,11 @@ public class EventControllerTest {
         assertEquals(Instant.ofEpochSecond(360), decodedResponse.endDate());
     }
 
+    /**
+     * Test getting all events related to a project. First adds events and relevant project to database, then fetches
+     * the event and checks all the details are correct
+     * @throws Exception thrown by method getting object from database
+     */
     @Test
     public void getManyByProjectId() throws Exception {
         AuthorisationParamsHelper.setParams("role", "STUDENT");
@@ -121,6 +144,10 @@ public class EventControllerTest {
         assertEquals(Instant.ofEpochSecond(480), receivedEvent2.endDate());
     }
 
+    /**
+     * Tries to get all events from a project that does not exist
+     * @throws Exception thrown by method getting object from database
+     */
     @Test
     public void getManyByNonExistentProjectId() throws Exception {
         AuthorisationParamsHelper.setParams("role", "STUDENT");
@@ -130,6 +157,11 @@ public class EventControllerTest {
                 .andExpect(status().isNotFound());
     }
 
+    /**
+     * Creates new valid event and posts it in order to add it to the database. Ensures all details are
+     * added correctly from the response.
+     * @throws Exception thrown by method getting object from database
+     */
     @Test
     public void createNew() throws Exception {
         var project = new ProjectEntity("test project", null, Instant.parse("2022-12-01T10:15:30.00Z"), Instant.parse("2023-01-20T10:15:30.00Z"));
@@ -163,6 +195,10 @@ public class EventControllerTest {
         assertEquals(Instant.parse("2023-01-15T10:00:00.00Z"), decodedResponse.endDate());
     }
 
+    /**
+     * Tries to create an event with an invalid project that does not exist.
+     * @throws Exception thrown by method getting object from database
+     */
     @Test
     public void createNewInvalidProject() throws Exception {
         var body = """
@@ -182,6 +218,10 @@ public class EventControllerTest {
                 .andExpect(status().isNotFound());
     }
 
+    /**
+     * Creates a new valid event with no description, as description is not required
+     * @throws Exception thrown by method getting object from database
+     */
     @Test
     public void createNewNoDescription() throws Exception {
         var project = new ProjectEntity("test project", null, Instant.parse("2022-12-01T10:15:30.00Z"), Instant.parse("2023-01-20T10:15:30.00Z"));
@@ -214,6 +254,10 @@ public class EventControllerTest {
         assertEquals(Instant.parse("2023-01-15T10:00:00.00Z"), decodedResponse.endDate());
     }
 
+    /**
+     * Tries to update an event that does not exist
+     * @throws Exception thrown by method getting object from database
+     */
     @Test
     public void updateInvalidEvent() throws Exception {
         var body = """
@@ -233,6 +277,10 @@ public class EventControllerTest {
                 .andExpect(status().isNotFound());
     }
 
+    /**
+     * Updates an event with valid information. Tests to ensure all fields are correctly updated
+     * @throws Exception thrown by method getting object from database
+     */
     @Test
     public void updateValidEvent() throws Exception {
         var project = new ProjectEntity("test project", null, Instant.parse("2022-12-01T10:15:30.00Z"), Instant.parse("2023-01-20T10:15:30.00Z"));
@@ -271,17 +319,25 @@ public class EventControllerTest {
         var decodedResponse = objectMapper.readValue(stringContent, EventContract.class);
 
         assertEquals("postedittestevent" , decodedResponse.name());
-//        assertNull(decodedResponse.description());
+        assertNull(decodedResponse.description());
         assertEquals(Instant.parse("2023-01-04T10:00:00.00Z"), decodedResponse.startDate());
         assertEquals(Instant.parse("2023-01-15T10:00:00.00Z"), decodedResponse.endDate());
     }
 
+    /**
+     * Tries to delete an event that does not exist
+     * @throws Exception thrown by method getting object from database
+     */
     @Test
     public void deleteInvalidEvent() throws Exception {
         this.mockMvc.perform(delete("/api/v1/events/fake_event"))
                 .andExpect(status().isNotFound());
     }
 
+    /**
+     * Deletes an event from the database, ensures that the event has been deleted
+     * @throws Exception thrown by method getting object from database
+     */
     @Test
     public void deleteValidEvent() throws Exception {
         var project = new ProjectEntity("test project", null, Instant.EPOCH, Instant.parse("2007-12-03T10:15:30.00Z"));
@@ -300,6 +356,11 @@ public class EventControllerTest {
                 .andExpect(status().isNotFound());
     }
 
+    /**
+     * Tries to create a valid event with invalid permissions, as the user needs to be a teacher or
+     * course admin to create.
+     * @throws Exception thrown by method getting object from database
+     */
     @Test
     public void tryCreateNewAsStudent() throws Exception {
         AuthorisationParamsHelper.setParams("role", "STUDENT");
@@ -324,6 +385,11 @@ public class EventControllerTest {
                 .andExpect(status().isForbidden());
     }
 
+    /**
+     * Tries to update a valid event with invalid permissions, as the user needs to be a teacher or
+     * course admin to update.
+     * @throws Exception thrown by method getting object from database
+     */
     @Test
     public void tryUpdateValidEventAsStudent() throws Exception {
         AuthorisationParamsHelper.setParams("role", "STUDENT");
@@ -354,6 +420,11 @@ public class EventControllerTest {
 
     }
 
+    /**
+     * Tries to delete a valid event with invalid permissions, as the user needs to be a teacher or
+     * course admin to delete.
+     * @throws Exception thrown by method getting object from database
+     */
     @Test
     public void tryDeleteEventAsStudent() throws Exception {
         AuthorisationParamsHelper.setParams("role", "STUDENT");
