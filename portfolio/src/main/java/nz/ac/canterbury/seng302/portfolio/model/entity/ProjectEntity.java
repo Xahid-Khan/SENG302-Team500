@@ -144,86 +144,41 @@ public class ProjectEntity {
         sprint.setProject(this);
     }
 
-    /**
-     * Removes sprint from sprints list
-     * @param sprint sprint to be deleted
-     */
     public void removeSprint(SprintEntity sprint) {
         sprints.remove(sprint);
         sprint.setProject(null);
     }
 
-    /**
-     * Inserts the given event to the events list, retaining sorted order.
-     *
-     * <p>Adapted from: https://stackoverflow.com/a/51893026</p>
-     *
-     * @param event to insert
-     */
-   public void addEvent(EventEntity event) {
-       var index = Collections.binarySearch(events, event, Comparator.comparing(EventEntity::getStartDate));
-       if (index < 0) {
-           index = -index - 1;
-       }
-
-       events.add(index, event);
-       event.setProject(this);
+   public void newEvent(EventEntity event) {
+        events.add(event);
+        event.setProject(this);
     }
 
-    /**
-     * Removes sprint from sprints list
-     * @param event to be deleted
-     */
     public void removeEvent(EventEntity event) {
         events.remove(event);
         event.setProject(null);
     }
 
-    /**
-     * Inserts the given deadline to the deadlines list, retaining sorted order.
-     *
-     * <p>Adapted from: https://stackoverflow.com/a/51893026</p>
-     *
-     * @param deadline to insert
-     */
-    public void addDeadline(DeadlineEntity deadline) {
-        var index = Collections.binarySearch(deadlines, deadline, Comparator.comparing(DeadlineEntity::getStartDate));
-        if (index < 0) {
-            index = -index - 1;
-        }
-        deadlines.add(index, deadline);
+    public void newDeadline(DeadlineEntity deadline) {
+        deadlines.add(deadline);
         deadline.setProject(this);
     }
 
-    /**
-     * Removes deadline from deadlines list
-     * @param deadline to delete
-     */
+    public void addDeadline(DeadlineEntity deadline) {
+        deadlines.add(deadline);
+        deadline.setProject(this);
+    }
+
     public void removeDeadline(DeadlineEntity deadline) {
         deadlines.remove(deadline);
         deadline.setProject(null);
     }
 
-    /**
-     * Inserts the given milestone to the milestones list, retaining sorted order.
-     *
-     * <p>Adapted from: https://stackoverflow.com/a/51893026</p>
-     *
-     * @param milestone to insert
-     */
-    public void addMilestone(MilestoneEntity milestone) {
-        var index = Collections.binarySearch(milestones, milestone, Comparator.comparing(MilestoneEntity::getStartDate));
-        if (index < 0) {
-            index = -index - 1;
-        }
-        milestones.add(index, milestone);
+    public void newMilestone(MilestoneEntity milestone) {
+        milestones.add(milestone);
         milestone.setProject(this);
     }
 
-    /**
-     * Removes milestone from milestones list
-     * @param milestone to delete
-     */
     public void removeMilestone(MilestoneEntity milestone) {
         milestones.remove(milestone);
         milestone.setProject(null);

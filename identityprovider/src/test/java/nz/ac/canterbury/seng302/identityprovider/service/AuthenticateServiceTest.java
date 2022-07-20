@@ -19,7 +19,6 @@ import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -27,115 +26,75 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class AuthenticateServiceTest {
 
-  @Autowired AuthenticateServerService service;
+    @Autowired
+    AuthenticateServerService service;
 
-  @Autowired UserRepository repository;
+    @Autowired
+    UserRepository repository;
 
-  @Autowired PasswordService passwordService;
+    @Autowired
+    PasswordService passwordService;
 
-  @BeforeAll
-  void createUsers() {
-    try {
-      List<UserRole> roles = new ArrayList<>();
-      roles.add(UserRole.STUDENT);
-      UserModel user1 =
-          new UserModel(
-              "a",
-              passwordService.hashPassword("password"),
-              "a",
-              "",
-              "a",
-              "",
-              "",
-              "",
-              "a@a",
-              roles,
-              null);
-      UserModel user2 =
-          new UserModel(
-              "b",
-              passwordService.hashPassword("password"),
-              "b",
-              "",
-              "b",
-              "",
-              "",
-              "",
-              "b@b",
-              roles,
-              null);
-      repository.save(user1);
-      repository.save(user2);
-    } catch (Exception e) {
-      e.printStackTrace();
+    @BeforeAll
+    void createUsers() {
+        try {
+            List<UserRole> roles = new ArrayList<>();
+            roles.add(UserRole.STUDENT);
+            UserModel user1 = new UserModel("a", passwordService.hashPassword("password"), "a", "", "a", "", "", "", "a@a", roles, null);
+            UserModel user2 = new UserModel("b", passwordService.hashPassword("password"), "b", "", "b", "", "", "", "b@b", roles, null);
+            repository.save(user1);
+            repository.save(user2);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
-  }
 
-  @Test
-  void testPasswordCorrect() throws NoSuchAlgorithmException, InvalidKeySpecException {
-    AuthenticateRequest req =
-        AuthenticateRequest.newBuilder().setUsername("a").setPassword("password").build();
-    StreamObserver<AuthenticateResponse> so =
-        new StreamObserver<AuthenticateResponse>() {
-          @Override
-          public void onNext(AuthenticateResponse value) {
-            assertTrue(value.getSuccess());
-          }
-
-          @Override
-          public void onError(Throwable t) {}
-
-          @Override
-          public void onCompleted() {}
+    @Test
+    void testPasswordCorrect() throws NoSuchAlgorithmException, InvalidKeySpecException {
+        AuthenticateRequest req = AuthenticateRequest.newBuilder().setUsername("a").setPassword("password").build();
+        StreamObserver<AuthenticateResponse> so = new StreamObserver<AuthenticateResponse>() {
+            @Override
+            public void onNext(AuthenticateResponse value) {
+                assertTrue(value.getSuccess());
+            }
+            @Override
+            public void onError(Throwable t) {}
+            @Override
+            public void onCompleted() {}
         };
-    service.authenticate(req, so);
-  }
+        service.authenticate(req, so);
+    }
 
-  @Test
-  void testPasswordIncorrect() throws NoSuchAlgorithmException, InvalidKeySpecException {
-    AuthenticateRequest req =
-        AuthenticateRequest.newBuilder().setUsername("a").setPassword("wrong").build();
-    StreamObserver<AuthenticateResponse> so =
-        new StreamObserver<AuthenticateResponse>() {
-          @Override
-          public void onNext(AuthenticateResponse value) {
-            assertEquals(
-                "Log in attempt failed: username or password incorrect",
-                value.getMessage()
-            );
-            assertFalse(value.getSuccess());
-          }
-
-          @Override
-          public void onError(Throwable t) {}
-
-          @Override
-          public void onCompleted() {}
+    @Test
+    void testPasswordIncorrect() throws NoSuchAlgorithmException, InvalidKeySpecException {
+        AuthenticateRequest req = AuthenticateRequest.newBuilder().setUsername("a").setPassword("wrong").build();
+        StreamObserver<AuthenticateResponse> so = new StreamObserver<AuthenticateResponse>() {
+            @Override
+            public void onNext(AuthenticateResponse value) {
+                assertFalse(value.getSuccess());
+            }
+            @Override
+            public void onError(Throwable t) {}
+            @Override
+            public void onCompleted() {}
         };
-    service.authenticate(req, so);
-  }
+        service.authenticate(req, so);
+    }
 
-  @Test
-  void testUsernameIncorrect() throws NoSuchAlgorithmException, InvalidKeySpecException {
-    AuthenticateRequest req =
-        AuthenticateRequest.newBuilder().setUsername("wrong").setPassword("password").build();
-    StreamObserver<AuthenticateResponse> so =
-        new StreamObserver<AuthenticateResponse>() {
-          @Override
-          public void onNext(AuthenticateResponse value) {
-            assertEquals(
-                "Log in attempt failed: username or password incorrect",
-                value.getMessage()
-            );
-            assertFalse(value.getSuccess());
-          }
-
-          @Override
-          public void onError(Throwable t) {}
-
-          @Override
-          public void onCompleted() {}
+    @Test
+    void testUsernameIncorrect() throws NoSuchAlgorithmException, InvalidKeySpecException {
+        AuthenticateRequest req = AuthenticateRequest.newBuilder().setUsername("wrong").setPassword("password").build();
+        StreamObserver<AuthenticateResponse> so = new StreamObserver<AuthenticateResponse>() {
+            @Override
+            public void onNext(AuthenticateResponse value) {
+                assertFalse(value.getSuccess());
+            }
+            @Override
+            public void onError(Throwable t) {}
+            @Override
+            public void onCompleted() {}
         };
-    service.authenticate(req, so);
-  }
+        service.authenticate(req, so);
+    }
+
 }

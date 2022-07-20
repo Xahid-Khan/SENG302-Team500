@@ -22,7 +22,8 @@ public class MilestoneMapper {
         return new MilestoneEntity(
                 contract.name(),
                 contract.description(),
-                contract.startDate()
+                contract.startDate(),
+                contract.endDate()
         );
     }
     /**
@@ -31,14 +32,14 @@ public class MilestoneMapper {
      * @param entity a event entity that is retried from database
      * @return      returns a event and related events in JSON data type.
      */
-    public MilestoneContract toContract(MilestoneEntity entity, long orderNumber) {
+    public MilestoneContract toContract(MilestoneEntity entity) {
         return new MilestoneContract(
                 entity.getProject().getId(),
                 entity.getId(),
                 entity.getName(),
                 entity.getDescription(),
                 entity.getStartDate(),
-                orderNumber
+                entity.getEndDate()
         );
     }
 }

@@ -4,7 +4,6 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import io.grpc.StatusRuntimeException;
 import nz.ac.canterbury.seng302.portfolio.DTO.EditedUserValidation;
 import nz.ac.canterbury.seng302.portfolio.DTO.User;
-import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
 import nz.ac.canterbury.seng302.portfolio.service.ChangePasswordClientService;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
@@ -39,7 +38,7 @@ public class EditPasswordController {
 
 
     @GetMapping(value="/edit_password")
-    public String getPage(Model model, @AuthenticationPrincipal PortfolioPrincipal principal){
+    public String getPage(Model model, @AuthenticationPrincipal AuthState principal){
 
         Integer userId = authStateService.getId(principal);
 
@@ -55,7 +54,7 @@ public class EditPasswordController {
 
     @PostMapping(value="/edit_password")
     public String postPage(Model model,
-                           @AuthenticationPrincipal PortfolioPrincipal principal,
+                           @AuthenticationPrincipal AuthState principal,
                            @RequestParam(value = "currentPassword") String currentPassword,
                            @RequestParam(value = "newPassword") String newPassword,
                            @RequestParam(value = "confirmPassword") String confirmPassword) {

@@ -18,6 +18,5 @@ public record  EventContract (
     String name,
     String description,
     Instant startDate,
-    Instant endDate,
-    Long orderNumber
+    Instant endDate
 ) {}

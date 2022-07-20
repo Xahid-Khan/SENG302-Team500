@@ -11,12 +11,12 @@ import nz.ac.canterbury.seng302.portfolio.repository.SprintRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.util.NoSuchElementException;
 
 @Service
 public class DeadlineService {
+    @Autowired
+    private SprintRepository sprintRepository;
 
     @Autowired
     private ProjectRepository projectRepository;
@@ -27,9 +27,6 @@ public class DeadlineService {
     @Autowired
     private DeadlineMapper deadlineMapper;
 
-    @PersistenceContext
-    private EntityManager entityManager;
-
     /**
      * Get the deadline with the deadline ID
      *
@@ -38,8 +35,8 @@ public class DeadlineService {
      * @return The deadline contract with the deadline ID
      */
     public DeadlineContract get(String deadlineId) {
-        var deadline= deadlineRepository.findById(deadlineId).orElseThrow();
-        return deadlineMapper.toContract(deadline, deadline.getOrderNumber());
+        var deadline= deadlineRepository.findById(deadlineId).orElseThrow(() -> new IllegalArgumentException("Invalid deadline ID"));
+        return deadlineMapper.toContract(deadline);
     }
 
     /**
@@ -52,11 +49,11 @@ public class DeadlineService {
         var project = projectRepository.findById(projectId).orElseThrow(() -> new IllegalArgumentException("Invalid project ID"));
         var entity = deadlineMapper.toEntity(deadline);
 
-        project.addDeadline(entity);
-        deadlineRepository.save(entity);
+        project.newDeadline(entity);
         projectRepository.save(project);
+        deadlineRepository.save(entity);
 
-        return deadlineMapper.toContract(entity, entity.getOrderNumber());
+        return deadlineMapper.toContract(entity);
     }
 
 
@@ -82,14 +79,14 @@ public class DeadlineService {
      * @param deadline to update, with the new values
      */
     public void update(String deadlineId, BaseDeadlineContract deadline) {
-        DeadlineEntity deadlineEntity = deadlineRepository.findById(deadlineId).orElseThrow();
+        DeadlineEntity deadlineEntity = deadlineRepository.findById(deadlineId).orElseThrow(() -> new NoSuchElementException("Invalid deadline ID"));
 
         deadlineEntity.setName(deadline.name());
         deadlineEntity.setDescription(deadline.description());
         deadlineEntity.setStartDate(deadline.startDate());
+        deadlineEntity.setEndDate(deadline.endDate());
 
         deadlineRepository.save(deadlineEntity);
-        entityManager.clear();
     }
 
 }

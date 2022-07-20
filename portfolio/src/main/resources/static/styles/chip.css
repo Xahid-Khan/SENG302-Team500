@@ -1,18 +1,17 @@
 /* The wrapper for the chip */
 .chip {
-    display: flex;
+    display: inline-block;
     padding: 0 0px;
     height: 25px;
     font-size: 16px;
     line-height: 25px;
-    border-radius: 3px 13px 13px 3px;
+    border-radius: 0px 13px 13px 0px;
     background-color: #cecece;
 }
 
 /* The text label for the chip */
 .label {
     padding: 0px 5px;
-    white-space: nowrap;
 }
 
 /* The close button for the chip */
@@ -29,23 +28,7 @@
     aspect-ratio: 1;
 }
 
-.chip[disabled='disabled']{
-    border-radius: 3px 3px 3px 3px;
-}
-
-.chip[disabled='disabled'] .remove-button{
-    display: none;
-}
-
 .remove-button:hover {
     color: #000;
     background-color: transparent;
-}
-
-/*A nicely spaced row of chips*/
-.chip-row {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 5px;
 }

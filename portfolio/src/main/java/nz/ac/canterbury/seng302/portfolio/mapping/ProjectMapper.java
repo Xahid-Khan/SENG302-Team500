@@ -62,8 +62,7 @@ public class ProjectMapper {
 
         for (int i=0; i < eventEntities.size(); i++) {
             eventContracts.add(eventMapper.toContract(
-                    eventEntities.get(i),
-                    i+1
+                    eventEntities.get(i)
             ));
         }
 
@@ -72,8 +71,7 @@ public class ProjectMapper {
 
         for (int i=0; i < deadlineEntities.size(); i++) {
             deadlineContracts.add(deadlineMapper.toContract(
-                    deadlineEntities.get(i),
-                    i+1
+                    deadlineEntities.get(i)
             ));
         }
 
@@ -82,8 +80,7 @@ public class ProjectMapper {
 
         for (int i=0; i < milestoneEntities.size(); i++) {
             milestoneContracts.add(milestoneMapper.toContract(
-                    milestoneEntities.get(i),
-                    i+1
+                    milestoneEntities.get(i)
             ));
         }
 

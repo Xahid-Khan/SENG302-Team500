@@ -2,7 +2,6 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import com.google.protobuf.Timestamp;
 import nz.ac.canterbury.seng302.portfolio.DTO.User;
-import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.portfolio.mapping.UserMapper;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
@@ -53,7 +52,7 @@ public class UserAccountController {
      */
     @GetMapping(value="/my_account")
     public String getPage(Model model,
-                          @AuthenticationPrincipal PortfolioPrincipal principal,
+                          @AuthenticationPrincipal AuthState principal,
                           @RequestParam Optional<String> edited){
         if (edited.isPresent()) {
             if (edited.get().equals("password")) {

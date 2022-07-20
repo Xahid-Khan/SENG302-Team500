@@ -36,7 +36,7 @@ public class UserModel {
 
     private String personalPronouns;
 
-    @Column(unique=true, nullable = false)
+    @Column(nullable = false)
     private String email;
 
     @ElementCollection(fetch = FetchType.EAGER)
