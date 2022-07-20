@@ -31,7 +31,7 @@ class EventView {
         <div class="event-description" id="event-description-${this.event.eventId}"></div>
         <div class="events-sprints" id="event-sprints-${this.event.eventId}"></div>
     </div>
-    
+    <div class="colour-block" id="event-colour-block-${this.event.eventId}"></div>
     `;
 
         this.toggleButton = document.getElementById(`toggle-event-details-${this.event.eventId}`);
