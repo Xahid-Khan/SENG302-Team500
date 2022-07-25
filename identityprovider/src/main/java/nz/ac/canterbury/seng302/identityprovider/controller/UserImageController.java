@@ -10,9 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
-import javax.swing.text.html.Option;
 import java.io.IOException;
-import java.util.Optional;
 
 @Controller
 public class UserImageController {
@@ -34,6 +32,8 @@ public class UserImageController {
             if (userPhoto != null) {
                 imageStream.write(userPhoto.getUserPhoto());
             }
+        } catch (NullPointerException e) {
+            e.printStackTrace();
         }
     }
 
