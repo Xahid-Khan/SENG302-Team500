@@ -7,7 +7,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -19,10 +18,9 @@ public class UserImageController {
 
     /**
      * This end-point will check if the user photo exist and return it.
-     * @param userId
-     * @param response
-     * @throws ServletException
-     * @throws IOException
+     * @param userId Integer
+     * @param response Http servlet Response
+     * @throws IOException Throws an Input/Output exception
      */
     @GetMapping(value = "/userImage/{id}")
     void showUserImage(@PathVariable("id") int userId, HttpServletResponse response) throws IOException {
@@ -32,8 +30,6 @@ public class UserImageController {
             if (userPhoto != null) {
                 imageStream.write(userPhoto.getUserPhoto());
             }
-        } catch (NullPointerException e) {
-            e.printStackTrace();
         }
     }
 
