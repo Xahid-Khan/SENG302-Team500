@@ -130,6 +130,7 @@ class PingPageStore {
             })
         }
         this.stomp.onWebSocketClose = (evt) => {
+            console.log("Socket closing")
             console.log("Socket closed!")
             runInAction(() => {
                 this.connectStatus = new LoadingError(evt)
