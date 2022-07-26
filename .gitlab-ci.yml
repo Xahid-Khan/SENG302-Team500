@@ -62,6 +62,7 @@ predeploy-copy-environment-variables:
     - cp ./runner_env.sh /home/gitlab-runner/runner_env.sh
   only:
     - dev
+    - U48T128/FixWebSocketsOnVM
     - tags
     - master
 
