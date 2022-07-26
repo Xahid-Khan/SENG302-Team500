@@ -90,7 +90,7 @@ deploy-staging-identityprovider:
     paths:
       - identityprovider/build/libs
   only:
-    - dev
+    - U48T128/FixWebSocketsOnVM
 
 deploy-staging-portfolio:
   stage: deploy
@@ -107,7 +107,7 @@ deploy-staging-portfolio:
     paths:
       - portfolio/build/libs
   only:
-    - dev
+    - U48T128/FixWebSocketsOnVM
 
 deploy-production-identityprovider:
   stage: deploy
