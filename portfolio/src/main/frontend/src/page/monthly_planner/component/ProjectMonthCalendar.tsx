@@ -148,8 +148,6 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
 
     const [events, setEvents] = React.useState(arrayOfEvents(null));
 
-    console.log(allEventDates)
-
     const eventClick = (info : any) => {
         const sprintId = info.event.id;
         setEvents(arrayOfEvents(sprintId))
