@@ -39,7 +39,7 @@ branch-build:
   except:
     - tags
     - master
-    - U48T128/FixWebSocketsOnVM
+    - dev
 
 ##### TESTING #####
 #junit-porfolio:
@@ -61,7 +61,7 @@ predeploy-copy-environment-variables:
     - python3 ./runner/export_environment_vars.py
     - cp ./runner_env.sh /home/gitlab-runner/runner_env.sh
   only:
-    - U48T128/FixWebSocketsOnVM
+    - dev
     - tags
     - master
 
@@ -90,7 +90,7 @@ deploy-staging-identityprovider:
     paths:
       - identityprovider/build/libs
   only:
-    - U48T128/FixWebSocketsOnVM
+    - dev
 
 deploy-staging-portfolio:
   stage: deploy
@@ -107,7 +107,7 @@ deploy-staging-portfolio:
     paths:
       - portfolio/build/libs
   only:
-    - U48T128/FixWebSocketsOnVM
+    - dev
 
 deploy-production-identityprovider:
   stage: deploy
