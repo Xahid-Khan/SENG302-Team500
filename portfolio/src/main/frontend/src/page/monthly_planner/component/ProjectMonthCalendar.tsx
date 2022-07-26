@@ -64,6 +64,7 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
     let eventDictionary = new Map();
     let milestoneDictionary = new Map();
     let allEventDates = new Set();
+    let tempLocalDates = new Set();
 
     /**
      * This method reads all the events (Events, Milestones, and Deadlines) and create a dictionary where key is the date
@@ -72,7 +73,7 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
      * @param dict an empty dictionary where the results will be stored and updated.
      * @param code code represents the type of events.
      */
-    const iconDataToDictionary = (iconEvents: any[], dict: Map<String, any>, code: String) => {
+    const iconDataToDictionary = (iconEvents: any[], dict: Map<string, any>, code: string) => {
         iconEvents.forEach((event) => {
             let startDate = new Date(event.startDate);
             let endDate: Date;
@@ -84,7 +85,12 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
                 } else {
                     dict.set(JSON.parse(JSON.stringify(startDate.toLocaleDateString())), [event]);
                 }
-                allEventDates.add(JSON.parse(JSON.stringify(startDate.toLocaleDateString())))
+                tempLocalDates.has(startDate.toLocaleDateString()) ?
+                    tempLocalDates.add(startDate.toLocaleDateString())
+                    :
+                    allEventDates.add(JSON.parse(JSON.stringify(startDate.toISOString())))
+                    tempLocalDates.add(startDate.toLocaleDateString())
+
                 startDate.setDate(startDate.getDate() + 1);
             }
         })
@@ -95,7 +101,7 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
     iconDataToDictionary(project.deadlines, deadlineDictionary, "_DL");
 
     function arrayOfEvents(id: string){
-        let events: any = []
+        let events: any[]
         if(id){
             events = project.sprints.map(sprint => ({
                 id: sprint.id,
@@ -125,17 +131,18 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
 
             }))
         }
-        allEventDates.forEach((eventDate: any) => events.push({
-            id: eventDate,
-            start: new Date(eventDate),
-            end: new Date(eventDate),
+
+        allEventDates.forEach((eventDate: any) => {events.push({
+            id: new Date(eventDate).toLocaleDateString(),
+            start: eventDate,
+            end: eventDate,
             backgroundColor: "rgba(52, 52, 52, 0.0)",
             textColor: "black",
             title: "",
             editable:false,
             allDay: true,
             borderColor: "transparent",
-        }))
+        })})
         return events
     }
 
@@ -153,22 +160,22 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
      */
     function getEventHoverData(date: any, eventType: string) {
         let stringResult: any[] = [];
-        let dictionary = new Map();
+        let dictionary;
         if (eventType == "events") {
             dictionary = eventDictionary;
-            stringResult.push("<p style='margin:0px; padding:0px; height: fit-content; width: fit-content'>Events:-</p>")
+            stringResult.push("<p style='margin:0; padding:0; height: fit-content; width: fit-content'>Events:-</p>")
         } else if (eventType == "milestones") {
             dictionary = milestoneDictionary;
-            stringResult.push("<p style='margin:0px; padding:0px; height: fit-content; width: fit-content'>Milestones:-</p>")
+            stringResult.push("<p style='margin:0; padding:0; height: fit-content; width: fit-content'>Milestones:-</p>")
         } else {
             dictionary = deadlineDictionary;
-            stringResult.push("<p style='margin:0px; padding:0px; height: fit-content; width: fit-content'>Deadlines:-</p>")
+            stringResult.push("<p style='margin:0; padding:0; height: fit-content; width: fit-content'>Deadlines:-</p>")
         }
 
         dictionary.get(date).map((subEvent: any) => {
-            stringResult.push("<p style='margin:0px; padding:0px; height: fit-content; width: fit-content'>" +
+            stringResult.push("<p style='margin:0; padding:0; height: fit-content; width: fit-content'>" +
                 subEvent.name + "<br />" +
-                "<h5 style='margin:0px; padding:0px'>" + subEvent.startDate.toLocaleString() + "&emsp;&emsp;" + eventType == "events" ? subEvent.endDate.toLocaleString() : "" + "</h5></p>");
+                `<h5 style='margin:0; padding:0'> ${subEvent.startDate.toLocaleString()} &emsp;&emsp; ${eventType == "events" ? subEvent.endDate.toLocaleString() : ""} </h5></p>`);
         })
 
         return (
@@ -202,7 +209,7 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
                     {
                         eventDictionary.has(eventInfo.event.id)?
                             <>
-                                <div style={{margin:"3px 0 3px 0", width:"30%"}} data-tip data-for = {"events" + eventInfo.event.id.toString()}>
+                                <div style={{margin:"3px 0 3px 0", width:"fit-content"}} data-tip data-for = {"events" + eventInfo.event.id.toString()}>
                                         <span className="material-icons" style={{float: "left"}} >event</span>
                                         <p style={{
                                             float: "left",
@@ -221,7 +228,7 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
                     {
                         milestoneDictionary.has(eventInfo.event.id)?
                             <>
-                                <div style={{margin:"3px 0 3px 0", width:"30%"}} data-tip data-for = {"milestones" + eventInfo.event.id.toString()}>
+                                <div style={{margin:"3px 0 3px 0", width:"fit-content"}} data-tip data-for = {"milestones" + eventInfo.event.id.toString()}>
                                     <span className="material-icons" style={{float: "left"}}>flag</span>
                                     <p style={{float: "left", margin: "3px 0 0 15px"}}>
                                         {milestoneDictionary.get(eventInfo.event.id).length}
@@ -239,7 +246,7 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
                     {
                         deadlineDictionary.has(eventInfo.event.id)?
                             <>
-                                <div style={{margin:"3px 0 3px 0", width:"30%"}} data-tip data-for = {"deadlines" + eventInfo.event.id.toString()}>
+                                <div style={{margin:"3px 0 3px 0", width:"fit-content"}} data-tip data-for = {"deadlines" + eventInfo.event.id.toString()}>
                                     <span className="material-icons" style={{float: "left"}}>timer</span>
                                     <p style={{float: "left", margin: "3px 0 0 15px"}}>
                                         {deadlineDictionary.get(eventInfo.event.id).length}
