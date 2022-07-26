@@ -24,7 +24,7 @@ publish-protos-to-maven-local:
     - ./gradlew publishToMavenLocal
 
 ##### BUILDING #####
-# builds all branches, except dev and master
+# builds all branches, except dev, vm-testing, and master
 branch-build:
   stage: build
   script:
@@ -40,19 +40,20 @@ branch-build:
     - tags
     - master
     - dev
+    - vm-testing
 
 ##### TESTING #####
-#junit-porfolio:
-#  stage: test
-#  script:
-#    - cd portfolio
-#    - ./gradlew test
+junit-porfolio:
+  stage: test
+  script:
+    - cd portfolio
+    - ./gradlew test
 
-#junit-identityprovider:
-#  stage: test
-#  script:
-#    - cd identityprovider
-#    - ./gradlew test
+junit-identityprovider:
+  stage: test
+  script:
+    - cd identityprovider
+    - ./gradlew test
 
 ##### PRE-DEPLOY #####
 predeploy-copy-environment-variables:
@@ -64,6 +65,7 @@ predeploy-copy-environment-variables:
     - dev
     - tags
     - master
+    - vm-testing
 
 ##### SONARQUBE #####
 sonarqube-report:
@@ -91,6 +93,7 @@ deploy-staging-identityprovider:
       - identityprovider/build/libs
   only:
     - dev
+    - vm-testing
 
 deploy-staging-portfolio:
   stage: deploy
@@ -108,6 +111,7 @@ deploy-staging-portfolio:
       - portfolio/build/libs
   only:
     - dev
+    - vm-testing
 
 deploy-production-identityprovider:
   stage: deploy
