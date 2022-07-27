@@ -49,7 +49,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
    */
   @Override
   public void registerStompEndpoints(StompEndpointRegistry config) {
-    config.addEndpoint(urlPathPrefix + "socket");
-    config.addEndpoint(urlPathPrefix + "socket").withSockJS();
+    config.addEndpoint("test/portfolio/socket");
+    config.addEndpoint("test/portfolio/socket").withSockJS();
   }
 }
