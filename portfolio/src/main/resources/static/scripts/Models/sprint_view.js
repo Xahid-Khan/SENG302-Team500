@@ -28,8 +28,8 @@ class SprintView {
         <span id="sprint-order-text-${this.sprint.sprintId}"></span>: <span id="sprint-title-text-${this.sprint.sprintId}" style="font-style: italic;"></span> | <span id="start-date-${this.sprint.sprintId}"></span> - <span id="end-date-${this.sprint.sprintId}"></span>
 
         <span class="crud">
-            <button class="icon-button sprint-controls" id="sprint-button-edit-${this.sprint.sprintId}" data-privilege="teacher"><span class="material-icons md-11">edit</span></button>
             <button class="icon-button sprint-controls" id="sprint-button-delete-${this.sprint.sprintId}" data-privilege="teacher"><span class="material-icons md-11">clear</span></button>
+            <button class="icon-button sprint-controls" id="sprint-button-edit-${this.sprint.sprintId}" data-privilege="teacher"><span class="material-icons md-11">edit</span></button>
             <button class="button visibility-button toggle-sprint-details" id="toggle-sprint-details-${this.sprint.sprintId}"><span class='material-icons'>visibility_off</span></button>
         </span>
     </div>

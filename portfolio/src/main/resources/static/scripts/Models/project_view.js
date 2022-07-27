@@ -136,13 +136,14 @@ class ProjectView {
                   <span class="monthly-planner-redirect">
                       <button class="button monthly-planner-redirect-button" id="monthly-planner-redirect-button-${this.project.id}">View Monthly Planner</button>
                   </span>
-                  <span class="crud">
-                      <button class="button icon-button edit-project" id="project-edit-button-${this.project.id}" data-privilege="teacher"><span class="material-icons">edit</span></button>
-                      <button class="button icon-button" id="project-delete-button-${this.project.id}" data-privilege="teacher"><span class="material-icons">clear</span></button>
-                  </span>
                   <span>
                       <button class="button visibility-button toggle-project-details" id="toggle-project-details-${this.project.id}"><span class='material-icons'>visibility</span></button>
                   </span>
+                  <span class="crud">
+                      <button class="button icon-button" id="project-delete-button-${this.project.id}" data-privilege="teacher"><span class="material-icons">clear</span></button>
+                      <button class="button icon-button edit-project" id="project-edit-button-${this.project.id}" data-privilege="teacher"><span class="material-icons">edit</span></button>
+                  </span>
+                  
               </div>
               <div>
                   <div class="project-description" id="project-description-${this.project.id}"></div>
@@ -194,6 +195,22 @@ class ProjectView {
                     </div>
                 </div>
               </div>
+              
+<!--              Delete modal-->
+              <div class="modal fade" id="project-delete-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="myModalLabel">Delete Project?</h3>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" id="deleteButton" href="#">Delete</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
             `;
 
         document.getElementById(`project-title-text-${this.project.id}`).innerText = this.project.name;

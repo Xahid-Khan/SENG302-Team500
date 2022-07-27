@@ -18,8 +18,8 @@ class MilestoneView {
     constructView() {
         this.containerElement.innerHTML = `
     <div class="crud">
-        <button class="icon-button milestone-controls" id="milestone-button-edit-${this.milestone.milestoneId}" data-privilege="teacher"><span class="material-icons">edit</span></button>
         <button class="icon-button milestone-controls" id="milestone-button-delete-${this.milestone.milestoneId}" data-privilege="teacher"><span class="material-icons">clear</span></button>
+        <button class="icon-button milestone-controls" id="milestone-button-edit-${this.milestone.milestoneId}" data-privilege="teacher"><span class="material-icons">edit</span></button>
         <button class="button visibility-button toggle-milestone-details" id="toggle-milestone-details-${this.milestone.milestoneId}"><span class='material-icons'>visibility_off</span></i></button>
     </div>
     <div class="editing-live-update" id="event-form-${this.milestone.milestoneId}"></div>
