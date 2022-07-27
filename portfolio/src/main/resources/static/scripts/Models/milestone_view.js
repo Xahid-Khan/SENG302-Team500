@@ -44,7 +44,7 @@ class MilestoneView {
         this.milestoneSprints.innerHTML = this.getSprints();
         this.sprints.forEach((sprint) => {
             if (document.getElementById(`milestone-sprint-name-${this.milestone.milestoneId}-${sprint.sprintId}`)) {
-                document.getElementById(`milestone-sprint-name-${this.milestone.milestoneId}-${sprint.sprintId}`).innerText = sprint.name + ': '
+                document.getElementById(`milestone-sprint-name-${this.milestone.milestoneId}-${sprint.sprintId}`).innerText = sprint.name + ':'
             }
         })
         document.getElementById(`start-date-${this.milestone.milestoneId}`).innerText = DatetimeUtils.localToUserDMYWithoutTime(this.milestone.startDate);
@@ -77,7 +77,14 @@ class MilestoneView {
         let foundSprints = false
         this.sprints.forEach(sprint => {
             if (this.milestone.startDate >= sprint.startDate && this.milestone.startDate <= sprint.endDate || this.milestone.endDate >= sprint.startDate && this.milestone.endDate <= sprint.endDate) {
-                html += `<div class="milestone-sprint-details"  style="color: ${sprint.colour}">   - <span id="milestone-sprint-name-${this.milestone.milestoneId}-${sprint.sprintId}"></span><span>${DatetimeUtils.localToUserDMY(sprint.startDate)}</span> - <span>${DatetimeUtils.localToUserDMY(sprint.endDate)}</span>`;
+                html += `
+                <div class="event-sprint-details">
+                    <span> • </span>
+                    <span id="milestone-sprint-name-${this.milestone.milestoneId}-${sprint.sprintId}" style="background-color: ${sprint.colour}; border: 1px solid ${sprint.colour};" class="event-sprint-name"></span>
+                    <span>${DatetimeUtils.localToUserDMY(sprint.startDate)}</span>
+                    <span> - </span>
+                    <span>${DatetimeUtils.localToUserDMY(sprint.endDate)}</span>
+                </div>`;
                 foundSprints = true
             }
         });

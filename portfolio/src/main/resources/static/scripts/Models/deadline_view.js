@@ -43,7 +43,7 @@ class DeadlineView {
         this.deadlineSprints.innerHTML = this.getSprints();
         this.sprints.forEach((sprint) => {
             if (document.getElementById(`deadline-sprint-name-${this.deadline.deadlineId}-${sprint.sprintId}`)) {
-                document.getElementById(`deadline-sprint-name-${this.deadline.deadlineId}-${sprint.sprintId}`).innerText = sprint.name + ': '
+                document.getElementById(`deadline-sprint-name-${this.deadline.deadlineId}-${sprint.sprintId}`).innerText = sprint.name + ':'
             }
         })
         document.getElementById(`start-date-${this.deadline.deadlineId}`).innerText = DatetimeUtils.localToUserDMY(this.deadline.startDate);
@@ -79,7 +79,14 @@ class DeadlineView {
         let foundSprints = false
         this.sprints.forEach(sprint => {
             if (this.deadline.startDate >= sprint.startDate && this.deadline.startDate <= sprint.endDate || this.deadline.endDate >= sprint.startDate && this.deadline.endDate <= sprint.endDate) {
-                html += `<div class="deadline-sprint-details"  style="color: ${sprint.colour}">   - <span id="deadline-sprint-name-${this.deadline.deadlineId}-${sprint.sprintId}"></span><span>${DatetimeUtils.localToUserDMY(sprint.startDate)}</span> - <span>${DatetimeUtils.localToUserDMY(sprint.endDate)}</span>`;
+                html += `
+                <div class="event-sprint-details">
+                    <span> • </span>
+                    <span id="deadline-sprint-name-${this.deadline.deadlineId}-${sprint.sprintId}" style="background-color: ${sprint.colour}; border: 1px solid ${sprint.colour};" class="event-sprint-name"></span>
+                    <span>${DatetimeUtils.localToUserDMY(sprint.startDate)}</span>
+                    <span> - </span>
+                    <span>${DatetimeUtils.localToUserDMY(sprint.endDate)}</span>
+                </div>`;
                 foundSprints = true
             }
         });
