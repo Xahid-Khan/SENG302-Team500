@@ -1,3 +1,4 @@
+
 class EventView {
     expandedView = false;
 
@@ -87,7 +88,15 @@ class EventView {
         this.sprints.forEach(sprint => {
             if (this.event.startDate >= sprint.startDate && this.event.startDate <= sprint.endDate || this.event.endDate >= sprint.startDate && this.event.endDate <= sprint.endDate
             || this.event.startDate <= sprint.startDate && this.event.endDate >= sprint.endDate) {
-                html += `<div class="event-sprint-details" style="color: ${sprint.colour}">   - <span id="event-sprint-name-${this.event.eventId}-${sprint.sprintId}"></span><span>${DatetimeUtils.localToUserDMY(sprint.startDate)}</span> - <span>${DatetimeUtils.localToUserDMY(sprint.endDate)}</span>`;
+                console.log("ggsgergr" + sprint.colour);
+                html += `
+    <div class="event-sprint-details" 
+    style="
+    background-color: ${sprint.colour}; 
+    border: 1px solid ${sprint.colour}; 
+    "
+    > - <span id="event-sprint-name-${this.event.eventId}-${sprint.sprintId}"></span>
+   <span>${DatetimeUtils.localToUserDMY(sprint.startDate)}</span> - <span>${DatetimeUtils.localToUserDMY(sprint.endDate)}</span> </div>`;
                 foundSprints = true
 
                 //Done twice to handle cases of single sprint. Displays block if a sprint contains the event
