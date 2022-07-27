@@ -44,10 +44,6 @@ body {
     padding-right: 5px;
 }
 
-.sprint-events-details {
-    padding-left: 10px;
-}
-
 .sprint-events-details span {
     font-size: 14px;
 }
@@ -285,6 +281,15 @@ textarea {
 .editing-live-update {
     color: darkslateblue;
     padding-bottom: 5px;
+}
+
+.sprint-events-details {
+    margin: 3px;
+}
+
+.sprint-event-name {
+    border-radius: 3px;
+    padding: 0px 5px;
 }
 
 @media only screen and (max-width: 1590px) {

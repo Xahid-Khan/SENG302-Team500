@@ -57,19 +57,19 @@ class SprintView {
         this.sprintEvents.innerHTML = this.getEvents();
         this.events.forEach((event) => {
             if (document.getElementById(`sprint-event-name-${this.sprint.sprintId}-${event.eventId}`)) {
-                document.getElementById(`sprint-event-name-${this.sprint.sprintId}-${event.eventId}`).innerText = event.name + ': '
+                document.getElementById(`sprint-event-name-${this.sprint.sprintId}-${event.eventId}`).innerText = event.name + ':'
             }
         })
         this.sprintDeadlines.innerHTML = this.getDeadlines();
         this.deadlines.forEach((deadline) => {
             if (document.getElementById(`sprint-deadline-name-${this.sprint.sprintId}-${deadline.deadlineId}`)) {
-                document.getElementById(`sprint-deadline-name-${this.sprint.sprintId}-${deadline.deadlineId}`).innerText = deadline.name + ': '
+                document.getElementById(`sprint-deadline-name-${this.sprint.sprintId}-${deadline.deadlineId}`).innerText = deadline.name + ':'
             }
         })
         this.sprintMilestones.innerHTML = this.getMilestones();
         this.milestones.forEach((milestone) => {
             if (document.getElementById(`sprint-milestone-name-${this.sprint.sprintId}-${milestone.milestoneId}`)) {
-                document.getElementById(`sprint-milestone-name-${this.sprint.sprintId}-${milestone.milestoneId}`).innerText = milestone.name + ': '
+                document.getElementById(`sprint-milestone-name-${this.sprint.sprintId}-${milestone.milestoneId}`).innerText = milestone.name + ':'
             }
         })
         this.colourBlock.style.background = this.sprint.colour;
@@ -109,37 +109,59 @@ class SprintView {
         let html = "";
         this.events.forEach(event => {
             if (event.startDate >= this.sprint.startDate && event.startDate <= this.sprint.endDate || event.endDate >= this.sprint.startDate && event.endDate <= this.sprint.endDate) {
-                html += `<span class="material-icons">event</span> <span id="sprint-event-name-${this.sprint.id}-${event.eventId}"></span>`
+
+
+                let gradient = "linear-gradient(45deg,"
+                this.sprints.forEach(sprint => {
+                    if (event.startDate >= sprint.startDate && event.startDate <= sprint.endDate
+                        || event.endDate >= sprint.startDate && event.endDate <= sprint.endDate
+                        || event.startDate <= sprint.startDate && event.endDate >= sprint.endDate) {
+                        //Done twice to handle cases of single sprint. Displays block if a sprint contains the event
+                        gradient+=sprint.colour+","
+                        gradient+=sprint.colour+","
+                    }
+                });
+                //Splices the last comma out of the linear gradient so it compiles. Sets the line colour
+                gradient=gradient.slice(0, -1) + ')';
+                gradient = "background: " + gradient
+
+
+                html += `
+                <span class="material-icons">event</span>
+                <span id="sprint-event-name-${this.sprint.sprintId}-${event.eventId}" style="${gradient}" class="sprint-event-name"></span><span> </span>`
+
                 if (event.startDate >= this.sprint.startDate && event.startDate <= this.sprint.endDate) {
-                    html += `<span style="color: ${this.sprint.colour}">${DatetimeUtils.localToUserDMY(event.startDate)}</span> - `;
+                    html += `<span>${DatetimeUtils.localToUserDMY(event.startDate)}</span> - `;
                 } else {
                     let found = false;
                     this.sprints.forEach(sprint => {
                         if (event.startDate >= sprint.startDate && event.startDate <= sprint.endDate) {
-                            html += `<span style="color: ${sprint.colour}">${DatetimeUtils.localToUserDMY(event.startDate)}</span> - `;
+                            html += ` <span>${DatetimeUtils.localToUserDMY(event.startDate)}</span> - `;
                             found = true;
                         }
                     });
                     if (!found) {
-                        html += `<span">${DatetimeUtils.localToUserDMY(event.startDate)}</span> - `;
+                        html += ` <span>${DatetimeUtils.localToUserDMY(event.startDate)}</span> - `;
                     }
                 }
                 if (event.endDate >= this.sprint.startDate && event.endDate <= this.sprint.endDate) {
-                    html += `<span style="color: ${this.sprint.colour}">${DatetimeUtils.localToUserDMY(event.endDate)}</span><br>`;
+                    html += ` <span>${DatetimeUtils.localToUserDMY(event.endDate)}</span><br>`;
                 } else {
                     let found = false;
                     this.sprints.forEach(sprint => {
                         if (event.endDate >= sprint.startDate && event.endDate <= sprint.endDate) {
-                            html += `<span style="color: ${sprint.colour}">${DatetimeUtils.localToUserDMY(event.endDate)}</span><br>`;
+                            html += ` <span>${DatetimeUtils.localToUserDMY(event.endDate)}</span><br>`;
                             found = true;
                         }
                     });
                     if (!found) {
-                        html += `<span>${DatetimeUtils.localToUserDMY(event.endDate)}</span>`;
+                        html += ` <span>${DatetimeUtils.localToUserDMY(event.endDate)}</span>`;
                     }
                 }
             }
         });
+
+
         if (html === "") {
             html = "<label>No events will occur during this sprint</label>"
         } else {
@@ -152,7 +174,20 @@ class SprintView {
         let html = "";
         this.deadlines.forEach(deadline => {
             if (deadline.startDate >= this.sprint.startDate && deadline.startDate <= this.sprint.endDate) {
-                html += `<span class="material-icons">timer</span> <span id="sprint-deadline-name-${this.sprint.id}-${deadline.deadlineId}"></span> <span style="color: ${this.sprint.colour}">${DatetimeUtils.localToUserDMY(deadline.startDate)}</span><br>`;
+
+                let gradient = "linear-gradient(45deg,"
+                this.sprints.forEach(sprint => {
+                    if (deadline.startDate >= sprint.startDate && deadline.startDate <= sprint.endDate) {
+                        //Done twice to handle cases of single sprint. Displays block if a sprint contains the event
+                        gradient+=sprint.colour+","
+                        gradient+=sprint.colour+","
+                    }
+                });
+                //Splices the last comma out of the linear gradient so it compiles. Sets the line colour
+                gradient=gradient.slice(0, -1) + ')';
+                gradient = "background: " + gradient
+
+                html += `<span class="material-icons">timer</span> <span id="sprint-deadline-name-${this.sprint.sprintId}-${deadline.deadlineId}" style="${gradient}" class="sprint-event-name"></span> <span>${DatetimeUtils.localToUserDMY(deadline.startDate)}</span><br>`;
             }
         });
         if (html === "") {
@@ -167,7 +202,20 @@ class SprintView {
         let html = "";
         this.milestones.forEach(milestone => {
             if (milestone.startDate >= this.sprint.startDate && milestone.startDate <= this.sprint.endDate) {
-                html += `<span class="material-icons">flag</span> <span id="sprint-milestone-name-${this.sprint.sprintId}-${milestone.milestoneId}"></span> <span style="color: ${this.sprint.colour}">${DatetimeUtils.localToUserDMY(milestone.startDate)}</span><br>`;
+
+                let gradient = "linear-gradient(45deg,"
+                this.sprints.forEach(sprint => {
+                    if (milestone.startDate >= sprint.startDate && milestone.startDate <= sprint.endDate) {
+                        //Done twice to handle cases of single sprint. Displays block if a sprint contains the event
+                        gradient+=sprint.colour+","
+                        gradient+=sprint.colour+","
+                    }
+                });
+                //Splices the last comma out of the linear gradient so it compiles. Sets the line colour
+                gradient=gradient.slice(0, -1) + ')';
+                gradient = "background: " + gradient
+
+                html += `<span class="material-icons">flag</span> <span id="sprint-milestone-name-${this.sprint.sprintId}-${milestone.milestoneId}" style="${gradient}" class="sprint-event-name"></span> <span>${DatetimeUtils.localToUserDMY(milestone.startDate)}</span><br>`;
             }
         });
         if (html === "") {
