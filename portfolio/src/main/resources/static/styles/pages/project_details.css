@@ -287,6 +287,18 @@ textarea {
     padding-bottom: 5px;
 }
 
+.modal{
+    padding: 1em;
+    max-width: 50ch;
+
+
+}
+
+.modal::backdrop{
+    background: #7f7e82;
+    opacity: .2;
+}
+
 @media only screen and (max-width: 1590px) {
 
     .input-start-time {

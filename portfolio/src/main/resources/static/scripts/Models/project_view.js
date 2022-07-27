@@ -140,7 +140,7 @@ class ProjectView {
                       <button class="button visibility-button toggle-project-details" id="toggle-project-details-${this.project.id}"><span class='material-icons'>visibility</span></button>
                   </span>
                   <span class="crud">
-                      <button class="button icon-button" id="project-delete-button-${this.project.id}" data-privilege="teacher"><span class="material-icons">clear</span></button>
+                      <button class="button icon-button" onclick="document.getElementById('modal-open').style.display='block'" id="project-delete-button-${this.project.id}" data-privilege="teacher"><span class="material-icons">clear</span></button>
                       <button class="button icon-button edit-project" id="project-edit-button-${this.project.id}" data-privilege="teacher"><span class="material-icons">edit</span></button>
                   </span>
                   
@@ -196,21 +196,20 @@ class ProjectView {
                 </div>
               </div>
               
-<!--              Delete modal-->
-              <div class="modal fade" id="project-delete-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title" id="myModalLabel">Delete Project?</h3>
-
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" id="deleteButton" href="#">Delete</button>
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                </div>
-            </div>
-        </div>
+              <div id="modal-open" class="modal">
+  <span onclick="document.getElementById('modal-open').style.display='none'" class="close">&times;</span>
+  <form class="modal-content">
+    <div class="container">
+      <h1>Delete?</h1>
+      <div class="clearfix">
+        <button type="button" class="cancelbtn" onclick="document.getElementById('modal-open').style.display='none'" class="close">Cancel</button>
+        <button type="button" class="deletebtn">Delete</button>
+      </div>
     </div>
+  </form>
+</div>
+              
+
             `;
 
         document.getElementById(`project-title-text-${this.project.id}`).innerText = this.project.name;
@@ -758,7 +757,8 @@ class ProjectView {
     wireView() {
         document.getElementById(`project-edit-button-${this.project.id}`).addEventListener("click", () => this.editCallback());
         document.getElementById(`toggle-project-details-${this.project.id}`).addEventListener("click", () => {this.toggleProjectDetails(); this.callPing()})
-        document.getElementById(`project-delete-button-${this.project.id}`).addEventListener("click", () => this.deleteCallback());
+        // document.getElementById(`project-delete-button-${this.project.id}`).addEventListener("click", () => this.deleteCallback());
+        // document.getElementById(`project-delete-button-${this.project.id}`).addEventListener("click", () => this.deleteCallback());
         document.getElementById(`monthly-planner-redirect-button-${this.project.id}`).addEventListener("click", () => this.monthlyPlannerRedirect(this.project.id));
         this.toggleSprintsButton.addEventListener('click', this.showSprints.bind(this));
         this.addSprintButton.addEventListener('click', this.openAddSprintForm.bind(this));
