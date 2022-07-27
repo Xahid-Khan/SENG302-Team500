@@ -287,22 +287,26 @@ textarea {
     padding-bottom: 5px;
 }
 
-.modal {
+.modal{
     display: none;
+    background-color: #fff;
+    width: 500px;
+    max-width: 100%;
+    border-radius: 12px;
+}
+.modal-container{
+    display: none;
+    background-color: rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
     position: fixed;
-    padding-left: 40%;
-    padding-top: 30%;
-    left: 0%;
-    right: 0%;
-    top: 0%;
-    bottom: 0%;
-    overflow: auto;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
 }
 
-.modal::backdrop{
-    background: #7f7e82;
-    opacity: .2;
-}
 
 @media only screen and (max-width: 1590px) {
 

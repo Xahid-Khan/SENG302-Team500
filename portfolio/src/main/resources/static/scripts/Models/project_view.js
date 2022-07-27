@@ -123,7 +123,11 @@ class ProjectView {
 
         console.log("Deadline bound");
     }
-
+    handleModalClose(){
+        document.getElementById('modal-open').style.display='none'
+        document.getElementById('modal-open-container').style.height='0'
+        document.getElementById('modal-open-container').style.width='0'
+    }
     /**
      * Adds HTML in to the project container, with the main attributes of projects and sprints.
      */
@@ -196,16 +200,16 @@ class ProjectView {
                 </div>
               </div>
               
-              <div id="modal-open" class="modal">
-  <span onclick="document.getElementById('modal-open').style.display='none'" class="close">&times;</span>
-  <form class="modal-content">
-    <div class="container">
+              
+    <div class="modal-container" id="modal-open-container">
+    <div id="modal-open" class="modal">
+    <span onclick="document.getElementById('modal-open').style.display='none'" class="close">&times;</span>
       <h1>Delete?</h1>
       <div class="clearfix">
         <button type="button" class="cancelbtn" onclick="document.getElementById('modal-open').style.display='none'" class="close">Cancel</button>
+<!--Close modal container too-->
         <button type="button" class="deletebtn">Delete</button>
       </div>
-    </div>
   </form>
 </div>
               
