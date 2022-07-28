@@ -7,7 +7,6 @@ import nz.ac.canterbury.seng302.portfolio.service.DeadlineService;
 import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
 import nz.ac.canterbury.seng302.portfolio.service.RolesService;
 import nz.ac.canterbury.seng302.portfolio.service.ValidationService;
-import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -34,6 +33,9 @@ public class DeadlineController {
 
     @Autowired
     private RolesService rolesService;
+
+    private static final String TEACHER = "TEACHER";
+    private static final String COURSE_ADMINISTRATOR = "COURSE_ADMINISTRATOR";
 
     /**
      * This method will be invoked when API receives a GET request with a deadline ID embedded in URL.
@@ -83,7 +85,7 @@ public class DeadlineController {
             @RequestBody BaseDeadlineContract deadline
     ) {
         ArrayList<String> roles = rolesService.getRolesByToken(principal);
-        if (roles.contains("TEACHER") || roles.contains("COORDINATOR")) {
+        if (roles.contains(TEACHER) || roles.contains(COURSE_ADMINISTRATOR)) {
             String errorMessage = validationService.checkAddDeadline(projectId, deadline);
             if (!errorMessage.equals("Okay")) {
                 if (errorMessage.equals("Project ID does not exist") || errorMessage.equals("Deadline ID does not exist")) {
@@ -118,7 +120,7 @@ public class DeadlineController {
             @RequestBody BaseDeadlineContract deadline
     ) {
         ArrayList<String> roles = rolesService.getRolesByToken(principal);
-        if (roles.contains("TEACHER") || roles.contains("COORDINATOR")) {
+        if (roles.contains(TEACHER) || roles.contains(COURSE_ADMINISTRATOR)) {
             String errorMessage = validationService.checkUpdateDeadline(id, deadline);
             if (!errorMessage.equals("Okay")) {
                 if (errorMessage.equals("Project ID does not exist") || errorMessage.equals(
@@ -151,7 +153,7 @@ public class DeadlineController {
             @PathVariable String id
     ) {
         ArrayList<String> roles = rolesService.getRolesByToken(principal);
-        if (roles.contains("TEACHER") || roles.contains("COORDINATOR")) {
+        if (roles.contains(TEACHER) || roles.contains(COURSE_ADMINISTRATOR)) {
             try {
                 deadlineService.delete(id);
 
