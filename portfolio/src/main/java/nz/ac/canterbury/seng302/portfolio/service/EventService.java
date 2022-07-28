@@ -74,6 +74,7 @@ public class EventService {
 
     project.removeEvent(event);
     eventRepository.deleteById(eventId);
+    // TODO: This causes an issue with the test
     projectRepository.save(project);
   }
 
