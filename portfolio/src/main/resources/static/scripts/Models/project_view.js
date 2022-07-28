@@ -72,8 +72,8 @@ class ProjectView {
      */
     appendSprint(sprintData) {
         const sprintElement = document.createElement("div");
+        sprintElement.classList.add(`sprint-view-${this.project.id}`)
         sprintElement.style.margin='15px 0 15px 0';
-
         this.sprintContainer.appendChild(sprintElement);
 
         console.log("Binding sprint");
@@ -87,6 +87,7 @@ class ProjectView {
 
     appendEvent(eventData) {
         const eventElement = document.createElement("div")
+        eventElement.classList.add(`event-view-${this.project.id}`)
         eventElement.style.margin='15px 0 15px 0';
         this.eventContainer.appendChild(eventElement);
 
@@ -99,6 +100,7 @@ class ProjectView {
 
     appendMilestone(milestoneData) {
         const milestoneElement = document.createElement("div")
+        milestoneElement.classList.add(`milestone-view-${this.project.id}`)
         milestoneElement.style.margin='15px 0 15px 0';
         this.milestoneContainer.appendChild(milestoneElement);
 
@@ -111,6 +113,7 @@ class ProjectView {
 
     appendDeadline(deadlineData) {
         const deadlineElement = document.createElement("div")
+        deadlineElement.classList.add(`deadline-view-${this.project.id}`)
         deadlineElement.style.margin='15px 0 15px 0';
         this.deadlineContainer.appendChild(deadlineElement);
 
