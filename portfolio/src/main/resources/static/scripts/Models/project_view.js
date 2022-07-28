@@ -52,6 +52,10 @@ class ProjectView {
         this.eventEditCallback = eventEditCallback;
         this.deadlineEditCallback = deadlineEditCallback;
         this.milestoneEditCallback = milestoneEditCallback;
+        this.modalDeleteContainer=document.getElementById(`modal-delete-open`);
+        this.modalDeleteX=document.getElementById(`modal-delete-x`);
+        this.modalDeleteCancel=document.getElementById(`modal-delete-cancel`);
+        this.modalDeleteConfirm=document.getElementById(`modal-delete-confirm`);
 
         this.eventDiv = null;
         this.showingEventDiv = false;
@@ -200,18 +204,11 @@ class ProjectView {
                 </div>
               </div>
               
-              
-    <div class="modal-container" id="modal-open-container">
-    <div id="modal-open" class="modal">
-    <span onclick="document.getElementById('modal-open').style.display='none'" class="close">&times;</span>
-      <h1>Delete?</h1>
-      <div class="clearfix">
-        <button type="button" class="cancelbtn" onclick="document.getElementById('modal-open').style.display='none'" class="close">Cancel</button>
-<!--Close modal container too-->
-        <button type="button" class="deletebtn">Delete</button>
-      </div>
+    
   </form>
 </div>
+
+
               
 
             `;
@@ -242,6 +239,7 @@ class ProjectView {
         this.toggleDeadlinesButton = document.getElementById(`toggle-deadline-button-${this.project.id}`);
         this.deadlinesContainer = document.getElementById(`deadlines-container-${this.project.id}`);
         this.deadlineContainer = document.getElementById(`deadlines-container-${this.project.id}`);
+
 
         for (let i = 0; i < this.project.sprints.length; i++) {
             this.appendSprint(this.project.sprints[i]);
@@ -757,12 +755,32 @@ class ProjectView {
     monthlyPlannerRedirect(projectId) {
         window.location.href = `monthly-planner/${projectId}`
     }
+    openDeleteModal(){
+        this.modalDeleteContainer.style.display='block';
+        this.modalDeleteX.addEventListener("click",()=>this.cancelDeleteModal())
+        this.modalDeleteCancel.addEventListener("click",()=>this.cancelDeleteModal())
+        this.modalDeleteConfirm.addEventListener("click",()=>this.confirmDeleteModal())
 
+
+    }
+    cancelDeleteModal(){
+        this.modalDeleteContainer.style.display='none';
+        this.modalDeleteX.removeEventListener("click",()=>this.cancelDeleteModal())
+        this.modalDeleteCancel.removeEventListener("click",()=>this.cancelDeleteModal())
+        this.modalDeleteConfirm.removeEventListener("click",()=>this.confirmDeleteModal())
+
+    }
+    confirmDeleteModal(){
+        this.modalDeleteContainer.style.display='none';
+        this.modalDeleteX.removeEventListener("click",()=>this.cancelDeleteModal())
+        this.modalDeleteCancel.removeEventListener("click",()=>this.cancelDeleteModal())
+        this.modalDeleteConfirm.removeEventListener("click",()=>this.confirmDeleteModal())
+        this.deleteCallback()
+    }
     wireView() {
         document.getElementById(`project-edit-button-${this.project.id}`).addEventListener("click", () => this.editCallback());
         document.getElementById(`toggle-project-details-${this.project.id}`).addEventListener("click", () => {this.toggleProjectDetails(); this.callPing()})
-        // document.getElementById(`project-delete-button-${this.project.id}`).addEventListener("click", () => this.deleteCallback());
-        // document.getElementById(`project-delete-button-${this.project.id}`).addEventListener("click", () => this.deleteCallback());
+        document.getElementById(`project-delete-button-${this.project.id}`).addEventListener("click", () => this.openDeleteModal());
         document.getElementById(`monthly-planner-redirect-button-${this.project.id}`).addEventListener("click", () => this.monthlyPlannerRedirect(this.project.id));
         this.toggleSprintsButton.addEventListener('click', this.showSprints.bind(this));
         this.addSprintButton.addEventListener('click', this.openAddSprintForm.bind(this));
