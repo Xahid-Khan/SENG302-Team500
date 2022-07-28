@@ -42,17 +42,17 @@ branch-build:
     - dev
 
 ##### TESTING #####
-#junit-porfolio:
-#  stage: test
-#  script:
-#    - cd portfolio
-#    - ./gradlew test
+junit-porfolio:
+  stage: test
+  script:
+    - cd portfolio
+    - ./gradlew test
 
-#junit-identityprovider:
-#  stage: test
-#  script:
-#    - cd identityprovider
-#    - ./gradlew test
+junit-identityprovider:
+  stage: test
+  script:
+    - cd identityprovider
+    - ./gradlew test
 
 ##### PRE-DEPLOY #####
 predeploy-copy-environment-variables:
