@@ -113,7 +113,6 @@ public class EventServiceTest {
 
     // deletes it
     var idToDelete = event1.getId();
-    // BREAKS HERE! TODO
     eventService.delete(idToDelete);
 
     // Check the event is deleted

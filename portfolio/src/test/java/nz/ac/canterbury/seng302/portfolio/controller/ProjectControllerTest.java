@@ -159,7 +159,7 @@ public class ProjectControllerTest {
         this.mockMvc.perform(delete(apiPath))
                 .andExpect(status().isBadRequest());
 
-        AuthorisationParamsHelper.setParams("role", "Coordinator");
+        AuthorisationParamsHelper.setParams("role", "COORDINATOR");
         this.mockMvc.perform(delete(apiPath))
                 .andExpect(status().isBadRequest());
 
@@ -180,7 +180,6 @@ public class ProjectControllerTest {
      */
     @Test
     public void updateProject() throws Exception {
-//        GetAuthorizationParams param1 = new GetAuthorizationParams("role", "TEACHER");
         var apiPath = "/api/v1/projects/" + projectId;
         var body = """
                 {

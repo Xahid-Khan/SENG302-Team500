@@ -28,13 +28,13 @@ public class RolesTest {
     @Test
     public void removeProject() throws Exception {
         var apiPath = "/api/v1/projects/" + projectId;
-        AuthorisationParamsHelper.setParams("role", "Student");
+        AuthorisationParamsHelper.setParams("role", "STUDENT");
 
         this.mockMvc.perform(delete(apiPath))
                                 .andExpect(status().isForbidden())
                                 .andReturn();
 
-        AuthorisationParamsHelper.setParams("role", "Teacher");
+        AuthorisationParamsHelper.setParams("role", "TEACHER");
         this.mockMvc.perform(delete(apiPath))
                 .andExpect(status().isBadRequest());
 
@@ -42,11 +42,11 @@ public class RolesTest {
         this.mockMvc.perform(delete(apiPath))
                 .andExpect(status().isBadRequest());
 
-        AuthorisationParamsHelper.setParams("role", "COORDINATOR, Teacher");
+        AuthorisationParamsHelper.setParams("role", "COORDINATOR, TEACHER");
         this.mockMvc.perform(delete("/api/v1/projects/some_project"))
                 .andExpect(status().isBadRequest());
 
-        AuthorisationParamsHelper.setParams("role", "COORDINATOR, Teacher, Student");
+        AuthorisationParamsHelper.setParams("role", "COORDINATOR, TEACHER, STUDENT");
         this.mockMvc.perform(delete("/api/v1/projects/123456"))
                 .andExpect(status().isBadRequest());
     }
@@ -59,13 +59,13 @@ public class RolesTest {
     @Test
     public void viewAllProjects() throws Exception {
         var apiPath = "/api/v1/projects/";
-        AuthorisationParamsHelper.setParams("role", "Student");
+        AuthorisationParamsHelper.setParams("role", "STUDENT");
 
         this.mockMvc.perform(get(apiPath))
                 .andExpect(status().isOk())
                 .andReturn();
 
-        AuthorisationParamsHelper.setParams("role", "Teacher");
+        AuthorisationParamsHelper.setParams("role", "TEACHER");
         this.mockMvc.perform(get(apiPath))
                 .andExpect(status().isOk());
 
@@ -73,11 +73,11 @@ public class RolesTest {
         this.mockMvc.perform(get(apiPath))
                 .andExpect(status().isOk());
 
-        AuthorisationParamsHelper.setParams("role", "COORDINATOR, Teacher");
+        AuthorisationParamsHelper.setParams("role", "COORDINATOR, TEACHER");
         this.mockMvc.perform(get("/api/v1/projects/some_project"))
                 .andExpect(status().isNotFound());
 
-        AuthorisationParamsHelper.setParams("role", "COORDINATOR, Teacher, Student");
+        AuthorisationParamsHelper.setParams("role", "COORDINATOR, TEACHER, STUDENT");
         this.mockMvc.perform(get("/api/v1/projects/123456"))
                 .andExpect(status().isNotFound());
     }
@@ -97,7 +97,7 @@ public class RolesTest {
                     "endDate": "2023-01-01T10:00:00.00Z"
                 }
                 """;
-        AuthorisationParamsHelper.setParams("role", "Student");
+        AuthorisationParamsHelper.setParams("role", "STUDENT");
 
         this.mockMvc.perform(put(apiPath)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -105,7 +105,7 @@ public class RolesTest {
                 .andExpect(status().isForbidden())
                 .andReturn();
 
-        AuthorisationParamsHelper.setParams("role", "Teacher");
+        AuthorisationParamsHelper.setParams("role", "TEACHER");
         this.mockMvc.perform(put(apiPath)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body))
@@ -117,11 +117,11 @@ public class RolesTest {
                         .content(body))
                 .andExpect(status().isNotFound());
 
-        AuthorisationParamsHelper.setParams("role", "COORDINATOR, Teacher");
+        AuthorisationParamsHelper.setParams("role", "COORDINATOR, TEACHER");
         this.mockMvc.perform(put("/api/v1/projects/some_project"))
                 .andExpect(status().isBadRequest());
 
-        AuthorisationParamsHelper.setParams("role", "COORDINATOR, Teacher, Student");
+        AuthorisationParamsHelper.setParams("role", "COORDINATOR, TEACHER, STUDENT");
         this.mockMvc.perform(put("/api/v1/projects/123456"))
                 .andExpect(status().isBadRequest());
     }
