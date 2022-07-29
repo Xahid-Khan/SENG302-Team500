@@ -27,24 +27,24 @@ public class LiveProjectUpdatesController {
    *   is working as expected.
    * </p>
    */
-  @MessageMapping("/test/portfolio/show")
-  @SendTo("/test/portfolio/topic/pongs")
+  @MessageMapping("/show")
+  @SendTo("/topic/pongs")
   public String show(@AuthenticationPrincipal PreAuthenticatedAuthenticationToken principal,
                  String location) {
     var authState = (PortfolioPrincipal) principal.getPrincipal();
     return "show~" + location + "~" + authState.getName();
   }
 
-  @MessageMapping("/test/portfolio/cancel")
-  @SendTo("/test/portfolio/topic/pongs")
+  @MessageMapping("/cancel")
+  @SendTo("/topic/pongs")
   public String cancel(@AuthenticationPrincipal PreAuthenticatedAuthenticationToken principal,
                      String location) {
     var authState = (PortfolioPrincipal) principal.getPrincipal();
     return "cancel~" + location + "~" + authState.getName();
   }
 
-  @MessageMapping("/test/portfolio/save")
-  @SendTo("/test/portfolio/topic/pongs")
+  @MessageMapping("/save")
+  @SendTo("/topic/pongs")
   public String save(@AuthenticationPrincipal PreAuthenticatedAuthenticationToken principal,
                      String location) {
     var authState = (PortfolioPrincipal) principal.getPrincipal();

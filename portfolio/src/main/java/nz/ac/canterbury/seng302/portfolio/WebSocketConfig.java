@@ -40,8 +40,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
   @Override
   public void configureMessageBroker(MessageBrokerRegistry config) {
     config
-        .setApplicationDestinationPrefixes("/test/portfolio/app")
-        .enableSimpleBroker("/test/portfolio/topic")
+        .setApplicationDestinationPrefixes("/app")
+        .enableSimpleBroker("/topic")
     ;
   }
 
@@ -51,7 +51,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
    */
   @Override
   public void registerStompEndpoints(StompEndpointRegistry config) {
-    config.addEndpoint("test/portfolio/socket");
-    config.addEndpoint("test/portfolio/socket").withSockJS();
+    config.addEndpoint("socket");
+    config.addEndpoint("socket").withSockJS();
   }
 }

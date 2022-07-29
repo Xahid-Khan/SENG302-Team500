@@ -166,7 +166,7 @@ class PingPageStore {
 
     protected subscribe(): void {
         console.log("Subscribing...")
-        this.stomp.subscribe("/test/portfolio/topic/pongs", (frame: StompMessage) => {
+        this.stomp.subscribe("/topic/pongs", (frame: StompMessage) => {
             this.onReceivePong(frame)
         })
     }
