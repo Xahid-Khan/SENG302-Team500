@@ -298,7 +298,7 @@ textarea {
 .event-sprint-container {
     display: flex;
     flex-direction: column;
-    margin: 4px 0 4px 0;
+    margin: 6px 0 6px 0;
     padding-left: 10px;
 }
 
