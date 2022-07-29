@@ -37,16 +37,21 @@ class SprintView {
         </div>
     
         <div class="events-details" id="sprint-details-${this.sprint.sprintId}">
-            <div class="sprint-description"><span><label>Description: </label></span> <span  id="sprint-description-${this.sprint.sprintId}"></span></div>
-            <div class="sprint-events" id="sprint-events-${this.sprint.sprintId}"></div>
-            <div class="sprint-deadlines" id="sprint-deadlines-${this.sprint.sprintId}"></div>
-            <div class="sprint-milestones" id="sprint-milestones-${this.sprint.sprintId}"></div>
+            <label class="event-description-label" id="event-description-label-${this.sprint.sprintId}"></label>
+            <div  id="sprint-description-${this.sprint.sprintId}" class="event-description"></div>
+            <label>Occurences during this sprint:</label>
+            <div>
+                <div class="sprint-events" id="sprint-events-${this.sprint.sprintId}"></div>
+                <div class="sprint-deadlines" id="sprint-deadlines-${this.sprint.sprintId}"></div>
+                <div class="sprint-milestones" id="sprint-milestones-${this.sprint.sprintId}"></div>
+            </div>
         </div>
     </div>
     `;
 
         this.toggleButton = document.getElementById(`toggle-sprint-details-${this.sprint.sprintId}`);
         this.sprintDetails = document.getElementById(`sprint-details-${this.sprint.sprintId}`);
+        this.descriptionLabel = document.getElementById(`event-description-label-${this.sprint.sprintId}`);
         this.description = document.getElementById(`sprint-description-${this.sprint.sprintId}`);
         this.colourBlock = document.getElementById(`sprint-colour-block-${this.sprint.sprintId}`);
         this.details = document.getElementById(`sprint-details-${this.sprint.sprintId}`);
@@ -55,7 +60,11 @@ class SprintView {
         this.sprintMilestones = document.getElementById(`sprint-milestones-${this.sprint.sprintId}`);
         document.getElementById(`sprint-order-text-${this.sprint.sprintId}`).innerText = `Sprint ${this.sprint.orderNumber}`;
         document.getElementById(`sprint-title-text-${this.sprint.sprintId}`).innerText = this.sprint.name;
+        if(this.sprint.description !== ''){
+            this.descriptionLabel.innerText = "Description:\n";
+        }
         this.description.innerText = this.sprint.description;
+
         this.sprintEvents.innerHTML = this.getEvents();
         this.events.forEach((event) => {
             if (document.getElementById(`sprint-event-name-${this.sprint.sprintId}-${event.eventId}`)) {
@@ -127,10 +136,12 @@ class SprintView {
                 gradient=gradient.slice(0, -1) + ')';
                 gradient = "background: " + gradient
 
-
                 html += `
-                <span class="material-icons">event</span>
-                <span id="sprint-event-name-${this.sprint.sprintId}-${event.eventId}" style="${gradient}" class="sprint-event-name"></span><span> </span>`
+                <div class="event-sprint-container">
+                    <div class="event-sprint-details">
+                        <span class="material-icons" style="font-size: 14px">event</span>
+                        <span id="sprint-event-name-${this.sprint.sprintId}-${event.eventId}" class="sprint-event-name"></span>
+                        <span> </span>`
 
                 if (event.startDate >= this.sprint.startDate && event.startDate <= this.sprint.endDate) {
                     html += `<span>${DatetimeUtils.localToUserDMY(event.startDate)}</span> - `;
@@ -138,7 +149,7 @@ class SprintView {
                     let found = false;
                     this.sprints.forEach(sprint => {
                         if (event.startDate >= sprint.startDate && event.startDate <= sprint.endDate) {
-                            html += `<span style="color: ${sprint.colour}">${DatetimeUtils.localToUserDMY(event.startDate)}</span> - `;
+                            html += `<span>${DatetimeUtils.localToUserDMY(event.startDate)}</span> - `;
                             found = true;
                         }
                     });
@@ -147,12 +158,12 @@ class SprintView {
                     }
                 }
                 if (event.endDate >= this.sprint.startDate && event.endDate <= this.sprint.endDate) {
-                    html += `<span style="color: ${this.sprint.colour}">${DatetimeUtils.localToUserDMY(event.endDate)}</span><br>`;
+                    html += `<span>${DatetimeUtils.localToUserDMY(event.endDate)}</span><br>`;
                 } else {
                     let found = false;
                     this.sprints.forEach(sprint => {
                         if (event.endDate >= sprint.startDate && event.endDate <= sprint.endDate) {
-                            html += `<span style="color: ${sprint.colour}">${DatetimeUtils.localToUserDMY(event.endDate)}</span><br>`;
+                            html += `<span>${DatetimeUtils.localToUserDMY(event.endDate)}</span><br>`;
                             found = true;
                         }
                     });
@@ -160,15 +171,14 @@ class SprintView {
                         html += `<span>${DatetimeUtils.localToUserDMY(event.endDate)}</span>`;
                     }
                 }
+                html += `
+                    </div>
+                    <div style="${gradient}" class="event-sprint-colour-block"></div>
+                </div>`;
+
             }
         });
 
-
-        if (html === "") {
-            html = "<label>No events will occur during this sprint</label>"
-        } else {
-            html = `<label>Events occurring during this sprint: </label> <div class="sprint-events-details">` + html;
-        }
         return html;
     }
 
@@ -189,14 +199,18 @@ class SprintView {
                 gradient=gradient.slice(0, -1) + ')';
                 gradient = "background: " + gradient
 
-                html += `<span class="material-icons">timer</span> <span id="sprint-deadline-name-${this.sprint.sprintId}-${deadline.deadlineId}" style="${gradient}" class="sprint-event-name"></span> <span>${DatetimeUtils.localToUserDMY(deadline.startDate)}</span><br>`;
+                html += `
+                <div class="event-sprint-container">
+                    <div class="event-sprint-details">
+                        <span class="material-icons" style="font-size: 14px">timer</span>
+                        <span id="sprint-deadline-name-${this.sprint.sprintId}-${deadline.deadlineId}" class="sprint-event-name"></span>
+                        <span>${DatetimeUtils.localToUserDMY(deadline.startDate)}</span><br>
+                    </div>
+                    <div style="${gradient}" class="event-sprint-colour-block"></div>
+                </div>`;
             }
         });
-        if (html === "") {
-            html += "<label>No deadlines will occur during this sprint</label>"
-        } else {
-            html = `<label>Deadlines occurring during this sprint: </label> <div class="sprint-events-details">` + html;
-        }
+
         return html;
     }
 
@@ -217,14 +231,18 @@ class SprintView {
                 gradient=gradient.slice(0, -1) + ')';
                 gradient = "background: " + gradient
 
-                html += `<span class="material-icons">flag</span> <span id="sprint-milestone-name-${this.sprint.sprintId}-${milestone.milestoneId}" style="${gradient}" class="sprint-event-name"></span> <span>${DatetimeUtils.localToUserDMY(milestone.startDate)}</span><br>`;
+                html += `
+                <div class="event-sprint-container">
+                    <div class="event-sprint-details">
+                        <span class="material-icons" style="font-size: 14px">flag</span>
+                        <span id="sprint-milestone-name-${this.sprint.sprintId}-${milestone.milestoneId}" class="sprint-event-name"></span>
+                        <span>${DatetimeUtils.localToUserDMY(milestone.startDate)}</span><br>
+                    </div>
+                    <div style="${gradient}" class="event-sprint-colour-block"></div>
+                </div>`;
             }
         });
-        if (html === "") {
-            html = "<label>No milestones will occur during this sprint</label>"
-        } else {
-            html = `<label>Milestones occurring during this sprint: </label> <div class="sprint-events-details">` + html;
-        }
+
         return html;
     }
 

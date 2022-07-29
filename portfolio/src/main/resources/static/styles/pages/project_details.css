@@ -98,6 +98,7 @@ body {
     display: none;
     overflow: hidden;
     font-size: 14px;
+    padding-left: 10px;
 }
 
 .events-sprints {
@@ -288,6 +289,7 @@ textarea {
 }
 
 .event-sprint-details {
+    font-size: 14px;
 }
 
 .event-sprint-name {
