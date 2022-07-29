@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html lang="en" xmlns:th="http://thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>My Account</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
@@ -40,7 +40,7 @@
     <div class="container">
         <div class="name-container">
             <div class="image-container" style="padding:0">
-                <img th:src="'//' + ${globalImagePath} + ${userId}"
+                <img id="userPhoto" th:src="'//' + ${globalImagePath} + ${userId}"
                      onerror="this.onerror=null;this.src='https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png'"
                        width="150" height="150" alt="Placeholder Profile Photo">
             </div>
@@ -54,9 +54,8 @@
             <div>
                 <form id="deletePhotoForm" action="#" th:action="@{edit_account/imageDelete}" th:object="${user}" method="post"
                     style="float:right; margin-left: 4px">
-                    <button class="button">
-                        Delete Photo
-                    </button>
+                    <button class="button" id="deleteUserPhoto" type="button">Delete Photo</button>
+                    <button type="submit" id="deletePhotoSubmissionForm" style="display: none" hidden></button>
                 </form>
                 <button class="button" onclick="location.href='edit_account'" type="button">Edit Details</button>
                 <button class="button" onclick="location.href='edit_password'" type="button">Edit Password</button>
@@ -98,8 +97,30 @@
             </tr>
         </table>
     </div>
+</div>
 
+<div class="modal-delete-container" id="modal-delete-open">
+    <div class="modal-delete">
+        <div class="modal-delete-header">
+            <div class="modal-delete-title">
+                Delete Confirmation
+            </div>
+
+            <div class="modal-delete-close-button" id="modal-delete-x">&times;</div>
+        </div>
+        <div class="border-line"></div>
+        <div class="modal-delete-body">
+            Are you sure you want to delete?
+        </div>
+        <div class="modal-delete-buttons">
+            <button class="button" id="modal-delete-cancel">Cancel</button>
+            <button class="button dangerous-button" id="modal-delete-confirm">Delete</button>
+        </div>
+    </div>
 </div>
 
 </body>
+
+<script type="text/javascript" th:src="@{scripts/user_profile_page.js}"></script>
+
 </html>
