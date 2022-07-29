@@ -63,7 +63,6 @@ predeploy-copy-environment-variables:
   only:
     - dev
     - tags
-    - master
 
 ##### SONARQUBE #####
 sonarqube-report:
@@ -125,7 +124,6 @@ deploy-production-identityprovider:
       - identityprovider/build/libs
   only:
     - tags
-    - master
 
 deploy-production-portfolio:
   stage: deploy
@@ -143,4 +141,3 @@ deploy-production-portfolio:
       - portfolio/build/libs
   only:
     - tags
-    - master
