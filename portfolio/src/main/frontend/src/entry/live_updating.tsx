@@ -38,7 +38,7 @@ class PingPageStore {
         })
 
         this.stomp = new StompClient({
-            webSocketFactory: () => new SockJS("/socket"),
+            webSocketFactory: () => new SockJS("/test/portfolio/socket"),
             connectionTimeout: 10000,
             debug: (msg) => console.log(new Date(), msg)
         })
