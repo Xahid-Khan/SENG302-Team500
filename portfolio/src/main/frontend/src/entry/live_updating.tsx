@@ -86,6 +86,7 @@ class PingPageStore {
 
     async start() {
         await new Promise<void>((res) => {
+            console.log("res :", res)
             this.connect(res)
         })
         if (!this.connected) {
@@ -135,7 +136,7 @@ class PingPageStore {
                 this.connectStatus = new LoadingError(evt)
             })
         }
-
+        console.log("stomp :", this.stomp)
         this.stomp.activate()
     }
 
@@ -165,7 +166,7 @@ class PingPageStore {
 
     protected subscribe(): void {
         console.log("Subscribing...")
-        this.stomp.subscribe("/topic/pongs", (frame: StompMessage) => {
+        this.stomp.subscribe("/test/portfolio/topic/pongs", (frame: StompMessage) => {
             this.onReceivePong(frame)
         })
     }
