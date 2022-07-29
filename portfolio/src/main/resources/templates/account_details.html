@@ -57,7 +57,7 @@
                     <button class="button" id="deleteUserPhoto" type="button">Delete Photo</button>
                     <button type="submit" id="deletePhotoSubmissionForm" style="display: none" hidden></button>
                 </form>
-                <button class="button" onclick="location.href='edit_account'" type="button">Edit Details</button>
+                <button class="button" onclick="location.href='edit_account'" th:disabled="false" type="button">Edit Details</button>
                 <button class="button" onclick="location.href='edit_password'" type="button">Edit Password</button>
             </div>
             <div class="edit-message" th:if="${editMessage != null}" th:text="${editMessage}">
