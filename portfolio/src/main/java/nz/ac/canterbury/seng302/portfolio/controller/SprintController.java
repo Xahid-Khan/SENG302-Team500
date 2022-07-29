@@ -46,6 +46,10 @@ public class SprintController {
     @Autowired
     private RolesService rolesService;
 
+
+    private static final String TEACHER = "TEACHER";
+    private static final String COURSE_ADMINISTRATOR = "COURSE_ADMINISTRATOR";
+
     /**
      * This method will be invoked when API receives a GET request with a sprint ID embedded in URL.
      * @param sprintId sprint-ID the user wants to retrieve
@@ -94,7 +98,8 @@ public class SprintController {
         @RequestBody BaseSprintContract sprint
     ) {
         ArrayList<String> roles = rolesService.getRolesByToken(principal);
-        if (roles.contains("TEACHER") || roles.contains("COORDINATOR")) {
+
+        if (roles.contains(TEACHER) || roles.contains(COURSE_ADMINISTRATOR)) {
             String errorMessage = validationService.checkAddSprint(projectId, sprint);
             if (!errorMessage.equals("Okay")) {
                 if (errorMessage.equals("Project ID does not exist") || errorMessage.equals("Sprint ID does not exist")) {
@@ -129,7 +134,7 @@ public class SprintController {
         @RequestBody BaseSprintContract sprint
     ) {
         ArrayList<String> roles = rolesService.getRolesByToken(principal);
-        if (roles.contains("TEACHER") || roles.contains("COORDINATOR")) {
+        if (roles.contains(TEACHER) || roles.contains(COURSE_ADMINISTRATOR)) {
             String errorMessage = validationService.checkUpdateSprint(id, sprint);
             if (!errorMessage.equals("Okay")) {
                 if (errorMessage.equals("Project ID does not exist") || errorMessage.equals(
@@ -162,7 +167,7 @@ public class SprintController {
         @PathVariable String id
     ) {
         ArrayList<String> roles = rolesService.getRolesByToken(principal);
-        if (roles.contains("TEACHER") || roles.contains("COORDINATOR")) {
+        if (roles.contains(TEACHER) || roles.contains(COURSE_ADMINISTRATOR)) {
             try {
                 sprintService.delete(id);
 
