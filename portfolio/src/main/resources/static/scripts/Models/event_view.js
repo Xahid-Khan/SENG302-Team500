@@ -1,3 +1,4 @@
+
 class EventView {
     expandedView = false;
 
@@ -17,34 +18,42 @@ class EventView {
      */
     constructView() {
         this.containerElement.innerHTML = `
-    <div class="crud">
-            <button class="icon-button event-controls" id="event-button-edit-${this.event.eventId}" data-privilege="teacher"><span class="material-icons" >edit</span></button>
-            <button class="icon-button event-controls" id="event-button-delete-${this.event.eventId}" data-privilege="teacher"><span class="material-icons">clear</span></button>
-            <button class="button visibility-button toggle-event-details" id="toggle-event-details-${this.event.eventId}"><span class='material-icons'>visibility_off</span></button>
-    </div>
-    <div class="editing-live-update" id="event-form-${this.event.eventId}"></div>
-    <div class="events-title">
-        <span id="event-title-text-${this.event.eventId}" style="font-style: italic;"></span> | <span id="start-date-${this.event.eventId}"></span> - <span id="end-date-${this.event.eventId}"></span>
-
-    </div>
-    <div class="events-details" id="event-details-${this.event.eventId}">
-        <div class="event-description" id="event-description-${this.event.eventId}"></div>
-        <div class="events-sprints" id="event-sprints-${this.event.eventId}"></div>
-    </div>
+    
     <div class="colour-block" id="event-colour-block-${this.event.eventId}"></div>
+    <div id = "${this.event.eventId}" class = "raised-card colour-block-card">
+        <div class="crud">
+                <button class="icon-button event-controls" id="event-button-edit-${this.event.eventId}" data-privilege="teacher"><span class="material-icons" >edit</span></button>
+                <button class="icon-button event-controls" id="event-button-delete-${this.event.eventId}" data-privilege="teacher"><span class="material-icons">clear</span></button>
+                <button class="button visibility-button toggle-event-details" id="toggle-event-details-${this.event.eventId}"><span class='material-icons'>visibility_off</span></button>
+        </div>
+        <div class="editing-live-update" id="event-form-${this.event.eventId}"></div>
+        <div class="events-title">
+            <span id="event-title-text-${this.event.eventId}" style="font-style: italic;"></span> | <span id="start-date-${this.event.eventId}"></span> - <span id="end-date-${this.event.eventId}"></span>
+    
+        </div>
+        <div class="events-details" id="event-details-${this.event.eventId}">
+            <label class="event-description-label" id="event-description-label-${this.event.eventId}"></label>
+            <div class="event-description" id="event-description-${this.event.eventId}"></div>
+            <div class="events-sprints" id="event-sprints-${this.event.eventId}"></div>
+        </div>
+    </div>
     `;
 
         this.toggleButton = document.getElementById(`toggle-event-details-${this.event.eventId}`);
+        this.descriptionLabel = document.getElementById(`event-description-label-${this.event.eventId}`);
         this.description = document.getElementById(`event-description-${this.event.eventId}`);
         this.details = document.getElementById(`event-details-${this.event.eventId}`);
         this.eventSprints = document.getElementById(`event-sprints-${this.event.eventId}`);
 
         document.getElementById(`event-title-text-${this.event.eventId}`).innerText = this.event.name;
-        this.description.innerText = "Description: " + this.event.description;
+        if(this.event.description !== ''){
+            this.descriptionLabel.innerText = "Description:\n";
+        }
+        this.description.innerText = this.event.description;
         this.eventSprints.innerHTML = this.getSprints();
         this.sprints.forEach((sprint) => {
             if (document.getElementById(`event-sprint-name-${this.event.eventId}-${sprint.sprintId}`)) {
-                document.getElementById(`event-sprint-name-${this.event.eventId}-${sprint.sprintId}`).innerText = sprint.name + ': '
+                document.getElementById(`event-sprint-name-${this.event.eventId}-${sprint.sprintId}`).innerText = sprint.name + ':'
             }
         })
         document.getElementById(`start-date-${this.event.eventId}`).innerText = DatetimeUtils.localToUserDMY(this.event.startDate);
@@ -87,7 +96,17 @@ class EventView {
         this.sprints.forEach(sprint => {
             if (this.event.startDate >= sprint.startDate && this.event.startDate <= sprint.endDate || this.event.endDate >= sprint.startDate && this.event.endDate <= sprint.endDate
             || this.event.startDate <= sprint.startDate && this.event.endDate >= sprint.endDate) {
-                html += `<div class="event-sprint-details" style="color: ${sprint.colour}">   - <span id="event-sprint-name-${this.event.eventId}-${sprint.sprintId}"></span><span>${DatetimeUtils.localToUserDMY(sprint.startDate)}</span> - <span>${DatetimeUtils.localToUserDMY(sprint.endDate)}</span>`;
+                html += `
+                <div class="event-sprint-container">
+                    <div class="event-sprint-details">
+                        <span> • </span>
+                        <span id="event-sprint-name-${this.event.eventId}-${sprint.sprintId}" class="event-sprint-name"></span>
+                        <span>${DatetimeUtils.localToUserDMY(sprint.startDate)}</span>
+                        <span> - </span>
+                        <span>${DatetimeUtils.localToUserDMY(sprint.endDate)}</span>
+                    </div>
+                    <div style="background-color: ${sprint.colour}" class="event-sprint-colour-block"></div>
+                </div>`;
                 foundSprints = true
 
                 //Done twice to handle cases of single sprint. Displays block if a sprint contains the event
