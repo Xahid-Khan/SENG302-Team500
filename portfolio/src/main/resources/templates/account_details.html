@@ -54,7 +54,7 @@
             <div>
                 <form id="deletePhotoForm" action="#" th:action="@{edit_account/imageDelete}" th:object="${user}" method="post"
                     style="float:right; margin-left: 4px">
-                    <button class="button" id="deleteUserPhoto" type="button">Delete Photo</button>
+                    <button th:disabled="${}" class="button" id="deleteUserPhoto" type="button">Delete Photo</button>
                     <button type="submit" id="deletePhotoSubmissionForm" style="display: none" hidden></button>
                 </form>
                 <button class="button" onclick="location.href='edit_account'" th:disabled="false" type="button">Edit Details</button>
