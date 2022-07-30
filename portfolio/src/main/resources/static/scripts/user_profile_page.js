@@ -14,8 +14,8 @@ async function activateDeletePhotoButton() {
     }
 }
 // window.addEventListener('load', activateDeletePhotoButton)
-window.onload = () => activateDeletePhotoButton()
-// document.getElementById("userPhoto").addEventListener("load", () => activateDeletePhotoButton())
+// window.onload = () => activateDeletePhotoButton()
+document.getElementById("userPhoto").onload(activateDeletePhotoButton)
 
 const modalDeleteContainer = document.getElementById(`modal-delete-open`);
 const modalDeleteX = document.getElementById(`modal-delete-x`);
