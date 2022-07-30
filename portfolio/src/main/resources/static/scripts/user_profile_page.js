@@ -13,7 +13,8 @@ async function activateDeletePhotoButton() {
         document.getElementById("deleteUserPhoto").removeAttribute("disabled")
     }
 }
-window.addEventListener('load', activateDeletePhotoButton)
+// window.addEventListener('load', activateDeletePhotoButton)
+window.onload = () => activateDeletePhotoButton()
 // document.getElementById("userPhoto").addEventListener("load", () => activateDeletePhotoButton())
 
 const modalDeleteContainer = document.getElementById(`modal-delete-open`);
@@ -44,4 +45,4 @@ const confirmDeleteModal = () => {
     document.getElementById("deletePhotoSubmissionForm").click();
 }
 
-document.getElementById("deletePhotoForm").addEventListener('click', ()=> openDeleteModal())
+document.getElementById("deleteUserPhoto").addEventListener('click', ()=> openDeleteModal())
