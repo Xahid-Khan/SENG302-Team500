@@ -13,8 +13,8 @@ async function activateDeletePhotoButton() {
         document.getElementById("deleteUserPhoto").removeAttribute("disabled")
     }
 }
-
-document.getElementById("userPhoto").addEventListener("load", () => activateDeletePhotoButton())
+window.addEventListener('load', activateDeletePhotoButton)
+// document.getElementById("userPhoto").addEventListener("load", () => activateDeletePhotoButton())
 
 const modalDeleteContainer = document.getElementById(`modal-delete-open`);
 const modalDeleteX = document.getElementById(`modal-delete-x`);
