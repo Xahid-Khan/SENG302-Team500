@@ -17,22 +17,24 @@ class MilestoneView {
      */
     constructView() {
         this.containerElement.innerHTML = `
-    <div class="colour-block" id="event-colour-block-${this.milestone.milestoneId}"></div>
     <div id = "${this.milestone.milestoneId}" class = "raised-card colour-block-card">
-        <div class="crud">
-            <button class="icon-button milestone-controls" id="milestone-button-edit-${this.milestone.milestoneId}" data-privilege="teacher"><span class="material-icons">edit</span></button>
-            <button class="icon-button milestone-controls" id="milestone-button-delete-${this.milestone.milestoneId}" data-privilege="teacher"><span class="material-icons">clear</span></button>
-            <button class="button visibility-button toggle-milestone-details" id="toggle-milestone-details-${this.milestone.milestoneId}"><span class='material-icons'>visibility_off</span></i></button>
-        </div>
-        <div class="editing-live-update" id="event-form-${this.milestone.milestoneId}"></div>
-        <div class="events-title">
-            <span id="milestone-title-text-${this.milestone.milestoneId}" style="font-style: italic;"></span> | <span id="start-date-${this.milestone.milestoneId}"></span>
-    
-        </div>
-        <div class="events-details" id="milestone-details-${this.milestone.milestoneId}">
-            <label class="event-description-label" id="event-description-label-${this.milestone.milestoneId}"></label>
-            <div class="event-description" id="milestone-description-${this.milestone.milestoneId}"></div>
-            <div class="events-sprints" id="milestone-sprints-${this.milestone.milestoneId}"></div>
+    <div class="colour-block" id="event-colour-block-${this.milestone.milestoneId}"></div>
+        <div class="card-contents">
+            <div class="crud">
+                <button class="icon-button milestone-controls" id="milestone-button-edit-${this.milestone.milestoneId}" data-privilege="teacher"><span class="material-icons">edit</span></button>
+                <button class="icon-button milestone-controls" id="milestone-button-delete-${this.milestone.milestoneId}" data-privilege="teacher"><span class="material-icons">clear</span></button>
+                <button class="button visibility-button toggle-milestone-details" id="toggle-milestone-details-${this.milestone.milestoneId}"><span class='material-icons'>visibility_off</span></i></button>
+            </div>
+            <div class="editing-live-update" id="event-form-${this.milestone.milestoneId}"></div>
+            <div class="events-title">
+                <span id="milestone-title-text-${this.milestone.milestoneId}" style="font-style: italic;"></span> | <span id="start-date-${this.milestone.milestoneId}"></span>
+        
+            </div>
+            <div class="events-details" id="milestone-details-${this.milestone.milestoneId}">
+                <label class="event-description-label" id="event-description-label-${this.milestone.milestoneId}"></label>
+                <div class="event-description" id="milestone-description-${this.milestone.milestoneId}"></div>
+                <div class="events-sprints" id="milestone-sprints-${this.milestone.milestoneId}"></div>
+            </div>
         </div>
     </div>
     `;
@@ -44,7 +46,7 @@ class MilestoneView {
         this.milestoneSprints = document.getElementById(`milestone-sprints-${this.milestone.milestoneId}`);
 
         document.getElementById(`milestone-title-text-${this.milestone.milestoneId}`).innerText = this.milestone.name;
-        if(this.milestone.description !== ''){
+        if(this.milestone.description.trim().length !== 0){
             this.descriptionLabel.innerText = "Description:\n";
         }
         this.description.innerText = this.milestone.description;

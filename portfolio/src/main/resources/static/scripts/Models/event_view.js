@@ -19,22 +19,24 @@ class EventView {
     constructView() {
         this.containerElement.innerHTML = `
     
+    <div id = "${this.event.eventId}" class = "raised-card">
     <div class="colour-block" id="event-colour-block-${this.event.eventId}"></div>
-    <div id = "${this.event.eventId}" class = "raised-card colour-block-card">
-        <div class="crud">
-                <button class="icon-button event-controls" id="event-button-edit-${this.event.eventId}" data-privilege="teacher"><span class="material-icons" >edit</span></button>
-                <button class="icon-button event-controls" id="event-button-delete-${this.event.eventId}" data-privilege="teacher"><span class="material-icons">clear</span></button>
-                <button class="button visibility-button toggle-event-details" id="toggle-event-details-${this.event.eventId}"><span class='material-icons'>visibility_off</span></button>
-        </div>
-        <div class="editing-live-update" id="event-form-${this.event.eventId}"></div>
-        <div class="events-title">
-            <span id="event-title-text-${this.event.eventId}" style="font-style: italic;"></span> | <span id="start-date-${this.event.eventId}"></span> - <span id="end-date-${this.event.eventId}"></span>
-    
-        </div>
-        <div class="events-details" id="event-details-${this.event.eventId}">
-            <label class="event-description-label" id="event-description-label-${this.event.eventId}"></label>
-            <div class="event-description" id="event-description-${this.event.eventId}"></div>
-            <div class="events-sprints" id="event-sprints-${this.event.eventId}"></div>
+        <div class="card-contents">
+            <div class="crud">
+                    <button class="icon-button event-controls" id="event-button-edit-${this.event.eventId}" data-privilege="teacher"><span class="material-icons" >edit</span></button>
+                    <button class="icon-button event-controls" id="event-button-delete-${this.event.eventId}" data-privilege="teacher"><span class="material-icons">clear</span></button>
+                    <button class="button visibility-button toggle-event-details" id="toggle-event-details-${this.event.eventId}"><span class='material-icons'>visibility_off</span></button>
+            </div>
+            <div class="editing-live-update" id="event-form-${this.event.eventId}"></div>
+            <div class="events-title">
+                <span id="event-title-text-${this.event.eventId}" style="font-style: italic;"></span> | <span id="start-date-${this.event.eventId}"></span> - <span id="end-date-${this.event.eventId}"></span>
+        
+            </div>
+            <div class="events-details" id="event-details-${this.event.eventId}">
+                <label class="event-description-label" id="event-description-label-${this.event.eventId}"></label>
+                <div class="event-description" id="event-description-${this.event.eventId}"></div>
+                <div class="events-sprints" id="event-sprints-${this.event.eventId}"></div>
+            </div>
         </div>
     </div>
     `;
@@ -46,7 +48,7 @@ class EventView {
         this.eventSprints = document.getElementById(`event-sprints-${this.event.eventId}`);
 
         document.getElementById(`event-title-text-${this.event.eventId}`).innerText = this.event.name;
-        if(this.event.description !== ''){
+        if(this.event.description.trim().length !== 0){
             this.descriptionLabel.innerText = "Description:\n";
         }
         this.description.innerText = this.event.description;
