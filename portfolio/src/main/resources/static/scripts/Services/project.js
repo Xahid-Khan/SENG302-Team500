@@ -345,6 +345,7 @@ class Project {
 
         const showingEvents = this.currentView.showingEvents;
         const showingMilestones = this.currentView.showingMilestones;
+        const showingDeadlines = this.currentView.showingDeadlines;
         this.showViewer();
         this.currentView.toggleSprints();
         if (showingEvents) {
@@ -352,6 +353,9 @@ class Project {
         }
         if (showingMilestones) {
             this.currentView.toggleMilestones();
+        }
+        if (showingDeadlines) {
+            this.currentView.toggleDeadlines();
         }
     }
 

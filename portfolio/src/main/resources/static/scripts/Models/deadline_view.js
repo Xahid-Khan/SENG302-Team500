@@ -7,6 +7,10 @@ class DeadlineView {
         this.editCallback = editCallback;
         this.deleteCallback = deleteCallback;
         this.sprints = sprints;
+        this.modalDeleteContainer=document.getElementById(`modal-delete-open`);
+        this.modalDeleteX=document.getElementById(`modal-delete-x`);
+        this.modalDeleteCancel=document.getElementById(`modal-delete-cancel`);
+        this.modalDeleteConfirm=document.getElementById(`modal-delete-confirm`);
 
         this.constructView();
         this.wireView();
@@ -18,8 +22,8 @@ class DeadlineView {
     constructView() {
         this.containerElement.innerHTML = `
     <div class="crud">
-            <button class="icon-button deadline-controls" id="deadline-button-edit-${this.deadline.deadlineId}" data-privilege="teacher"><span class="material-icons">edit</span></button>
             <button class="icon-button deadline-controls" id="deadline-button-delete-${this.deadline.deadlineId}" data-privilege="teacher"><span class="material-icons">clear</span></button>
+            <button class="icon-button deadline-controls" id="deadline-button-edit-${this.deadline.deadlineId}" data-privilege="teacher"><span class="material-icons">edit</span></button>
             <button class="button visibility-button toggle-deadline-details" id="toggle-deadline-details-${this.deadline.deadlineId}"><span class='material-icons'>visibility_off</span></button>
     </div>
     <div class="editing-live-update" id="event-form-${this.deadline.deadlineId}"></div>
@@ -66,10 +70,33 @@ class DeadlineView {
 
         this.expandedView = !this.expandedView;
     }
+    openDeleteModal(){
+        this.modalDeleteContainer.style.display='block';
+        this.modalDeleteX.addEventListener("click",()=>this.cancelDeleteModal())
+        this.modalDeleteCancel.addEventListener("click",()=>this.cancelDeleteModal())
+        this.modalDeleteConfirm.addEventListener("click",()=>this.confirmDeleteModal())
+
+
+    }
+    cancelDeleteModal(){
+        this.modalDeleteContainer.style.display='none';
+        this.modalDeleteX.removeEventListener("click",()=>this.cancelDeleteModal())
+        this.modalDeleteCancel.removeEventListener("click",()=>this.cancelDeleteModal())
+        this.modalDeleteConfirm.removeEventListener("click",()=>this.confirmDeleteModal())
+
+    }
+    confirmDeleteModal(){
+        this.modalDeleteContainer.style.display='none';
+        this.modalDeleteX.removeEventListener("click",()=>this.cancelDeleteModal())
+        this.modalDeleteCancel.removeEventListener("click",()=>this.cancelDeleteModal())
+        this.modalDeleteConfirm.removeEventListener("click",()=>this.confirmDeleteModal())
+        Socket.saveEdit(this.deadline.deadlineId)
+        this.deleteCallback()
+    }
 
     wireView() {
         document.getElementById(`deadline-button-edit-${this.deadline.deadlineId}`).addEventListener('click', () => this.editCallback());
-        document.getElementById(`deadline-button-delete-${this.deadline.deadlineId}`).addEventListener("click", () => {this.deleteCallback(); Socket.saveEdit(this.deadline.deadlineId)});
+        document.getElementById(`deadline-button-delete-${this.deadline.deadlineId}`).addEventListener("click", () => this.openDeleteModal());
 
         this.toggleButton.addEventListener('click', this.toggleExpandedView.bind(this));
     }

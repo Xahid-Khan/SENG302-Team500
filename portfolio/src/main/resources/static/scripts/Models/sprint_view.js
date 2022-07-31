@@ -13,6 +13,10 @@ class SprintView {
         this.sprints = sprints;
         this.deadlines = deadlines;
         this.milestones = milestones;
+        this.modalDeleteContainer=document.getElementById(`modal-delete-open`);
+        this.modalDeleteX=document.getElementById(`modal-delete-x`);
+        this.modalDeleteCancel=document.getElementById(`modal-delete-cancel`);
+        this.modalDeleteConfirm=document.getElementById(`modal-delete-confirm`);
 
         this.constructView();
         this.wireView();
@@ -28,8 +32,8 @@ class SprintView {
         <span id="sprint-order-text-${this.sprint.sprintId}"></span>: <span id="sprint-title-text-${this.sprint.sprintId}" style="font-style: italic;"></span> | <span id="start-date-${this.sprint.sprintId}"></span> - <span id="end-date-${this.sprint.sprintId}"></span>
 
         <span class="crud">
-            <button class="icon-button sprint-controls" id="sprint-button-edit-${this.sprint.sprintId}" data-privilege="teacher"><span class="material-icons md-11">edit</span></button>
             <button class="icon-button sprint-controls" id="sprint-button-delete-${this.sprint.sprintId}" data-privilege="teacher"><span class="material-icons md-11">clear</span></button>
+            <button class="icon-button sprint-controls" id="sprint-button-edit-${this.sprint.sprintId}" data-privilege="teacher"><span class="material-icons md-11">edit</span></button>
             <button class="button visibility-button toggle-sprint-details" id="toggle-sprint-details-${this.sprint.sprintId}"><span class='material-icons'>visibility_off</span></button>
         </span>
     </div>
@@ -97,10 +101,32 @@ class SprintView {
 
         this.expandedView = !this.expandedView;
     }
+    openDeleteModal(){
+        this.modalDeleteContainer.style.display='block';
+        this.modalDeleteX.addEventListener("click",()=>this.cancelDeleteModal())
+        this.modalDeleteCancel.addEventListener("click",()=>this.cancelDeleteModal())
+        this.modalDeleteConfirm.addEventListener("click",()=>this.confirmDeleteModal())
+
+
+    }
+    cancelDeleteModal(){
+        this.modalDeleteContainer.style.display='none';
+        this.modalDeleteX.removeEventListener("click",()=>this.cancelDeleteModal())
+        this.modalDeleteCancel.removeEventListener("click",()=>this.cancelDeleteModal())
+        this.modalDeleteConfirm.removeEventListener("click",()=>this.confirmDeleteModal())
+
+    }
+    confirmDeleteModal(){
+        this.modalDeleteContainer.style.display='none';
+        this.modalDeleteX.removeEventListener("click",()=>this.cancelDeleteModal())
+        this.modalDeleteCancel.removeEventListener("click",()=>this.cancelDeleteModal())
+        this.modalDeleteConfirm.removeEventListener("click",()=>this.confirmDeleteModal())
+        this.deleteCallback()
+    }
 
     wireView() {
         document.getElementById(`sprint-button-edit-${this.sprint.sprintId}`).addEventListener('click', () => this.editCallback());
-        document.getElementById(`sprint-button-delete-${this.sprint.sprintId}`).addEventListener("click", () => this.deleteCallback());
+        document.getElementById(`sprint-button-delete-${this.sprint.sprintId}`).addEventListener("click", () => this.openDeleteModal());
 
         this.toggleButton.addEventListener('click', this.toggleExpandedView.bind(this));
     }
