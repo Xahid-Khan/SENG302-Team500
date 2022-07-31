@@ -28,27 +28,31 @@ class SprintView {
     constructView() {
         this.containerElement.innerHTML = `
     <div id = "${this.sprint.sprintId}" class = "raised-card">
-    <div class="colour-block" id="sprint-colour-block-${this.sprint.sprintId}"></div>
-    <div id = "${this.sprint.sprintId}" class = "raised-card colour-block-card">
-        <div class="sprints" id="sprints-container-${this.sprint.sprintId}"></div>
-        <div class="events-title">
-            <span id="sprint-order-text-${this.sprint.sprintId}"></span>: <span id="sprint-title-text-${this.sprint.sprintId}" style="font-style: italic;"></span> | <span id="start-date-${this.sprint.sprintId}"></span> - <span id="end-date-${this.sprint.sprintId}"></span>
+        <div class="colour-block" id="sprint-colour-block-${this.sprint.sprintId}"></div>
     
-            <span class="crud">
-                <button class="icon-button sprint-controls" id="sprint-button-edit-${this.sprint.sprintId}" data-privilege="teacher"><span class="material-icons md-11">edit</span></button>
-                <button class="icon-button sprint-controls" id="sprint-button-delete-${this.sprint.sprintId}" data-privilege="teacher"><span class="material-icons md-11">clear</span></button>
-                <button class="button visibility-button toggle-sprint-details" id="toggle-sprint-details-${this.sprint.sprintId}"><span class='material-icons'>visibility_off</span></button>
-            </span>
-        </div>
-    
-        <div class="events-details" id="sprint-details-${this.sprint.sprintId}">
-            <label class="event-description-label" id="event-description-label-${this.sprint.sprintId}"></label>
-            <div  id="sprint-description-${this.sprint.sprintId}" class="event-description"></div>
-            <label>Occurences during this sprint:</label>
-            <div>
-                <div class="sprint-events" id="sprint-events-${this.sprint.sprintId}"></div>
-                <div class="sprint-deadlines" id="sprint-deadlines-${this.sprint.sprintId}"></div>
-                <div class="sprint-milestones" id="sprint-milestones-${this.sprint.sprintId}"></div>
+        <div class="card-content">
+            <div class="sprints" id="sprints-container-${this.sprint.sprintId}"></div>
+            <div class="events-title">
+                <span id="sprint-order-text-${this.sprint.sprintId}"></span>: <span id="sprint-title-text-${this.sprint.sprintId}" style="font-style: italic;"></span> | <span id="start-date-${this.sprint.sprintId}"></span> - <span id="end-date-${this.sprint.sprintId}"></span>
+        
+                <span class="crud">
+                    <button class="icon-button sprint-controls" id="sprint-button-edit-${this.sprint.sprintId}" data-privilege="teacher"><span class="material-icons md-11">edit</span></button>
+                    <button class="icon-button sprint-controls" id="sprint-button-delete-${this.sprint.sprintId}" data-privilege="teacher"><span class="material-icons md-11">clear</span></button>
+                    <button class="button visibility-button toggle-sprint-details" id="toggle-sprint-details-${this.sprint.sprintId}"><span class='material-icons'>visibility_off</span></button>
+                </span>
+            </div>
+        
+            <div class="events-details" id="sprint-details-${this.sprint.sprintId}">
+                <label class="event-description-label" id="event-description-label-${this.sprint.sprintId}"></label>
+                <div  id="sprint-description-${this.sprint.sprintId}" class="event-description"></div>
+                <div class="events-sprints">
+                    <label id="occurences-label-${this.sprint.sprintId}">Occurences during this sprint:</label>
+                    <div>
+                        <div class="sprint-events" id="sprint-events-${this.sprint.sprintId}"></div>
+                        <div class="sprint-deadlines" id="sprint-deadlines-${this.sprint.sprintId}"></div>
+                        <div class="sprint-milestones" id="sprint-milestones-${this.sprint.sprintId}"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -58,6 +62,7 @@ class SprintView {
         this.sprintDetails = document.getElementById(`sprint-details-${this.sprint.sprintId}`);
         this.descriptionLabel = document.getElementById(`event-description-label-${this.sprint.sprintId}`);
         this.description = document.getElementById(`sprint-description-${this.sprint.sprintId}`);
+        this.occurencesLabel = document.getElementById(`occurences-label-${this.sprint.sprintId}`);
         this.colourBlock = document.getElementById(`sprint-colour-block-${this.sprint.sprintId}`);
         this.details = document.getElementById(`sprint-details-${this.sprint.sprintId}`);
         this.sprintEvents = document.getElementById(`sprint-events-${this.sprint.sprintId}`);
@@ -71,23 +76,32 @@ class SprintView {
         this.description.innerText = this.sprint.description;
 
         this.sprintEvents.innerHTML = this.getEvents();
+        let found = false;
         this.events.forEach((event) => {
             if (document.getElementById(`sprint-event-name-${this.sprint.sprintId}-${event.eventId}`)) {
                 document.getElementById(`sprint-event-name-${this.sprint.sprintId}-${event.eventId}`).innerText = event.name + ':'
+                found = true
             }
         })
         this.sprintDeadlines.innerHTML = this.getDeadlines();
         this.deadlines.forEach((deadline) => {
             if (document.getElementById(`sprint-deadline-name-${this.sprint.sprintId}-${deadline.deadlineId}`)) {
                 document.getElementById(`sprint-deadline-name-${this.sprint.sprintId}-${deadline.deadlineId}`).innerText = deadline.name + ':'
+                found = true
             }
         })
         this.sprintMilestones.innerHTML = this.getMilestones();
         this.milestones.forEach((milestone) => {
             if (document.getElementById(`sprint-milestone-name-${this.sprint.sprintId}-${milestone.milestoneId}`)) {
                 document.getElementById(`sprint-milestone-name-${this.sprint.sprintId}-${milestone.milestoneId}`).innerText = milestone.name + ':'
+                found = true
             }
         })
+
+        if(!found) {
+            this.occurencesLabel.innerText = "No occurences this sprint"
+        }
+
         this.colourBlock.style.background = this.sprint.colour;
         document.getElementById(`start-date-${this.sprint.sprintId}`).innerText = DatetimeUtils.localToUserDMY(this.sprint.startDate);
         const displayedDate = new Date(this.sprint.endDate.valueOf());
