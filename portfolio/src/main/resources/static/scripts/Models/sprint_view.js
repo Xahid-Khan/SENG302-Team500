@@ -66,7 +66,7 @@ class SprintView {
         this.sprintMilestones = document.getElementById(`sprint-milestones-${this.sprint.sprintId}`);
         document.getElementById(`sprint-order-text-${this.sprint.sprintId}`).innerText = `Sprint ${this.sprint.orderNumber}`;
         document.getElementById(`sprint-title-text-${this.sprint.sprintId}`).innerText = this.sprint.name;
-        if(this.sprint.description !== ''){
+        if(this.sprint.description.trim().length !== 0){
             this.descriptionLabel.innerText = "Description:\n";
         }
         this.description.innerText = this.sprint.description;
