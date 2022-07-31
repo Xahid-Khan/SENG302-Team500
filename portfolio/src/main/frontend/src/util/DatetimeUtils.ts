@@ -54,16 +54,10 @@ export class DatetimeUtils {
     }
 
     /**
-     * If the given date is at time 00:00:00 in the local timezone, returns null.
-     *
-     * Otherwise, will return a 'HH:MM[:SS]'-formatted string.
+     * Gets date and time and formats it to DMY and 12:00 PM format
      */
-    static getTimeStringIfNonZeroLocally(date: Date) {
-        if (this.hasTimeComponent(date)) {
-            // There is an hours/minutes/seconds component to this date in the local timezone.
-            return `${date.getHours()}:${leftPadNumber(date.getMinutes(), 2)}${(date.getSeconds() !== 0) ? ':' + leftPadNumber(date.getSeconds(), 2) : ''}`;
-        }
-        return null;
+    static localToDMYWithTime(date: Date) {
+        return `${date.getDate()} ${date.toLocaleString('default', {month: 'long'})} ${date.getFullYear()} ${date.getHours() % 12}:${leftPadNumber(date.getMinutes(), 2)}${(date.getSeconds() !== 0) ? ':' + leftPadNumber(date.getSeconds(), 2) : ''} ${date.getHours() > 12 ? 'PM' : 'AM'}`
     }
 
     /**
@@ -94,12 +88,9 @@ export class DatetimeUtils {
 
     /**
      * Format a JavaScript Date to a date string suitable for presentation to the user.
-     *
-     * Note that if the given Date has a non-zero time component in the local timezone the output of {@link getTimeStringIfNonZeroLocally} may be appended.
      */
     static localToUserDMY(localDate: Date) {
-        const hoursComponent = this.getTimeStringIfNonZeroLocally(localDate);
-        return `${localDate.getDate()} ${localDate.toLocaleString('default', {month: 'long'})} ${localDate.getFullYear()}${(hoursComponent !== null) ? ' ' + hoursComponent : ''}`;
+        return `${localDate.getDate()} ${localDate.toLocaleString('default', {month: 'long'})} ${localDate.getFullYear()}`;
     }
 
     /**

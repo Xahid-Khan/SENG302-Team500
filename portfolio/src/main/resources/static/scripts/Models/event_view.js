@@ -47,12 +47,9 @@ class EventView {
                 document.getElementById(`event-sprint-name-${this.event.eventId}-${sprint.sprintId}`).innerText = sprint.name + ': '
             }
         })
-        document.getElementById(`start-date-${this.event.eventId}`).innerText = DatetimeUtils.localToUserDMY(this.event.startDate);
+        document.getElementById(`start-date-${this.event.eventId}`).innerText = DatetimeUtils.localToDMYWithTime(this.event.startDate);
         const displayedDate = new Date(this.event.endDate.valueOf());
-        if (DatetimeUtils.getTimeStringIfNonZeroLocally(this.event.endDate) === null) {
-            displayedDate.setDate(displayedDate.getDate() - 1);
-        }
-        document.getElementById(`end-date-${this.event.eventId}`).innerText = DatetimeUtils.localToUserDMY(displayedDate);
+        document.getElementById(`end-date-${this.event.eventId}`).innerText = DatetimeUtils.localToDMYWithTime(displayedDate);
     }
 
     /**

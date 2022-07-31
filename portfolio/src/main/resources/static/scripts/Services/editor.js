@@ -54,10 +54,10 @@ class Editor {
                   <br><br>
               </div>
               <label id="start-date-label-${this.entityId}">Start Date*:</label>
-              <input type=${this.allowTimeInput ? "datetime-local" : "date"} name="start-date" class="date-input" id="edit-start-date-${this.entityId}" min=${this.project.startDate.toISOString().split(".")[0]} max=${this.project.endDate.toISOString().split(".")[0]}>
+              <input type=${this.allowTimeInput ? "datetime-local" : "date"} name="start-date" class="date-input" id="edit-start-date-${this.entityId}" min=${this.allowTimeInput ? DatetimeUtils.toLocalYMD(this.project.startDate)+"T00:00:00" : DatetimeUtils.toLocalYMD(this.project.startDate)} max=${this.allowTimeInput ? this.project.endDate.toISOString().split(".")[0] : this.project.endDate.toISOString().slice(0, 10)}>
                 <br/>
               <label id="end-date-label-${this.entityId}">End Date*:</label>
-              <input type=${this.allowTimeInput ? "datetime-local" : "date"} name="end-date" class="date-input" id="edit-end-date-${this.entityId}" min=${this.project.startDate.toISOString().split(".")[0]} max=${this.project.endDate.toISOString().split(".")[0]}>
+              <input type=${this.allowTimeInput ? "datetime-local" : "date"} name="end-date" class="date-input" id="edit-end-date-${this.entityId}" min=${DatetimeUtils.toLocalYMD(this.project.startDate)+"T00:00:00"} max=${this.project.endDate.toISOString().split(".")[0]}>
                 <br/>
               <label id="color-label-${this.entityId}">Colour*:</label>
               <input type="color" name="colour" id="edit-colour-${this.entityId}"/>
@@ -246,7 +246,11 @@ class Editor {
 
 
         if (startDate === null || ( this.allowEndDateInput && endDate === null)) {
-            this.setDateError("The date and time fields are required.");
+            if (this.allowTimeInput) {
+                this.setDateError("The date and time fields are required.");
+            } else {
+                this.setDateError("The date field is required.")
+            }
             return false;
         } else {
             if (endDate < startDate) {
