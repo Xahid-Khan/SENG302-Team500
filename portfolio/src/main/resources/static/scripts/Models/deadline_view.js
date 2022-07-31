@@ -21,21 +21,23 @@ class DeadlineView {
      */
     constructView() {
         this.containerElement.innerHTML = `
+    <div id = "${this.deadline.deadlineId}" class = "raised-card">
     <div class="colour-block" id="event-colour-block-${this.deadline.deadlineId}"></div>
-    <div id = "${this.deadline.deadlineId}" class = "raised-card colour-block-card">
-        <div class="crud">
-                <button class="icon-button deadline-controls" id="deadline-button-edit-${this.deadline.deadlineId}" data-privilege="teacher"><span class="material-icons">edit</span></button>
-                <button class="icon-button deadline-controls" id="deadline-button-delete-${this.deadline.deadlineId}" data-privilege="teacher"><span class="material-icons">clear</span></button>
-                <button class="button visibility-button toggle-deadline-details" id="toggle-deadline-details-${this.deadline.deadlineId}"><span class='material-icons'>visibility_off</span></button>
-        </div>
-        <div class="editing-live-update" id="event-form-${this.deadline.deadlineId}"></div>
-        <div class="events-title">
-            <span id="deadline-title-text-${this.deadline.deadlineId}" style="font-style: italic;"></span> | <span id="start-date-${this.deadline.deadlineId}"></span>
-        </div>
-        <div class="events-details" id="deadline-details-${this.deadline.deadlineId}">
-            <label class="event-description-label" id="event-description-label-${this.deadline.deadlineId}"></label>
-            <div class="event-description" id="deadline-description-${this.deadline.deadlineId}"></div>
-            <div class="events-sprints" id="deadline-sprints-${this.deadline.deadlineId}"></div>
+        <div class="card-contents">
+            <div class="crud">
+                    <button class="icon-button deadline-controls" id="deadline-button-edit-${this.deadline.deadlineId}" data-privilege="teacher"><span class="material-icons">edit</span></button>
+                    <button class="icon-button deadline-controls" id="deadline-button-delete-${this.deadline.deadlineId}" data-privilege="teacher"><span class="material-icons">clear</span></button>
+                    <button class="button visibility-button toggle-deadline-details" id="toggle-deadline-details-${this.deadline.deadlineId}"><span class='material-icons'>visibility_off</span></button>
+            </div>
+            <div class="editing-live-update" id="event-form-${this.deadline.deadlineId}"></div>
+            <div class="events-title">
+                <span id="deadline-title-text-${this.deadline.deadlineId}" style="font-style: italic;"></span> | <span id="start-date-${this.deadline.deadlineId}"></span>
+            </div>
+            <div class="events-details" id="deadline-details-${this.deadline.deadlineId}">
+                <label class="event-description-label" id="event-description-label-${this.deadline.deadlineId}"></label>
+                <div class="event-description" id="deadline-description-${this.deadline.deadlineId}"></div>
+                <div class="events-sprints" id="deadline-sprints-${this.deadline.deadlineId}"></div>
+            </div>
         </div>
     </div>
     
@@ -48,7 +50,7 @@ class DeadlineView {
         this.deadlineSprints = document.getElementById(`deadline-sprints-${this.deadline.deadlineId}`);
 
         document.getElementById(`deadline-title-text-${this.deadline.deadlineId}`).innerText = this.deadline.name;
-        if(this.deadline.description !== ''){
+        if(this.deadline.description.trim().length !== 0){
             this.descriptionLabel.innerText = "Description:\n";
         }
         this.description.innerText = this.deadline.description;

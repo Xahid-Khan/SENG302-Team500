@@ -27,6 +27,7 @@ class SprintView {
      */
     constructView() {
         this.containerElement.innerHTML = `
+    <div id = "${this.sprint.sprintId}" class = "raised-card">
     <div class="colour-block" id="sprint-colour-block-${this.sprint.sprintId}"></div>
     <div id = "${this.sprint.sprintId}" class = "raised-card colour-block-card">
         <div class="sprints" id="sprints-container-${this.sprint.sprintId}"></div>
