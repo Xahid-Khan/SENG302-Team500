@@ -7,6 +7,10 @@ class EventView {
         this.editCallback = editCallback;
         this.deleteCallback = deleteCallback;
         this.sprints = sprints;
+        this.modalDeleteContainer=document.getElementById(`modal-delete-open`);
+        this.modalDeleteX=document.getElementById(`modal-delete-x`);
+        this.modalDeleteCancel=document.getElementById(`modal-delete-cancel`);
+        this.modalDeleteConfirm=document.getElementById(`modal-delete-confirm`);
 
         this.constructView();
         this.wireView();
@@ -18,8 +22,8 @@ class EventView {
     constructView() {
         this.containerElement.innerHTML = `
     <div class="crud">
-            <button class="icon-button event-controls" id="event-button-edit-${this.event.eventId}" data-privilege="teacher"><span class="material-icons" >edit</span></button>
             <button class="icon-button event-controls" id="event-button-delete-${this.event.eventId}" data-privilege="teacher"><span class="material-icons">clear</span></button>
+            <button class="icon-button event-controls" id="event-button-edit-${this.event.eventId}" data-privilege="teacher"><span class="material-icons" >edit</span></button>
             <button class="button visibility-button toggle-event-details" id="toggle-event-details-${this.event.eventId}"><span class='material-icons'>visibility_off</span></button>
     </div>
     <div class="editing-live-update" id="event-form-${this.event.eventId}"></div>
@@ -70,10 +74,32 @@ class EventView {
 
         this.expandedView = !this.expandedView;
     }
+    openDeleteModal(){
+        this.modalDeleteContainer.style.display='block';
+        this.modalDeleteX.addEventListener("click",()=>this.cancelDeleteModal())
+        this.modalDeleteCancel.addEventListener("click",()=>this.cancelDeleteModal())
+        this.modalDeleteConfirm.addEventListener("click",()=>this.confirmDeleteModal())
 
+
+    }
+    cancelDeleteModal(){
+        this.modalDeleteContainer.style.display='none';
+        this.modalDeleteX.removeEventListener("click",()=>this.cancelDeleteModal())
+        this.modalDeleteCancel.removeEventListener("click",()=>this.cancelDeleteModal())
+        this.modalDeleteConfirm.removeEventListener("click",()=>this.confirmDeleteModal())
+
+    }
+    confirmDeleteModal(){
+        this.modalDeleteContainer.style.display='none';
+        this.modalDeleteX.removeEventListener("click",()=>this.cancelDeleteModal())
+        this.modalDeleteCancel.removeEventListener("click",()=>this.cancelDeleteModal())
+        this.modalDeleteConfirm.removeEventListener("click",()=>this.confirmDeleteModal())
+        Socket.saveEdit(this.event.eventId)
+        this.deleteCallback()
+    }
     wireView() {
         document.getElementById(`event-button-edit-${this.event.eventId}`).addEventListener('click', () => this.editCallback());
-        document.getElementById(`event-button-delete-${this.event.eventId}`).addEventListener("click", () => {this.deleteCallback(); Socket.saveEdit(this.event.eventId)});
+        document.getElementById(`event-button-delete-${this.event.eventId}`).addEventListener("click", () => this.openDeleteModal());
 
         this.toggleButton.addEventListener('click', this.toggleExpandedView.bind(this));
     }
