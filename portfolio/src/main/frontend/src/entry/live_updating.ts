@@ -9,7 +9,7 @@ import {
     LoadingStatus
 } from "../util/network/loading_status";
 import SockJS from "sockjs-client";
-import {Client as StompClient, Message as StompMessage, Stomp} from "@stomp/stompjs";
+import {Client as StompClient, Frame, Message as StompMessage, Stomp} from "@stomp/stompjs";
 
 /**
  * MobX-enabled store for the Ping/Socket Test page.
@@ -17,7 +17,7 @@ import {Client as StompClient, Message as StompMessage, Stomp} from "@stomp/stom
  * This serves as a basic working model of how to use WebSockets with Spring Boot.
  */
 class PingPageStore {
-    stomp: StompClient
+    stomp: any = null
 
     connectStatus: LoadingStatus = new LoadingNotYetAttempted()
 
@@ -94,14 +94,17 @@ class PingPageStore {
             onConnected()
             return
         }
-
+        let store = this;
         let socket = new SockJS("socket")
-        this.stomp = Stomp.over(socket);
+        store.stomp = Stomp.over(socket);
 
-        console.log("Subscribing...")
-        this.stomp.subscribe("/topic/pongs", (frame: StompMessage) => {
-            this.onReceivePong(frame)
-            this.connectStatus = new LoadingDone()
+        store.stomp.connect({}, () => {
+            console.log("Connected.")
+            console.log("Subscribing...")
+            store.stomp.subscribe("/topic/pongs", (message: StompMessage) => {
+                store.onReceivePong(message)
+                store.connectStatus = new LoadingDone()
+            })
         })
 
         console.log("stomp :", this.stomp)
