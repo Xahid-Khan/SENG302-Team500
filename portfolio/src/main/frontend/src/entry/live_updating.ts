@@ -9,7 +9,7 @@ import {
     LoadingStatus
 } from "../util/network/loading_status";
 import SockJS from "sockjs-client";
-import {Client as StompClient, Message as StompMessage} from "@stomp/stompjs";
+import {Client as StompClient, Message as StompMessage, Stomp} from "@stomp/stompjs";
 
 /**
  * MobX-enabled store for the Ping/Socket Test page.
@@ -37,11 +37,8 @@ class PingPageStore {
             start: action
         })
 
-        this.stomp = new StompClient({
-            webSocketFactory: () => new SockJS("/test/portfolio/socket"),
-            connectionTimeout: 10000,
-            debug: (msg) => console.log(new Date(), msg)
-        })
+        let socket = new SockJS("socket")
+        this.stomp = Stomp.over(socket);
 
         console.log("Created new PingPageStore.")
     }
@@ -101,43 +98,13 @@ class PingPageStore {
             return
         }
 
-        this.stomp.beforeConnect = () => {
-            runInAction(() => {
-                this.connectStatus = new LoadingPending()
-            })
-        }
-        this.stomp.onConnect = (frame: StompMessage) => {
-            // Connected
-            console.log("Connected")
-            runInAction(() => {
-                this.connectStatus = new LoadingDone()
-                this.subscribe()
-            })
+        console.log("Subscribing...")
+        this.stomp.subscribe("/topic/pongs", (frame: StompMessage) => {
+            this.onReceivePong(frame)
+            this.connectStatus = new LoadingDone()
+        })
 
-            onConnected()
-        }
-        this.stomp.onStompError = (err: StompMessage) => {
-            // Error
-            console.log("Error!")
-            runInAction(() => {
-                this.connectStatus = new LoadingError(err)
-            })
-        }
-        this.stomp.onWebSocketError = (evt) => {
-            // Error
-            console.log("Error!")
-            runInAction(() => {
-                this.connectStatus = new LoadingError(evt)
-            })
-        }
-        this.stomp.onWebSocketClose = (evt) => {
-            console.log("Socket closed!")
-            runInAction(() => {
-                this.connectStatus = new LoadingError(evt)
-            })
-        }
         console.log("stomp :", this.stomp)
-        this.stomp.activate()
     }
 
     protected onReceivePong(frame: StompMessage) {
@@ -161,13 +128,6 @@ class PingPageStore {
                     document.getElementById("editing-form-" + locAndName[1]).innerText = "";
                 }
             }
-        })
-    }
-
-    protected subscribe(): void {
-        console.log("Subscribing...")
-        this.stomp.subscribe("/topic/pongs", (frame: StompMessage) => {
-            this.onReceivePong(frame)
         })
     }
 }
