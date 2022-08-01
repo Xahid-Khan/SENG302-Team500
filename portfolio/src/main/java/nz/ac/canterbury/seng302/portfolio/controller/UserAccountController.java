@@ -113,8 +113,8 @@ public class UserAccountController {
         return dateString +
                 " (" +
                 ((years == 0) ? "" : years + " years ") +
-                ((years != 0 && months == 0) ? "" : months + " months ") +
-                ((years != 0 && months != 0) ? "" : days + " days") +
+                ((months == 0) ? "" : months + " months ") +
+                ((months != 0) ? "" : days + " days") +
                 ")";
     }
 
