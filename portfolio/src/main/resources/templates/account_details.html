@@ -67,13 +67,13 @@
     </div>
     <div>
         <table>
-            <tr>
+            <tr th:if="${user.nickname != ''}">
                 <td style="width: 175px"><h3 style="margin: 10px 0 10px 0" th:text="'Nickname: '"/></td>
-                <td><p style="margin: 10px 0 10px 0" th:text="${user.nickname != ''} ? ${user.nickname} : '-Undefined-'"></p></td>
+                <td><p style="margin: 10px 0 10px 0" th:text="${user.nickname}"></p></td>
             </tr>
-            <tr>
+            <tr th:if="${user.personalPronouns != ''}">
                 <td style="width: 175px"><h3 style="margin: 10px 0 10px 0" th:text="'Pronouns: '"/></td>
-                <td><p style="margin: 10px 0 10px 0" th:text="${user.personalPronouns != ''} ? ${user.personalPronouns} : '-Undefined-'"></p></td>
+                <td><p style="margin: 10px 0 10px 0" th:text="${user.personalPronouns}"></p></td>
             </tr>
             <tr>
                 <td style="width: 175px"><h3 style="margin: 10px 0 10px 0" th:text="'Username: '"/></td>
@@ -91,9 +91,9 @@
                 <td style="width: 175px"><h3 style="margin: 10px 0 10px 0" th:text="'Member since: '"/></td>
                 <td><p style="margin: 10px 0 10px 0" th:text="${registration_date}"></p></td>
             </tr>
-            <tr>
+            <tr th:if="${user.bio != ''}">
                 <td style="width: 175px"><h3 style="margin: 10px 0 10px 0" th:text="'Bio: '"/></td>
-                <td><p style="margin: 10px 0 10px 0" th:text="${user.bio != ''} ? ${user.bio} : '-Undefined-'"></p></td>
+                <td><p style="margin: 10px 0 10px 0" th:text="${user.bio}"></p></td>
             </tr>
         </table>
     </div>
