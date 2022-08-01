@@ -54,10 +54,10 @@ class Editor {
                   <br><br>
               </div>
               <label id="start-date-label-${this.entityId}">Start Date*:</label>
-              <input type=${this.allowTimeInput ? "datetime-local" : "date"} name="start-date" class="date-input" id="edit-start-date-${this.entityId}" min=${this.project.startDate.toISOString().split(".")[0]} max=${this.project.endDate.toISOString().split(".")[0]}>
+              <input type=${this.allowTimeInput ? "datetime-local" : "date"} name="start-date" class="date-input" id="edit-start-date-${this.entityId}" min=${this.title !== "New project details:" ? this.project.startDate.toISOString().split(".")[0] : ""} max=${this.title !== "New project details:" ? this.project.endDate.toISOString().split(".")[0]: ""}>
                 <br/>
               <label id="end-date-label-${this.entityId}">End Date*:</label>
-              <input type=${this.allowTimeInput ? "datetime-local" : "date"} name="end-date" class="date-input" id="edit-end-date-${this.entityId}" min=${this.project.startDate.toISOString().split(".")[0]} max=${this.project.endDate.toISOString().split(".")[0]}>
+              <input type=${this.allowTimeInput ? "datetime-local" : "date"} name="end-date" class="date-input" id="edit-end-date-${this.entityId}" min=${this.title !== "New project details:" ? this.project.startDate.toISOString().split(".")[0] : ""} max=${this.title !== "New project details:" ? this.project.endDate.toISOString().split(".")[0]: ""}>
                 <br/>
               <label id="color-label-${this.entityId}">Colour*:</label>
               <input type="color" name="colour" id="edit-colour-${this.entityId}"/>
@@ -77,7 +77,6 @@ class Editor {
       </div>
     `
         document.getElementById(`edit-section-form-title-${this.entityId}`).innerText = this.title;
-
         this.nameInput = document.getElementById(`edit-project-name-${this.entityId}`);
         this.descriptionInput = document.getElementById(`edit-description-${this.entityId}`);
         this.startDateInput = document.getElementById(`edit-start-date-${this.entityId}`);
@@ -145,7 +144,6 @@ class Editor {
      * Sets the initial defaults for the inputs.
      */
     fillDefaults() {
-
         this.nameInput.value = this.initialData.name ?? "";
         this.descriptionInput.value = this.initialData.description ?? "";
         if (this.initialData.startDate) {
@@ -246,7 +244,11 @@ class Editor {
 
 
         if (startDate === null || ( this.allowEndDateInput && endDate === null)) {
-            this.setDateError("The date and time fields are required.");
+            if (this.allowTimeInput) {
+                this.setDateError("The date and time fields are required.");
+            } else {
+                this.setDateError("Please fill in required dates.")
+            }
             return false;
         } else {
             if (endDate < startDate) {
@@ -254,7 +256,6 @@ class Editor {
                 return false;
             }
         }
-
         const customError = this.customDatesValidator(startDate, endDate);
         if (customError !== null) {
             this.setDateError(customError);
@@ -308,17 +309,22 @@ class Editor {
 
         this.nameInput.addEventListener('change', this.validateName.bind(this));  // Is only called after the text field loses focus.
         this.nameInput.addEventListener('input', this.validateName.bind(this));  // Ensure that the validator is called as the user types to provide real-time feedback.
+
         this.startDateInput.addEventListener('change', () => {
             this.startDateEdited = true;
-            this.getRelatedEvents();
+            if (!this.title.includes("sprint") && !this.title.includes("project")) {
+                this.getRelatedEvents();
+            }
+            this.validateDates();
+        });
+        this.endDateInput.addEventListener('change', () => {
+            this.endDateEdited = true;
+            if (!this.title.includes("sprint") && !this.title.includes("project")) {
+                this.getRelatedEvents();
+            }
             this.validateDates();
         });
 
-        this.endDateInput.addEventListener('change', () => {
-            this.endDateEdited = true;
-            this.getRelatedEvents();
-            this.validateDates();
-        });
     }
 
     getRelatedEvents() {
