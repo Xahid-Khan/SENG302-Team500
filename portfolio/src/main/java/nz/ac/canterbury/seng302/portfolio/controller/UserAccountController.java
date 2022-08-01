@@ -108,11 +108,13 @@ public class UserAccountController {
 
         long years = ChronoUnit.YEARS.between(date, LocalDate.now());
         long months = ChronoUnit.MONTHS.between(date, LocalDate.now()) % 12;
+        long days = ChronoUnit.DAYS.between(date, LocalDate.now());
 
         return dateString +
                 " (" +
                 ((years == 0) ? "" : years + " years ") +
-                ((years != 0 && months == 0) ? "" : months + " months") +
+                ((years != 0 && months == 0) ? "" : months + " months ") +
+                ((years != 0 && months != 0) ? "" : days + " days") +
                 ")";
     }
 
