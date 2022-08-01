@@ -17,7 +17,7 @@ import {Client as StompClient, Message as StompMessage, Stomp} from "@stomp/stom
  * This serves as a basic working model of how to use WebSockets with Spring Boot.
  */
 class PingPageStore {
-    readonly stomp: StompClient
+    stomp: StompClient
 
     connectStatus: LoadingStatus = new LoadingNotYetAttempted()
 
@@ -36,9 +36,6 @@ class PingPageStore {
             showEdit: action,
             start: action
         })
-
-        let socket = new SockJS("socket")
-        this.stomp = Stomp.over(socket);
 
         console.log("Created new PingPageStore.")
     }
@@ -91,12 +88,15 @@ class PingPageStore {
         }
     }
 
-    protected connect(onConnected: VoidFunction): void {
+    connect(onConnected: VoidFunction): void {
         if (this.connectStatus instanceof LoadingPending || this.connectStatus instanceof LoadingDone) {
             console.warn("Cannot connect twice.")
             onConnected()
             return
         }
+
+        let socket = new SockJS("socket")
+        this.stomp = Stomp.over(socket);
 
         console.log("Subscribing...")
         this.stomp.subscribe("/topic/pongs", (frame: StompMessage) => {
@@ -107,7 +107,7 @@ class PingPageStore {
         console.log("stomp :", this.stomp)
     }
 
-    protected onReceivePong(frame: StompMessage) {
+    onReceivePong(frame: StompMessage) {
         runInAction(() => {
             this.pongArray.push(frame.body)
             const locAndName = frame.body.split("~");

@@ -15,9 +15,6 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-  @Value("${nz.ac.canterbury.seng302.portfolio.urlPathPrefix}")
-  private String urlPathPrefix;
-
   /**
    * Configures STOMP like so.
    *
@@ -51,7 +48,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
   @Override
   public void registerStompEndpoints(StompEndpointRegistry config) {
     config.addEndpoint("socket")
-            .setAllowedOriginPatterns("https://*.canterbury.ac.nz");
-    config.addEndpoint("socket").withSockJS().setClientLibraryUrl( "https://cdn.jsdelivr.net/sockjs/1.6.1/sockjs.min.js" );
+            .setAllowedOriginPatterns("https://*.canterbury.ac.nz")
+            .withSockJS()
+            .setClientLibraryUrl( "https://cdn.jsdelivr.net/sockjs/1.6.1/sockjs.min.js");
   }
 }
