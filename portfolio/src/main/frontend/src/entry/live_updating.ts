@@ -49,32 +49,38 @@ class PingPageStore {
     }
 
     showEdit(location: string) {
-        console.log("Attempting to send ping...")
         if (this.connected) {
+            console.log("Attempting to send ping...")
             this.stomp.publish({
                 destination: "/app/show",
                 body: location
             })
+        } else {
+            console.log("Not connected")
         }
     }
 
     cancelEdit(location: string) {
-        console.log("Attempting to send ping...")
         if (this.connected) {
+            console.log("Attempting to send ping...")
             this.stomp.publish({
                 destination: "/app/cancel",
                 body: location
             })
+        } else {
+            console.log("Not connected")
         }
     }
 
     saveEdit(location: string) {
-        console.log("Attempting to send ping...")
         if (this.connected) {
+            console.log("Attempting to send ping...")
             this.stomp.publish({
                 destination: "/app/save",
                 body: location
             })
+        } else {
+            console.log("Not connected")
         }
     }
 
@@ -82,10 +88,13 @@ class PingPageStore {
         await new Promise<void>((res) => {
             console.log("res :", res)
             this.connect(res)
+        }).then(() => {
+            console.log(this.connected)
+            console.log(this.connectStatus)
+            if (!this.connected) {
+                throw new Error("Connect resolved but we aren't connected yet!")
+            }
         })
-        if (!this.connected) {
-            throw new Error("Connect resolved but we aren't connected yet!")
-        }
     }
 
     connect(onConnected: VoidFunction): void {
@@ -101,10 +110,11 @@ class PingPageStore {
         store.stomp.connect({}, () => {
             console.log("Connected.")
             console.log("Subscribing...")
+            store.connectStatus = new LoadingDone()
             store.stomp.subscribe("/topic/pongs", (message: StompMessage) => {
                 store.onReceivePong(message)
-                store.connectStatus = new LoadingDone()
             })
+            onConnected()
         })
 
         console.log("stomp :", this.stomp)
