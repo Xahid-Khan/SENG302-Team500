@@ -7,7 +7,6 @@ import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import java.time.Instant;
 
 /**
@@ -26,9 +25,6 @@ public class EventEntity {
     private ProjectEntity project;
 
 
-    // TODO Check validation in line with previous validation
-    @Pattern(message = "Please use letters or characters", regexp = "(?<=\\s|^)[a-zA-Z\s]*(?=[.,;:]?\\s|$)")
-    // Regex pattern from https://stackoverflow.com/questions/36851740/regex-for-just-alphabetic-characters-only-java
     @Length(message = "Name must be between 1 and 32 characters", min = 1, max = 32)
     @Column(name = "name", nullable = false)
     private String name;

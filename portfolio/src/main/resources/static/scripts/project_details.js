@@ -48,9 +48,9 @@ const displayCharactersRemaining = (field, maxCharacters) => {
   let lengthField;
   // This is hacky, and should be solved when project_details.js is refactored.
   if (field.id.includes("name")) {
-    lengthField = document.getElementById("edit-name-length")
+    lengthField = field.parentNode.childNodes.item(5)
   } else {
-    lengthField = document.getElementById("edit-description-length")
+    lengthField = field.parentNode.childNodes.item(5)
   }
   lengthField.textContent = `${field.value.length} / ${maxCharacters}`;
 }
