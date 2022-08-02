@@ -13,13 +13,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.List;
 
-
 /**
- * Handles the GET request on the /monthly-planner endpoint
+ * Handles the GET request on the /groups endpoint
  */
 @Controller
-public class MonthlyPlannerController {
-
+public class GroupsController {
     @Autowired
     private UserAccountService userAccountService;
 
@@ -27,16 +25,14 @@ public class MonthlyPlannerController {
     private AuthStateService authStateService;
 
     /**
-     * GET /monthly-planner/{projectId} fetches monthly planner view for a specific project projectId, this page
-     * shows a calendar view with all sprints showing from the related project
+     * GET /groups fetches the groups page. The groups page shows all groups
      *
      * @param principal Principal for the currently logged in user, used to get userId
      * @param model Parameters sent to thymeleaf template to be rendered into HTML
-     * @return The monthly_planner html page
+     * @return The groups html page
      */
-    @GetMapping("/monthly-planner/{projectId}")
-    public String getMonthlyPlanner(@AuthenticationPrincipal PortfolioPrincipal principal, Model model) {
-
+    @GetMapping(value="/groups")
+    public String getGroups(@AuthenticationPrincipal PortfolioPrincipal principal, Model model) {
         Integer userId = authStateService.getId(principal);
 
         UserResponse userDetails = userAccountService.getUserById(userId);
@@ -46,7 +42,6 @@ public class MonthlyPlannerController {
         model.addAttribute("canEdit", roles.contains(UserRole.TEACHER) || roles.contains(UserRole.COURSE_ADMINISTRATOR));
         model.addAttribute("username", userDetails.getUsername());
 
-        return "monthly_planner";
+        return "groups";
     }
-
 }
