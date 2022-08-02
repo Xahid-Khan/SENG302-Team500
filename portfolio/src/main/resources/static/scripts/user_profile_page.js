@@ -1,14 +1,10 @@
 'use strict';
 
-
 const activateDeletePhotoButton = () => {
-    const userImage = document.getElementById("userPhoto").getAttribute("src")
-    console.log(userImage)
-    if (userImage === "https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png") {
-        console.log("1111")
-        document.getElementById("deleteUserPhoto").setAttribute("disabled", "true")
+    const userImage = document.getElementById("userPhoto")
+    if (userImage) {
+        document.getElementById("deleteUserPhoto").setAttribute("disabled", "true");
     }
-    return null
 }
 
 document.getElementById("userPhoto").addEventListener("load", () => activateDeletePhotoButton())
@@ -41,4 +37,4 @@ const confirmDeleteModal = () => {
     document.getElementById("deletePhotoSubmissionForm").click();
 }
 
-document.getElementById("deletePhotoForm").addEventListener('click', ()=> openDeleteModal())
+document.getElementById("deleteUserPhoto").addEventListener('click', ()=> openDeleteModal())

@@ -66,12 +66,12 @@
         </div>
     </div>
     <div>
-        <table style="white-space: break-spaces">
-            <tr>
+        <table>
+            <tr th:if="${user.nickname != ''}">
                 <td style="width: 175px"><h3 style="margin: 10px 0 10px 0" th:text="'Nickname: '"/></td>
                 <td><p style="margin: 10px 0 10px 0" th:text="${user.nickname}"></p></td>
             </tr>
-            <tr>
+            <tr th:if="${user.personalPronouns != ''}">
                 <td style="width: 175px"><h3 style="margin: 10px 0 10px 0" th:text="'Pronouns: '"/></td>
                 <td><p style="margin: 10px 0 10px 0" th:text="${user.personalPronouns}"></p></td>
             </tr>
@@ -91,7 +91,7 @@
                 <td style="width: 175px"><h3 style="margin: 10px 0 10px 0" th:text="'Member since: '"/></td>
                 <td><p style="margin: 10px 0 10px 0" th:text="${registration_date}"></p></td>
             </tr>
-            <tr>
+            <tr th:if="${user.bio != ''}">
                 <td style="width: 175px"><h3 style="margin: 10px 0 10px 0" th:text="'Bio: '"/></td>
                 <td><p style="margin: 10px 0 10px 0" th:text="${user.bio}"></p></td>
             </tr>
@@ -103,14 +103,14 @@
     <div class="modal-delete">
         <div class="modal-delete-header">
             <div class="modal-delete-title">
-                Delete Confirmation
+                Delete Profile Picture Confirmation
             </div>
 
             <div class="modal-delete-close-button" id="modal-delete-x">&times;</div>
         </div>
         <div class="border-line"></div>
         <div class="modal-delete-body">
-            Are you sure you want to delete?
+            Are you sure you want to delete your profile picture?
         </div>
         <div class="modal-delete-buttons">
             <button class="button" id="modal-delete-cancel">Cancel</button>
