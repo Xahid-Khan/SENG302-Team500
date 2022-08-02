@@ -1,6 +1,5 @@
 package nz.ac.canterbury.seng302.identityprovider.service;
 
-import com.google.protobuf.ByteString;
 import nz.ac.canterbury.seng302.identityprovider.database.PhotoModel;
 import nz.ac.canterbury.seng302.identityprovider.database.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.database.UserPhotoRepository;
@@ -61,7 +60,7 @@ public class EditUserService {
      * @param rawImageData Image that needs to be saved to DB
      * @return a FileUploadStatusResponse
      */
-    public FileUploadStatusResponse UploadUserPhoto(int userId, byte[] rawImageData) {
+    public FileUploadStatusResponse uploadUserPhoto(int userId, byte[] rawImageData) {
         FileUploadStatusResponse.Builder reply = FileUploadStatusResponse.newBuilder();
         try {
             PhotoModel newPhoto =
@@ -86,12 +85,7 @@ public class EditUserService {
     public DeleteUserProfilePhotoResponse deletePhoto(DeleteUserProfilePhotoRequest request) {
         DeleteUserProfilePhotoResponse.Builder reply = DeleteUserProfilePhotoResponse.newBuilder();
         try {
-            PhotoModel deletePhoto = new PhotoModel(
-                    request.getUserId(),
-                    null
-            );
-
-            photoRepository.save(deletePhoto);
+            photoRepository.deleteById(request.getUserId());
             reply.setIsSuccess(true);
             reply.setMessage("User profile photo has been deleted");
         } catch (Exception e) {
