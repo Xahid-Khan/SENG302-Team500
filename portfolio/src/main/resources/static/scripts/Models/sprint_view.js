@@ -13,6 +13,10 @@ class SprintView {
         this.sprints = sprints;
         this.deadlines = deadlines;
         this.milestones = milestones;
+        this.modalDeleteContainer=document.getElementById(`modal-delete-open`);
+        this.modalDeleteX=document.getElementById(`modal-delete-x`);
+        this.modalDeleteCancel=document.getElementById(`modal-delete-cancel`);
+        this.modalDeleteConfirm=document.getElementById(`modal-delete-confirm`);
 
         this.constructView();
         this.wireView();
@@ -101,10 +105,32 @@ class SprintView {
 
         this.expandedView = !this.expandedView;
     }
+    openDeleteModal(){
+        this.modalDeleteContainer.style.display='block';
+        this.modalDeleteX.addEventListener("click",()=>this.cancelDeleteModal())
+        this.modalDeleteCancel.addEventListener("click",()=>this.cancelDeleteModal())
+        this.modalDeleteConfirm.addEventListener("click",()=>this.confirmDeleteModal())
+
+
+    }
+    cancelDeleteModal(){
+        this.modalDeleteContainer.style.display='none';
+        this.modalDeleteX.removeEventListener("click",()=>this.cancelDeleteModal())
+        this.modalDeleteCancel.removeEventListener("click",()=>this.cancelDeleteModal())
+        this.modalDeleteConfirm.removeEventListener("click",()=>this.confirmDeleteModal())
+
+    }
+    confirmDeleteModal(){
+        this.modalDeleteContainer.style.display='none';
+        this.modalDeleteX.removeEventListener("click",()=>this.cancelDeleteModal())
+        this.modalDeleteCancel.removeEventListener("click",()=>this.cancelDeleteModal())
+        this.modalDeleteConfirm.removeEventListener("click",()=>this.confirmDeleteModal())
+        this.deleteCallback()
+    }
 
     wireView() {
         document.getElementById(`sprint-button-edit-${this.sprint.sprintId}`).addEventListener('click', () => this.editCallback());
-        document.getElementById(`sprint-button-delete-${this.sprint.sprintId}`).addEventListener("click", () => this.deleteCallback());
+        document.getElementById(`sprint-button-delete-${this.sprint.sprintId}`).addEventListener("click", () => this.openDeleteModal());
 
         this.toggleButton.addEventListener('click', this.toggleExpandedView.bind(this));
     }
