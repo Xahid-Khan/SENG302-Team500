@@ -83,9 +83,7 @@ class SprintView {
         this.colourBlock.style.background = this.sprint.colour;
         document.getElementById(`start-date-${this.sprint.sprintId}`).innerText = DatetimeUtils.localToUserDMY(this.sprint.startDate);
         const displayedDate = new Date(this.sprint.endDate.valueOf());
-        if (DatetimeUtils.getTimeStringIfNonZeroLocally(this.sprint.endDate) === null) {
-            displayedDate.setDate(displayedDate.getDate() - 1);
-        }
+        displayedDate.setDate(displayedDate.getDate() - 1);
 
         document.getElementById(`end-date-${this.sprint.sprintId}`).innerText = DatetimeUtils.localToUserDMY(displayedDate);
     }
