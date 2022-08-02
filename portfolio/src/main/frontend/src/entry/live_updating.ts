@@ -52,7 +52,7 @@ class PingPageStore {
             console.log("Attempting to send ping...")
             this.stomp.publish({
                 destination: "/app/alert",
-                body: location + "~" + "show"
+                body: location + "~show~" + document.getElementsByClassName("username")[0].textContent
             })
         } else {
             console.log("Not connected")
@@ -64,7 +64,7 @@ class PingPageStore {
             console.log("Attempting to send ping...")
             this.stomp.publish({
                 destination: "/app/alert",
-                body: location + "~" + "cancel"
+                body: location + "~cancel~" + document.getElementsByClassName("username")[0].textContent
             })
         } else {
             console.log("Not connected")
@@ -76,7 +76,7 @@ class PingPageStore {
             console.log("Attempting to send ping...")
             this.stomp.publish({
                 destination: "/app/alert",
-                body: location + "~" + "save"
+                body: location + "~save~" + document.getElementsByClassName("username")[0].textContent
             })
         } else {
             console.log("Not connected")
@@ -87,8 +87,6 @@ class PingPageStore {
         await new Promise<void>((res) => {
             this.connect(res)
         }).then(() => {
-            console.log(this.connected)
-            console.log(this.connectStatus)
             if (!this.connected) {
                 throw new Error("Connect resolved but we aren't connected yet!")
             }
@@ -120,20 +118,22 @@ class PingPageStore {
         runInAction(() => {
             this.pongArray.push(frame.body)
             const message = JSON.parse(frame.body)
-            if (message['action'] === "show") {
-                if (document.getElementById("event-form-" + message['location'])) {
-                    document.getElementById("event-form-" + message['location']).innerText = message['action'] + " is currently editing"
+            if (message['username'] !== document.getElementsByClassName("username")[0].textContent) {
+                if (message['action'] === "show") {
+                    if (document.getElementById("event-form-" + message['location'])) {
+                        document.getElementById("event-form-" + message['location']).innerText = message['name'] + " is currently editing"
+                    } else {
+                        document.getElementById("editing-form-" + message['location']).innerText = message['name'] + " is currently editing"
+                    }
                 } else {
-                    document.getElementById("editing-form-" + message['location']).innerText = message['action'] + " is currently editing"
-                }
-            } else {
-                if (message['action'] === "save") {
-                    window.location.reload();
-                }
-                if (document.getElementById("event-form-" + message['location'])) {
-                    document.getElementById("event-form-" + message['location']).innerText = "";
-                } else {
-                    document.getElementById("editing-form-" + message['location']).innerText = "";
+                    if (message['action'] === "save") {
+                        window.location.reload();
+                    }
+                    if (document.getElementById("event-form-" + message['location'])) {
+                        document.getElementById("event-form-" + message['location']).innerText = "";
+                    } else {
+                        document.getElementById("editing-form-" + message['location']).innerText = "";
+                    }
                 }
             }
         })

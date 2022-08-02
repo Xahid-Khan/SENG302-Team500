@@ -22,7 +22,7 @@ class Editor {
 
         if (this.entityId && !this.title.includes("New")) {
             Socket.showEdit(this.entityId)
-            console.log("here ", this.entityId)
+            window.addEventListener('beforeunload', () => Socket.cancelEdit(this.entityId))
         }
 
         this.constructView();
@@ -288,6 +288,7 @@ class Editor {
                     colour: this.getColour()
                 })
                 Socket.saveEdit(this.entityId);
+                window.removeEventListener('beforeunload', () => Socket.cancelEdit(this.entityId))
             } finally {
                 this.saveButton.innerText = "Save";
                 this.saveButton.setAttribute("disabled", "false");
@@ -305,7 +306,7 @@ class Editor {
             evt.preventDefault();
             this.validateAndSubmit();
         });
-        document.getElementById(`edit-cancel-button-${this.entityId}`).addEventListener('click', () => {this.cancelCallback(); Socket.cancelEdit(this.entityId)});
+        document.getElementById(`edit-cancel-button-${this.entityId}`).addEventListener('click', () => {this.cancelCallback(); Socket.cancelEdit(this.entityId); window.removeEventListener('beforeunload', () => Socket.cancelEdit(this.entityId))});
 
         this.nameInput.addEventListener('change', this.validateName.bind(this));  // Is only called after the text field loses focus.
         this.nameInput.addEventListener('input', this.validateName.bind(this));  // Ensure that the validator is called as the user types to provide real-time feedback.

@@ -91,6 +91,7 @@ class DeadlineView {
         this.modalDeleteCancel.removeEventListener("click",()=>this.cancelDeleteModal())
         this.modalDeleteConfirm.removeEventListener("click",()=>this.confirmDeleteModal())
         Socket.saveEdit(this.deadline.deadlineId)
+        window.removeEventListener('beforeunload', () => Socket.cancelEdit(this.entityId))
         this.deleteCallback()
     }
 

@@ -24,11 +24,10 @@ class ProjectView {
     addMilestoneForm = null
     addMilestoneLoadingStatus = LoadingStatus.NotYetAttempted;
 
-    constructor(containerElement, project, pingCallback, editCallback, deleteCallback, sprintDeleteCallback, sprintUpdateCallback, eventDeleteCallback, eventUpdateCallback, deadlineDeleteCallback, deadlineUpdateCallback, milestoneDeleteCallback, milestoneUpdateCallback, eventEditCallback, deadlineEditCallback, milestoneEditCallback) {
+    constructor(containerElement, project, editCallback, deleteCallback, sprintDeleteCallback, sprintUpdateCallback, eventDeleteCallback, eventUpdateCallback, deadlineDeleteCallback, deadlineUpdateCallback, milestoneDeleteCallback, milestoneUpdateCallback, eventEditCallback, deadlineEditCallback, milestoneEditCallback) {
         console.log("project", project)
         this.containerElement = containerElement;
         this.project = project;
-        this.pingCallback = pingCallback;
         this.sprintContainer = null;
         this.sprints = new Map();
         this.eventContainer = null;
@@ -256,10 +255,6 @@ class ProjectView {
         for (let k = 0; k < this.project.deadlines.length; k++) {
             this.appendDeadline(this.project.deadlines[k]);
         }
-    }
-
-    callPing() {
-        this.pingCallback();
     }
 
     /**
@@ -779,7 +774,7 @@ class ProjectView {
     }
     wireView() {
         document.getElementById(`project-edit-button-${this.project.id}`).addEventListener("click", () => this.editCallback());
-        document.getElementById(`toggle-project-details-${this.project.id}`).addEventListener("click", () => {this.toggleProjectDetails(); this.callPing()})
+        document.getElementById(`toggle-project-details-${this.project.id}`).addEventListener("click", () => this.toggleProjectDetails())
         document.getElementById(`project-delete-button-${this.project.id}`).addEventListener("click", () => this.openDeleteModal());
         document.getElementById(`monthly-planner-redirect-button-${this.project.id}`).addEventListener("click", () => this.monthlyPlannerRedirect(this.project.id));
         this.toggleSprintsButton.addEventListener('click', this.showSprints.bind(this));

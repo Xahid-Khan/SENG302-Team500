@@ -1,6 +1,8 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
+import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
+import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -17,6 +19,12 @@ import java.util.Map;
 @Controller
 public class LiveProjectUpdatesController {
 
+  @Autowired
+  private UserAccountService userAccountService;
+
+  @Autowired
+  private AuthStateService authStateService;
+
   /**
    * STOMP endpoint that receives a message string and echos it back with metadata attached.
    *
@@ -27,9 +35,10 @@ public class LiveProjectUpdatesController {
    */
   @MessageMapping("/alert")
   @SendTo("/topic/edit-project")
-  public Map<String, String> save(@AuthenticationPrincipal PreAuthenticatedAuthenticationToken principal, String alert) {
+  public Map<String, String> alert(@AuthenticationPrincipal PreAuthenticatedAuthenticationToken principal, String alert) {
     var authState = (PortfolioPrincipal) principal.getPrincipal();
     Map<String, String> message = new HashMap<>();
+    message.put("username", alert.split("~")[2]);
     message.put("action", alert.split("~")[1]);
     message.put("location", alert.split("~")[0]);
     message.put("name", authState.getName());
