@@ -1,8 +1,8 @@
 'use strict';
 
 const activateDeletePhotoButton = () => {
-    const userImage = document.getElementById("userPhoto")
-    if (userImage) {
+    const userImage = document.getElementById("userPhoto").getAttribute("src");
+    if (!(userImage.includes("localhost"||"canterbury.ac.nz"))) {
         document.getElementById("deleteUserPhoto").setAttribute("disabled", "true");
     }
 }
