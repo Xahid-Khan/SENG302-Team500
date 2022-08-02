@@ -34,7 +34,7 @@ class Editor {
      */
     constructView() {
         const actualEndDate = new Date(new Date(this.project.endDate).setDate(new Date(this.project.endDate).getDate() - 1))
-        console.log(actualEndDate)
+        const oneYearAgo = DatetimeUtils.toLocalYMD(new Date(new Date().setFullYear(new Date().getFullYear() - 1)))
         this.containerElement.innerHTML = `
       <div class="edit-project-section" id="edit-project-section-${this.entityId}">
           <p class="edit-section-title" id="edit-section-form-title-${this.entityId}">Edit Details:</p>
@@ -56,12 +56,10 @@ class Editor {
                   <br><br>
               </div>
               <label id="start-date-label-${this.entityId}">Start Date*:</label>
-              <input type=${this.allowTimeInput ? "datetime-local" : "date"} name="start-date" class="date-input" id="edit-start-date-${this.entityId}" min=${this.allowTimeInput ? DatetimeUtils.toLocalYMD(this.project.startDate)+"T00:00:00" : DatetimeUtils.toLocalYMD(this.project.startDate)} max=${this.allowTimeInput ? DatetimeUtils.toLocalYMD(actualEndDate)+"T00:00:00" : DatetimeUtils.toLocalYMD(actualEndDate)}>
-              <input type=${this.allowTimeInput ? "datetime-local" : "date"} name="start-date" class="date-input" id="edit-start-date-${this.entityId}" min=${this.title !== "New project details:" ? this.project.startDate.toISOString().split(".")[0] : ""} max=${this.title !== "New project details:" ? this.project.endDate.toISOString().split(".")[0]: ""}>
+              <input type=${this.allowTimeInput ? "datetime-local" : "date"} name="start-date" class="date-input" id="edit-start-date-${this.entityId}" min=${this.title !== "New project details:" ? this.allowTimeInput ? DatetimeUtils.toLocalYMD(this.project.startDate)+"T00:00:00" : DatetimeUtils.toLocalYMD(this.project.startDate): oneYearAgo} max=${this.title !== "New project details:" ? this.allowTimeInput ? DatetimeUtils.toLocalYMD(actualEndDate)+"T00:00:00" : DatetimeUtils.toLocalYMD(actualEndDate) : ""}>
                 <br/>
               <label id="end-date-label-${this.entityId}">End Date*:</label>
-              <input type=${this.allowTimeInput ? "datetime-local" : "date"} name="end-date" class="date-input" id="edit-end-date-${this.entityId}" min=${this.title !== "New project details:" ? this.project.startDate.toISOString().split(".")[0] : ""} max=${this.title !== "New project details:" ? this.project.endDate.toISOString().split(".")[0]: ""}>
-              <input type=${this.allowTimeInput ? "datetime-local" : "date"} name="end-date" class="date-input" id="edit-end-date-${this.entityId}" min=${DatetimeUtils.toLocalYMD(this.project.startDate)+"T00:00:00"} max=${DatetimeUtils.toLocalYMD(actualEndDate)+"T00:00:00"}>
+              <input type=${this.allowTimeInput ? "datetime-local" : "date"} name="end-date" class="date-input" id="edit-end-date-${this.entityId}" min=${this.title !== "New project details:" ? DatetimeUtils.toLocalYMD(this.project.startDate)+"T00:00:00": ""} max=${this.title !== "New project details:" ? DatetimeUtils.toLocalYMD(actualEndDate)+"T00:00:00": ""}>
                 <br/>
               <label id="color-label-${this.entityId}">Colour*:</label>
               <input type="color" name="colour" id="edit-colour-${this.entityId}"/>
