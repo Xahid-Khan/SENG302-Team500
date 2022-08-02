@@ -1,9 +1,9 @@
 'use strict';
 
 const activateDeletePhotoButton = () => {
-    const userImage = document.getElementById("userPhoto").getAttribute("src")
-    if (userImage === "https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png") {
-        document.getElementById("deleteUserPhoto").setAttribute("disabled", "true")
+    const userImage = document.getElementById("userPhoto")
+    if (userImage) {
+        document.getElementById("deleteUserPhoto").setAttribute("disabled", "true");
     }
 }
 
