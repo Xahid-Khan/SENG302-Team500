@@ -33,6 +33,8 @@ class Editor {
      * Constructs view for the Projects, populating the HTML.
      */
     constructView() {
+        const actualEndDate = new Date(new Date(this.project.endDate).setDate(new Date(this.project.endDate).getDate() - 1))
+        console.log(actualEndDate)
         this.containerElement.innerHTML = `
       <div class="edit-project-section" id="edit-project-section-${this.entityId}">
           <p class="edit-section-title" id="edit-section-form-title-${this.entityId}">Edit Details:</p>
@@ -54,10 +56,10 @@ class Editor {
                   <br><br>
               </div>
               <label id="start-date-label-${this.entityId}">Start Date*:</label>
-              <input type=${this.allowTimeInput ? "datetime-local" : "date"} name="start-date" class="date-input" id="edit-start-date-${this.entityId}" min=${this.allowTimeInput ? DatetimeUtils.toLocalYMD(this.project.startDate)+"T00:00:00" : DatetimeUtils.toLocalYMD(this.project.startDate)} max=${this.allowTimeInput ? this.project.endDate.toISOString().split(".")[0] : this.project.endDate.toISOString().slice(0, 10)}>
+              <input type=${this.allowTimeInput ? "datetime-local" : "date"} name="start-date" class="date-input" id="edit-start-date-${this.entityId}" min=${this.allowTimeInput ? DatetimeUtils.toLocalYMD(this.project.startDate)+"T00:00:00" : DatetimeUtils.toLocalYMD(this.project.startDate)} max=${this.allowTimeInput ? DatetimeUtils.toLocalYMD(actualEndDate)+"T00:00:00" : DatetimeUtils.toLocalYMD(actualEndDate)}>
                 <br/>
               <label id="end-date-label-${this.entityId}">End Date*:</label>
-              <input type=${this.allowTimeInput ? "datetime-local" : "date"} name="end-date" class="date-input" id="edit-end-date-${this.entityId}" min=${DatetimeUtils.toLocalYMD(this.project.startDate)+"T00:00:00"} max=${this.project.endDate.toISOString().split(".")[0]}>
+              <input type=${this.allowTimeInput ? "datetime-local" : "date"} name="end-date" class="date-input" id="edit-end-date-${this.entityId}" min=${DatetimeUtils.toLocalYMD(this.project.startDate)+"T00:00:00"} max=${DatetimeUtils.toLocalYMD(actualEndDate)+"T00:00:00"}>
                 <br/>
               <label id="color-label-${this.entityId}">Colour*:</label>
               <input type="color" name="colour" id="edit-colour-${this.entityId}"/>
@@ -183,11 +185,6 @@ class Editor {
 
         if (this.nameInput.value.trim() === "") {
             this.setNameError("Name must not contain only whitespaces.");
-            return false;
-        }
-
-        if (this.title === "New event details:" && !this.nameInput.value.match("(?<=\\s|^)[a-zA-Z\s]*(?=[.,;:]?\\s|$)")) {
-            this.setNameError("Name can only contain characters");
             return false;
         }
 
@@ -452,6 +449,21 @@ class Editor {
                 // Taken from: https://stackoverflow.com/a/325964
                 if (startDate > sprint.startDate || endDate < sprint.endDate) {
                     return `This date range overlaps with Sprint ${sprint.orderNumber}. Please choose a non-overlapping date range.`;
+                }
+            }
+            for (const event of project.events.values()) {
+                if (startDate > event.startDate || endDate < event.endDate) {
+                    return `This date range overlaps with Event: ${event.name}. Please choose a non-overlapping date range.`;
+                }
+            }
+            for (const deadline of project.deadlines.values()) {
+                if (startDate > deadline.startDate || endDate < deadline.startDate) {
+                    return `This date range overlaps with Deadline: ${deadline.name}. Please choose a non-overlapping date range.`;
+                }
+            }
+            for (const milestone of project.milestones.values()) {
+                if (startDate > milestone.startDate || endDate < milestone.startDate) {
+                    return `This date range overlaps with Milestone: ${milestone.name}. Please choose a non-overlapping date range.`;
                 }
             }
             return null;
