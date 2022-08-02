@@ -1,11 +1,39 @@
+import Croppie from "croppie"
+import "./styles.css";
+
 // Size of the largest file that can be uploaded to the server (in bytes).
+
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
-
 // Size of the largest file that can be uploaded to the server and saved **without our compression being applied to it**.
-const FILE_COMPRESSION_THRESHOLD = 5 * 1024 * 1024;
 
+const FILE_COMPRESSION_THRESHOLD = 5 * 1024 * 1024;
 // Size of the (square) image element in pixels.
+
+
 const IMAGE_SIZE = 150;
+
+
+
+const croppieOptions = {
+    showZoomer: true,
+    enableOrientation: true,
+    mouseWheelZoom: "ctrl",
+    viewport: {
+        width: 300,
+        height: 200,
+        type: "square"
+    },
+    boundary: {
+        width: "50vw",
+        height: "50vh"
+    }
+};
+
+const croppie = document.getElementById("smallImage");
+const c = new Croppie(croppie, croppieOptions);
+
+
+
 
 (() => {
     let blockFormSubmit = false;

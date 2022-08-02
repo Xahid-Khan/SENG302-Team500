@@ -21,6 +21,8 @@
                 <a href="user-list">View Users</a>
             </div>
         </div>
+
+
         <div class="account">
             <div class="dropdown">
                 <button class="button dropbutton"><div class="username" th:text="${username}"></div>
@@ -42,6 +44,10 @@
     <div class="container">
         <div class="name-container">
             <div class="left-padding">
+
+                <img src="https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png" id="smallImage" />
+
+
                 <form id='form' action="#" th:action="@{edit_account}" th:object="${user}" method="post" enctype="multipart/form-data">
                     <h1 class="edit-title">Edit Account Details</h1>
 
