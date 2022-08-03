@@ -41,7 +41,7 @@
         <div class="name-container">
             <div class="image-container" style="padding:0">
                 <img id="userPhoto" th:src="'//' + ${globalImagePath} + ${userId}"
-                     onerror="this.onerror=null;this.src='https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png'"
+                     onerror="this.onerror=null;document.getElementById('deleteUserPhoto').setAttribute('disabled', 'true');this.src='https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png'"
                        width="150" height="150" alt="Placeholder Profile Photo">
             </div>
             <div class="left-padding">

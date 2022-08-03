@@ -1,13 +1,5 @@
 'use strict';
 
-const activateDeletePhotoButton = () => {
-    const userImage = document.getElementById("userPhoto").getAttribute("src");
-    if (!(userImage.includes("localhost"||"canterbury.ac.nz"))) {
-        document.getElementById("deleteUserPhoto").setAttribute("disabled", "true");
-    }
-}
-
-document.getElementById("userPhoto").addEventListener("load", () => activateDeletePhotoButton())
 
 const modalDeleteContainer = document.getElementById(`modal-delete-open`);
 const modalDeleteX = document.getElementById(`modal-delete-x`);
