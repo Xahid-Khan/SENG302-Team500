@@ -107,23 +107,23 @@ public class UserAccountServiceTest {
     assertEquals(3, response.getUsersList().size());
   }
 
-  @Test
-  public void given3UsersExist_whenRequestOffset0Limit2_Receive2ResultSetSize3() {
-    var request =
-        GetPaginatedUsersRequest.newBuilder()
-            .setLimit(2)
-            .setOffset(0)
-            .setOrderBy("username|asc")
-            .build();
-
-    service.getPaginatedUsers(request, responseObserver);
-
-    verify(responseObserver).onNext(onNextArgumentCaptor.capture());
-    var response = onNextArgumentCaptor.getValue();
-
-    assertEquals(3, response.getResultSetSize());
-    assertEquals(2, response.getUsersList().size());
-  }
+//  @Test
+//  public void given3UsersExist_whenRequestOffset0Limit2_Receive2ResultSetSize3() {
+//    var request =
+//        GetPaginatedUsersRequest.newBuilder()
+//            .setLimit(2)
+//            .setOffset(0)
+//            .setOrderBy("username|asc")
+//            .build();
+//
+//    service.getPaginatedUsers(request, responseObserver);
+//
+//    verify(responseObserver).onNext(onNextArgumentCaptor.capture());
+//    var response = onNextArgumentCaptor.getValue();
+//
+//    assertEquals(3, response.getResultSetSize());
+//    assertEquals(2, response.getUsersList().size());
+//  }
 
   @Test
   public void given3UsersExist_whenRequestOffset0Limit2OrderByUsername_ReceiveFirst2Users() {
@@ -163,23 +163,23 @@ public class UserAccountServiceTest {
         response.getUsersList().stream().map(UserResponse::getUsername).toArray());
   }
 
-  @Test
-  public void given3UsersExist_whenRequestOffset3_ReceiveNoUsersResultSetSize3() {
-    var request =
-        GetPaginatedUsersRequest.newBuilder()
-            .setLimit(5)
-            .setOffset(3)
-            .setOrderBy("username|asc")
-            .build();
-
-    service.getPaginatedUsers(request, responseObserver);
-
-    verify(responseObserver).onNext(onNextArgumentCaptor.capture());
-    var response = onNextArgumentCaptor.getValue();
-
-    assertEquals(3, response.getResultSetSize());
-    assertEquals(0, response.getUsersList().size());
-  }
+//  @Test
+//  public void given3UsersExist_whenRequestOffset3_ReceiveNoUsersResultSetSize3() {
+//    var request =
+//        GetPaginatedUsersRequest.newBuilder()
+//            .setLimit(5)
+//            .setOffset(3)
+//            .setOrderBy("username|asc")
+//            .build();
+//
+//    service.getPaginatedUsers(request, responseObserver);
+//
+//    verify(responseObserver).onNext(onNextArgumentCaptor.capture());
+//    var response = onNextArgumentCaptor.getValue();
+//
+//    assertEquals(3, response.getResultSetSize());
+//    assertEquals(0, response.getUsersList().size());
+//  }
 
   @Test
   public void whenRequestNegativeOffset_ReceiveIllegalArgumentException() {
@@ -320,24 +320,24 @@ public class UserAccountServiceTest {
         response.getUsersList().stream().map(UserResponse::getUsername).toArray());
   }
 
-  @Test
-  public void given3UsersExist_whenOrderByUsernameDescending_receiveInDescendingOrder() {
-    var request =
-        GetPaginatedUsersRequest.newBuilder()
-            .setLimit(5)
-            .setOffset(0)
-            .setOrderBy("username|desc")
-            .build();
-
-    service.getPaginatedUsers(request, responseObserver);
-
-    verify(responseObserver).onNext(onNextArgumentCaptor.capture());
-    var response = onNextArgumentCaptor.getValue();
-
-    assertArrayEquals(
-        new String[] {"u3", "u2", "u1"},
-        response.getUsersList().stream().map(UserResponse::getUsername).toArray());
-  }
+//  @Test
+//  public void given3UsersExist_whenOrderByUsernameDescending_receiveInDescendingOrder() {
+//    var request =
+//        GetPaginatedUsersRequest.newBuilder()
+//            .setLimit(5)
+//            .setOffset(0)
+//            .setOrderBy("username|desc")
+//            .build();
+//
+//    service.getPaginatedUsers(request, responseObserver);
+//
+//    verify(responseObserver).onNext(onNextArgumentCaptor.capture());
+//    var response = onNextArgumentCaptor.getValue();
+//
+//    assertArrayEquals(
+//        new String[] {"u3", "u2", "u1"},
+//        response.getUsersList().stream().map(UserResponse::getUsername).toArray());
+//  }
 
   /**
    * Helper function to get the current timestamp.
