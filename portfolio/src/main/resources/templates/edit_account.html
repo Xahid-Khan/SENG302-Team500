@@ -8,7 +8,6 @@
     <link rel="stylesheet" th:href="@{styles/pages/project_details.css}">
     <link rel="stylesheet" th:href="@{styles/navbar.css}"/>
     <link rel="stylesheet" th:href="@{styles/pages/edit_account.css}" />
-    <link rel="stylesheet" href="croppie.css" />
 
 </head>
 <body>
@@ -22,8 +21,6 @@
                 <a href="user-list">View Users</a>
             </div>
         </div>
-
-
         <div class="account">
             <div class="dropdown">
                 <button class="button dropbutton"><div class="username" th:text="${username}"></div>
@@ -45,13 +42,6 @@
     <div class="container">
         <div class="name-container">
             <div class="left-padding">
-
-                <div id="croppieTestId">
-
-                    I'm here
-                </div>
-
-
                 <form id='form' action="#" th:action="@{edit_account}" th:object="${user}" method="post" enctype="multipart/form-data">
                     <h1 class="edit-title">Edit Account Details</h1>
 
@@ -156,8 +146,6 @@
 
 <script type="text/javascript" th:src="@{scripts/popup_form.js}"></script>
 <script type="text/javascript" th:src="@{scripts/edit_account.js}"></script>
-<script type="text/javascript" th:src="@{scripts/croppie_spike.js}"></script>
-<script src="croppie.js"></script>
 </body>
 
 <style>

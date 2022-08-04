@@ -22,11 +22,13 @@
     "@fullcalendar/interaction": "^5.10.1",
     "@fullcalendar/react": "^5.10.1",
     "@stomp/stompjs": "^6.1.2",
+    "@types/croppie": "^2.6.1",
+    "croppie": "^2.6.5",
     "mobx": "^6.5.0",
     "mobx-react-lite": "^3.3.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "sockjs-client": "^1.6.1",
-    "react-tooltip": "^4.2.21"
+    "react-tooltip": "^4.2.21",
+    "sockjs-client": "^1.6.1"
   }
 }
