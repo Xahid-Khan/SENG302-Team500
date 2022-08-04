@@ -9,26 +9,26 @@ public class GroupModel {
     private int id;
 
     @Column(unique = true, nullable = false)
-    private String groupName;
+    private String shortName;
 
-    private String description;
+    private String longName;
 
     protected GroupModel () {}
 
-    public GroupModel (String name, String description){
-        this.groupName = name;
-        this.description = description;
+    public GroupModel (String shortName, String longName){
+        this.shortName = shortName;
+        this.longName = longName;
     }
 
     public int getId() {
         return id;
     }
 
-    public String getGroupName() {
-        return groupName;
+    public String getShortName() {
+        return shortName;
     }
 
-    public String getDescription() {
-        return description;
+    public String getLongName() {
+        return longName;
     }
 }
