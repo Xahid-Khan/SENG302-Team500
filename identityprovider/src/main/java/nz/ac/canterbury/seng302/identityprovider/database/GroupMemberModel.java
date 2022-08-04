@@ -24,7 +24,7 @@ public class GroupMemberModel {
         return groupId;
     }
 
-    public List<Integer> getUserId() {
+    public final List<Integer> getUserId() {
         return userId;
     }
 }
