@@ -145,7 +145,7 @@ class ProjectView {
                       <button class="button monthly-planner-redirect-button" id="monthly-planner-redirect-button-${this.project.id}">View Monthly Planner</button>
                   </span>
                   <span>
-                      <button class="button visibility-button toggle-project-details" id="toggle-project-details-${this.project.id}"><span class='material-icons'>visibility</span></button>
+                      <button class="button visibility-button toggle-project-details" id="toggle-project-details-${this.project.id}"><span class='material-icons'>visibility_off</span></button>
                   </span>
                   <span class="crud">
                       <button class="button icon-button" onclick="document.getElementById('modal-open').style.display='block'" id="project-delete-button-${this.project.id}" data-privilege="teacher"><span class="material-icons">clear</span></button>
@@ -215,10 +215,10 @@ class ProjectView {
 
         document.getElementById(`project-title-text-${this.project.id}`).innerText = this.project.name;
         document.getElementById(`project-description-${this.project.id}`).innerText = this.project.description;
-        document.getElementById(`project-startDate-${this.project.id}`).innerText = DatetimeUtils.localToUserDMY(this.project.startDate);
+        document.getElementById(`project-startDate-${this.project.id}`).innerText = DatetimeUtils.localToUserDMYWithoutTime(this.project.startDate);
         const displayedDate = new Date(this.project.endDate.valueOf());
         displayedDate.setDate(displayedDate.getDate()  - 1);
-        document.getElementById(`project-endDate-${this.project.id}`).innerText = DatetimeUtils.localToUserDMY(displayedDate);
+        document.getElementById(`project-endDate-${this.project.id}`).innerText = DatetimeUtils.localToUserDMYWithoutTime(displayedDate);
 
         this.addSprintButton = document.getElementById(`add-sprint-button-${this.project.id}`);
         this.toggleSprintsButton = document.getElementById(`toggle-sprint-button-${this.project.id}`);
@@ -748,7 +748,7 @@ class ProjectView {
         this.toggleDeadlines();
         this.toggleSprints();
         this.toggleMilestones();
-        document.getElementById(`toggle-project-details-${this.project.id}`).innerHTML = this.showingProjectDetails ? "<span class='material-icons'>visibility</span>" : "<span class='material-icons'>visibility_off</span>";
+        document.getElementById(`toggle-project-details-${this.project.id}`).innerHTML = this.showingProjectDetails ? "<span class='material-icons'>visibility_off</span>" : "<span class='material-icons'>visibility</span>";
         this.showingProjectDetails = !this.showingProjectDetails;
     }
 

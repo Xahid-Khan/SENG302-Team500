@@ -34,7 +34,7 @@ class Editor {
      */
     constructView() {
         const actualEndDate = new Date(new Date(this.project.endDate).setDate(new Date(this.project.endDate).getDate() - 1))
-        console.log(actualEndDate)
+        const oneYearAgo = DatetimeUtils.toLocalYMD(new Date(new Date().setFullYear(new Date().getFullYear() - 1)))
         this.containerElement.innerHTML = `
       <div class="edit-project-section" id="edit-project-section-${this.entityId}">
           <p class="edit-section-title" id="edit-section-form-title-${this.entityId}">Edit Details:</p>
@@ -56,10 +56,10 @@ class Editor {
                   <br><br>
               </div>
               <label id="start-date-label-${this.entityId}">Start Date*:</label>
-              <input type=${this.allowTimeInput ? "datetime-local" : "date"} name="start-date" class="date-input" id="edit-start-date-${this.entityId}" min=${this.allowTimeInput ? DatetimeUtils.toLocalYMD(this.project.startDate)+"T00:00:00" : DatetimeUtils.toLocalYMD(this.project.startDate)} max=${this.allowTimeInput ? DatetimeUtils.toLocalYMD(actualEndDate)+"T00:00:00" : DatetimeUtils.toLocalYMD(actualEndDate)}>
+              <input type=${this.allowTimeInput ? "datetime-local" : "date"} name="start-date" class="date-input" id="edit-start-date-${this.entityId}" min=${this.title !== "New project details:" ? this.allowTimeInput ? DatetimeUtils.toLocalYMD(this.project.startDate)+"T00:00:00" : DatetimeUtils.toLocalYMD(this.project.startDate): oneYearAgo} max=${this.title !== "New project details:" ? this.allowTimeInput ? DatetimeUtils.toLocalYMD(actualEndDate)+"T00:00:00" : DatetimeUtils.toLocalYMD(actualEndDate) : ""}>
                 <br/>
               <label id="end-date-label-${this.entityId}">End Date*:</label>
-              <input type=${this.allowTimeInput ? "datetime-local" : "date"} name="end-date" class="date-input" id="edit-end-date-${this.entityId}" min=${DatetimeUtils.toLocalYMD(this.project.startDate)+"T00:00:00"} max=${DatetimeUtils.toLocalYMD(actualEndDate)+"T00:00:00"}>
+              <input type=${this.allowTimeInput ? "datetime-local" : "date"} name="end-date" class="date-input" id="edit-end-date-${this.entityId}" min=${this.title !== "New project details:" ? DatetimeUtils.toLocalYMD(this.project.startDate)+"T00:00:00": ""} max=${this.title !== "New project details:" ? DatetimeUtils.toLocalYMD(actualEndDate)+"T00:00:00": ""}>
                 <br/>
               <label id="color-label-${this.entityId}">Colour*:</label>
               <input type="color" name="colour" id="edit-colour-${this.entityId}"/>
@@ -246,7 +246,7 @@ class Editor {
             if (this.allowTimeInput) {
                 this.setDateError("The date and time fields are required.");
             } else {
-                this.setDateError("The date field is required.")
+                this.setDateError("Please fill in required dates.")
             }
             return false;
         } else {
@@ -255,7 +255,6 @@ class Editor {
                 return false;
             }
         }
-
         const customError = this.customDatesValidator(startDate, endDate);
         if (customError !== null) {
             this.setDateError(customError);
@@ -311,13 +310,17 @@ class Editor {
         this.nameInput.addEventListener('input', this.validateName.bind(this));  // Ensure that the validator is called as the user types to provide real-time feedback.
         this.startDateInput.addEventListener('change', () => {
             this.startDateEdited = true;
-            this.getRelatedEvents();
+            if (!this.title.includes("sprint") && !this.title.includes("project")) {
+                this.getRelatedEvents();
+            }
             this.validateDates();
         });
 
         this.endDateInput.addEventListener('change', () => {
             this.endDateEdited = true;
-            this.getRelatedEvents();
+            if (!this.title.includes("sprint") && !this.title.includes("project")) {
+                this.getRelatedEvents();
+            }
             this.validateDates();
         });
     }
