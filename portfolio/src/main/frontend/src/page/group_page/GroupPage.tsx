@@ -1,7 +1,7 @@
-import React from "react"
-import {PageLayout} from "../../component/layout/PageLayout"
+import * as React from 'react';
 
 import {ToasterRoot} from "../../component/toast/ToasterRoot";
+import {ShowAllGroups} from "./ShowAllGroups";
 
 /**
  * The root of the MonthlyPlannerPage. This does a few jobs:
@@ -13,11 +13,19 @@ export const GroupPage = () => {
     return (
 
             <ToasterRoot>
-                <PageLayout>
+                <div className="add-group">
                     <div>
-                        <h1>Test</h1>
+                        <button className="button add-group-button" id="add-group" data-privilege="teacher"> Add
+                            Group
+                        </button>
                     </div>
-                </PageLayout>
+                </div>
+                <div className={"raised-card groups"}>
+                    <h1>Groups</h1>
+                    <ShowAllGroups/>
+                </div>
+
+
             </ToasterRoot>
 
     )

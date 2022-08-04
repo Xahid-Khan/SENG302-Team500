@@ -4,15 +4,12 @@
 import React from "react"
 import ReactDOM from "react-dom"
 import "./monthly_planner.css"
+import {GroupPage} from "../page/group_page/GroupPage";
 
 ReactDOM.render(
     <React.StrictMode>
 
-        <div>
-            <h1>
-                TEST
-            </h1>
-        </div>
+        <GroupPage/>
     </React.StrictMode>,
     document.getElementById("react-root")
 )

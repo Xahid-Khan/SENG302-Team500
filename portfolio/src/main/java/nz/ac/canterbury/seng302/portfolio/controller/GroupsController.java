@@ -39,7 +39,7 @@ public class GroupsController {
         List<UserRole> roles = userDetails.getRolesList();
 
         model.addAttribute("userId", userId);
-        model.addAttribute("canEdit", roles.contains(UserRole.TEACHER) || roles.contains(UserRole.COURSE_ADMINISTRATOR));
+        model.addAttribute("isStudent", !roles.contains(UserRole.TEACHER) && !roles.contains(UserRole.COURSE_ADMINISTRATOR));
         model.addAttribute("username", userDetails.getUsername());
 
         return "groups";
