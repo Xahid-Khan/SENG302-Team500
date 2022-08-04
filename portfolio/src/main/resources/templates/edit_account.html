@@ -8,6 +8,7 @@
     <link rel="stylesheet" th:href="@{styles/pages/project_details.css}">
     <link rel="stylesheet" th:href="@{styles/navbar.css}"/>
     <link rel="stylesheet" th:href="@{styles/pages/edit_account.css}" />
+    <link rel="stylesheet" href="croppie.css" />
 
 </head>
 <body>
@@ -45,7 +46,10 @@
         <div class="name-container">
             <div class="left-padding">
 
-                <img src="https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png" id="smallImage" />
+                <div id="croppieTestId">
+
+                    I'm here
+                </div>
 
 
                 <form id='form' action="#" th:action="@{edit_account}" th:object="${user}" method="post" enctype="multipart/form-data">
@@ -152,6 +156,8 @@
 
 <script type="text/javascript" th:src="@{scripts/popup_form.js}"></script>
 <script type="text/javascript" th:src="@{scripts/edit_account.js}"></script>
+<script type="text/javascript" th:src="@{scripts/croppie_spike.js}"></script>
+<script src="croppie.js"></script>
 </body>
 
 <style>
