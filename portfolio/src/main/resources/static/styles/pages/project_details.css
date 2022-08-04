@@ -98,7 +98,6 @@ body {
     display: none;
     overflow: hidden;
     font-size: 14px;
-    padding-left: 10px;
 }
 
 .events-sprints {
@@ -108,9 +107,9 @@ body {
 .colour-block {
     display: block;
     width: 100%;
-    height: 6px;
-    box-shadow: 2px 5px 8px 1px black;
-    margin-top: 12px;
+    height: 8px;
+    border-radius: 6px 6px 0 0;
+    border-bottom: 1px solid rgb(217 217 217);
 }
 
 .navbar-items {
@@ -286,6 +285,41 @@ textarea {
     color: darkslateblue;
     padding-bottom: 5px;
 }
+
+.event-sprint-details {
+}
+
+.event-sprint-name {
+    border-radius: 3px;
+    padding: 0px 5px;
+}
+
+.event-sprint-container {
+    display: flex;
+    flex-direction: column;
+    margin: 6px 0 6px 0;
+    padding-left: 10px;
+}
+
+.event-sprint-colour-block {
+    height: 2px;
+    box-shadow: 0 0px 2px rgb(0 0 0 / 36%);
+}
+
+.card-contents {
+    padding: 25px;
+}
+
+.event-description {
+    padding-left: 10px;
+}
+
+.event-description-label {
+    font-weight: bold;
+}
+
+
+
 
 @media only screen and (max-width: 1590px) {
 

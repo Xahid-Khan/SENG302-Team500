@@ -13,6 +13,10 @@ class SprintView {
         this.sprints = sprints;
         this.deadlines = deadlines;
         this.milestones = milestones;
+        this.modalDeleteContainer=document.getElementById(`modal-delete-open`);
+        this.modalDeleteX=document.getElementById(`modal-delete-x`);
+        this.modalDeleteCancel=document.getElementById(`modal-delete-cancel`);
+        this.modalDeleteConfirm=document.getElementById(`modal-delete-confirm`);
 
         this.constructView();
         this.wireView();
@@ -23,24 +27,28 @@ class SprintView {
      */
     constructView() {
         this.containerElement.innerHTML = `
-    <div class="sprints" id="sprints-container-${this.sprint.sprintId}"></div>
-    <div class="events-title">
-        <span id="sprint-order-text-${this.sprint.sprintId}"></span>: <span id="sprint-title-text-${this.sprint.sprintId}" style="font-style: italic;"></span> | <span id="start-date-${this.sprint.sprintId}"></span> - <span id="end-date-${this.sprint.sprintId}"></span>
-
-        <span class="crud">
-            <button class="icon-button sprint-controls" id="sprint-button-edit-${this.sprint.sprintId}" data-privilege="teacher"><span class="material-icons md-11">edit</span></button>
-            <button class="icon-button sprint-controls" id="sprint-button-delete-${this.sprint.sprintId}" data-privilege="teacher"><span class="material-icons md-11">clear</span></button>
-            <button class="button visibility-button toggle-sprint-details" id="toggle-sprint-details-${this.sprint.sprintId}"><span class='material-icons'>visibility_off</span></button>
-        </span>
-    </div>
-
-    <div class="events-details" id="sprint-details-${this.sprint.sprintId}">
-        <div class="sprint-description"><span><label>Description: </label></span> <span  id="sprint-description-${this.sprint.sprintId}"></span></div>
-        <div class="sprint-events" id="sprint-events-${this.sprint.sprintId}"></div>
-        <div class="sprint-deadlines" id="sprint-deadlines-${this.sprint.sprintId}"></div>
-        <div class="sprint-milestones" id="sprint-milestones-${this.sprint.sprintId}"></div>
-    </div>
+    <div id = "${this.sprint.sprintId}" class = "raised-card">
     <div class="colour-block" id="sprint-colour-block-${this.sprint.sprintId}"></div>
+        <div class="card-contents">
+            <div class="sprints" id="sprints-container-${this.sprint.sprintId}"></div>
+            <div class="events-title">
+                <span id="sprint-order-text-${this.sprint.sprintId}"></span>: <span id="sprint-title-text-${this.sprint.sprintId}" style="font-style: italic;"></span> | <span id="start-date-${this.sprint.sprintId}"></span> - <span id="end-date-${this.sprint.sprintId}"></span>
+        
+                <span class="crud">
+                    <button class="icon-button sprint-controls" id="sprint-button-edit-${this.sprint.sprintId}" data-privilege="teacher"><span class="material-icons md-11">edit</span></button>
+                    <button class="icon-button sprint-controls" id="sprint-button-delete-${this.sprint.sprintId}" data-privilege="teacher"><span class="material-icons md-11">clear</span></button>
+                    <button class="button visibility-button toggle-sprint-details" id="toggle-sprint-details-${this.sprint.sprintId}"><span class='material-icons'>visibility_off</span></button>
+                </span>
+            </div>
+        
+            <div class="events-details" id="sprint-details-${this.sprint.sprintId}">
+                <div class="sprint-description"><span><label>Description: </label></span> <span  id="sprint-description-${this.sprint.sprintId}"></span></div>
+                <div class="sprint-events" id="sprint-events-${this.sprint.sprintId}"></div>
+                <div class="sprint-deadlines" id="sprint-deadlines-${this.sprint.sprintId}"></div>
+                <div class="sprint-milestones" id="sprint-milestones-${this.sprint.sprintId}"></div>
+            </div>
+        </div>
+    </div>
     `;
 
         this.toggleButton = document.getElementById(`toggle-sprint-details-${this.sprint.sprintId}`);
@@ -75,9 +83,7 @@ class SprintView {
         this.colourBlock.style.background = this.sprint.colour;
         document.getElementById(`start-date-${this.sprint.sprintId}`).innerText = DatetimeUtils.localToUserDMY(this.sprint.startDate);
         const displayedDate = new Date(this.sprint.endDate.valueOf());
-        if (DatetimeUtils.getTimeStringIfNonZeroLocally(this.sprint.endDate) === null) {
-            displayedDate.setDate(displayedDate.getDate() - 1);
-        }
+        displayedDate.setDate(displayedDate.getDate() - 1);
 
         document.getElementById(`end-date-${this.sprint.sprintId}`).innerText = DatetimeUtils.localToUserDMY(displayedDate);
     }
@@ -97,10 +103,32 @@ class SprintView {
 
         this.expandedView = !this.expandedView;
     }
+    openDeleteModal(){
+        this.modalDeleteContainer.style.display='block';
+        this.modalDeleteX.addEventListener("click",()=>this.cancelDeleteModal())
+        this.modalDeleteCancel.addEventListener("click",()=>this.cancelDeleteModal())
+        this.modalDeleteConfirm.addEventListener("click",()=>this.confirmDeleteModal())
+
+
+    }
+    cancelDeleteModal(){
+        this.modalDeleteContainer.style.display='none';
+        this.modalDeleteX.removeEventListener("click",()=>this.cancelDeleteModal())
+        this.modalDeleteCancel.removeEventListener("click",()=>this.cancelDeleteModal())
+        this.modalDeleteConfirm.removeEventListener("click",()=>this.confirmDeleteModal())
+
+    }
+    confirmDeleteModal(){
+        this.modalDeleteContainer.style.display='none';
+        this.modalDeleteX.removeEventListener("click",()=>this.cancelDeleteModal())
+        this.modalDeleteCancel.removeEventListener("click",()=>this.cancelDeleteModal())
+        this.modalDeleteConfirm.removeEventListener("click",()=>this.confirmDeleteModal())
+        this.deleteCallback()
+    }
 
     wireView() {
         document.getElementById(`sprint-button-edit-${this.sprint.sprintId}`).addEventListener('click', () => this.editCallback());
-        document.getElementById(`sprint-button-delete-${this.sprint.sprintId}`).addEventListener("click", () => this.deleteCallback());
+        document.getElementById(`sprint-button-delete-${this.sprint.sprintId}`).addEventListener("click", () => this.openDeleteModal());
 
         this.toggleButton.addEventListener('click', this.toggleExpandedView.bind(this));
     }
@@ -109,7 +137,7 @@ class SprintView {
         let html = "";
         this.events.forEach(event => {
             if (event.startDate >= this.sprint.startDate && event.startDate <= this.sprint.endDate || event.endDate >= this.sprint.startDate && event.endDate <= this.sprint.endDate) {
-                html += `<span class="material-icons">event</span> <span id="sprint-event-name-${this.sprint.id}-${event.eventId}"></span>`
+                html += `<span class="material-icons">event</span> <span id="sprint-event-name-${this.sprint.sprintId}-${event.eventId}"></span>`
                 if (event.startDate >= this.sprint.startDate && event.startDate <= this.sprint.endDate) {
                     html += `<span style="color: ${this.sprint.colour}">${DatetimeUtils.localToUserDMY(event.startDate)}</span> - `;
                 } else {
@@ -152,7 +180,7 @@ class SprintView {
         let html = "";
         this.deadlines.forEach(deadline => {
             if (deadline.startDate >= this.sprint.startDate && deadline.startDate <= this.sprint.endDate) {
-                html += `<span class="material-icons">timer</span> <span id="sprint-deadline-name-${this.sprint.id}-${deadline.deadlineId}"></span> <span style="color: ${this.sprint.colour}">${DatetimeUtils.localToUserDMY(deadline.startDate)}</span><br>`;
+                html += `<span class="material-icons">timer</span> <span id="sprint-deadline-name-${this.sprint.sprintId}-${deadline.deadlineId}"></span> <span style="color: ${this.sprint.colour}">${DatetimeUtils.localToUserDMY(deadline.startDate)}</span><br>`;
             }
         });
         if (html === "") {

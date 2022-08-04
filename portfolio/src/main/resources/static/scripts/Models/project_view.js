@@ -52,6 +52,10 @@ class ProjectView {
         this.eventEditCallback = eventEditCallback;
         this.deadlineEditCallback = deadlineEditCallback;
         this.milestoneEditCallback = milestoneEditCallback;
+        this.modalDeleteContainer=document.getElementById(`modal-delete-open`);
+        this.modalDeleteX=document.getElementById(`modal-delete-x`);
+        this.modalDeleteCancel=document.getElementById(`modal-delete-cancel`);
+        this.modalDeleteConfirm=document.getElementById(`modal-delete-confirm`);
 
         this.eventDiv = null;
         this.showingEventDiv = false;
@@ -72,8 +76,8 @@ class ProjectView {
      */
     appendSprint(sprintData) {
         const sprintElement = document.createElement("div");
-        sprintElement.classList.add("events-view", "raised-card", `sprint-view-${this.project.id}`);
-
+        sprintElement.classList.add(`sprint-view-${this.project.id}`)
+        sprintElement.style.margin='15px 0 15px 0';
         this.sprintContainer.appendChild(sprintElement);
 
         console.log("Binding sprint");
@@ -87,8 +91,8 @@ class ProjectView {
 
     appendEvent(eventData) {
         const eventElement = document.createElement("div")
-        eventElement.classList.add("events-view", "raised-card", `event-view-${this.project.id}`);
-        eventElement.id = eventData.eventId;
+        eventElement.classList.add(`event-view-${this.project.id}`)
+        eventElement.style.margin='15px 0 15px 0';
         this.eventContainer.appendChild(eventElement);
 
         console.log("Binding event");
@@ -100,8 +104,8 @@ class ProjectView {
 
     appendMilestone(milestoneData) {
         const milestoneElement = document.createElement("div")
-        milestoneElement.classList.add("events-view", "raised-card", `milestone-view-${this.project.id}`);
-        milestoneElement.id = milestoneData.milestoneId;
+        milestoneElement.classList.add(`milestone-view-${this.project.id}`)
+        milestoneElement.style.margin='15px 0 15px 0';
         this.milestoneContainer.appendChild(milestoneElement);
 
         console.log("Binding milestone");
@@ -113,8 +117,8 @@ class ProjectView {
 
     appendDeadline(deadlineData) {
         const deadlineElement = document.createElement("div")
-        deadlineElement.classList.add("events-view", "raised-card", `deadline-view-${this.project.id}`);
-        deadlineElement.id = deadlineData.deadlineId;
+        deadlineElement.classList.add(`deadline-view-${this.project.id}`)
+        deadlineElement.style.margin='15px 0 15px 0';
         this.deadlineContainer.appendChild(deadlineElement);
 
         console.log("Binding deadline");
@@ -123,7 +127,11 @@ class ProjectView {
 
         console.log("Deadline bound");
     }
-
+    handleModalClose(){
+        document.getElementById('modal-open').style.display='none'
+        document.getElementById('modal-open-container').style.height='0'
+        document.getElementById('modal-open-container').style.width='0'
+    }
     /**
      * Adds HTML in to the project container, with the main attributes of projects and sprints.
      */
@@ -136,13 +144,14 @@ class ProjectView {
                   <span class="monthly-planner-redirect">
                       <button class="button monthly-planner-redirect-button" id="monthly-planner-redirect-button-${this.project.id}">View Monthly Planner</button>
                   </span>
-                  <span class="crud">
-                      <button class="button icon-button edit-project" id="project-edit-button-${this.project.id}" data-privilege="teacher"><span class="material-icons">edit</span></button>
-                      <button class="button icon-button" id="project-delete-button-${this.project.id}" data-privilege="teacher"><span class="material-icons">clear</span></button>
-                  </span>
                   <span>
                       <button class="button visibility-button toggle-project-details" id="toggle-project-details-${this.project.id}"><span class='material-icons'>visibility</span></button>
                   </span>
+                  <span class="crud">
+                      <button class="button icon-button" onclick="document.getElementById('modal-open').style.display='block'" id="project-delete-button-${this.project.id}" data-privilege="teacher"><span class="material-icons">clear</span></button>
+                      <button class="button icon-button edit-project" id="project-edit-button-${this.project.id}" data-privilege="teacher"><span class="material-icons">edit</span></button>
+                  </span>
+                  
               </div>
               <div>
                   <div class="project-description" id="project-description-${this.project.id}"></div>
@@ -194,6 +203,14 @@ class ProjectView {
                     </div>
                 </div>
               </div>
+              
+    
+  </form>
+</div>
+
+
+              
+
             `;
 
         document.getElementById(`project-title-text-${this.project.id}`).innerText = this.project.name;
@@ -222,6 +239,7 @@ class ProjectView {
         this.toggleDeadlinesButton = document.getElementById(`toggle-deadline-button-${this.project.id}`);
         this.deadlinesContainer = document.getElementById(`deadlines-container-${this.project.id}`);
         this.deadlineContainer = document.getElementById(`deadlines-container-${this.project.id}`);
+
 
         for (let i = 0; i < this.project.sprints.length; i++) {
             this.appendSprint(this.project.sprints[i]);
@@ -737,11 +755,32 @@ class ProjectView {
     monthlyPlannerRedirect(projectId) {
         window.location.href = `monthly-planner/${projectId}`
     }
+    openDeleteModal(){
+        this.modalDeleteContainer.style.display='block';
+        this.modalDeleteX.addEventListener("click",()=>this.cancelDeleteModal())
+        this.modalDeleteCancel.addEventListener("click",()=>this.cancelDeleteModal())
+        this.modalDeleteConfirm.addEventListener("click",()=>this.confirmDeleteModal())
 
+
+    }
+    cancelDeleteModal(){
+        this.modalDeleteContainer.style.display='none';
+        this.modalDeleteX.removeEventListener("click",()=>this.cancelDeleteModal())
+        this.modalDeleteCancel.removeEventListener("click",()=>this.cancelDeleteModal())
+        this.modalDeleteConfirm.removeEventListener("click",()=>this.confirmDeleteModal())
+
+    }
+    confirmDeleteModal(){
+        this.modalDeleteContainer.style.display='none';
+        this.modalDeleteX.removeEventListener("click",()=>this.cancelDeleteModal())
+        this.modalDeleteCancel.removeEventListener("click",()=>this.cancelDeleteModal())
+        this.modalDeleteConfirm.removeEventListener("click",()=>this.confirmDeleteModal())
+        this.deleteCallback()
+    }
     wireView() {
         document.getElementById(`project-edit-button-${this.project.id}`).addEventListener("click", () => this.editCallback());
         document.getElementById(`toggle-project-details-${this.project.id}`).addEventListener("click", () => {this.toggleProjectDetails(); this.callPing()})
-        document.getElementById(`project-delete-button-${this.project.id}`).addEventListener("click", () => this.deleteCallback());
+        document.getElementById(`project-delete-button-${this.project.id}`).addEventListener("click", () => this.openDeleteModal());
         document.getElementById(`monthly-planner-redirect-button-${this.project.id}`).addEventListener("click", () => this.monthlyPlannerRedirect(this.project.id));
         this.toggleSprintsButton.addEventListener('click', this.showSprints.bind(this));
         this.addSprintButton.addEventListener('click', this.openAddSprintForm.bind(this));
