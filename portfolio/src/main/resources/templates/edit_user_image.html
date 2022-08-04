@@ -7,8 +7,8 @@
   <link rel="stylesheet" th:href="@{styles/pages/account_details.css}"/>
   <link rel="stylesheet" th:href="@{styles/pages/project_details.css}">
   <link rel="stylesheet" th:href="@{styles/navbar.css}"/>
-<!--  <link rel="stylesheet" th:href="@{styles/pages/edit_account.css}" />-->
-  <link rel="stylesheet" href="../../frontend/node_modules/croppie/croppie.css" />
+  <link rel="stylesheet" th:href="@{styles/pages/edit_account.css}" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.2/croppie.min.css" />
 
 </head>
 <body>
@@ -41,66 +41,43 @@
   </div>
 </div>
 
-<div class="raised-card card-padding" style="display: flex;justify-content: center;">
-  <div class="container">
-    <div class="name-container">
-      <div class="left-padding">
-
-<!--        <div id="croppieTestId"></div>-->
+<span id="imageLink" th:text="'//' + ${globalImagePath} + ${userId}" hidden></span>
+<div class="raised-card card-padding" style="display: grid; justify-content: center;">
+  <form id='form' action="#" th:action="@{edit_account}" th:object="${user}" method="post" enctype="multipart/form-data">
+    <h1 class="edit-title" style="float: left;">Edit User Photo</h1>
+    <form id="deletePhotoForm" action="#" th:action="@{edit_account/imageDelete}" th:object="${user}" method="post"
+          style="float:right; margin-left: 4px">
+      <button class="button" style="float: right; margin-top: 25px;">
+        Delete Photo
+      </button>
+    </form>
+    <div>
+      <div class="edit-crop-photo">
         <div id="croppie"></div>
-        <div id="root"></div>
+      </div>
 
-
-<!--        <form id='form' action="#" th:action="@{edit_account}" th:object="${user}" method="post" enctype="multipart/form-data">-->
-<!--          <h1 class="edit-title">Edit Account Details</h1>-->
-
-<!--          &lt;!&ndash;    Submits a populated UserDTO to endpoint register &ndash;&gt;-->
-
-<!--          &lt;!&ndash;    Submits a populated UserDTO to endpoint register &ndash;&gt;-->
-<!--          <input id="newUploadedImage" type="file" name="image" accept="image/jpeg,image/png,image/gif" hidden>-->
-
-<!--          <div class="image-container">-->
-<!--            <div class="imagePreviewOverlayContainer">-->
-<!--              <img-->
-<!--                      class="current-image"-->
-<!--                      th:src="'//' + ${globalImagePath} + ${userId}"-->
-<!--                      onerror="this.onerror=null;this.src='https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png'"-->
-<!--                      width="150"-->
-<!--                      height="150"-->
-<!--                      alt="No Photo"-->
-<!--              >-->
-
-<!--              <canvas id="image-preview" class="imagePreviewOverlay" width="150" height="150"></canvas>-->
-<!--            </div>-->
-
-<!--            <label for="newUploadedImage">-->
-<!--              <span class="image-upload-button">Choose profile picture</span>-->
-<!--            </label>-->
-
-<!--            <div class="image-upload-comment">-->
-<!--              <div>Please choose a JPEG, PNG, or GIF of less than 10MB size.</div>-->
-<!--              <div>Images above 5MB in size will be compressed.</div>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--          <button id='submit' name="save" type="Submit" value="0">Save</button>-->
-<!--          <button type="button" onclick="window.location.href='my_account'">Cancel</button>-->
-
-<!--        </form>-->
+      <div class="edit-crop-photo">
+        <img th:src="'//' + ${globalImagePath} + ${userId}" id="userProfileImage"
+             onerror="this.onerror=null; this.hidden='true'; document.getElementById('submit').setAttribute('disabled', 'false') " width="300" height="300">
       </div>
     </div>
     <div>
+      <div id="croppieTestId"></div>
     </div>
-    <div class="right-padding">
-    </div>
-  </div>
-  <div>
-  </div>
+    <button id='submit' name="save" type="Submit" value="0" style="margin: 10px 3px 15px 3px" disabled>Save Photo</button>
+    <button type="button" onclick="window.location.href='my_account'">Cancel</button>
+  </form>
+
 </div>
 
 <script type="text/javascript" th:src="@{../frontend/cropping_image.js}"></script>
 
 </body>
+<script>
+  let imageToUpload = "";
+  const imageTest = await fetch(document.getElementById("imageLink").innerHTML);
 
+</script>
 <style>
   input, textarea {
     width: 100%;
@@ -110,6 +87,13 @@
   .form-row {
     width: 100%;
     padding-bottom: 20px;
+  }
+
+  .edit-crop-photo {
+    display: flex;
+    justify-content: center;
+    float: left;
+    margin: 0 40px 0 40px;
   }
 
 </style>

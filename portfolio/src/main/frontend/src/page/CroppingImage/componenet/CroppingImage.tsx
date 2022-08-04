@@ -1,78 +1,106 @@
 import Croppie, {CroppieOptions} from "croppie";
 import React from "react";
 import "croppie/croppie.css";
-import ReactDOM from "react-dom";
+
+const croppieOptions : CroppieOptions = {
+    showZoomer: true,
+    enableOrientation: true,
+    mouseWheelZoom: "ctrl",
+    viewport: {
+        width: 300,
+        height: 300,
+        type: "square"
+    },
+    boundary: {
+        width: 350,
+        height: 300
+    },
+};
+
+const croppieElement = document.getElementById("croppie");
+const croppie = new Croppie(croppieElement, croppieOptions);
 
 
-export const CroppingImage: React.FC = () => {
-    const [croppedImage, setCroppedImage] = React.useState(null);
-    const [isImageUploaded, setIsImageUploaded] = React.useState(false);
-    let imageData = React.useRef<any>();
-    let file = React.useRef<any>();
+class CroppingImage extends React.Component {
+    state = {
+        croppedImage : "",
+        isFileUploaded: false,
+        currentImage: ""
+    };
 
-    const croppieOpts: CroppieOptions = {
-        viewport: {
-            width: 250,
-            height: 250,
-            type: "square"
+    file: any = React.createRef();
+    // croppie = React.createRef();
+    img: any = React.createRef();
+
+    checkCurrentImage = async () => {
+        const currentImage = document.getElementById("userProfileImage")
+        console.log("I'm here");
+        console.log(currentImage.getAttribute("src"));
+
+
+        if (currentImage.hasAttribute("hidden")) {
+            console.log(currentImage.getAttribute("src"));
+            console.log(currentImage.dataset);
         }
     };
 
-    const placement = document.getElementById("croppie");
-    const croppie = new Croppie(placement, croppieOpts);
-
-
-    // let croppie = createRef();
-
-    const onImageUpload = (event: any) => {
-        setIsImageUploaded(true),
-        () => {
+    onFileUpload = () => {
+        this.setState({ isFileUploaded: true }, () => {
             const reader = new FileReader();
-            file = event.file.current.files[0];
-            reader.readAsDataURL(file as any);
+            const file = this.file.current.files[0];
+            reader.readAsDataURL(file);
             reader.onload = () => {
-                croppie.bind({url : reader.result.toString()});
+                croppie.bind({ url: ""+reader.result });
             };
-            reader.onerror = function (error) {
-                console.log(error);
-            }
-        }
-    }
+            reader.onerror = function(error) {
+                console.log("Error: ", error);
+            };
+        });
+    };
 
-    const onCroppingImage = (event: any) => {
-        croppie.result({type: "base64"}).then(croppedFile => {
-            setCroppedImage({userImage: croppedFile}),
-                () => imageData.current.src = croppedFile;
-        })
-    }
+    onResult = () => {
+        croppie.result({type:"base64"}).then(base64 => {
+            this.setState(
+                { croppedImage: base64 },
+                () => (this.img.current.src = base64),
+            );
+            document.getElementById("userProfileImage").setAttribute("src", base64);
 
-    return (
-        <div>
-            <input
-                type="file"
-                id="files"
-                ref={file}
-                onChange={onImageUpload}
-            />
-            <hr />
-            <button
-                type="button"
-                disabled={!isImageUploaded}
-                onClick={onCroppingImage}
-            >
-                Crop!
-            </button>
-            <hr />
-            <h2> Result! </h2>
-            <div>
-                <img ref={imageData} alt="cropped image" />
-                <a hidden={!croppedImage} href={croppedImage} download="cropped.png">
-                    Download Cropped Image
-                </a>
+        });
+    };
+
+    render() {
+        const { isFileUploaded, croppedImage } = this.state;
+        this.checkCurrentImage();
+        return (
+            <div id={"specialButtons"}>
+                <input
+                    type="file"
+                    id="newUploadedImage"
+                    ref={this.file}
+                    onChange={this.onFileUpload}
+                    accept="image/jpeg,image/png,image/gif" hidden
+                />
+
+                <label htmlFor="newUploadedImage">
+                    <span className="image-upload-button">Choose profile picture</span>
+                </label>
+
+                <button
+                    type="button"
+                    disabled={!isFileUploaded}
+                    onClick={this.onResult}
+                    style={{float:"right", marginTop:"-30px"}}
+                >
+                    Crop Image
+                </button>
+                <hr style={{marginTop:"25px"}} />
+                    <img ref={this.img} hidden={true}/>
             </div>
-        </div>
-    )
+        );
+    }
 }
 
-// const rootElement = document.getElementById("root");
-// ReactDOM.render(<CroppingImage/>, rootElement)
+export {
+    CroppingImage
+}

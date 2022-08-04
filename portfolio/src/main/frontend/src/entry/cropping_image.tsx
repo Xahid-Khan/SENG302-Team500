@@ -10,5 +10,5 @@ ReactDOM.render(
     <React.StrictMode>
         <CroppingUserImage/>
     </React.StrictMode>,
-    document.getElementById("root")
+    document.getElementById("croppieTestId")
 )
