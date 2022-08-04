@@ -1,7 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.model.contract;
 
 import java.time.Instant;
-import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseDeadlineContract;
 
 /**
  * A contract for a deadline. Used for sending and retrieving sprints from the database
