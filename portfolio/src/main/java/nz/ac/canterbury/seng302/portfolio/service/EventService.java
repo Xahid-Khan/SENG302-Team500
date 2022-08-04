@@ -1,21 +1,16 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
 import nz.ac.canterbury.seng302.portfolio.mapping.EventMapper;
-import nz.ac.canterbury.seng302.portfolio.mapping.SprintMapper;
-import nz.ac.canterbury.seng302.portfolio.model.contract.BaseEventContract;
-import nz.ac.canterbury.seng302.portfolio.model.contract.BaseSprintContract;
+import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseEventContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.EventContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.EventEntity;
-import nz.ac.canterbury.seng302.portfolio.model.entity.ProjectEntity;
 import nz.ac.canterbury.seng302.portfolio.repository.EventRepository;
 import nz.ac.canterbury.seng302.portfolio.repository.ProjectRepository;
-import nz.ac.canterbury.seng302.portfolio.repository.SprintRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.ArrayList;
 import java.util.NoSuchElementException;
 
 @Service
@@ -38,7 +33,7 @@ public class EventService {
      */
     public EventContract get(String eventId) {
         var event= eventRepository.findById(eventId).orElseThrow();
-        return eventMapper.toContract(event, event.getOrderNumber());
+        return eventMapper.toContract(event);
     }
 
   /**
@@ -56,7 +51,7 @@ public class EventService {
         eventRepository.save(entity);
         projectRepository.save(project);
 
-        return eventMapper.toContract(entity, entity.getOrderNumber());
+        return eventMapper.toContract(entity);
     }
 
   /**

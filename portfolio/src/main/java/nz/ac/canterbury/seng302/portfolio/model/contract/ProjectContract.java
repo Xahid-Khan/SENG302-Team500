@@ -5,6 +5,7 @@ import java.util.List;
 
 /**
  * A contract for a project.
+ *
  * @param id The id of the project.
  * @param name The name of the project.
  * @param description The description of the project.
@@ -14,13 +15,13 @@ import java.util.List;
  * @param events The events of the project.
  */
 public record ProjectContract(
-        String id,
-        String name,
-        String description,
-        Instant startDate,
-        Instant endDate,
-        List<SprintContract> sprints,
-        List<EventContract> events,
-        List<MilestoneContract> milestones,
-        List<DeadlineContract> deadlines
-) { }
+    String id,
+    String name,
+    String description,
+    Instant startDate,
+    Instant endDate,
+    List<SprintContract> sprints,
+    List<EventContract> events,
+    List<MilestoneContract> milestones,
+    List<DeadlineContract> deadlines
+) implements Contractable {}

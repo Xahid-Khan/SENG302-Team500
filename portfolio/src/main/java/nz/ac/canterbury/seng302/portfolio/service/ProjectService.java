@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import nz.ac.canterbury.seng302.portfolio.mapping.ProjectMapper;
-import nz.ac.canterbury.seng302.portfolio.model.contract.BaseProjectContract;
+import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseProjectContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.ProjectContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.ProjectEntity;
 import nz.ac.canterbury.seng302.portfolio.repository.ProjectRepository;
