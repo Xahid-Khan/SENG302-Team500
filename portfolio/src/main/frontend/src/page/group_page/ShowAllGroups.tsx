@@ -34,10 +34,17 @@ export function ShowAllGroups() {
         <div>
             {groups.map((group: any) => (
                 <div className={'raised-card group'}>
-                    <h2 className={'group-name-long'}>{group['longName']}</h2>
+                    <div className={'group-header'}>
+                        <h2 className={'group-name-long'}>{group['longName']}</h2>
+                        <button className="button edit-group-button" id="edit-group" data-privilege="teacher"> Edit
+                            Group
+                        </button>
+
+
+                    </div>
                     <h3 className={'group-name-short'}>{group['shortName']}</h3>
                     <div className={"table"}>
-                        <div className={"groups-header"}>
+                        <div className={"groups-table-header"}>
                             <div className="tableCell"><b>Name</b></div>
                             <div className="tableCell"><b>Username</b></div>
                             <div className="tableCell"><b>Alias</b></div>
