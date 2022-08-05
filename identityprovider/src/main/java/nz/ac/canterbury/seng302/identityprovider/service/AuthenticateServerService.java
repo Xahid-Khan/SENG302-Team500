@@ -42,7 +42,7 @@ public class AuthenticateServerService extends AuthenticationServiceImplBase {
             jwtTokenService.generateTokenForUser(
                 user.getUsername(),
                 user.getId(),
-                user.getFirstName() + user.getLastName(),
+                user.getFirstName() + " " + user.getLastName(),
                 // Encodes all roles a user has as a CSV
                 user.getRoles().stream()
                     .map(UserRole::toString)
