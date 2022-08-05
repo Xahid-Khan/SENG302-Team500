@@ -7,53 +7,72 @@ const croppieOptions : CroppieOptions = {
     enableOrientation: true,
     mouseWheelZoom: "ctrl",
     viewport: {
-        width: 300,
-        height: 300,
+        width: 250,
+        height: 250,
         type: "square"
     },
     boundary: {
-        width: 350,
+        width: 300,
         height: 300
     },
 };
 
+const CheckFileTypeAndSize = (file : any) : boolean => {
+    const errorElement = document.getElementById("image-preview-error");
+    const warningElement = document.getElementById("image-preview-warning")
+
+    if (!(file.type == "image/jpeg" || file.type == "image/png" || file.type == "image/gif")) {
+        errorElement.innerHTML = "Invalid File Type - Only JPEG, PNG, and GIF are allowed.";
+        document.getElementById("image-preview-error").removeAttribute("hidden");
+        return false
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+
+        errorElement.innerHTML = "Image size is too big - 10MB max is allowed";
+        document.getElementById("image-preview-error").removeAttribute("hidden");
+        return false
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+        warningElement.removeAttribute("hidden")
+        warningElement.innerHTML = "Your file is greater than 5MB - it will be compressed to save space.";
+    }
+
+    errorElement.setAttribute("hidden", "true");
+    return true;
+}
+
 const croppieElement = document.getElementById("croppie");
 const croppie = new Croppie(croppieElement, croppieOptions);
-
 
 class CroppingImage extends React.Component {
     state = {
         croppedImage : "",
         isFileUploaded: false,
-        currentImage: ""
+        croppedFile: ""
     };
 
     file: any = React.createRef();
     // croppie = React.createRef();
     img: any = React.createRef();
 
-    checkCurrentImage = async () => {
-        const currentImage = document.getElementById("userProfileImage")
-        console.log("I'm here");
-        console.log(currentImage.getAttribute("src"));
-
-
-        if (currentImage.hasAttribute("hidden")) {
-            console.log(currentImage.getAttribute("src"));
-            console.log(currentImage.dataset);
-        }
-    };
-
     onFileUpload = () => {
         this.setState({ isFileUploaded: true }, () => {
             const reader = new FileReader();
             const file = this.file.current.files[0];
-            reader.readAsDataURL(file);
-            reader.onload = () => {
-                croppie.bind({ url: ""+reader.result });
-            };
-            reader.onerror = function(error) {
-                console.log("Error: ", error);
+
+            if (CheckFileTypeAndSize(file)) {
+                reader.readAsDataURL(file);
+
+                reader.onload = () => {
+                    croppie.bind({url: "" + reader.result});
+                    this.setState({croppedImage: reader.result})
+                    document.getElementById('submit').removeAttribute('disabled');
+                };
+                reader.onerror = function (error) {
+                    console.log("Error: ", error);
+                };
             };
         });
     };
@@ -64,16 +83,23 @@ class CroppingImage extends React.Component {
                 { croppedImage: base64 },
                 () => (this.img.current.src = base64),
             );
+            document.getElementById('previewText').setAttribute("hidden", "true");
             document.getElementById("userProfileImage").setAttribute("src", base64);
+            document.getElementById("userProfileImage").removeAttribute('hidden');
 
         });
+
+        croppie.result({type: "blob"}).then(blob => {
+            this.setState({croppedFile:blob})
+            });
     };
 
     render() {
-        const { isFileUploaded, croppedImage } = this.state;
-        this.checkCurrentImage();
+        const { isFileUploaded, croppedImage, croppedFile } = this.state;
+
+        document.getElementById("newCroppedUserImage").setAttribute("value", croppedImage);
         return (
-            <div id={"specialButtons"}>
+            <div id={"specialButtons"} style={{display:'block'}}>
                 <input
                     type="file"
                     id="newUploadedImage"
@@ -94,12 +120,13 @@ class CroppingImage extends React.Component {
                 >
                     Crop Image
                 </button>
-                <hr style={{marginTop:"25px"}} />
+                <hr style={{marginTop:"25px"}}/>
                     <img ref={this.img} hidden={true}/>
             </div>
         );
     }
 }
+
 
 export {
     CroppingImage
