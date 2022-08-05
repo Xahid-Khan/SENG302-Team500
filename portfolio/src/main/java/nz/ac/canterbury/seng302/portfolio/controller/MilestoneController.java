@@ -35,6 +35,9 @@ public class MilestoneController {
     @Autowired
     private RolesService rolesService;
 
+    private static final String TEACHER = "TEACHER";
+    private static final String COURSE_ADMINISTRATOR = "COURSE_ADMINISTRATOR";
+
     /**
      * This method will be invoked when API receives a GET request with a milestone ID embedded in URL.
      * @param milestoneId milestone-ID the user wants to retrieve
@@ -83,7 +86,7 @@ public class MilestoneController {
             @RequestBody BaseMilestoneContract milestone
     ) {
         ArrayList<String> roles = rolesService.getRolesByToken(principal);
-        if (roles.contains("TEACHER") || roles.contains("COORDINATOR")) {
+        if (roles.contains(TEACHER) || roles.contains(COURSE_ADMINISTRATOR)) {
             String errorMessage = validationService.checkAddMilestone(projectId, milestone);
             if (!errorMessage.equals("Okay")) {
                 if (errorMessage.equals("Project ID does not exist") || errorMessage.equals("Milestone ID does not exist")) {
@@ -118,7 +121,7 @@ public class MilestoneController {
             @RequestBody BaseMilestoneContract milestone
     ) {
         ArrayList<String> roles = rolesService.getRolesByToken(principal);
-        if (roles.contains("TEACHER") || roles.contains("COORDINATOR")) {
+        if (roles.contains(TEACHER) || roles.contains(COURSE_ADMINISTRATOR)) {
             String errorMessage = validationService.checkUpdateMilestone(id, milestone);
             if (!errorMessage.equals("Okay")) {
                 if (errorMessage.equals("Project ID does not exist") || errorMessage.equals(
@@ -151,7 +154,7 @@ public class MilestoneController {
             @PathVariable String id
     ) {
         ArrayList<String> roles = rolesService.getRolesByToken(principal);
-        if (roles.contains("TEACHER") || roles.contains("COORDINATOR")) {
+        if (roles.contains(TEACHER) || roles.contains(COURSE_ADMINISTRATOR)) {
             try {
                 milestoneService.delete(id);
 

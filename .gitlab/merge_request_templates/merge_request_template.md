@@ -17,3 +17,7 @@ Not all of these must be checked off. This ensures that the branch is checked be
   - Coverage after branch: (`x`/100)  
 - [ ] Manual tests
 - [ ] Relevant ACs covered
+- VM testing:
+  - [ ] Does not need to be tested 
+  - [ ] Needs to be tested
+  - [ ] Already tested
