@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import java.util.List;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
@@ -11,9 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import java.util.List;
-
-/** Handles the GET request on the /groups endpoint */
+/** Handles the GET request on the /groups endpoint. */
 @Controller
 public class GroupsController {
   @Autowired private UserAccountService userAccountService;
@@ -23,7 +22,7 @@ public class GroupsController {
   /**
    * GET /groups fetches the groups page. The groups page shows all groups
    *
-   * @param principal Principal for the currently logged in user, used to get userId
+   * @param principal Principal for the currently logged-in user, used to get userId
    * @param model Parameters sent to thymeleaf template to be rendered into HTML
    * @return The groups html page
    */
