@@ -74,7 +74,7 @@ public class UserAccountController {
         model.addAttribute("delegate", this);
         model.addAttribute("user", userDetails);
         model.addAttribute("registration_date", dateString);
-        model.addAttribute("userId", userId);
+        model.addAttribute("username", userDetails.getUsername());
 
         return "account_details";
     }
@@ -91,6 +91,7 @@ public class UserAccountController {
         model.addAttribute("user", userDetails);
         model.addAttribute("registration_date", dateString);
         model.addAttribute("userId", id);
+        model.addAttribute("username", userDetails.getUsername());
 
         return "account_details";
     }
