@@ -78,7 +78,7 @@ class Sprint {
      */
     showViewer() {
         this.currentView?.dispose();
-        this.currentView = new SprintView(this.containerElement, this.project.events, this.project.deadlines, this.project.milestones, this.project.events, this.sprint, this.deleteSprint.bind(this), this.showEditor.bind(this));
+        this.currentView = new SprintView(this.containerElement, this.project.events, this.project.deadlines, this.project.milestones, this.project.sprints, this.sprint, this.deleteSprint.bind(this), this.showEditor.bind(this));
     }
 
     /**
