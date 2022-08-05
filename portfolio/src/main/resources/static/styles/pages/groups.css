@@ -1,0 +1,43 @@
+.add-group {
+    display: flex;
+    justify-content: right;
+    padding-right: 50px;
+}
+
+.add-group-button {
+    margin: 15px 5px;
+}
+
+.groups {
+    padding: 10px 50px 50px 50px;
+    margin: 0 40px
+}
+
+.group {
+    padding: 20px;
+}
+
+.groups-header {
+    display: table-row;
+}
+
+.modal-create-group {
+    background-color: #fff;
+    margin: 20% auto;
+    width: 40%;
+    border: black solid 1px;
+    border-radius: 20px;
+    padding: 20px 20px 50px 20px;
+}
+
+.input-name {
+    margin: 4px 8px;
+}
+
+.delete-group {
+    float: right;
+}
+
+.delete-group:hover {
+    cursor: pointer;
+}
