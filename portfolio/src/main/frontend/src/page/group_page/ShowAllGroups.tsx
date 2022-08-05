@@ -1,5 +1,5 @@
-import * as React from "react";
-
+import {Box, Modal, Button} from "@material-ui/core";
+import * as React from 'react';
 
 const getGroups = () => {
     return [{
@@ -27,6 +27,9 @@ const getGroups = () => {
 
 
 export function ShowAllGroups() {
+    const [open, setOpen] = React.useState(false);
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
 
     const groups = getGroups()
 
@@ -36,11 +39,28 @@ export function ShowAllGroups() {
                 <div className={'raised-card group'}>
                     <div className={'group-header'}>
                         <h2 className={'group-name-long'}>{group['longName']}</h2>
-                        <button className="button edit-group-button" id="edit-group" data-privilege="teacher"> Edit
+                        <button className="button edit-group-button" id="edit-group" data-privilege="teacher" onClick={handleOpen}> Edit
                             Group
                         </button>
+                        <Modal
+                            open={open}
+                            onClose={handleClose}
+                            aria-labelledby="modal-modal-title"
+                            aria-describedby="modal-modal-description"
+                        >
+                            <Box >
+                                    <ShowAllGroups/>
+                                <Button className="button add-member-group-button" id="edit-group" data-privilege="teacher" onClick={handleOpen}> Add
+                                </Button>
+                                <Button className="button delete-member-group-button" id="edit-group" data-privilege="teacher" onClick={handleOpen}> Copy
+                                </Button>
+                                <Button className="button copy-group-button" id="edit-group" data-privilege="teacher" onClick={handleOpen}> Delete
+                                </Button>
+                                    <ShowAllGroups/>
 
 
+                            </Box>
+                        </Modal>
                     </div>
                     <h3 className={'group-name-short'}>{group['shortName']}</h3>
                     <div className={"table"}>

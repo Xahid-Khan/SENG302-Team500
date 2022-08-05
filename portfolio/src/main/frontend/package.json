@@ -18,15 +18,19 @@
     "typescript-plugin-css-modules": "^3.4.0"
   },
   "dependencies": {
+    "@emotion/react": "^11.10.0",
+    "@emotion/styled": "^11.10.0",
     "@fullcalendar/daygrid": "^5.10.1",
     "@fullcalendar/interaction": "^5.10.1",
     "@fullcalendar/react": "^5.10.1",
+    "@material-ui/core": "^4.12.4",
+    "@mui/material": "^5.9.3",
     "@stomp/stompjs": "^6.1.2",
     "mobx": "^6.5.0",
     "mobx-react-lite": "^3.3.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "sockjs-client": "^1.6.1",
-    "react-tooltip": "^4.2.21"
+    "react-tooltip": "^4.2.21",
+    "sockjs-client": "^1.6.1"
   }
 }
