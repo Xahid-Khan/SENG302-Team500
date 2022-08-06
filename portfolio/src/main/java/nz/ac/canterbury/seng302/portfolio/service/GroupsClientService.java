@@ -29,6 +29,8 @@ public class GroupsClientService {
    * @return              a CreateGroupResponse with either a success or error
    */
   public CreateGroupResponse createGroup(BaseGroupContract groupContract) {
+    // Ensures that the user is authorized to perform the request
+
     CreateGroupRequest groupRequest = CreateGroupRequest.newBuilder()
         .setLongName(groupContract.longName())
         .setShortName(groupContract.shortName())
