@@ -26,11 +26,18 @@ public class GroupsClientService {
    * @return a CreateGroupResponse with either a success or error(s)
    */
   public CreateGroupResponse createGroup(BaseGroupContract groupContract) {
+<<<<<<< HEAD
     CreateGroupRequest groupRequest =
         CreateGroupRequest.newBuilder()
             .setLongName(groupContract.longName())
             .setShortName(groupContract.shortName())
             .build();
+=======
+    CreateGroupRequest groupRequest = CreateGroupRequest.newBuilder()
+        .setLongName(groupContract.longName())
+        .setShortName(groupContract.shortName())
+        .build();
+>>>>>>> U15_T155/Create_Group_Functionality
     return groupBlockingStub.createGroup(groupRequest);
   }
 
