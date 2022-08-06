@@ -34,13 +34,13 @@ export function CreateGroupForm() {
         <form onSubmit={(e) => validateCreateForm(e)}>
             <div>
                 <label>Short Name*:</label>
-                <input type="text" name="short-name" className="input-name" id={"short-name"} maxLength={15} onChange={(e) => {setShortName(e.target.value); setShortCharCount(e.target.value.length)}}/>
-                <span className="input-length" id="short-name-length">{shortCharCount} / 15</span>
+                <input type="text" name="short-name" className="input-name" id={"short-name"} maxLength={32} onChange={(e) => {setShortName(e.target.value); setShortCharCount(e.target.value.length)}}/>
+                <span className="input-length" id="short-name-length">{shortCharCount} / 32</span>
             </div>
             <div>
                 <label>Long Name*:</label>
-                <input type="text" name="long-name" className="input-name" id={"long-name"} maxLength={30} onChange={(e) => {setLongName(e.target.value); setLongCharCount(e.target.value.length)}}/>
-                <span className="input-length" id="long-name-length">{longCharCount} / 30</span>
+                <input type="text" name="long-name" className="input-name" id={"long-name"} maxLength={64} onChange={(e) => {setLongName(e.target.value); setLongCharCount(e.target.value.length)}}/>
+                <span className="input-length" id="long-name-length">{longCharCount} / 64</span>
             </div>
             <div className="form-error" id="create-group-error"/>
             <p>* = Required field.</p>

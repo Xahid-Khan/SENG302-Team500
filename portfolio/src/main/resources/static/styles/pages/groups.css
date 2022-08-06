@@ -30,6 +30,49 @@
     padding: 20px 20px 50px 20px;
 }
 
+.modal-edit-group-members {
+    background-color: #fff;
+    margin: 10% auto;
+    width: 80%;
+    border: black solid 1px;
+    border-radius: 20px;
+    padding: 20px 20px 50px 20px;
+}
+
+.modal-edit-group-members-body {
+    width: 100%;
+}
+
+.edit-group-members-container {
+    display: flex;
+}
+
+.other-groups-users-header {
+    display: flex;
+}
+
+.current-group {
+    width: 100%;
+    padding: 5px;
+}
+
+.other-group-users {
+    width: 100%;
+    padding: 5px;
+}
+
+.edit-group-members-buttons {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding-top: 130px
+}
+
+.edit-group-members-button {
+    margin: 4px;
+}
+
 .input-name {
     margin: 4px 8px;
 }

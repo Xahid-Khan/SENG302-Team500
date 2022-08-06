@@ -8,7 +8,7 @@ export function DeleteGroupModal() {
                     <div className={"modal-title"}>
                         Delete group
                     </div>
-                    <div className={"modal-close-button"} id={"group-delete-x"} onClick={() => document.getElementById("modal-create-group-open").style.display = "none"}>&times;</div>
+                    <div className={"modal-close-button"} id={"group-delete-x"}>&times;</div>
                 </div>
                 <div className={"border-line"}/>
                 <div className="modal-body">

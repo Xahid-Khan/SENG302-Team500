@@ -4,6 +4,7 @@ import {ToasterRoot} from "../../component/toast/ToasterRoot";
 import {ShowAllGroups} from "./ShowAllGroups";
 import {CreateGroupModal} from "./CreateGroup";
 import {DeleteGroupModal} from "./DeleteGroupModal";
+import {EditGroupMembersModal} from "./EditGroupMembersModal";
 
 /**
  * The root of the MonthlyPlannerPage. This does a few jobs:
@@ -17,7 +18,9 @@ export const GroupPage = () => {
             <ToasterRoot>
                 <div className="add-group">
                     <div>
-                        <button className="button add-group-button" id="add-group" data-privilege="teacher" onClick={() => document.getElementById("modal-create-group-open").style.display = "block"}> Create Group
+                        <button className="button add-group-button" id="add-group" data-privilege="teacher"
+                                onClick={() => document.getElementById("modal-create-group-open").style.display = "block"}> Create
+                            Group
                         </button>
                     </div>
                 </div>
@@ -27,6 +30,7 @@ export const GroupPage = () => {
                 </div>
                 <CreateGroupModal/>
                 <DeleteGroupModal/>
+                <EditGroupMembersModal/>
 
 
             </ToasterRoot>
