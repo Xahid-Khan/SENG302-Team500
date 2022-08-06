@@ -17,20 +17,6 @@
     padding: 20px;
 }
 
-.groups-table-header {
+.groups-header {
     display: table-row;
-}
-
-.group-header{
-/*    have title on left side and button on right side*/
-    display: flex;
-    align-items: center;
-}
-.group-name-long{
-    display: flex;
-    padding-right: 5px;
-}
-
-.edit-group{
-    float: right;
 }
