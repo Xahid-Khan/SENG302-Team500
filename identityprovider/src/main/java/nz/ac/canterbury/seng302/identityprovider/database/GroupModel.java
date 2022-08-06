@@ -18,6 +18,7 @@ public class GroupModel {
   @Column(unique = true, nullable = false)
   private String shortName;
 
+  @Column(unique = true, nullable = false)
   private String longName;
 
   protected GroupModel() {}

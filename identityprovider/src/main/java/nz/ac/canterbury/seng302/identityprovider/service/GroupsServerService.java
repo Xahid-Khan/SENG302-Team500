@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 /** This service handles all requests on the server side to manage groups. */
 @Service
-public class GroupsServerService {
+public class  GroupsServerService {
   @Autowired private GroupRepository groupRepository;
 
   /**

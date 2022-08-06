@@ -12,10 +12,10 @@ import nz.ac.canterbury.seng302.portfolio.model.contract.Contractable;
  * @param longName    the long name of the group (e.g., "Superstars")
  */
 public record BaseGroupContract(
-    @Size(max = 128, message = "Long name must not exceed 128 characters")
+    @Size(max = 64, message = "Long name must not exceed 64 characters")
     @NotBlank(message = "Long name is required")
     String longName,
-    @Size(max = 32)
+    @Size(max = 32, message = "Short name must not exceed 32 characters")
     @NotBlank(message = "Short name is required")
     String shortName
 ) implements Contractable {}
