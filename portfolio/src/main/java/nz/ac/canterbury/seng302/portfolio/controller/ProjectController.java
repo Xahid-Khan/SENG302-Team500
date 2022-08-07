@@ -33,6 +33,10 @@ public class ProjectController {
     @Autowired
     private RolesService rolesService;
 
+
+    private static final String TEACHER = "TEACHER";
+    private static final String COURSE_ADMINISTRATOR = "COURSE_ADMINISTRATOR";
+
     /**
      * This method will be invoked when API receives a GET request, and will produce a list of all the projects.
      * @return List of projects converted into project contract (JSON) type.
@@ -71,7 +75,7 @@ public class ProjectController {
     @PostMapping(value = "/projects", produces = "application/json")
     public ResponseEntity<?> addNewProject(@AuthenticationPrincipal PortfolioPrincipal principal, @RequestBody BaseProjectContract newProject) {
         ArrayList<String> roles = rolesService.getRolesByToken(principal);
-        if (roles.contains("TEACHER") || roles.contains("COORDINATOR")) {
+        if (roles.contains(TEACHER) || roles.contains(COURSE_ADMINISTRATOR)) {
             try {
                 var errorMessage = validationService.checkAddProject(newProject);
 
@@ -99,7 +103,7 @@ public class ProjectController {
     @DeleteMapping(value = "/projects/{id}", produces = "application/json")
     public ResponseEntity<?> removeProject(@AuthenticationPrincipal PortfolioPrincipal principal, @PathVariable String id) {
         ArrayList<String> roles = rolesService.getRolesByToken(principal);
-        if (roles.contains("TEACHER") || roles.contains("COORDINATOR")) {
+        if (roles.contains(TEACHER) || roles.contains(COURSE_ADMINISTRATOR)) {
             try {
                 projectService.delete(id);
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -121,7 +125,7 @@ public class ProjectController {
     @PutMapping(value = "/projects/{id}", produces = "application/json")
     public ResponseEntity<?> updateProject(@AuthenticationPrincipal PortfolioPrincipal principal, @RequestBody ProjectContract updatedProject, @PathVariable String id) {
         ArrayList<String> roles = rolesService.getRolesByToken(principal);
-        if (roles.contains("TEACHER") || roles.contains("COORDINATOR")) {
+        if (roles.contains(TEACHER) || roles.contains(COURSE_ADMINISTRATOR)) {
             try {
                 var errorMessage = validationService.checkUpdateProject(id, updatedProject);
 

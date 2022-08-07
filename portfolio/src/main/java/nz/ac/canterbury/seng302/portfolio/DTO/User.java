@@ -28,25 +28,24 @@ public record User(
     @Size(min = 8, max = 512, message = "Password must be at least 8 characters long and no longer than 512 characters", groups = RegisteredUserValidation.class)
     String password,
 
-    @Pattern(regexp = "^(?!.*  )([\\p{L} /-]*)", message = "Name must only contain alphabetical characters, or special characters '/' and '-'. It must also not contain more than one whitespace between characters", groups = RegisteredUserValidation.class)
+    @Pattern(regexp = "^(?!.*  )([\\p{L} /'-]*)", message = "Name must only contain alphabetical characters, or special characters: \"/\", \"-\", or \"'\". It must also not contain more than one whitespace between characters", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
     @NotBlank(message = "First name is required", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
     @Size(max = 50, message = "First name cannot be longer than 50 characters", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
     String firstName,
 
-    @Pattern(regexp = "^(?!.*  )([\\p{L} /-]*)", message = "Name must only contain alphabetical characters, or special characters '/' and '-'. It must also not contain more than one whitespace between characters", groups = RegisteredUserValidation.class)
+    @Pattern(regexp = "^(?!.*  )([\\p{L} /'-]*)", message = "Name must only contain alphabetical characters, or special characters: \"/\", \"-\", or \"'\". It must also not contain more than one whitespace between characters", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
     @Size(max = 50, message = "Middle name(s) cannot be longer than 50 characters", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
     @Nullable String middleName,
 
-    @Pattern(regexp = "^(?!.*  )([\\p{L} /-]*)", message = "Name must only contain alphabetical characters, or special characters '/' and '-'. It must also not contain more than one whitespace between characters", groups = RegisteredUserValidation.class)
+    @Pattern(regexp = "^(?!.*  )([\\p{L} /'-]*)", message = "Name must only contain alphabetical characters, or special characters: \"/\", \"-\", or \"'\". It must also not contain more than one whitespace between characters", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
     @NotBlank(message = "Last name is required", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
     @Size(max = 50, message = "Last name cannot be longer than 50 characters", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
     String lastName,
 
-    @Pattern(regexp = "^(?!.*  )([\\p{L} /-]*)", message = "Name must only contain alphabetical characters, or special characters '/' and '-'. It must also not contain more than one whitespace between characters", groups = RegisteredUserValidation.class)
+    @Pattern(regexp = "^(?!.*  )([\\p{L} /'-]*)", message = "Name must only contain alphabetical characters, or special characters: \"/\", \"-\", or \"'\". It must also not contain more than one whitespace between characters", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
     @Size(max = 32, message = "Nickname cannot be longer than 32 characters", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
     @Nullable String nickname,
 
-    @Pattern(regexp = "^[ A-Za-z0-9_!?.,#$%^&*()\\[\\]{};'<>:\"-=_+]*$", message = "Bio must only contain letters, numbers or the following special characters !?.,#$%^&*()[]{};'<>:\"-=_+", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
     @Size(max = 512, message = "Bio cannot be longer than 512 characters", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
     @Nullable String bio,
 
@@ -54,7 +53,7 @@ public record User(
     @Size(max = 50, message = "Personal pronouns cannot be longer than 50 characters", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
     @Nullable String personalPronouns,
 
-    // Emails are stupidly complicated. This basic Regex should suffice for most use cases however.
+    // Emails are stupidly complicated. This basic Regex should suffice for most use cases, however.
     @Email(message = "Email cannot contain any special characters, be of the format recipient@domain.suffix, and must have a valid domain name ", regexp = "[0-9A-Za-z-_.]+@[0-9A-Za-z-_.]+.[A-Za-z]+", groups = {EditedUserValidation.class, RegisteredUserValidation.class})
     String email,
 

@@ -207,7 +207,7 @@ public class UserAccountService extends UserAccountServiceGrpc.UserAccountServic
         }
 
         FileUploadStatusResponse uploadStatus =
-            editUserService.UploadUserPhoto(userId, buffer.toByteArray());
+            editUserService.uploadUserPhoto(userId, buffer.toByteArray());
 
         if (uploadStatus.getStatus() == FileUploadStatus.FAILED) {
           responseObserver.onError(new Throwable(String.valueOf(uploadStatus.getStatus())));
