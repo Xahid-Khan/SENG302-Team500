@@ -15,6 +15,7 @@
 
 .group {
     padding: 20px;
+    margin-bottom: 25px;
 }
 
 .groups-header {
@@ -95,6 +96,12 @@
     -webkit-user-select: none;
     -ms-user-select: none;
     user-select: none;
+}
+
+.edit-group-members-error {
+    padding: 10px;
+    text-align: center;
+    color: red;
 }
 
 .current-group {

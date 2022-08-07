@@ -9,8 +9,7 @@ export function EditGroupMembersModal({viewGroupId}: any) {
                     <div className={"modal-title"}>
                         Manage group members
                     </div>
-                    <div className={"modal-close-button"} id={"group-edit-members-x"}
-                         onClick={() => document.getElementById("modal-edit-group-members-open").style.display = "none"}>&times;</div>
+                    <div className={"modal-close-button"} id={"group-edit-members-x"}>&times;</div>
                 </div>
                 <div className={"border-line"}/>
                 <div className="modal-body modal-edit-group-members-body">

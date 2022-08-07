@@ -1,4 +1,5 @@
 import * as React from "react";
+import {useEffect} from "react";
 
 export function EditGroupMembers({viewGroupId}: any) {
 
@@ -64,24 +65,99 @@ export function EditGroupMembers({viewGroupId}: any) {
                 }
             ]}]
 
-    const [otherGroupViewing, setOtherGroupViewing] = React.useState(groups)
+    const [groupsToChange, setGroupsToChange] = React.useState([])
 
-    let group = {"id": -1,
-        "longName": "Default Group",
-        "shortName": "Default",
-        "users": [{"id": -1,
-            "name": "Default",
-            "username": "User",
-            "alias": "",
-            "roles": ["Student"]}]}
+    const [allGroups, setAllGroups] = React.useState(groups)
+
+    const users = [
+        {
+            "id": 1,
+            "name": "John",
+            "username": "johnstewart",
+            "alias": "Johnny",
+            "roles": ["Teacher, Student"]
+        },
+        {
+            "id": 2,
+            "name": "Sarah",
+            "username": "sarahjohn",
+            "alias": "Sa",
+            "roles": ["Student"]
+        },
+        {
+            "id": 4,
+            "name": "John",
+            "username": "cal127",
+            "alias": "Cod",
+            "roles": ["Teacher, Student"]
+        },
+        {
+            "id": 3,
+            "name": "James",
+            "username": "Potter",
+            "alias": "Jimmy",
+            "roles": ["Student"]
+        },
+        {
+            "id": 6,
+            "name": "Ben Stewart",
+            "username": "kingturtle12HD",
+            "alias": "Beef",
+            "roles": ["Teacher, Student"]
+        },
+        {
+            "id": 7,
+            "name": "Darren Patrick",
+            "username": "dpatrick2002",
+            "alias": "Dazza",
+            "roles": ["Student"]
+        }]
+
+    const [errorMessage, setErrorMessage] = React.useState("")
+
+    const [otherGroupViewing, setOtherGroupViewing] = React.useState([{
+        "id": -1,
+        "longName": "",
+        "shortName": "",
+        "users": []
+    }])
+
+    const [myGroup, setMyGroup] = React.useState({
+        "id": -1,
+        "longName": "",
+        "shortName": "",
+        "users": []
+    })
+
+    const [myGroupUpdate, setMyGroupUpdate] = React.useState(false)
+    const [otherGroupViewingUpdate, setOtherGroupViewingUpdate] = React.useState(false)
+
+    useEffect(() => {
+        if (myGroup === undefined || myGroup.id === -1) {
+            setMyGroup(allGroups.filter((item) => item.id === viewGroupId)[0])
+        }
+    }, [viewGroupId, myGroupUpdate])
+
+    useEffect(() => {
+        if (otherGroupViewing === undefined || otherGroupViewing[0].id === -1) {
+            setOtherGroupViewing(allGroups)
+        }
+    }, [otherGroupViewingUpdate, allGroups])
+
 
     const showFilter = (groupName: string) => {
+        otherUsersSelected.forEach((id) => document.getElementById(`other-users-${id}`).style.backgroundColor = "transparent")
+        currentGroupUsersSelected.forEach((id) => document.getElementById(`current-group-users-${id}`).style.backgroundColor = "transparent")
+        setOtherUsersSelected([])
+        setCurrentGroupUsersSelected([])
+        setShiftClickOther([])
+        setShiftClickCurrent([])
         document.getElementById("filter-groups-button").innerText = groupName;
         document.getElementById("other-users-title").innerText = groupName;
         if (groupName === "All users") {
-            setOtherGroupViewing(groups)
+            setOtherGroupViewing(allGroups)
         } else {
-            setOtherGroupViewing(groups.filter((item) => item.shortName === groupName))
+            setOtherGroupViewing(allGroups.filter((item) => item.shortName === groupName))
         }
     }
 
@@ -124,7 +200,7 @@ export function EditGroupMembers({viewGroupId}: any) {
             for (let i = 1; i < children.length; i++) {
                 if (i >= startIndex && i <= endIndex) {
                     document.getElementById(children[i].id).style.backgroundColor = "#ccc"
-                    newSelections.push(children[i].id.split('-')[2])
+                    newSelections.push(parseInt(children[i].id.split('-')[2]))
                 } else {
                     document.getElementById(children[i].id).style.backgroundColor = "transparent"
                 }
@@ -134,6 +210,7 @@ export function EditGroupMembers({viewGroupId}: any) {
     }
 
     const handleOtherUserSelect = (event: any, user: any) => {
+        setErrorMessage("")
         currentGroupUsersSelected.forEach((id) => {
             document.getElementById(`current-group-users-${id}`).style.backgroundColor = "transparent"
         })
@@ -195,7 +272,7 @@ export function EditGroupMembers({viewGroupId}: any) {
             for (let i = 1; i < children.length; i++) {
                 if (i >= startIndex && i <= endIndex) {
                     document.getElementById(children[i].id).style.backgroundColor = "#ccc"
-                    newSelections.push(children[i].id.split('-')[3])
+                    newSelections.push(parseInt(children[i].id.split('-')[3]))
                 } else {
                     document.getElementById(children[i].id).style.backgroundColor = "transparent"
                 }
@@ -205,6 +282,7 @@ export function EditGroupMembers({viewGroupId}: any) {
     }
 
     const handleCurrentGroupUserSelect = (event: any, user: any) => {
+        setErrorMessage("")
         otherUsersSelected.forEach((id) => {
             document.getElementById(`other-users-${id}`).style.backgroundColor = "transparent"
         })
@@ -232,45 +310,160 @@ export function EditGroupMembers({viewGroupId}: any) {
         }
     }
 
-    groups.forEach((item) => {
-        if (item.id === viewGroupId) {
-            group = item;
+    const addToCurrent = () => {
+        let duplicate = false
+        let usersToAdd = users.filter((user) => otherUsersSelected.includes(user.id))
+        myGroup.users.forEach((user) => {
+            usersToAdd.forEach((userToAdd: any) => {
+                if (user.id === userToAdd.id) {
+                    duplicate = true
+                    setErrorMessage("One or more of the users selected are already in this group. Please deselect these users and try again")
+                }
+            })
+        })
+
+        if (duplicate === false) {
+            myGroup.users = myGroup.users.concat(usersToAdd)
+            allGroups.forEach((item, index) => {
+                if (item.id === myGroup.id) {
+                    allGroups[index].users = myGroup.users
+                }
+            })
+            let currentIndex = -1
+            groupsToChange.forEach((item: any, index: number) => {
+                if(item.id === myGroup.id) {
+                    currentIndex = index
+                }
+            })
+            if (currentIndex !== -1) {
+                groupsToChange[currentIndex] = myGroup
+            } else {
+                setGroupsToChange([...groupsToChange, myGroup])
+            }
+            setMyGroupUpdate(!myGroupUpdate)
         }
-    })
+    }
+
+    const copyToOther = () => {
+        let duplicate = false
+        let usersToAdd = users.filter((user) => currentGroupUsersSelected.includes(user.id))
+        otherGroupViewing[0].users.forEach((user: any) => {
+            usersToAdd.forEach((userToAdd: any) => {
+                if (user.id === userToAdd.id) {
+                    duplicate = true
+                    setErrorMessage("One or more of the users selected are already in this group. Please deselect these users and try again")
+                }
+            })
+        })
+        if (duplicate === false) {
+            otherGroupViewing[0].users = otherGroupViewing[0].users.concat(usersToAdd)
+            allGroups.forEach((item, index) => {
+                if (item.id === otherGroupViewing[0].id) {
+                    allGroups[index].users = otherGroupViewing[0].users
+                }
+            })
+            let currentIndex = -1
+            groupsToChange.forEach((item: any, index: number) => {
+                if(item.id === otherGroupViewing[0].id) {
+                    currentIndex = index
+                }
+            })
+            if (currentIndex !== -1) {
+                groupsToChange[currentIndex] = otherGroupViewing[0]
+            } else {
+                setGroupsToChange([...groupsToChange, otherGroupViewing[0]])
+            }
+            setOtherGroupViewingUpdate(!otherGroupViewingUpdate)
+        }
+    }
+
+    const removeFromGroup = () => {
+        if (currentGroupUsersSelected.length > 0) {
+            currentGroupUsersSelected.forEach((id) => {
+                myGroup.users.forEach((user: any, index: number) => {
+                    if (user.id === id) {
+                        myGroup.users = myGroup.users.slice(0, index).concat(myGroup.users.slice(index+1, myGroup.users.length))
+                    }
+                })
+            })
+            allGroups.forEach((item, index) => {
+                if (item.id === myGroup.id) {
+                    allGroups[index].users = myGroup.users
+                }
+            })
+            setCurrentGroupUsersSelected([])
+            setMyGroupUpdate(!myGroupUpdate)
+        } else {
+            otherUsersSelected.forEach((id) => {
+                otherGroupViewing[0].users.forEach((user: any, index: number) => {
+                    if (user.id === id) {
+                        otherGroupViewing[0].users =  otherGroupViewing[0].users.slice(0, index).concat( otherGroupViewing[0].users.slice(index+1,  otherGroupViewing[0].users.length))
+                    }
+                })
+            })
+            allGroups.forEach((item, index) => {
+                if (item.id === otherGroupViewing[0].id) {
+                    allGroups[index].users = otherGroupViewing[0].users
+                }
+            })
+            setOtherUsersSelected([])
+            setOtherGroupViewingUpdate(!otherGroupViewingUpdate)
+        }
+    }
+
+    const handleMemberEditSubmit = () => {
+        document.getElementById("modal-edit-group-members-open").style.display = "none"
+        window.location.reload()
+    }
+
+    const handleCancel = () => {
+        document.getElementById("modal-edit-group-members-open").style.display = "none"
+        window.location.reload()
+    }
+
+    if (document.getElementById("group-edit-members-confirm")) {
+        document.getElementById("group-edit-members-confirm").addEventListener("click", () => handleMemberEditSubmit())
+        document.getElementById("group-edit-members-cancel").addEventListener("click", () => handleCancel())
+        document.getElementById("group-edit-members-x").addEventListener("click", () => handleCancel())
+    }
 
     return (
+        <div>
+        {myGroup ?
         <div className={"edit-group-members-container"}>
             <div className={"current-group"}>
                 <h2>Current Group</h2>
-                <div className={'raised-card group'} id={`current-group-members-${group['id']}`}>
-                    <div className={"group-header"}>
-                        <h2 className={'group-name-long'}>{group['longName']}</h2>
-                    </div>
-                    <h3 className={'group-name-short'}>{group['shortName']}</h3>
-                    <div className={"table groups-table"} id={"current-group-users-list"}>
-                        <div className={"groups-header"}>
-                            <div className="tableCell"><b>Name</b></div>
-                            <div className="tableCell"><b>Username</b></div>
-                            <div className="tableCell"><b>Alias</b></div>
-                            <div className="tableCell"><b>Roles</b></div>
+                    <div className={'raised-card group'} id={`current-group-members-${myGroup['id']}`}>
+                        <div className={"group-header"}>
+                            <h2 className={'group-name-long'}>{myGroup['longName']}</h2>
                         </div>
-                        {group['users'].map((user: any) => (
-                            <div className="groups-row" id={`current-group-users-${user.id}`} key={user.id} onClick={(event => handleCurrentGroupUserSelect(event, user))}>
-                                <div className="tableCell">{user['name']}</div>
-                                <div className="tableCell">{user['username']}</div>
-                                <div className="tableCell">{user['alias']}</div>
-                                <div className="tableCell">{user['roles'].toString()}</div>
+                        <h3 className={'group-name-short'}>{myGroup['shortName']}</h3>
+                        <div className={"table groups-table"} id={"current-group-users-list"}>
+                            <div className={"groups-header"}>
+                                <div className="tableCell"><b>Name</b></div>
+                                <div className="tableCell"><b>Username</b></div>
+                                <div className="tableCell"><b>Alias</b></div>
+                                <div className="tableCell"><b>Roles</b></div>
                             </div>
-                        ))}
+                            {myGroup['users'].map((user: any) => (
+                                <div className="groups-row" id={`current-group-users-${user.id}`} key={user.id}
+                                     onClick={(event => handleCurrentGroupUserSelect(event, user))}>
+                                    <div className="tableCell">{user['name']}</div>
+                                    <div className="tableCell">{user['username']}</div>
+                                    <div className="tableCell">{user['alias']}</div>
+                                    <div className="tableCell">{user['roles'].toString()}</div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
-                </div>
             </div>
             <div>
                 <div className={"edit-group-members-buttons"}>
-                    <button className={"edit-group-members-button"}>Add to current</button>
-                    <button className={"edit-group-members-button"}>Copy <span className="material-icons" style={{fontSize: 14}}>arrow_forward</span></button>
-                    <button className={"edit-group-members-button"}>Remove user</button>
+                    <button className={"edit-group-members-button"} disabled={otherUsersSelected.length === 0} onClick={() => addToCurrent()}><span className="material-icons" style={{fontSize: 14}}>arrow_back</span> Add to current</button>
+                    <button className={"edit-group-members-button"} disabled={currentGroupUsersSelected.length === 0 || document.getElementById("filter-groups-button").innerText === "All users"} onClick={() => copyToOther()}>Copy to other <span className="material-icons" style={{fontSize: 14}}>arrow_forward</span></button>
+                    <button className={"edit-group-members-button"} disabled={currentGroupUsersSelected.length === 0 && (otherUsersSelected.length === 0 || document.getElementById("filter-groups-button").innerText === "All users")} onClick={() => removeFromGroup()}>Remove from group</button>
                 </div>
+                <div className={"edit-group-members-error"}>{errorMessage}</div>
             </div>
             <div className={"other-group-users"}>
                 <div className={"other-groups-users-header"}>
@@ -281,7 +474,7 @@ export function EditGroupMembers({viewGroupId}: any) {
                             </div>
                             <div className={"filter-groups-options"} id={"filter-groups-options"}>
                                 <button className={"filter-option-button"} onClick={() => showFilter("All users")}>All users</button>
-                                {groups.filter((item) => item.id != group.id).map((item) => (
+                                {allGroups.filter((item) => item.id != myGroup.id && item.longName !== "Members without a group").map((item) => (
                                     <button className={"filter-option-button"} key={item.id} onClick={() => showFilter(item['shortName'])}>{item['shortName']}</button>
                                 ))}
                             </div>
@@ -292,7 +485,7 @@ export function EditGroupMembers({viewGroupId}: any) {
                         <h2>Other Users</h2>
                     </div>
                 </div>
-                <div className={'raised-card group'} id={`current-group-members-${group['id']}`}>
+                <div className={'raised-card group'} id={`current-group-members-${myGroup['id']}`}>
                     <h2 id={"other-users-title"}>All Users</h2>
                     <div className={"table groups-table"} id={"other-users-list"}>
                         <div className={"groups-header"}>
@@ -301,7 +494,7 @@ export function EditGroupMembers({viewGroupId}: any) {
                             <div className="tableCell"><b>Alias</b></div>
                             <div className="tableCell"><b>Roles</b></div>
                         </div>
-                            {otherGroupViewing.filter((item) => item.id != group.id).map((item) => (item['users'].map((user: any) => (
+                            {otherGroupViewing.map((item) => (item['users'].map((user: any) => (
                                 <div className="groups-row" id={`other-users-${user.id}`} key={user.id} onClick={(event => handleOtherUserSelect(event, user))}>
                                     <div className="tableCell">{user['name']}</div>
                                     <div className="tableCell">{user['username']}</div>
@@ -312,6 +505,8 @@ export function EditGroupMembers({viewGroupId}: any) {
                     </div>
                 </div>
             </div>
+        </div>
+        : ""}
         </div>
     );
 }

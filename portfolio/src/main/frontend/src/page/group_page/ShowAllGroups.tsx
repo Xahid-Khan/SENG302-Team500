@@ -1,5 +1,4 @@
 import * as React from "react";
-import {EditGroupMembers} from "./EditGroupMembers";
 
 
 const getGroups = () => {
@@ -8,22 +7,62 @@ const getGroups = () => {
         "longName": "Teaching Team",
         "shortName": "Teachers",
         "users": [
+            {
+                "id": 1,
+                "name": "John",
+                "username": "johnstewart",
+                "alias": "Johnny",
+                "roles": ["Teacher, Student"]
+            },
+            {
+                "id": 2,
+                "name": "Sarah",
+                "username": "sarahjohn",
+                "alias": "Sa",
+                "roles": ["Student"]
+            }
+        ]},
+        {
+            "id": 2,
+            "longName": "Group 500 - IDK",
+            "shortName": "G500",
+            "users": [
                 {
-                    "id": "1",
+                    "id": 4,
                     "name": "John",
-                    "username": "johnstewart",
-                    "alias": "Johnny",
+                    "username": "cal127",
+                    "alias": "Cod",
                     "roles": ["Teacher, Student"]
                 },
                 {
-                    "id": "2",
-                    "name": "Sarah",
-                    "username": "sarahjohn",
-                    "alias": "Sa",
+                    "id": 3,
+                    "name": "James",
+                    "username": "Potter",
+                    "alias": "Jimmy",
                     "roles": ["Student"]
                 }
             ]
-    }]
+        },
+        {
+            "id": 3,
+            "longName": "The Boys",
+            "shortName": "Lads",
+            "users": [
+                {
+                    "id": 6,
+                    "name": "Ben Stewart",
+                    "username": "kingturtle12HD",
+                    "alias": "Beef",
+                    "roles": ["Teacher, Student"]
+                },
+                {
+                    "id": 7,
+                    "name": "Darren Patrick",
+                    "username": "dpatrick2002",
+                    "alias": "Dazza",
+                    "roles": ["Student"]
+                }
+            ]}]
 }
 
 const deleteGroup = (id: number) => {
@@ -57,7 +96,7 @@ export function ShowAllGroups({setViewGroupId}: any) {
                         <div className={"delete-group"}>
                             <span className={"material-icons"} onClick={() => wireModal(group['id'])}>clear</span>
                         </div>
-                        <button className="button edit-group-button" id="edit-group" data-privilege="teacher" onClick={() => {document.getElementById("modal-edit-group-members-open").style.display = "block"; setViewGroupId(group.id)}}> Mange Group Members
+                        <button className="button edit-group-button" id="edit-group" data-privilege="teacher" onClick={() => {document.getElementById("modal-edit-group-members-open").style.display = "block"; setViewGroupId(group.id)}}> Manage Group Members
                         </button>
                         <h2 className={'group-name-long'}>{group['longName']}</h2>
                     </div>
