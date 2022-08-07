@@ -1,4 +1,5 @@
 import * as React from "react";
+import {EditGroupMembers} from "./EditGroupMembers";
 
 
 const getGroups = () => {
@@ -44,8 +45,8 @@ const wireModal = (id: number) => {
     document.getElementById("group-delete-cancel").addEventListener("click", () => clearEventListeners(id))
 }
 
-export function ShowAllGroups() {
-    const [open, setOpen] = React.useState(false);
+export function ShowAllGroups({setViewGroupId}: any) {
+
     const groups = getGroups()
 
     return (
@@ -56,13 +57,12 @@ export function ShowAllGroups() {
                         <div className={"delete-group"}>
                             <span className={"material-icons"} onClick={() => wireModal(group['id'])}>clear</span>
                         </div>
-                        <h2 className={'group-name-long'}>{group['longName']}</h2>
-                        <button className="button edit-group-button" id="edit-group" data-privilege="teacher" onClick={() => {document.getElementById("modal-edit-group-members-open").style.display = "block"; document.getElementById("modal-edit-group-members-open").title = group['id']}}> Edit
-                            Group
+                        <button className="button edit-group-button" id="edit-group" data-privilege="teacher" onClick={() => {document.getElementById("modal-edit-group-members-open").style.display = "block"; setViewGroupId(group.id)}}> Mange Group Members
                         </button>
+                        <h2 className={'group-name-long'}>{group['longName']}</h2>
                     </div>
                     <h3 className={'group-name-short'}>{group['shortName']}</h3>
-                    <div className={"table"} id={"group-list-"}>
+                    <div className={"table"} id={"group-list"}>
                         <div className={"groups-header"}>
                             <div className="tableCell"><b>Name</b></div>
                             <div className="tableCell"><b>Username</b></div>

@@ -13,24 +13,25 @@ import {EditGroupMembersModal} from "./EditGroupMembersModal";
  * 3. Place the PageContent component inside that Layout component.
  */
 export const GroupPage = () => {
-    return (
 
+    const [viewGroupId, setViewGroupId] = React.useState(-1)
+
+    return (
             <ToasterRoot>
                 <div className="add-group">
                     <div>
                         <button className="button add-group-button" id="add-group" data-privilege="teacher"
-                                onClick={() => document.getElementById("modal-create-group-open").style.display = "block"}> Create
-                            Group
+                                onClick={() => document.getElementById("modal-create-group-open").style.display = "block"}> Create Group
                         </button>
                     </div>
                 </div>
                 <div className={"raised-card groups"}>
                     <h1>Groups</h1>
-                    <ShowAllGroups/>
+                    <ShowAllGroups setViewGroupId={setViewGroupId}/>
                 </div>
                 <CreateGroupModal/>
                 <DeleteGroupModal/>
-                <EditGroupMembersModal/>
+                <EditGroupMembersModal viewGroupId={viewGroupId}/>
 
 
             </ToasterRoot>
