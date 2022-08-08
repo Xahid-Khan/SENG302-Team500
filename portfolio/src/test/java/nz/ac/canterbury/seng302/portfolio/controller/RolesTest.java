@@ -1,6 +1,8 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import java.util.Arrays;
 import nz.ac.canterbury.seng302.portfolio.AuthorisationParamsHelper;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
@@ -28,25 +30,31 @@ public class RolesTest {
     @Test
     public void removeProject() throws Exception {
         var apiPath = "/api/v1/projects/" + projectId;
-        AuthorisationParamsHelper.setParams("role", "STUDENT");
+        AuthorisationParamsHelper.setParams("role", UserRole.STUDENT);
 
         this.mockMvc.perform(delete(apiPath))
                                 .andExpect(status().isForbidden())
                                 .andReturn();
 
-        AuthorisationParamsHelper.setParams("role", "TEACHER");
+        AuthorisationParamsHelper.setParams("role", UserRole.TEACHER);
         this.mockMvc.perform(delete(apiPath))
                 .andExpect(status().isBadRequest());
 
-        AuthorisationParamsHelper.setParams("role", "COORDINATOR");
+        AuthorisationParamsHelper.setParams("role", UserRole.COURSE_ADMINISTRATOR);
         this.mockMvc.perform(delete(apiPath))
                 .andExpect(status().isBadRequest());
 
-        AuthorisationParamsHelper.setParams("role", "COORDINATOR, TEACHER");
+        AuthorisationParamsHelper.setParams(
+            "role",
+            Arrays.asList(UserRole.TEACHER, UserRole.COURSE_ADMINISTRATOR)
+        );
         this.mockMvc.perform(delete("/api/v1/projects/some_project"))
                 .andExpect(status().isBadRequest());
 
-        AuthorisationParamsHelper.setParams("role", "COORDINATOR, TEACHER, STUDENT");
+        AuthorisationParamsHelper.setParams(
+            "role",
+            Arrays.asList(UserRole.STUDENT, UserRole.TEACHER, UserRole.COURSE_ADMINISTRATOR)
+        );
         this.mockMvc.perform(delete("/api/v1/projects/123456"))
                 .andExpect(status().isBadRequest());
     }
@@ -59,25 +67,31 @@ public class RolesTest {
     @Test
     public void viewAllProjects() throws Exception {
         var apiPath = "/api/v1/projects/";
-        AuthorisationParamsHelper.setParams("role", "STUDENT");
+        AuthorisationParamsHelper.setParams("role", UserRole.STUDENT);
 
         this.mockMvc.perform(get(apiPath))
                 .andExpect(status().isOk())
                 .andReturn();
 
-        AuthorisationParamsHelper.setParams("role", "TEACHER");
+        AuthorisationParamsHelper.setParams("role", UserRole.TEACHER);
         this.mockMvc.perform(get(apiPath))
                 .andExpect(status().isOk());
 
-        AuthorisationParamsHelper.setParams("role", "COORDINATOR");
+        AuthorisationParamsHelper.setParams("role", UserRole.COURSE_ADMINISTRATOR);
         this.mockMvc.perform(get(apiPath))
                 .andExpect(status().isOk());
 
-        AuthorisationParamsHelper.setParams("role", "COORDINATOR, TEACHER");
+        AuthorisationParamsHelper.setParams(
+            "role",
+            Arrays.asList(UserRole.TEACHER, UserRole.COURSE_ADMINISTRATOR)
+        );
         this.mockMvc.perform(get("/api/v1/projects/some_project"))
                 .andExpect(status().isNotFound());
 
-        AuthorisationParamsHelper.setParams("role", "COORDINATOR, TEACHER, STUDENT");
+        AuthorisationParamsHelper.setParams(
+            "role",
+            Arrays.asList(UserRole.STUDENT, UserRole.TEACHER, UserRole.COURSE_ADMINISTRATOR)
+        );
         this.mockMvc.perform(get("/api/v1/projects/123456"))
                 .andExpect(status().isNotFound());
     }
@@ -97,7 +111,7 @@ public class RolesTest {
                     "endDate": "2023-01-01T10:00:00.00Z"
                 }
                 """;
-        AuthorisationParamsHelper.setParams("role", "STUDENT");
+        AuthorisationParamsHelper.setParams("role", UserRole.STUDENT);
 
         this.mockMvc.perform(put(apiPath)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -105,23 +119,29 @@ public class RolesTest {
                 .andExpect(status().isForbidden())
                 .andReturn();
 
-        AuthorisationParamsHelper.setParams("role", "TEACHER");
+        AuthorisationParamsHelper.setParams("role", UserRole.TEACHER);
         this.mockMvc.perform(put(apiPath)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body))
                 .andExpect(status().isNotFound());
 
-        AuthorisationParamsHelper.setParams("role", "COORDINATOR");
+        AuthorisationParamsHelper.setParams("role", UserRole.COURSE_ADMINISTRATOR);
         this.mockMvc.perform(put(apiPath)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body))
                 .andExpect(status().isNotFound());
 
-        AuthorisationParamsHelper.setParams("role", "COORDINATOR, TEACHER");
+        AuthorisationParamsHelper.setParams(
+            "role",
+            Arrays.asList(UserRole.TEACHER, UserRole.COURSE_ADMINISTRATOR)
+        );
         this.mockMvc.perform(put("/api/v1/projects/some_project"))
                 .andExpect(status().isBadRequest());
 
-        AuthorisationParamsHelper.setParams("role", "COORDINATOR, TEACHER, STUDENT");
+        AuthorisationParamsHelper.setParams(
+            "role",
+            Arrays.asList(UserRole.STUDENT, UserRole.TEACHER, UserRole.COURSE_ADMINISTRATOR)
+        );
         this.mockMvc.perform(put("/api/v1/projects/123456"))
                 .andExpect(status().isBadRequest());
     }

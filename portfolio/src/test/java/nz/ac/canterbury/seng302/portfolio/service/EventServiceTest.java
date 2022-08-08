@@ -13,6 +13,7 @@ import nz.ac.canterbury.seng302.portfolio.model.entity.SprintEntity;
 import nz.ac.canterbury.seng302.portfolio.repository.EventRepository;
 import nz.ac.canterbury.seng302.portfolio.repository.ProjectRepository;
 import nz.ac.canterbury.seng302.portfolio.repository.SprintRepository;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +39,7 @@ public class EventServiceTest {
     eventRepository.deleteAll();
     projectRepository.deleteAll();
 
-    AuthorisationParamsHelper.setParams("role", "TEACHER");
+    AuthorisationParamsHelper.setParams("role", UserRole.TEACHER);
   }
 
   /**

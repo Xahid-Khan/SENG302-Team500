@@ -8,6 +8,7 @@ import nz.ac.canterbury.seng302.portfolio.model.entity.DeadlineEntity;
 import nz.ac.canterbury.seng302.portfolio.model.entity.ProjectEntity;
 import nz.ac.canterbury.seng302.portfolio.repository.DeadlineRepository;
 import nz.ac.canterbury.seng302.portfolio.repository.ProjectRepository;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +55,7 @@ public class DeadlineControllerTest {
         deadlineRepository.deleteAll();
         projectRepository.deleteAll();
 
-        AuthorisationParamsHelper.setParams("role", "TEACHER");
+        AuthorisationParamsHelper.setParams("role", UserRole.TEACHER);
     }
 
     /**
@@ -77,7 +78,7 @@ public class DeadlineControllerTest {
      */
     @Test
     public void getById() throws Exception {
-        AuthorisationParamsHelper.setParams("role", "STUDENT");
+        AuthorisationParamsHelper.setParams("role", UserRole.STUDENT);
         var project = new ProjectEntity("test project", null, Instant.EPOCH, Instant.parse("2007-12-03T10:15:30.00Z"));
         var deadline = new DeadlineEntity("testdeadline", "test description", Instant.ofEpochSecond(120));
         project.addDeadline(deadline);
@@ -107,7 +108,7 @@ public class DeadlineControllerTest {
      */
     @Test
     public void getManyByProjectId() throws Exception {
-        AuthorisationParamsHelper.setParams("role", "STUDENT");
+        AuthorisationParamsHelper.setParams("role", UserRole.STUDENT);
         var project = new ProjectEntity("test project", null, Instant.EPOCH, Instant.parse("2007-12-03T10:15:30.00Z"));
         var deadline = new DeadlineEntity("deadline", "test description", Instant.ofEpochSecond(120));
         var deadline2 = new DeadlineEntity("testdeadline", "test description 2", Instant.ofEpochSecond(420));
@@ -147,7 +148,7 @@ public class DeadlineControllerTest {
      */
     @Test
     public void getManyByNonExistentProjectId() throws Exception {
-        AuthorisationParamsHelper.setParams("role", "STUDENT");
+        AuthorisationParamsHelper.setParams("role", UserRole.STUDENT);
         var result = this.mockMvc.perform(
                         get("/api/v1/projects/fake_project/deadlines")
                 )
@@ -352,7 +353,7 @@ public class DeadlineControllerTest {
      */
     @Test
     public void tryCreateNewAsStudent() throws Exception {
-        AuthorisationParamsHelper.setParams("role", "STUDENT");
+        AuthorisationParamsHelper.setParams("role", UserRole.STUDENT);
 
         var project = new ProjectEntity("test project", null, Instant.parse("2022-12-01T10:15:30.00Z"), Instant.parse("2023-01-20T10:15:30.00Z"));
         projectRepository.save(project);
@@ -380,7 +381,7 @@ public class DeadlineControllerTest {
      */
     @Test
     public void tryUpdateValidDeadlineAsStudent() throws Exception {
-        AuthorisationParamsHelper.setParams("role", "STUDENT");
+        AuthorisationParamsHelper.setParams("role", UserRole.STUDENT);
 
         var project = new ProjectEntity("test project", null, Instant.parse("2022-12-01T10:15:30.00Z"), Instant.parse("2023-01-20T10:15:30.00Z"));
         var deadline = new DeadlineEntity("preedittestdeadline", "pre-test description", Instant.parse("2023-01-03T10:15:30.00Z"));
@@ -414,7 +415,7 @@ public class DeadlineControllerTest {
      */
     @Test
     public void tryDeleteDeadlineAsStudent() throws Exception {
-        AuthorisationParamsHelper.setParams("role", "STUDENT");
+        AuthorisationParamsHelper.setParams("role", UserRole.STUDENT);
         var project = new ProjectEntity("test project", null, Instant.EPOCH, Instant.parse("2007-12-03T10:15:30.00Z"));
         var deadline = new DeadlineEntity("preedittestdeadline", "pre-test description", Instant.parse("2007-12-03T10:15:30.00Z"));
         project.addDeadline(deadline);
