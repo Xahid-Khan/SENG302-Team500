@@ -7,24 +7,28 @@ import java.util.List;
 @Entity
 public class GroupMemberModel {
     @Id
-    private int groupId;
+    private int id;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Column(nullable = false)
-    private List <Integer> userId = new ArrayList<>();
+    private List <Integer> userIds = new ArrayList<>();
 
     protected GroupMemberModel() {}
 
     public GroupMemberModel(int groupId, List<Integer> userId) {
-        this.groupId = groupId;
-        this.userId = userId;
+        this.id = groupId;
+        this.userIds = userId;
     }
 
     public int getGroupId() {
-        return groupId;
+        return this.id;
     }
 
-    public final List<Integer> getUserId() {
-        return userId;
+    public List<Integer> getUserId() {
+        return userIds;
+    }
+
+    public void addNewMember(int userId) {
+        this.userIds.add(userId);
     }
 }
