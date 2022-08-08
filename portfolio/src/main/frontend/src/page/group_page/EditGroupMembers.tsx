@@ -427,6 +427,38 @@ export function EditGroupMembers({viewGroupId}: any) {
         document.getElementById("group-edit-members-x").addEventListener("click", () => handleCancel())
     }
 
+    const openRemoveModal = () => {
+        document.getElementById("modal-delete-open").style.display = "block"
+        document.getElementById("modal-delete-confirm").addEventListener("click", () => {
+            document.getElementById("modal-delete-open").style.display = "none"
+            removeFromGroup()
+        })
+        document.getElementById("modal-delete-cancel").addEventListener("click", () => {
+            document.getElementById("modal-delete-open").style.display = "none"
+        })
+        document.getElementById("modal-delete-x").addEventListener("click", () => {
+            document.getElementById("modal-delete-open").style.display = "none"
+        })
+    }
+
+    const getOtherViewingUsers = (): any => {
+        let otherGroupViewingNoDuplicates: any = []
+        otherGroupViewing.forEach((item) => {
+            let duplicate = false
+            item['users'].forEach((user) => {
+                otherGroupViewingNoDuplicates.forEach((otherUser: any) => {
+                    if (otherUser.id === user.id) {
+                        duplicate = true
+                    }
+                })
+                if (duplicate === false) {
+                    otherGroupViewingNoDuplicates.push(user)
+                }
+            })
+        })
+        return otherGroupViewingNoDuplicates
+    }
+
     return (
         <div>
         {myGroup ?
@@ -438,22 +470,24 @@ export function EditGroupMembers({viewGroupId}: any) {
                             <h2 className={'group-name-long'}>{myGroup['longName']}</h2>
                         </div>
                         <h3 className={'group-name-short'}>{myGroup['shortName']}</h3>
-                        <div className={"table groups-table"} id={"current-group-users-list"}>
-                            <div className={"groups-header"}>
-                                <div className="tableCell"><b>Name</b></div>
-                                <div className="tableCell"><b>Username</b></div>
-                                <div className="tableCell"><b>Alias</b></div>
-                                <div className="tableCell"><b>Roles</b></div>
-                            </div>
-                            {myGroup['users'].map((user: any) => (
-                                <div className="groups-row" id={`current-group-users-${user.id}`} key={user.id}
-                                     onClick={(event => handleCurrentGroupUserSelect(event, user))}>
-                                    <div className="tableCell">{user['name']}</div>
-                                    <div className="tableCell">{user['username']}</div>
-                                    <div className="tableCell">{user['alias']}</div>
-                                    <div className="tableCell">{user['roles'].toString()}</div>
+                        <div className={"user-list-table"}>
+                            <div className={"table groups-table"} id={"current-group-users-list"}>
+                                <div className={"groups-header"}>
+                                    <div className="tableCell"><b>Name</b></div>
+                                    <div className="tableCell"><b>Username</b></div>
+                                    <div className="tableCell"><b>Alias</b></div>
+                                    <div className="tableCell"><b>Roles</b></div>
                                 </div>
-                            ))}
+                                {myGroup['users'].map((user: any) => (
+                                    <div className="groups-row" id={`current-group-users-${user.id}`} key={user.id}
+                                         onClick={(event => handleCurrentGroupUserSelect(event, user))}>
+                                        <div className="tableCell">{user['name']}</div>
+                                        <div className="tableCell">{user['username']}</div>
+                                        <div className="tableCell">{user['alias']}</div>
+                                        <div className="tableCell">{user['roles'].toString()}</div>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </div>
             </div>
@@ -461,7 +495,7 @@ export function EditGroupMembers({viewGroupId}: any) {
                 <div className={"edit-group-members-buttons"}>
                     <button className={"edit-group-members-button"} disabled={otherUsersSelected.length === 0} onClick={() => addToCurrent()}><span className="material-icons" style={{fontSize: 14}}>arrow_back</span> Add to current</button>
                     <button className={"edit-group-members-button"} disabled={currentGroupUsersSelected.length === 0 || document.getElementById("filter-groups-button").innerText === "All users"} onClick={() => copyToOther()}>Copy to other <span className="material-icons" style={{fontSize: 14}}>arrow_forward</span></button>
-                    <button className={"edit-group-members-button"} disabled={currentGroupUsersSelected.length === 0 && (otherUsersSelected.length === 0 || document.getElementById("filter-groups-button").innerText === "All users")} onClick={() => removeFromGroup()}>Remove from group</button>
+                    <button className={"edit-group-members-button"} disabled={currentGroupUsersSelected.length === 0 && (otherUsersSelected.length === 0 || document.getElementById("filter-groups-button").innerText === "All users")} onClick={() => openRemoveModal()}>Remove from group</button>
                 </div>
                 <div className={"edit-group-members-error"}>{errorMessage}</div>
             </div>
@@ -487,21 +521,23 @@ export function EditGroupMembers({viewGroupId}: any) {
                 </div>
                 <div className={'raised-card group'} id={`current-group-members-${myGroup['id']}`}>
                     <h2 id={"other-users-title"}>All Users</h2>
-                    <div className={"table groups-table"} id={"other-users-list"}>
-                        <div className={"groups-header"}>
-                            <div className="tableCell"><b>Name</b></div>
-                            <div className="tableCell"><b>Username</b></div>
-                            <div className="tableCell"><b>Alias</b></div>
-                            <div className="tableCell"><b>Roles</b></div>
+                    <div className={"user-list-table"}>
+                        <div className={"table groups-table"} id={"other-users-list"}>
+                            <div className={"groups-header"}>
+                                <div className="tableCell"><b>Name</b></div>
+                                <div className="tableCell"><b>Username</b></div>
+                                <div className="tableCell"><b>Alias</b></div>
+                                <div className="tableCell"><b>Roles</b></div>
+                            </div>
+                                {getOtherViewingUsers().map((user: any) => (
+                                    <div className="groups-row" id={`other-users-${user.id}`} key={user.id} onClick={(event => handleOtherUserSelect(event, user))}>
+                                        <div className="tableCell">{user['name']}</div>
+                                        <div className="tableCell">{user['username']}</div>
+                                        <div className="tableCell">{user['alias']}</div>
+                                        <div className="tableCell">{user['roles'].toString()}</div>
+                                    </div>
+                                ))}
                         </div>
-                            {otherGroupViewing.map((item) => (item['users'].map((user: any) => (
-                                <div className="groups-row" id={`other-users-${user.id}`} key={user.id} onClick={(event => handleOtherUserSelect(event, user))}>
-                                    <div className="tableCell">{user['name']}</div>
-                                    <div className="tableCell">{user['username']}</div>
-                                    <div className="tableCell">{user['alias']}</div>
-                                    <div className="tableCell">{user['roles'].toString()}</div>
-                                </div>
-                            ))))}
                     </div>
                 </div>
             </div>
