@@ -3,6 +3,8 @@ import {FormEvent, useEffect} from "react";
 
 export function EditGroupSettings( {viewGroupId}: any ) {
 
+    const userId = parseInt(window.localStorage.getItem("userId"))
+
     const groups = [{
         "id": 1,
         "longName": "Teaching Team",
@@ -104,7 +106,7 @@ export function EditGroupSettings( {viewGroupId}: any ) {
             window.location.reload()
         }
     }
-
+    const isMember = myGroup !== undefined ? myGroup.users.filter((user) => user.id === userId).length > 0 : false
 
     return (
         <div>{myGroup ?
@@ -113,20 +115,29 @@ export function EditGroupSettings( {viewGroupId}: any ) {
                     <div className={"edit-form raised-card"}>
                         <h3>Group Settings</h3>
                         <div>
-                            <label>Long Name:</label>
-                            <input type="text" name="long-name" className="input-name" id={"long-name"} maxLength={64} onChange={(e) => {setLongName(e.target.value); setLongCharCount(e.target.value.length)}}/>
-                            <span className="input-length" id="long-name-length">{longCharCount} / 64</span>
+                            <label className={"settings-title"}>Short Name:</label>
+                            <label>  {myGroup.shortName}</label>
+                        </div>
+                        <br/>
+                        <div className={"settings-long-name"}>
+                            <label className={"settings-title"}>Long Name:</label>
+                            {isMember ? <input type="text" name="long-name" className="input-name" id={"long-name"} placeholder={myGroup.longName} maxLength={64} onChange={(e) => {setLongName(e.target.value); setLongCharCount(e.target.value.length)}}/>
+                            : <label>  {myGroup.longName}</label> }
+                            {isMember ? <span className="input-length" id="long-name-length">{longCharCount} / 64</span> : ""}
                         </div>
                         <h3>Repo Settings</h3>
                         <div>
-                            <label>Alias:</label>
-                            <input type="text" name="alias" className="input-name" id={"alias"} maxLength={64} onChange={(e) => {setAlias(e.target.value)}}/>
-                        </div>
+                            <label className={"settings-title"}>Alias:</label>
+                            {isMember ? <input type="text" name="alias" className="input-name" id={"alias"} maxLength={64} onChange={(e) => {setAlias(e.target.value)}}/>
+                            : <label> Default alias</label>}
+                            </div>
                         <div className="form-error" id="edit-group-error"/>
+                        { isMember ?
                         <div className="modal-buttons">
                             <button onClick={(e) => validateEditForm(e)} className="button" id="group-settings-confirm">Save</button>
                             <button onClick={() => handleCancel()} className="button" id="group-settings-cancel">Cancel</button>
                         </div>
+                        : ""}
                     </div>
                 </div>
 

@@ -135,6 +135,10 @@
     padding: 5px;
 }
 
+.settings-title {
+    font-weight: bold;
+}
+
 .other-group-users {
     width: 100%;
     padding: 5px;
