@@ -2,14 +2,11 @@ package nz.ac.canterbury.seng302.identityprovider.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import nz.ac.canterbury.seng302.identityprovider.database.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.database.UserRepository;
-import nz.ac.canterbury.seng302.identityprovider.exceptions.IrremovableRoleException;
-import nz.ac.canterbury.seng302.identityprovider.exceptions.UserDoesNotExistException;
 import nz.ac.canterbury.seng302.shared.identityprovider.ModifyRoleOfUserRequest;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,9 +39,7 @@ public class RoleServiceTest {
             "Pronouns",
             "Email@Email.Email",
             List.of(UserRole.STUDENT),
-            null
-        )
-    );
+            null));
   }
 
   /** Adds a teacher role to a user. */
@@ -111,13 +106,17 @@ public class RoleServiceTest {
 
   @Test
   void ensureNoEmptyRoles() {
-    assertThrows(IrremovableRoleException.class, () -> roleService.removeRoleFromUser(
-        ModifyRoleOfUserRequest.newBuilder()
-            .setUserId(userRepository.findAll().iterator().next().getId())
-            .setRole(UserRole.STUDENT)
-            .build()));
+    var response =
+        roleService.removeRoleFromUser(
+            ModifyRoleOfUserRequest.newBuilder()
+                .setUserId(userRepository.findAll().iterator().next().getId())
+                .setRole(UserRole.STUDENT)
+                .build());
 
-     assertEquals(
+    assertFalse(response.getIsSuccess());
+    assertEquals("Error: User must have at least 1 role.", response.getMessage());
+
+    assertEquals(
         1,
         userRepository
             .findById(userRepository.findAll().iterator().next().getId())
@@ -127,10 +126,10 @@ public class RoleServiceTest {
 
   @Test
   void modifyRolesOfNonExistentUser() {
-    assertThrows(UserDoesNotExistException.class, () -> roleService.addRoleToUser(
-        ModifyRoleOfUserRequest.newBuilder()
-            .setUserId(-1)
-            .setRole(UserRole.TEACHER)
-            .build()));
+    var response =
+        roleService.addRoleToUser(
+            ModifyRoleOfUserRequest.newBuilder().setUserId(-1).setRole(UserRole.TEACHER).build());
+    assertFalse(response.getIsSuccess());
+    assertEquals("Error: User does not exist.", response.getMessage());
   }
 }

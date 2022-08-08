@@ -501,31 +501,6 @@ class RegistrationControllerTest {
 
     assertTrue(wasError(result));
   }
-  /**
-   * Tests using emojis in bio
-   *
-   * @throws Exception if perform fails for some reason
-   */
-  @ParameterizedTest
-  @ValueSource(strings = {"\uD83D\uDE97", "\uD83D\uDE02", "♪"})
-  void registerInvalidBio(String bio) throws Exception {
-    var user =
-        new User(
-            "Username",
-            "Password1",
-            "FirstName",
-            "Middle Names",
-            "LastName",
-            "Nickname",
-            bio,
-            "He/Him",
-            "email%40email.com",
-            currentTimestamp());
-
-    var result = submitInvalidRegistration(user);
-
-    assertTrue(wasError(result));
-  }
 
   /**
    * Tests using valid bios. In order, tests characters and the valid special characters.
@@ -537,7 +512,11 @@ class RegistrationControllerTest {
   @ValueSource(
       strings = {
         "Test",
-        "%21%3F.%2C%23%24%25%5E%26%2A%28%29%5B%5D%7B%7D%3B%27%3C%3E%3A%22-%3D_%2B"
+        "%21%3F.%2C%23%24%25%5E%26%2A%28%29%5B%5D%7B%7D%3B%27%3C%3E%3A%22-%3D_%2B",
+        "\uD83D\uDE97",
+        "\uD83D\uDE02",
+        "♪",
+        "🐱‍👤"
       })
   void registerValidBio(String bio) throws Exception {
     var validUser =

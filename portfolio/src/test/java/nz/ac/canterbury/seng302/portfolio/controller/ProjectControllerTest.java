@@ -7,6 +7,7 @@ import nz.ac.canterbury.seng302.portfolio.model.entity.ProjectEntity;
 import nz.ac.canterbury.seng302.portfolio.model.entity.SprintEntity;
 import nz.ac.canterbury.seng302.portfolio.repository.ProjectRepository;
 import nz.ac.canterbury.seng302.portfolio.repository.SprintRepository;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,7 +65,7 @@ public class ProjectControllerTest {
         sprintRepository.save(sprint);
 
         projectId = project1.getId();
-        AuthorisationParamsHelper.setParams("role", "TEACHER");
+        AuthorisationParamsHelper.setParams("role", UserRole.TEACHER);
     }
 
 
@@ -149,25 +150,25 @@ public class ProjectControllerTest {
      */
     @Test
     public void removeProject() throws Exception {
-        AuthorisationParamsHelper.setParams("role", "TEACHER");
+        AuthorisationParamsHelper.setParams("role", UserRole.TEACHER);
         var apiPath = "/api/v1/projects/" + projectId;
 
         this.mockMvc.perform(delete(apiPath))
                 .andExpect(status().isNoContent());
 
-        AuthorisationParamsHelper.setParams("role", "TEACHER");
+        AuthorisationParamsHelper.setParams("role", UserRole.TEACHER);
         this.mockMvc.perform(delete(apiPath))
                 .andExpect(status().isBadRequest());
 
-        AuthorisationParamsHelper.setParams("role", "Coordinator");
+        AuthorisationParamsHelper.setParams("role", UserRole.COURSE_ADMINISTRATOR);
         this.mockMvc.perform(delete(apiPath))
                 .andExpect(status().isBadRequest());
 
-        AuthorisationParamsHelper.setParams("role", "TEACHER");
+        AuthorisationParamsHelper.setParams("role", UserRole.TEACHER);
         this.mockMvc.perform(delete("/api/v1/projects/some_project"))
                 .andExpect(status().isBadRequest());
 
-        AuthorisationParamsHelper.setParams("role", "TEACHER");
+        AuthorisationParamsHelper.setParams("role", UserRole.TEACHER);
         this.mockMvc.perform(delete("/api/v1/projects/123456"))
                 .andExpect(status().isBadRequest());
     }
@@ -180,7 +181,6 @@ public class ProjectControllerTest {
      */
     @Test
     public void updateProject() throws Exception {
-//        GetAuthorizationParams param1 = new GetAuthorizationParams("role", "TEACHER");
         var apiPath = "/api/v1/projects/" + projectId;
         var body = """
                 {
