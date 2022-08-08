@@ -2,12 +2,10 @@ package nz.ac.canterbury.seng302.identityprovider.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import nz.ac.canterbury.seng302.identityprovider.database.GroupModel;
-import nz.ac.canterbury.seng302.identityprovider.database.GroupRepository;
-import nz.ac.canterbury.seng302.shared.identityprovider.CreateGroupRequest;
-import nz.ac.canterbury.seng302.shared.identityprovider.CreateGroupResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.DeleteGroupRequest;
-import nz.ac.canterbury.seng302.shared.identityprovider.DeleteGroupResponse;
+
+import nz.ac.canterbury.seng302.identityprovider.database.*;
+import nz.ac.canterbury.seng302.identityprovider.mapping.UserMapper;
+import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import nz.ac.canterbury.seng302.shared.util.ValidationError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +14,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class  GroupsServerService {
   @Autowired private GroupRepository groupRepository;
+
+  @Autowired private GroupMemberRepository groupMemberRepository;
+
+  @Autowired private UserRepository userRepository;
+
+  @Autowired private UserMapper userMapper;
 
   /**
    * Handles the functionality on the server side for creating groups. It will ensure that both the
@@ -86,4 +90,98 @@ public class  GroupsServerService {
           .build();
     }
   }
-}
+
+  /**
+   * Handles the functionality on the server side for adding members to a group. If the database
+   * does not have a group with the corresponding ID, then a failure will be returned. If the database
+   * does have a group with the corresponding ID, then the members will be updated. If members cannot
+   * be updated, then a failure will be returned. Otherwise, a success will be returned.
+   *
+   * @param groupRequest the AddGroupMembersRequest gRPC message
+   * @return a AddGroupMembersResponse gRPC message
+   */
+  public AddGroupMembersResponse addGroupMembers(AddGroupMembersRequest groupRequest) {
+    //Checks groups existence
+    if (groupRepository.findById(groupRequest.getGroupId()).isEmpty()) {
+      return AddGroupMembersResponse.newBuilder()
+              .setIsSuccess(false)
+              .setMessage("Error: Group does not exist")
+              .build();
+    } else {
+      //Gets the group from the repository and adds the user Ids to the group
+      var group = groupMemberRepository.findById(groupRequest.getGroupId()).orElseThrow();
+      String message = group.addUserIds(groupRequest.getUserIdsList());
+
+      // If the message is not success, then there was an error
+      if (message.equals("Success")) {
+        return AddGroupMembersResponse.newBuilder()
+                .setIsSuccess(false)
+                .setMessage(message)
+                .build();
+      } else {
+
+        //Success,  save and return response
+        groupMemberRepository.save(group);
+        return AddGroupMembersResponse.newBuilder()
+                .setIsSuccess(true)
+                .setMessage("Group members successfully added")
+                .build();
+      }
+    }
+  }
+
+    /**
+     * Handles the functionality on the server side for removing members from a group. If the database
+     * does not have a group with the corresponding ID, then a failure will be returned. If the database
+     * does have a group with the corresponding ID, then the members will be updated. If members cannot
+     * be updated, then a failure will be returned. Otherwise, a success will be returned.
+     *
+     * @param groupRequest the AddGroupMembersRequest gRPC message
+     * @return a AddGroupMembersResponse gRPC message
+     */
+    public RemoveGroupMembersResponse removeGroupMembers(RemoveGroupMembersRequest groupRequest) {
+      //Checks groups existence
+      if (groupRepository.findById(groupRequest.getGroupId()).isEmpty()) {
+        return RemoveGroupMembersResponse.newBuilder()
+            .setIsSuccess(false)
+            .setMessage("Error: Group does not exist")
+            .build();
+      } else {
+        //Gets the group from the repository and adds the user Ids to the group
+        var group = groupMemberRepository.findById(groupRequest.getGroupId()).orElseThrow();
+        String message = group.removeUserIds(groupRequest.getUserIdsList());
+
+        // If the message is not success, then there was an error
+        if (message.equals("Success")) {
+            return RemoveGroupMembersResponse.newBuilder()
+                .setIsSuccess(false)
+                .setMessage(message)
+                .build();
+            } else {
+
+          //Success,  save and return response
+            groupMemberRepository.save(group);
+            return RemoveGroupMembersResponse.newBuilder()
+                .setIsSuccess(true)
+                .setMessage("Group members successfully removed")
+                .build();
+        }
+      }
+    }
+
+//    public GetGroupDetailsResponse getGroupDetails(GetGroupDetailsRequest groupRequest) {
+//        var group = groupRepository.findById(groupRequest.getGroupId()).orElseThrow();
+//        var groupMembers = groupMemberRepository.findById(groupRequest.getGroupId()).orElseThrow();
+//        List<UserResponse> userList = new ArrayList<>();
+//        for (Integer userId : groupMembers.getUserId()) {
+//          var userFound = userRepository.findById(userId);
+//          return userMapper.toUserResponse(userFound.orElseThrow());
+//        }
+//        return GetGroupDetailsResponse.newBuilder()
+//                .setShortName(group.getShortName())
+//                .setLongName(group.getLongName())
+//                .addMembers()
+//
+//    }
+  }
+

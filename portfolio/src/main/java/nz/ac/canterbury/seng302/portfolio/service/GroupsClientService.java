@@ -2,12 +2,10 @@ package nz.ac.canterbury.seng302.portfolio.service;
 
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseGroupContract;
-import nz.ac.canterbury.seng302.shared.identityprovider.CreateGroupRequest;
-import nz.ac.canterbury.seng302.shared.identityprovider.CreateGroupResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.DeleteGroupRequest;
-import nz.ac.canterbury.seng302.shared.identityprovider.DeleteGroupResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.GroupsServiceGrpc;
+import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * Handles all services of groups on the client side. This includes: - Creating a group - Deleting a
@@ -26,18 +24,11 @@ public class GroupsClientService {
    * @return a CreateGroupResponse with either a success or error(s)
    */
   public CreateGroupResponse createGroup(BaseGroupContract groupContract) {
-<<<<<<< HEAD
-    CreateGroupRequest groupRequest =
-        CreateGroupRequest.newBuilder()
-            .setLongName(groupContract.longName())
-            .setShortName(groupContract.shortName())
-            .build();
-=======
     CreateGroupRequest groupRequest = CreateGroupRequest.newBuilder()
         .setLongName(groupContract.longName())
         .setShortName(groupContract.shortName())
         .build();
->>>>>>> U15_T155/Create_Group_Functionality
+
     return groupBlockingStub.createGroup(groupRequest);
   }
 
@@ -51,4 +42,42 @@ public class GroupsClientService {
     return groupBlockingStub.deleteGroup(
         DeleteGroupRequest.newBuilder().setGroupId(groupId).build());
   }
+
+    /**
+     * Handles adding a group's members when given a group id
+     * @param groupId the ID of the group to add to
+     * @param userIds the user ids of the updated group
+     * @return a AddGroupMembersResponse with either a success or errors(s)
+     */
+    public AddGroupMembersResponse addGroupMembers(int groupId, List<Integer> userIds) {
+        return groupBlockingStub.addGroupMembers(
+                AddGroupMembersRequest.newBuilder()
+                        .setGroupId(groupId)
+                        .addAllUserIds(userIds)
+                        .build());
+    }
+
+  /**
+   * Handles deleting a group's members when given a group id
+   * @param groupId the ID of the group to add to
+   * @param userIds the user ids of the updated group
+   * @return a AddGroupMembersResponse with either a success or errors(s)
+   */
+    public RemoveGroupMembersResponse removeGroupMembers(int groupId, List<Integer> userIds) {
+      return groupBlockingStub.removeGroupMembers(
+              RemoveGroupMembersRequest.newBuilder()
+                      .setGroupId(groupId)
+                      .addAllUserIds(userIds)
+                      .build());
+    }
+
+  /**
+   * Handles getting a group's details when given a group id
+   * @param groupId the ID of the group to get the details of
+   * @return a GetGroupDetailsResponse which has the groups details
+   */
+  public GetGroupDetailsResponse getGroupDetails(int groupId) {
+      return groupBlockingStub.getGroupDetails(
+              GetGroupDetailsRequest.newBuilder().setGroupId(groupId).build());
+    }
 }

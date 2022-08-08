@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.identityprovider.database;
 
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,9 +12,10 @@ public class GroupMemberModel {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Column(nullable = false)
-    private List <Integer> userId = new ArrayList<>();
+    private List<Integer> userId = new ArrayList<>();
 
-    protected GroupMemberModel() {}
+    protected GroupMemberModel() {
+    }
 
     public GroupMemberModel(int groupId, List<Integer> userId) {
         this.groupId = groupId;
@@ -24,7 +26,46 @@ public class GroupMemberModel {
         return groupId;
     }
 
-    public final List<Integer> getUserId() {
+    public List<Integer> getUserId() {
         return userId;
+    }
+
+
+
+    /**
+     * Adds users to the group.
+     *
+     * @param userIds The user ids to add.
+     * @return The message if failed. Returns success if successful.
+     */
+    public String addUserIds(List<Integer> userIds) {
+        for (Integer id : userIds) {
+            if (!this.userId.contains(id)) {
+                this.userId.add(id);
+
+            } else {
+                return "User already in group";
+            }
+        }
+        return "Success";
+    }
+
+    /**
+     * Removes users from the group.
+     *
+     * @param userIds The user ids to add.
+     * @return The message if failed. Returns success if successful.
+     */
+    public String removeUserIds(List<Integer> userIds) {
+        for (Integer id : userIds) {
+            if (this.userId.contains(id)) {
+                this.userId.remove(id);
+
+            } else {
+                return "User not in group";
+            }
+        }
+        return "Success";
+
     }
 }
