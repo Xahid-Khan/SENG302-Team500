@@ -15,17 +15,17 @@ public class GroupMemberModel {
 
     protected GroupMemberModel() {}
 
-    public GroupMemberModel(int groupId, List<Integer> userId) {
+    public GroupMemberModel(int groupId, List<Integer> userIds) {
         this.id = groupId;
-        this.userIds = userId;
+        this.userIds = userIds;
     }
 
     public int getGroupId() {
         return this.id;
     }
 
-    public List<Integer> getUserId() {
-        return userIds;
+    public List<Integer> getUserIds() {
+        return this.userIds;
     }
 
     public void addNewMember(int userId) {

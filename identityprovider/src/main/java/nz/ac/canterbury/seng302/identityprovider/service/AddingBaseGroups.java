@@ -33,7 +33,7 @@ public class AddingBaseGroups {
     private GroupModel nonGroup;
 
     /**
-     * This method is listingint to the application ready event, after application is ready it creates 2 student users and
+     * This method is listing to the application ready event, after application is ready it creates 2 student users and
      * 1 teacher user, then creates 1 teaching staff group (group of users who are teacher) and 1 non-group (group for users who are not teacher).
      * Then it adds those users into their respect groups.
      * @throws NoSuchAlgorithmException this exception is thrown by password service
