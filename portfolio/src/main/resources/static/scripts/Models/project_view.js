@@ -24,11 +24,10 @@ class ProjectView {
     addMilestoneForm = null
     addMilestoneLoadingStatus = LoadingStatus.NotYetAttempted;
 
-    constructor(containerElement, project, pingCallback, editCallback, deleteCallback, sprintDeleteCallback, sprintUpdateCallback, eventDeleteCallback, eventUpdateCallback, deadlineDeleteCallback, deadlineUpdateCallback, milestoneDeleteCallback, milestoneUpdateCallback, eventEditCallback, deadlineEditCallback, milestoneEditCallback) {
+    constructor(containerElement, project, editCallback, deleteCallback, sprintDeleteCallback, sprintUpdateCallback, eventDeleteCallback, eventUpdateCallback, deadlineDeleteCallback, deadlineUpdateCallback, milestoneDeleteCallback, milestoneUpdateCallback, eventEditCallback, deadlineEditCallback, milestoneEditCallback) {
         console.log("project", project)
         this.containerElement = containerElement;
         this.project = project;
-        this.pingCallback = pingCallback;
         this.sprintContainer = null;
         this.sprints = new Map();
         this.eventContainer = null;
@@ -145,7 +144,7 @@ class ProjectView {
                       <button class="button monthly-planner-redirect-button" id="monthly-planner-redirect-button-${this.project.id}">View Monthly Planner</button>
                   </span>
                   <span>
-                      <button class="button visibility-button toggle-project-details" id="toggle-project-details-${this.project.id}"><span class='material-icons'>visibility</span></button>
+                      <button class="button visibility-button toggle-project-details" id="toggle-project-details-${this.project.id}"><span class='material-icons'>visibility_off</span></button>
                   </span>
                   <span class="crud">
                       <button class="button icon-button" onclick="document.getElementById('modal-open').style.display='block'" id="project-delete-button-${this.project.id}" data-privilege="teacher"><span class="material-icons">clear</span></button>
@@ -215,10 +214,10 @@ class ProjectView {
 
         document.getElementById(`project-title-text-${this.project.id}`).innerText = this.project.name;
         document.getElementById(`project-description-${this.project.id}`).innerText = this.project.description;
-        document.getElementById(`project-startDate-${this.project.id}`).innerText = DatetimeUtils.localToUserDMY(this.project.startDate);
+        document.getElementById(`project-startDate-${this.project.id}`).innerText = DatetimeUtils.localToUserDMYWithoutTime(this.project.startDate);
         const displayedDate = new Date(this.project.endDate.valueOf());
         displayedDate.setDate(displayedDate.getDate()  - 1);
-        document.getElementById(`project-endDate-${this.project.id}`).innerText = DatetimeUtils.localToUserDMY(displayedDate);
+        document.getElementById(`project-endDate-${this.project.id}`).innerText = DatetimeUtils.localToUserDMYWithoutTime(displayedDate);
 
         this.addSprintButton = document.getElementById(`add-sprint-button-${this.project.id}`);
         this.toggleSprintsButton = document.getElementById(`toggle-sprint-button-${this.project.id}`);
@@ -256,10 +255,6 @@ class ProjectView {
         for (let k = 0; k < this.project.deadlines.length; k++) {
             this.appendDeadline(this.project.deadlines[k]);
         }
-    }
-
-    callPing() {
-        this.pingCallback();
     }
 
     /**
@@ -748,7 +743,7 @@ class ProjectView {
         this.toggleDeadlines();
         this.toggleSprints();
         this.toggleMilestones();
-        document.getElementById(`toggle-project-details-${this.project.id}`).innerHTML = this.showingProjectDetails ? "<span class='material-icons'>visibility</span>" : "<span class='material-icons'>visibility_off</span>";
+        document.getElementById(`toggle-project-details-${this.project.id}`).innerHTML = this.showingProjectDetails ? "<span class='material-icons'>visibility_off</span>" : "<span class='material-icons'>visibility</span>";
         this.showingProjectDetails = !this.showingProjectDetails;
     }
 
@@ -779,7 +774,7 @@ class ProjectView {
     }
     wireView() {
         document.getElementById(`project-edit-button-${this.project.id}`).addEventListener("click", () => this.editCallback());
-        document.getElementById(`toggle-project-details-${this.project.id}`).addEventListener("click", () => {this.toggleProjectDetails(); this.callPing()})
+        document.getElementById(`toggle-project-details-${this.project.id}`).addEventListener("click", () => this.toggleProjectDetails())
         document.getElementById(`project-delete-button-${this.project.id}`).addEventListener("click", () => this.openDeleteModal());
         document.getElementById(`monthly-planner-redirect-button-${this.project.id}`).addEventListener("click", () => this.monthlyPlannerRedirect(this.project.id));
         this.toggleSprintsButton.addEventListener('click', this.showSprints.bind(this));
