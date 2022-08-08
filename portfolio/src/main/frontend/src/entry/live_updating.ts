@@ -9,7 +9,7 @@ import {
     LoadingStatus
 } from "../util/network/loading_status";
 import SockJS from "sockjs-client";
-import {Client as StompClient, Message as StompMessage} from "@stomp/stompjs";
+import {Client as StompClient, Frame, Message as StompMessage, Stomp} from "@stomp/stompjs";
 
 /**
  * MobX-enabled store for the Ping/Socket Test page.
@@ -17,7 +17,7 @@ import {Client as StompClient, Message as StompMessage} from "@stomp/stompjs";
  * This serves as a basic working model of how to use WebSockets with Spring Boot.
  */
 class PingPageStore {
-    readonly stomp: StompClient
+    stomp: any = null
 
     connectStatus: LoadingStatus = new LoadingNotYetAttempted()
 
@@ -37,12 +37,6 @@ class PingPageStore {
             start: action
         })
 
-        this.stomp = new StompClient({
-            webSocketFactory: () => new SockJS("/test/portfolio/socket"),
-            connectionTimeout: 10000,
-            debug: (msg) => console.log(new Date(), msg)
-        })
-
         console.log("Created new PingPageStore.")
     }
 
@@ -55,91 +49,78 @@ class PingPageStore {
     }
 
     showEdit(location: string) {
-        console.log("Attempting to send ping...")
         if (this.connected) {
+            console.log("Attempting to send ping...")
             this.stomp.publish({
                 destination: "/app/show",
                 body: location
             })
+        } else {
+            console.log("Not connected")
         }
     }
 
     cancelEdit(location: string) {
-        console.log("Attempting to send ping...")
         if (this.connected) {
+            console.log("Attempting to send ping...")
             this.stomp.publish({
                 destination: "/app/cancel",
                 body: location
             })
+        } else {
+            console.log("Not connected")
         }
     }
 
     saveEdit(location: string) {
-        console.log("Attempting to send ping...")
         if (this.connected) {
+            console.log("Attempting to send ping...")
             this.stomp.publish({
                 destination: "/app/save",
                 body: location
             })
+        } else {
+            console.log("Not connected")
         }
     }
 
     async start() {
         await new Promise<void>((res) => {
+            console.log("res :", res)
             this.connect(res)
+        }).then(() => {
+            console.log(this.connected)
+            console.log(this.connectStatus)
+            if (!this.connected) {
+                throw new Error("Connect resolved but we aren't connected yet!")
+            }
         })
-        if (!this.connected) {
-            throw new Error("Connect resolved but we aren't connected yet!")
-        }
     }
 
-    protected connect(onConnected: VoidFunction): void {
+    connect(onConnected: VoidFunction): void {
         if (this.connectStatus instanceof LoadingPending || this.connectStatus instanceof LoadingDone) {
             console.warn("Cannot connect twice.")
             onConnected()
             return
         }
+        let store = this;
+        let socket = new SockJS("socket")
+        store.stomp = Stomp.over(socket);
 
-        this.stomp.beforeConnect = () => {
-            runInAction(() => {
-                this.connectStatus = new LoadingPending()
+        store.stomp.connect({}, () => {
+            console.log("Connected.")
+            console.log("Subscribing...")
+            store.connectStatus = new LoadingDone()
+            store.stomp.subscribe("/topic/pongs", (message: StompMessage) => {
+                store.onReceivePong(message)
             })
-        }
-        this.stomp.onConnect = (frame: StompMessage) => {
-            // Connected
-            console.log("Connected")
-            runInAction(() => {
-                this.connectStatus = new LoadingDone()
-                this.subscribe()
-            })
-
             onConnected()
-        }
-        this.stomp.onStompError = (err: StompMessage) => {
-            // Error
-            console.log("Error!")
-            runInAction(() => {
-                this.connectStatus = new LoadingError(err)
-            })
-        }
-        this.stomp.onWebSocketError = (evt) => {
-            // Error
-            console.log("Error!")
-            runInAction(() => {
-                this.connectStatus = new LoadingError(evt)
-            })
-        }
-        this.stomp.onWebSocketClose = (evt) => {
-            console.log("Socket closed!")
-            runInAction(() => {
-                this.connectStatus = new LoadingError(evt)
-            })
-        }
+        })
 
-        this.stomp.activate()
+        console.log("stomp :", this.stomp)
     }
 
-    protected onReceivePong(frame: StompMessage) {
+    onReceivePong(frame: StompMessage) {
         runInAction(() => {
             this.pongArray.push(frame.body)
             const locAndName = frame.body.split("~");
@@ -160,13 +141,6 @@ class PingPageStore {
                     document.getElementById("editing-form-" + locAndName[1]).innerText = "";
                 }
             }
-        })
-    }
-
-    protected subscribe(): void {
-        console.log("Subscribing...")
-        this.stomp.subscribe("/topic/pongs", (frame: StompMessage) => {
-            this.onReceivePong(frame)
         })
     }
 }

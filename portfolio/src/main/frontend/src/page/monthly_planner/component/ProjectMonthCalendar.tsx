@@ -149,8 +149,10 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
     const [events, setEvents] = React.useState(arrayOfEvents(null));
 
     const eventClick = (info : any) => {
-        const sprintId = info.event.id;
-        setEvents(arrayOfEvents(sprintId))
+        if(window.localStorage.getItem("canEdit") === "true") {
+            const sprintId = info.event.id;
+            setEvents(arrayOfEvents(sprintId))
+        }
     }
 
     /**
@@ -174,8 +176,8 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
 
         dictionary.get(date).map((subEvent: any) => {
             stringResult.push("<p style='margin:0; padding:0; height: fit-content; width: fit-content'>" +
-                subEvent.name + "<br />" +
-                `<h5 style='margin:0; padding:0'> ${subEvent.startDate.toLocaleString()} &emsp;&emsp; ${eventType == "events" ? subEvent.endDate.toLocaleString() : ""} </h5></p>`);
+                "<h2 style='margin:0; padding: 0'>" +subEvent.name + "</h2><br />" +
+                `<h4 style='margin:0; padding:0'> ${subEvent.startDate.toLocaleString()} &emsp; ${eventType == "events" ? "- &emsp; " + subEvent.endDate.toLocaleString() : ""} </h4></p>`);
         })
 
         return (
