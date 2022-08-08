@@ -4,6 +4,7 @@ import {FormEvent, useEffect} from "react";
 export function EditGroupSettings( {viewGroupId}: any ) {
 
     const userId = parseInt(window.localStorage.getItem("userId"))
+    const isStudent = window.localStorage.getItem("isStudent")
 
     const groups = [{
         "id": 1,
@@ -106,7 +107,7 @@ export function EditGroupSettings( {viewGroupId}: any ) {
             window.location.reload()
         }
     }
-    const isMember = myGroup !== undefined ? myGroup.users.filter((user) => user.id === userId).length > 0 : false
+    const canEdit = (myGroup !== undefined ? myGroup.users.filter((user) => user.id === userId).length > 0 : false) || isStudent === "false"
 
     return (
         <div>{myGroup ?
@@ -121,18 +122,18 @@ export function EditGroupSettings( {viewGroupId}: any ) {
                         <br/>
                         <div className={"settings-long-name"}>
                             <label className={"settings-title"}>Long Name:</label>
-                            {isMember ? <input type="text" name="long-name" className="input-name" id={"long-name"} placeholder={myGroup.longName} maxLength={64} onChange={(e) => {setLongName(e.target.value); setLongCharCount(e.target.value.length)}}/>
+                            {canEdit ? <input type="text" name="long-name" className="input-name" id={"long-name"} placeholder={myGroup.longName} maxLength={64} onChange={(e) => {setLongName(e.target.value); setLongCharCount(e.target.value.length)}}/>
                             : <label>  {myGroup.longName}</label> }
-                            {isMember ? <span className="input-length" id="long-name-length">{longCharCount} / 64</span> : ""}
+                            {canEdit ? <span className="input-length" id="long-name-length">{longCharCount} / 64</span> : ""}
                         </div>
                         <h3>Repo Settings</h3>
                         <div>
                             <label className={"settings-title"}>Alias:</label>
-                            {isMember ? <input type="text" name="alias" className="input-name" id={"alias"} maxLength={64} onChange={(e) => {setAlias(e.target.value)}}/>
+                            {canEdit ? <input type="text" name="alias" className="input-name" id={"alias"} maxLength={64} onChange={(e) => {setAlias(e.target.value)}}/>
                             : <label> Default alias</label>}
                             </div>
                         <div className="form-error" id="edit-group-error"/>
-                        { isMember ?
+                        { canEdit ?
                         <div className="modal-buttons">
                             <button onClick={(e) => validateEditForm(e)} className="button" id="group-settings-confirm">Save</button>
                             <button onClick={() => handleCancel()} className="button" id="group-settings-cancel">Cancel</button>
