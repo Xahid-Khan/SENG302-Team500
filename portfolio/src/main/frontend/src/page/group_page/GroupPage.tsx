@@ -5,6 +5,7 @@ import {ShowAllGroups} from "./ShowAllGroups";
 import {CreateGroupModal} from "./CreateGroup";
 import {DeleteGroupModal} from "./DeleteGroupModal";
 import {EditGroupMembersModal} from "./EditGroupMembersModal";
+import {RemoveMemberModal} from "./RemoveMemberModal";
 
 /**
  * The root of the MonthlyPlannerPage. This does a few jobs:
@@ -21,7 +22,8 @@ export const GroupPage = () => {
                 <div className="add-group">
                     <div>
                         <button className="button add-group-button" id="add-group" data-privilege="teacher"
-                                onClick={() => document.getElementById("modal-create-group-open").style.display = "block"}> Create Group
+                                onClick={() => document.getElementById("modal-create-group-open").style.display = "block"}> Create
+                            Group
                         </button>
                     </div>
                 </div>
@@ -32,6 +34,7 @@ export const GroupPage = () => {
                 <CreateGroupModal/>
                 <DeleteGroupModal/>
                 <EditGroupMembersModal viewGroupId={viewGroupId}/>
+                <RemoveMemberModal/>
 
 
             </ToasterRoot>
