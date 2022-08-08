@@ -26,18 +26,11 @@ public class GroupsClientService {
    * @return a CreateGroupResponse with either a success or error(s)
    */
   public CreateGroupResponse createGroup(BaseGroupContract groupContract) {
-<<<<<<< HEAD
     CreateGroupRequest groupRequest =
         CreateGroupRequest.newBuilder()
             .setLongName(groupContract.longName())
             .setShortName(groupContract.shortName())
             .build();
-=======
-    CreateGroupRequest groupRequest = CreateGroupRequest.newBuilder()
-        .setLongName(groupContract.longName())
-        .setShortName(groupContract.shortName())
-        .build();
->>>>>>> U15_T155/Create_Group_Functionality
     return groupBlockingStub.createGroup(groupRequest);
   }
 
@@ -45,7 +38,7 @@ public class GroupsClientService {
    * Handles deleting a group when given a group ID.
    *
    * @param groupId the ID of the group to delete
-   * @return        a DeleteGroupResponse with either a success or errors(s)
+   * @return a DeleteGroupResponse with either a success or errors(s)
    */
   public DeleteGroupResponse deleteGroup(int groupId) {
     return groupBlockingStub.deleteGroup(
