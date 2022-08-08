@@ -4,7 +4,7 @@ import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.portfolio.model.contract.BaseEventContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.EventContract;
 import nz.ac.canterbury.seng302.portfolio.service.*;
-import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -31,9 +30,6 @@ public class EventController {
 
     @Autowired
     private RolesService rolesService;
-
-    private static final String TEACHER = "TEACHER";
-    private static final String COURSE_ADMINISTRATOR = "COURSE_ADMINISTRATOR";
 
     /**
      * This method will be invoked when API receives a GET request with a event ID embedded in URL.
@@ -82,8 +78,8 @@ public class EventController {
             @PathVariable String projectId,
             @RequestBody BaseEventContract event
     ) {
-        ArrayList<String> roles = rolesService.getRolesByToken(principal);
-        if (roles.contains(TEACHER) || roles.contains(COURSE_ADMINISTRATOR)) {
+        List<UserRole> roles = rolesService.getRolesByToken(principal);
+        if (roles.contains(UserRole.TEACHER) || roles.contains(UserRole.COURSE_ADMINISTRATOR)) {
             String errorMessage = validationService.checkAddEvent(projectId, event);
             if (!errorMessage.equals("Okay")) {
                 if (errorMessage.equals("Project ID does not exist") || errorMessage.equals("Event ID does not exist")) {
@@ -117,8 +113,8 @@ public class EventController {
             @PathVariable String id,
             @RequestBody BaseEventContract event
     ) {
-        ArrayList<String> roles = rolesService.getRolesByToken(principal);
-        if (roles.contains(TEACHER) || roles.contains(COURSE_ADMINISTRATOR)) {
+        List<UserRole> roles = rolesService.getRolesByToken(principal);
+        if (roles.contains(UserRole.TEACHER) || roles.contains(UserRole.COURSE_ADMINISTRATOR)) {
             String errorMessage = validationService.checkUpdateEvent(id, event);
             if (!errorMessage.equals("Okay")) {
                 if (errorMessage.equals("Project ID does not exist") || errorMessage.equals(
@@ -150,8 +146,8 @@ public class EventController {
             @AuthenticationPrincipal PortfolioPrincipal principal,
             @PathVariable String id
     ) {
-        ArrayList<String> roles = rolesService.getRolesByToken(principal);
-        if (roles.contains(TEACHER) || roles.contains(COURSE_ADMINISTRATOR)) {
+        List<UserRole> roles = rolesService.getRolesByToken(principal);
+        if (roles.contains(UserRole.TEACHER) || roles.contains(UserRole.COURSE_ADMINISTRATOR)) {
             try {
                 eventService.delete(id);
 
