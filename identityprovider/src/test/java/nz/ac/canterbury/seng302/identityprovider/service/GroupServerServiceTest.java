@@ -3,9 +3,7 @@ package nz.ac.canterbury.seng302.identityprovider.service;
 import nz.ac.canterbury.seng302.identityprovider.database.GroupMemberRepository;
 import nz.ac.canterbury.seng302.identityprovider.database.GroupRepository;
 import nz.ac.canterbury.seng302.identityprovider.database.UserRepository;
-import nz.ac.canterbury.seng302.shared.identityprovider.AddGroupMembersRequest;
-import nz.ac.canterbury.seng302.shared.identityprovider.CreateGroupRequest;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterRequest;
+import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 public class GroupServerServiceTest {
@@ -88,7 +85,11 @@ public class GroupServerServiceTest {
         assertNotNull(groupRepository.findByShortName("TG"));
     }
 
-
+    /**
+     * Tests adding group members to a group
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidKeySpecException
+     */
     @Test
     public void addValidUsersToGroup() throws NoSuchAlgorithmException, InvalidKeySpecException {
         //Creates group, adds two users. Makes service request to add both users to group
@@ -101,14 +102,58 @@ public class GroupServerServiceTest {
                         .addUserIds(userTwoResponse.getNewUserId())
                         .addUserIds(userOneResponse.getNewUserId());
 
+        //Uses the service to add the users to the group
         var addGroupMembersResponse = groupsServerService.addGroupMembers(addGroupMembersRequest.build());
         assertTrue(addGroupMembersResponse.getIsSuccess());
 
+        //Checks that the users one and two are in the group
         var groupMembers = groupMemberRepository.findById(createGroupResponse.getNewGroupId());
         for (Integer id : groupMembers.get().getUserId()) {
-            assertTrue(userRepository.findById(id).isPresent());
+            assertTrue(id==userOneResponse.getNewUserId() || id==userTwoResponse.getNewUserId());
+        }
+    }
+
+    /**
+     * Tests adding group members to a group
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidKeySpecException
+     */
+    @Test
+    public void addDeleteUsersFromGroup() throws NoSuchAlgorithmException, InvalidKeySpecException {
+        //Creates group, adds two users. Makes service request to add both users to group
+        var createGroupResponse = groupsServerService.createGroup(createGroupRequest.build());
+        var userOneResponse = registerServerService.register(createUserOneRequest.build());
+        var userTwoResponse = registerServerService.register(createUserTwoRequest.build());
+        AddGroupMembersRequest.Builder addGroupMembersRequest =
+                AddGroupMembersRequest.newBuilder()
+                        .setGroupId(createGroupResponse.getNewGroupId())
+                        .addUserIds(userTwoResponse.getNewUserId())
+                        .addUserIds(userOneResponse.getNewUserId());
+
+        //Uses the service to add the users to the group
+        var addGroupMembersResponse = groupsServerService.addGroupMembers(addGroupMembersRequest.build());
+        assertTrue(addGroupMembersResponse.getIsSuccess());
+
+        //Checks that the users one and two are in the group
+        var groupMembers = groupMemberRepository.findById(createGroupResponse.getNewGroupId());
+        for (Integer id : groupMembers.get().getUserId()) {
+            assertTrue(id==userOneResponse.getNewUserId() || id==userTwoResponse.getNewUserId());
         }
 
+        // Removes user one from the group
+        RemoveGroupMembersRequest.Builder removeGroupMembersRequest =
+                RemoveGroupMembersRequest.newBuilder()
+                        .setGroupId(createGroupResponse.getNewGroupId())
+                        .addUserIds(userOneResponse.getNewUserId());
+
+        RemoveGroupMembersResponse removeGroupMembersResponse = groupsServerService.removeGroupMembers(removeGroupMembersRequest.build());
+
+        // Checks that the user one is not in the group
+        groupMembers = groupMemberRepository.findById(createGroupResponse.getNewGroupId());
+        assertTrue(removeGroupMembersResponse.getIsSuccess());
+        for (Integer id : groupMembers.get().getUserId()) {
+            assertFalse(id==userOneResponse.getNewUserId());
+        }
     }
 
 
