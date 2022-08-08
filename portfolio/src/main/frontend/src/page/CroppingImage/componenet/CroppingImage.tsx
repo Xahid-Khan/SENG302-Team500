@@ -24,19 +24,25 @@ const CheckFileTypeAndSize = (file : any) : boolean => {
     if (!(file.type == "image/jpeg" || file.type == "image/png" || file.type == "image/gif")) {
         errorElement.innerHTML = "Invalid File Type - Only JPEG, PNG, and GIF are allowed.";
         document.getElementById("image-preview-error").removeAttribute("hidden");
+        document.getElementById('submit').setAttribute('disabled', "true");
+        warningElement.setAttribute("hidden", "true");
         return false
     }
 
     if (file.size > 10 * 1024 * 1024) {
 
         errorElement.innerHTML = "Image size is too big - 10MB max is allowed";
+        warningElement.setAttribute("hidden", "true");
         document.getElementById("image-preview-error").removeAttribute("hidden");
+        document.getElementById('submit').setAttribute('disabled', "true");
         return false
     }
 
     if (file.size > 5 * 1024 * 1024) {
+        errorElement.setAttribute("hidden", "true");
         warningElement.removeAttribute("hidden")
         warningElement.innerHTML = "Your file is greater than 5MB - it will be compressed to save space.";
+        document.getElementById('submit').setAttribute('disabled', "true");
     }
 
     errorElement.setAttribute("hidden", "true");
@@ -50,11 +56,9 @@ class CroppingImage extends React.Component {
     state = {
         croppedImage : "",
         isFileUploaded: false,
-        croppedFile: ""
     };
 
     file: any = React.createRef();
-    // croppie = React.createRef();
     img: any = React.createRef();
 
     onFileUpload = () => {
@@ -67,8 +71,6 @@ class CroppingImage extends React.Component {
 
                 reader.onload = () => {
                     croppie.bind({url: "" + reader.result});
-                    this.setState({croppedImage: reader.result})
-                    document.getElementById('submit').removeAttribute('disabled');
                 };
                 reader.onerror = function (error) {
                     console.log("Error: ", error);
@@ -83,19 +85,16 @@ class CroppingImage extends React.Component {
                 { croppedImage: base64 },
                 () => (this.img.current.src = base64),
             );
+            document.getElementById('submit').removeAttribute('disabled');
             document.getElementById('previewText').setAttribute("hidden", "true");
             document.getElementById("userProfileImage").setAttribute("src", base64);
             document.getElementById("userProfileImage").removeAttribute('hidden');
 
         });
-
-        croppie.result({type: "blob"}).then(blob => {
-            this.setState({croppedFile:blob})
-            });
     };
 
     render() {
-        const { isFileUploaded, croppedImage, croppedFile } = this.state;
+        const { isFileUploaded, croppedImage } = this.state;
 
         document.getElementById("newCroppedUserImage").setAttribute("value", croppedImage);
         return (
@@ -105,6 +104,7 @@ class CroppingImage extends React.Component {
                     id="newUploadedImage"
                     ref={this.file}
                     onChange={this.onFileUpload}
+                    name={"image"}
                     accept="image/jpeg,image/png,image/gif" hidden
                 />
 

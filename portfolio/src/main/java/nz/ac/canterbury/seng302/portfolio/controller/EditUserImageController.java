@@ -15,21 +15,13 @@ public class EditUserImageController {
     @Autowired
     private AuthStateService authStateService;
 
-    @Autowired
-    private UserAccountService userAccountService;
-
-    @GetMapping(value="/edit_user_image")
-    public String getPage(
-            Model model, @AuthenticationPrincipal PortfolioPrincipal principal) {
-        Integer userId = authStateService.getId(principal);
-
-//        UserResponse userDetails = userAccountService.getUserById(userId);
-
-        // Prefill the form with the user's details
-        model.addAttribute("userId", userId);
-//        model.addAttribute("username", userDetails.getUsername());
-//        model.addAttribute("user", userDetails);
-
-        return "edit_user_image";
-    }
+//    @GetMapping(value="/edit_user_image")
+//    public String getPage(
+//            Model model, @AuthenticationPrincipal PortfolioPrincipal principal) {
+//        Integer userId = authStateService.getId(principal);
+//
+//        model.addAttribute("userId", userId);
+//
+//        return "edit_user_image";
+//    }
 }
