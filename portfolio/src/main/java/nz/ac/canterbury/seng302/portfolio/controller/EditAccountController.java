@@ -144,7 +144,9 @@ public class EditAccountController {
     Integer userId = authStateService.getId(principal);
     UserResponse userDetails = userAccountService.getUserById(userId);
 
-    model.addAttribute("username", userDetails.getUsername());
+    if (userDetails != null) {
+      model.addAttribute("username", userDetails.getUsername());
+    }
     if (bindingResult.hasErrors()) {
       return "edit_account";
     }
