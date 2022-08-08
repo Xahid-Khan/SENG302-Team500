@@ -3,18 +3,19 @@ import * as React from "react";
 
 const getGroups = () => {
     return [{
+        "id": 1,
         "longName": "Teaching Team",
         "shortName": "Teachers",
         "users": [
                 {
-                    "id": "1",
+                    "id": 1,
                     "name": "John",
                     "username": "johnstewart",
                     "alias": "Johnny",
                     "roles": ["Teacher, Student"]
                 },
                 {
-                    "id": "2",
+                    "id": 2,
                     "name": "Sarah",
                     "username": "sarahjohn",
                     "alias": "Sa",
@@ -26,7 +27,7 @@ const getGroups = () => {
 
 
 
-export function ShowAllGroups() {
+export function ShowAllGroups({setViewGroupId}: any) {
 
     const groups = getGroups()
 
@@ -36,6 +37,10 @@ export function ShowAllGroups() {
                 <div className={'raised-card group'}>
                     <h2 className={'group-name-long'}>{group['longName']}</h2>
                     <h3 className={'group-name-short'}>{group['shortName']}</h3>
+                    <button className={"button"} onClick={() => {
+                        document.getElementById("group-settings-modal-open").style.display='block';
+                        setViewGroupId(group.id)
+                    }}><span className={"material-icons"}>settings</span> </button>
                     <div className={"table"}>
                         <div className={"groups-header"}>
                             <div className="tableCell"><b>Name</b></div>

@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import {ToasterRoot} from "../../component/toast/ToasterRoot";
 import {ShowAllGroups} from "./ShowAllGroups";
+import {GroupSettingsModal} from "./GroupSettingsModal";
 
 /**
  * The root of the GroupPage. This does a few jobs:
@@ -10,8 +11,10 @@ import {ShowAllGroups} from "./ShowAllGroups";
  * 3. Place the PageContent component inside that Layout component.
  */
 export const GroupPage = () => {
-    return (
 
+    const [viewGroupId, setViewGroupId] = React.useState(-1)
+
+    return (
             <ToasterRoot>
                 <div className="add-group">
                     <div>
@@ -22,9 +25,9 @@ export const GroupPage = () => {
                 </div>
                 <div className={"raised-card groups"}>
                     <h1>Groups</h1>
-                    <ShowAllGroups/>
+                    <ShowAllGroups setViewGroupId={setViewGroupId}/>
                 </div>
-
+                <GroupSettingsModal viewGroupId={viewGroupId}/>
 
             </ToasterRoot>
 
