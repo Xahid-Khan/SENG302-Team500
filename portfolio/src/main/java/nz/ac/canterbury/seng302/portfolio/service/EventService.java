@@ -1,17 +1,16 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
+import java.util.NoSuchElementException;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import nz.ac.canterbury.seng302.portfolio.mapping.EventMapper;
-import nz.ac.canterbury.seng302.portfolio.model.contract.BaseEventContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.EventContract;
+import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseEventContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.EventEntity;
 import nz.ac.canterbury.seng302.portfolio.repository.EventRepository;
 import nz.ac.canterbury.seng302.portfolio.repository.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import java.util.NoSuchElementException;
 
 @Service
 public class EventService {
@@ -32,14 +31,16 @@ public class EventService {
    */
   public EventContract get(String eventId) {
     var event = eventRepository.findById(eventId).orElseThrow();
-    return eventMapper.toContract(event, event.getOrderNumber());
+    return eventMapper.toContract(event);
   }
 
   /**
    * Creates an event within a project and puts it in a sprint if it falls within the sprint's start
-   * and end dates
+   * and end dates.
    *
-   * @return
+   * @param projectId the project's ID
+   * @param event a base event contract
+   * @return a full event contract
    */
   public EventContract createEvent(String projectId, BaseEventContract event) {
 
@@ -52,7 +53,7 @@ public class EventService {
     eventRepository.save(entity);
     projectRepository.save(project);
 
-    return eventMapper.toContract(entity, entity.getOrderNumber());
+    return eventMapper.toContract(entity);
   }
 
   /**

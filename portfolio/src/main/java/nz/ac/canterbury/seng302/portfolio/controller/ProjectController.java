@@ -1,9 +1,11 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
-import nz.ac.canterbury.seng302.portfolio.model.contract.BaseProjectContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.ProjectContract;
+import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseProjectContract;
 import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
 import nz.ac.canterbury.seng302.portfolio.service.RolesService;
 import nz.ac.canterbury.seng302.portfolio.service.ValidationService;
@@ -12,9 +14,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
-import java.util.ArrayList;
-import java.util.NoSuchElementException;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * This project controller file allows users to make API calls, such as GET, POST, PUT, DELETE

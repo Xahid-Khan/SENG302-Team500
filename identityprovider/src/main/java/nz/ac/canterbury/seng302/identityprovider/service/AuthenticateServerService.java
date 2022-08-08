@@ -75,7 +75,7 @@ public class AuthenticateServerService extends AuthenticationServiceImplBase {
 
   /**
    * The AuthenticationInterceptor already handles validating the authState for us, so here we just
-   * need to retrieve that from the current context and return it in the gRPC body
+   * need to retrieve that from the current context and return it in the gRPC body.
    */
   @Override
   public void checkAuthState(Empty request, StreamObserver<AuthState> responseObserver) {

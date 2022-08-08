@@ -2,10 +2,9 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
-import nz.ac.canterbury.seng302.portfolio.model.contract.BaseSprintContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.SprintContract;
+import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseSprintContract;
 import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
 import nz.ac.canterbury.seng302.portfolio.service.RolesService;
 import nz.ac.canterbury.seng302.portfolio.service.SprintService;

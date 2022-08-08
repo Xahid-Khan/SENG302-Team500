@@ -1,16 +1,18 @@
 package nz.ac.canterbury.seng302.portfolio.model.entity;
 
-import java.util.Collections;
-import java.util.Comparator;
-
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.GenericGenerator;
-
-import javax.persistence.*;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
+import javax.persistence.Table;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 /**
  * The database representation of a Project.
@@ -20,12 +22,7 @@ import java.util.List;
  */
 @Entity
 @Table(name = "project")
-public class ProjectEntity {
-  @Id
-  @GeneratedValue(generator = "uuid")
-  @GenericGenerator(name = "uuid", strategy = "uuid2")
-  private String id;
-
+public class ProjectEntity extends PortfolioEntity {
   @Column(nullable = false)
   private String name;
 
@@ -41,25 +38,33 @@ public class ProjectEntity {
   @OneToMany(mappedBy = "project", fetch = FetchType.EAGER)
   @OrderBy("startDate")
   @Fetch(value = FetchMode.SUBSELECT)
-  private List<SprintEntity> sprints = new ArrayList<>();
+  private final List<SprintEntity> sprints = new ArrayList<>();
 
   @OneToMany(mappedBy = "project", fetch = FetchType.EAGER)
   @OrderBy("startDate")
   @Fetch(value = FetchMode.SUBSELECT)
-  private List<EventEntity> events = new ArrayList<>();
+  private final List<EventEntity> events = new ArrayList<>();
 
   @OneToMany(mappedBy = "project", fetch = FetchType.EAGER)
   @OrderBy("startDate")
   @Fetch(value = FetchMode.SUBSELECT)
-  private List<MilestoneEntity> milestones = new ArrayList<>();
+  private final List<MilestoneEntity> milestones = new ArrayList<>();
 
   @OneToMany(mappedBy = "project", fetch = FetchType.EAGER)
   @OrderBy("startDate")
   @Fetch(value = FetchMode.SUBSELECT)
-  private List<DeadlineEntity> deadlines = new ArrayList<>();
+  private final List<DeadlineEntity> deadlines = new ArrayList<>();
 
   protected ProjectEntity() {}
 
+  /**
+   * Creates a new ProjectEntity.
+   *
+   * @param name the name of the project
+   * @param description the description of the project
+   * @param startDate the start date of the project
+   * @param endDate the ending date of the project
+   */
   public ProjectEntity(String name, String description, Instant startDate, Instant endDate) {
     this.name = name;
     this.description = description;
@@ -69,11 +74,7 @@ public class ProjectEntity {
 
   @Override
   public String toString() {
-    return String.format("Project[id=%s, name=%s]", id, name);
-  }
-
-  public String getId() {
-    return id;
+    return String.format("Project[id=%s, name=%s]", getId(), name);
   }
 
   public String getName() {
@@ -127,7 +128,8 @@ public class ProjectEntity {
   /**
    * Inserts the given sprint to the sprints list, retaining sorted order.
    *
-   * <p>Adapted from: https://stackoverflow.com/a/51893026
+   * <p>Adapted from: <a
+   * href="https://stackoverflow.com/a/51893026">stackoverflow.com/a/51893026>StackOverflow</a>
    *
    * @param sprint to insert
    */
@@ -143,7 +145,7 @@ public class ProjectEntity {
   }
 
   /**
-   * Removes sprint from sprints list
+   * Removes sprint from sprints list.
    *
    * @param sprint sprint to be deleted
    */
@@ -155,7 +157,7 @@ public class ProjectEntity {
   /**
    * Inserts the given event to the events list, retaining sorted order.
    *
-   * <p>Adapted from: https://stackoverflow.com/a/51893026
+   * <p>Adapted from: <a href="https://stackoverflow.com/a/51893026">StackOverflow</a>
    *
    * @param event to insert
    */
@@ -171,7 +173,7 @@ public class ProjectEntity {
   }
 
   /**
-   * Removes sprint from sprints list
+   * Removes sprint from sprints list.
    *
    * @param event to be deleted
    */
@@ -182,8 +184,7 @@ public class ProjectEntity {
 
   /**
    * Inserts the given deadline to the deadlines list, retaining sorted order.
-   *
-   * <p>Adapted from: https://stackoverflow.com/a/51893026
+   * <p>Adapted from: <a href="https://stackoverflow.com/a/51893026">StackOverflow</a></p>
    *
    * @param deadline to insert
    */
@@ -199,7 +200,7 @@ public class ProjectEntity {
   }
 
   /**
-   * Removes deadline from deadlines list
+   * Removes deadline from deadlines list.
    *
    * @param deadline to delete
    */
@@ -210,8 +211,7 @@ public class ProjectEntity {
 
   /**
    * Inserts the given milestone to the milestones list, retaining sorted order.
-   *
-   * <p>Adapted from: https://stackoverflow.com/a/51893026
+   * <p>Adapted from: <a href="https://stackoverflow.com/a/51893026">StackOverflow</a></p>
    *
    * @param milestone to insert
    */
@@ -227,7 +227,7 @@ public class ProjectEntity {
   }
 
   /**
-   * Removes milestone from milestones list
+   * Removes milestone from milestones list.
    *
    * @param milestone to delete
    */
