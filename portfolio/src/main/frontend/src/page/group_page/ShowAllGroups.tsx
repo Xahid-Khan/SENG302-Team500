@@ -65,7 +65,13 @@ const getGroups = () => {
             ]}]
 }
 
-const deleteGroup = (id: number) => {
+const deleteGroup = async (id: number) => {
+    const response = await fetch(`api/v1/groups/${id}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
     document.getElementById(`group-${id}`).style.display = "none"
     document.getElementById("modal-delete-group-open").style.display = "none"
 }

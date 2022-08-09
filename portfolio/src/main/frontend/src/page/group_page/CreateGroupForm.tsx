@@ -10,7 +10,7 @@ export function CreateGroupForm() {
     const [longName, setLongName] = React.useState('')
     const [longCharCount, setLongCharCount] = React.useState(0)
 
-    const validateCreateForm = (e: FormEvent) => {
+    const validateCreateForm = async (e: FormEvent) => {
         let errors = false
         let errorMessage
 
@@ -27,6 +27,14 @@ export function CreateGroupForm() {
         if (errors) {
             e.preventDefault()
             document.getElementById("create-group-error").innerText = errorMessage;
+        } else {
+            const response = await fetch(`api/v1/groups`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify([longName, shortName])
+            });
         }
     }
 
