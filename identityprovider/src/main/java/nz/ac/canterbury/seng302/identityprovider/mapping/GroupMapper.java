@@ -32,7 +32,7 @@ public class GroupMapper {
 
     public GroupDetailsResponse toGroupDetailsResponse(GroupModel group) {
         //gets all users from ids in useRepository
-        var groupMembersIds = groupMemberRepository.findById(group.getId()).get().getUserId();
+        var groupMembersIds = groupMemberRepository.findById(group.getId()).get().getUserIds();
         var groupMembersIterable = userRepository.findAllById(groupMembersIds);
         ArrayList<UserResponse> groupMembers = new ArrayList<>();
 

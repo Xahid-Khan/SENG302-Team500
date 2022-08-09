@@ -10,7 +10,8 @@ export function CreateGroupForm() {
     const [longName, setLongName] = React.useState('')
     const [longCharCount, setLongCharCount] = React.useState(0)
 
-    const validateCreateForm = async (e: FormEvent) => {
+    const validateCreateForm = async (formEvent: FormEvent) => {
+        formEvent.preventDefault()
         let errors = false
         let errorMessage
 
@@ -25,16 +26,26 @@ export function CreateGroupForm() {
         }
 
         if (errors) {
-            e.preventDefault()
             document.getElementById("create-group-error").innerText = errorMessage;
         } else {
-            const response = await fetch(`api/v1/groups`, {
+
+            await fetch(`api/v1/groups`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify([longName, shortName])
-            });
+                body: JSON.stringify({"longName": longName, "shortName": shortName})
+            }).then((res) => {
+                if (res.ok === true) {
+                    window.location.reload()
+                } else {
+                    document.getElementById("create-group-error").innerText = "Unable to create group: Please ensure both short name and long name are unique from all other groups"
+                }
+            }).catch((e) => {
+                console.log("error ", e)
+            })
+
+
         }
     }
 

@@ -3,6 +3,8 @@ package nz.ac.canterbury.seng302.identityprovider.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.grpc.stub.StreamObserver;
+import net.devh.boot.grpc.server.service.GrpcService;
 import nz.ac.canterbury.seng302.identityprovider.database.*;
 import nz.ac.canterbury.seng302.identityprovider.mapping.GroupMapper;
 import nz.ac.canterbury.seng302.identityprovider.mapping.UserMapper;
@@ -15,8 +17,8 @@ import org.springframework.stereotype.Service;
 /**
  * This service handles all requests on the server side to manage groups.
  */
-@Service
-public class GroupsServerService {
+@GrpcService
+public class GroupsServerService extends GroupsServiceGrpc.GroupsServiceImplBase {
     @Autowired
     private GroupRepository groupRepository;
 
@@ -32,6 +34,12 @@ public class GroupsServerService {
     @Autowired
     private GroupMapper groupMapper;
 
+    @Autowired
+    private RoleService roleService;
+
+    @Autowired
+    private GetUserService getUserService;
+
     private String groupDoesntExistMessage = "Error: Group does not exist";
 
     /**
@@ -39,13 +47,14 @@ public class GroupsServerService {
      * short name and the long name of the group are unique. If they are, it will add the group to the
      * database. Otherwise, it will fail and return with validation errors.
      *
-     * @param groupRequest the CreateGroupRequest gRPC message
+     * @param request the CreateGroupRequest gRPC message
      * @return a CreateGroupResponse gRPC message with potential errors
      */
-    public CreateGroupResponse createGroup(CreateGroupRequest groupRequest) {
+    @Override
+    public void createGroup(CreateGroupRequest request, StreamObserver<CreateGroupResponse> responseObserver) {
         List<ValidationError> validationErrors = new ArrayList<>();
         // Ensure that both the short name and long name are unique
-        if (groupRepository.findByLongName(groupRequest.getLongName()) != null) {
+        if (groupRepository.findByLongName(request.getLongName()) != null) {
             validationErrors.add(
                     ValidationError.newBuilder()
                             .setFieldName("longName")
@@ -54,7 +63,7 @@ public class GroupsServerService {
                             .build());
         }
 
-        if (groupRepository.findByShortName(groupRequest.getShortName()) != null) {
+        if (groupRepository.findByShortName(request.getShortName()) != null) {
             validationErrors.add(
                     ValidationError.newBuilder()
                             .setFieldName("shortName")
@@ -64,26 +73,27 @@ public class GroupsServerService {
         }
 
         if (validationErrors.isEmpty()) {
-            GroupModel group = new GroupModel(groupRequest.getShortName(), groupRequest.getLongName());
+            GroupModel group = new GroupModel(request.getShortName(), request.getLongName());
             groupRepository.save(group);
 
             //Creates a groupMember entity with the same id as the group
             GroupMemberModel groupMember = new GroupMemberModel(group.getId(), new ArrayList<>());
             groupMemberRepository.save(groupMember);
 
-            return CreateGroupResponse.newBuilder()
+            responseObserver.onNext(CreateGroupResponse.newBuilder()
                     .setIsSuccess(true)
                     .setNewGroupId(group.getId())
                     .setMessage("Group successfully created")
-                    .build();
+                    .build());
         } else {
-            return CreateGroupResponse.newBuilder()
+            responseObserver.onNext(CreateGroupResponse.newBuilder()
                     .setIsSuccess(false)
                     .setNewGroupId(-1)
                     .setMessage("Validation error(s)")
                     .addAllValidationErrors(validationErrors)
-                    .build();
+                    .build());
         }
+        responseObserver.onCompleted();
     }
 
     /**
@@ -91,24 +101,26 @@ public class GroupsServerService {
      * a group with the corresponding ID, then a failure will be returned. Otherwise, the group will
      * be deleted, and a success will be returned.
      *
-     * @param groupRequest the DeleteGroupRequest gRPC message
+     * @param request the DeleteGroupRequest gRPC message
      * @return a DeleteGroupResponse gRPC message
      */
-    public DeleteGroupResponse deleteGroup(DeleteGroupRequest groupRequest) {
-        if (groupRepository.findById(groupRequest.getGroupId()).isEmpty()) {
-            return DeleteGroupResponse.newBuilder()
+    @Override
+    public void deleteGroup(DeleteGroupRequest request, StreamObserver<DeleteGroupResponse> responseObserver) {
+        if (groupRepository.findById(request.getGroupId()).isEmpty()) {
+            responseObserver.onNext(DeleteGroupResponse.newBuilder()
                     .setIsSuccess(false)
                     .setMessage(groupDoesntExistMessage)
-                    .build();
+                    .build());
         } else {
-            groupRepository.deleteById(groupRequest.getGroupId());
-            groupMemberRepository.deleteById(groupRequest.getGroupId());
+            groupRepository.deleteById(request.getGroupId());
+            groupMemberRepository.deleteById(request.getGroupId());
 
-            return DeleteGroupResponse.newBuilder()
+            responseObserver.onNext(DeleteGroupResponse.newBuilder()
                     .setIsSuccess(true)
                     .setMessage("Group successfully deleted")
-                    .build();
+                    .build());
         }
+        responseObserver.onCompleted();
     }
 
     /**
@@ -117,36 +129,48 @@ public class GroupsServerService {
      * does have a group with the corresponding ID, then the members will be updated. If members cannot
      * be updated, then a failure will be returned. Otherwise, a success will be returned.
      *
-     * @param groupRequest the AddGroupMembersRequest gRPC message
+     * @param request the AddGroupMembersRequest gRPC message
      * @return a AddGroupMembersResponse gRPC message
      */
-    public AddGroupMembersResponse addGroupMembers(AddGroupMembersRequest groupRequest) {
+    @Override
+    public void addGroupMembers(AddGroupMembersRequest request, StreamObserver<AddGroupMembersResponse> responseObserver) {
         //Checks groups existence
-        if (groupRepository.findById(groupRequest.getGroupId()).isEmpty() || groupMemberRepository.findById(groupRequest.getGroupId()).isEmpty()) {
-            return AddGroupMembersResponse.newBuilder()
+        if (groupRepository.findById(request.getGroupId()).isEmpty() || groupMemberRepository.findById(request.getGroupId()).isEmpty()) {
+            responseObserver.onNext(AddGroupMembersResponse.newBuilder()
                     .setIsSuccess(false)
                     .setMessage(groupDoesntExistMessage)
-                    .build();
+                    .build());
         } else {
 
             //update groupMember table
-            GroupMemberModel groupMember = groupMemberRepository.findById(groupRequest.getGroupId()).get();
-            String message = groupMember.addUserIds(groupRequest.getUserIdsList());
+            GroupMemberModel groupMember = groupMemberRepository.findById(request.getGroupId()).get();
+            String message = groupMember.addUserIds(request.getUserIdsList());
 
             if (!message.equals("Success")) {
-                return AddGroupMembersResponse.newBuilder()
+                responseObserver.onNext(AddGroupMembersResponse.newBuilder()
                         .setIsSuccess(false)
                         .setMessage(message)
-                        .build();
+                        .build());
             } else {
+
+                for (Integer userId : request.getUserIdsList()) {
+                    if (groupRepository.findById(request.getGroupId()).get().getShortName().equals("Teachers")) {
+                        roleService.addRoleToUser(ModifyRoleOfUserRequest.newBuilder()
+                                .setUserId(userId)
+                                .setRole(UserRole.TEACHER)
+                                .build());
+                    }
+                }
+
                 groupMemberRepository.save(groupMember);
-                return AddGroupMembersResponse.newBuilder()
+                responseObserver.onNext(AddGroupMembersResponse.newBuilder()
                         .setIsSuccess(true)
                         .setMessage("Members successfully added")
-                        .build();
+                        .build());
             }
 
         }
+        responseObserver.onCompleted();
     }
 
     /**
@@ -155,37 +179,59 @@ public class GroupsServerService {
      * does have a group with the corresponding ID, then the members will be updated. If members cannot
      * be updated, then a failure will be returned. Otherwise, a success will be returned.
      *
-     * @param groupRequest the AddGroupMembersRequest gRPC message
+     * @param request the AddGroupMembersRequest gRPC message
      * @return a AddGroupMembersResponse gRPC message
      */
-    public RemoveGroupMembersResponse removeGroupMembers(RemoveGroupMembersRequest groupRequest) {
+    @Override
+    public void removeGroupMembers(RemoveGroupMembersRequest request, StreamObserver<RemoveGroupMembersResponse> responseObserver) {
         //Checks groups existence
-        if (groupRepository.findById(groupRequest.getGroupId()).isEmpty()) {
-            return RemoveGroupMembersResponse.newBuilder()
+        if (groupRepository.findById(request.getGroupId()).isEmpty()) {
+            responseObserver.onNext(RemoveGroupMembersResponse.newBuilder()
                     .setIsSuccess(false)
                     .setMessage(groupDoesntExistMessage)
-                    .build();
+                    .build());
         } else {
             //Gets the group from the repository and adds the user Ids to the group
-            var group = groupMemberRepository.findById(groupRequest.getGroupId()).orElseThrow();
-            String message = group.removeUserIds(groupRequest.getUserIdsList());
+            var group = groupMemberRepository.findById(request.getGroupId()).orElseThrow();
+            String message = group.removeUserIds(request.getUserIdsList());
 
             // If the message is not success, then there was an error
             if (!message.equals("Success")) {
-                return RemoveGroupMembersResponse.newBuilder()
+                responseObserver.onNext(RemoveGroupMembersResponse.newBuilder()
                         .setIsSuccess(false)
                         .setMessage(message)
-                        .build();
+                        .build());
             } else {
+
+                for (Integer userId : request.getUserIdsList()) {
+                    if (groupRepository.findById(request.getGroupId()).get().getShortName().equals("Teachers")) {
+                        UserResponse user = getUserService.getUserAccountById(GetUserByIdRequest.newBuilder()
+                                .setId(userId)
+                                .build());
+                        if (user.getRolesList().contains(UserRole.TEACHER)) {
+                            roleService.removeRoleFromUser(ModifyRoleOfUserRequest.newBuilder()
+                                    .setUserId(userId)
+                                    .setRole(UserRole.TEACHER)
+                                    .build());
+                        }
+                        if (user.getRolesList().contains(UserRole.COURSE_ADMINISTRATOR)) {
+                            roleService.removeRoleFromUser(ModifyRoleOfUserRequest.newBuilder()
+                                    .setUserId(userId)
+                                    .setRole(UserRole.COURSE_ADMINISTRATOR)
+                                    .build());
+                        }
+                    }
+                }
 
                 //Success,  save and return response
                 groupMemberRepository.save(group);
-                return RemoveGroupMembersResponse.newBuilder()
+                responseObserver.onNext(RemoveGroupMembersResponse.newBuilder()
                         .setIsSuccess(true)
                         .setMessage("Group members successfully removed")
-                        .build();
+                        .build());
             }
         }
+        responseObserver.onCompleted();
     }
 
 
@@ -195,7 +241,8 @@ public class GroupsServerService {
      *
      * @return a GetAllGroupsResponse gRPC message with all the groups
      */
-    public PaginatedGroupsResponse getAllGroupDetails(GetPaginatedGroupsRequest groupInfoRequest) {
+    @Override
+    public void getPaginatedGroups(GetPaginatedGroupsRequest request, StreamObserver<PaginatedGroupsResponse> responseObserver) {
         //all groups
         var allGroupsIterator = groupRepository.findAll();
         List<GroupDetailsResponse> allGroups = new ArrayList<>();
@@ -205,17 +252,18 @@ public class GroupsServerService {
 
         //if groups repository is empty
         if (allGroups.isEmpty()) {
-            return PaginatedGroupsResponse.newBuilder()
+            responseObserver.onNext(PaginatedGroupsResponse.newBuilder()
                     .setPaginationResponseOptions(PaginationResponseOptions.newBuilder()
                             .setResultSetSize(0).build())
-                    .build();
+                    .build());
         } else {
-            return PaginatedGroupsResponse.newBuilder()
+            responseObserver.onNext(PaginatedGroupsResponse.newBuilder()
                     .setPaginationResponseOptions(PaginationResponseOptions.newBuilder()
                             .setResultSetSize(allGroups.size()).build())
                     .addAllGroups(allGroups)
-                    .build();
+                    .build());
         }
+        responseObserver.onCompleted();
     }
 }
 

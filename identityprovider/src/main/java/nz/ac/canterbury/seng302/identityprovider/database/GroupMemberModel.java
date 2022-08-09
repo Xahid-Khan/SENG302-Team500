@@ -44,8 +44,8 @@ public class GroupMemberModel {
      */
     public String addUserIds(List<Integer> userIds) {
         for (Integer id : userIds) {
-            if (!this.userId.contains(id)) {
-                this.userId.add(id);
+            if (!this.userIds.contains(id)) {
+                this.userIds.add(id);
 
             } else {
                 return "Error: User already in group";
@@ -62,8 +62,8 @@ public class GroupMemberModel {
      */
     public String removeUserIds(List<Integer> userIds) {
         for (Integer id : userIds) {
-            if (this.userId.contains(id)) {
-                this.userId.remove(id);
+            if (this.userIds.contains(id)) {
+                this.userIds.remove(id);
 
             } else {
                 return "Error: User not in group";

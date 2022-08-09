@@ -1,84 +1,28 @@
 import * as React from "react";
 import {useEffect} from "react";
 
-export async function EditGroupMembers({viewGroupId}: any) {
+export function EditGroupMembers({viewGroupId}: any) {
 
-    // const allGroupsResponse = await fetch('api/v1/groups/all');
-    //
-    // const groups = allGroupsResponse.body.
+    const getAllGroups = async ()  => {
+        const allGroupsResponse = await fetch('api/v1/groups/all')
+        return allGroupsResponse.json()
+    }
 
-    const groups = [{
-        "id": 10,
-        "longName": "Users without a group",
-        "shortName": "Non Group",
+    const [allGroups, setAllGroups] = React.useState([{
+        "id": -1,
+        "longName": "",
+        "shortName": "",
         "users": []
-        },
-        {
-        "id": 1,
-        "longName": "Teaching Team",
-        "shortName": "Teachers",
-        "users": [
-            {
-                "id": 1,
-                "name": "John",
-                "username": "johnstewart",
-                "alias": "Johnny",
-                "roles": ["Teacher, Student"]
-            },
-            {
-                "id": 2,
-                "name": "Sarah",
-                "username": "sarahjohn",
-                "alias": "Sa",
-                "roles": ["Student"]
-            }
-        ]},
-        {
-            "id": 2,
-            "longName": "Group 500 - IDK",
-            "shortName": "G500",
-            "users": [
-                {
-                    "id": 4,
-                    "name": "John",
-                    "username": "cal127",
-                    "alias": "Cod",
-                    "roles": ["Teacher, Student"]
-                },
-                {
-                    "id": 3,
-                    "name": "James",
-                    "username": "Potter",
-                    "alias": "Jimmy",
-                    "roles": ["Student"]
-                }
-            ]
-        },
-        {
-            "id": 3,
-            "longName": "The Boys",
-            "shortName": "Lads",
-            "users": [
-                {
-                    "id": 6,
-                    "name": "Ben Stewart",
-                    "username": "kingturtle12HD",
-                    "alias": "Beef",
-                    "roles": ["Teacher, Student"]
-                },
-                {
-                    "id": 7,
-                    "name": "Darren Patrick",
-                    "username": "dpatrick2002",
-                    "alias": "Dazza",
-                    "roles": ["Student"]
-                }
-            ]}]
+    }])
+
+    useEffect(() => {
+        getAllGroups().then((result) => {
+            setAllGroups(result)
+        })
+    }, [])
 
     const [membersAdded, setMembersAdded] = React.useState<{ [key: number]: number[] }>({})
     const [membersRemoved, setMembersRemoved] = React.useState<{ [key: number]: number[] }>({})
-
-    const [allGroups, setAllGroups] = React.useState(groups)
 
     const [errorMessage, setErrorMessage] = React.useState("")
 
@@ -124,7 +68,7 @@ export async function EditGroupMembers({viewGroupId}: any) {
         if (groupName === "All users") {
             setOtherGroupViewing(allGroups)
         } else {
-            setOtherGroupViewing(allGroups.filter((item) => item.shortName === groupName))
+            setOtherGroupViewing(allGroups.filter((item: any) => item.shortName === groupName))
         }
     }
 
@@ -281,8 +225,8 @@ export async function EditGroupMembers({viewGroupId}: any) {
         let duplicate = false
         let usersToAdd: any = []
         let usersToAddIds: number[] = []
-        allGroups.forEach((group) => {
-            group['users'].forEach((user) => {
+        allGroups.forEach((group: any) => {
+            group['users'].forEach((user: any) => {
                 if (otherUsersSelected.includes(user.id)) {
                     usersToAdd.push(user)
                     usersToAddIds.push(user.id)
@@ -300,7 +244,7 @@ export async function EditGroupMembers({viewGroupId}: any) {
 
         if (duplicate === false) {
             myGroup.users = myGroup.users.concat(usersToAdd)
-            allGroups.forEach((item, index) => {
+            allGroups.forEach((item: any, index: number) => {
                 if (item.id === myGroup.id) {
                     allGroups[index].users = myGroup.users
                 }
@@ -330,14 +274,45 @@ export async function EditGroupMembers({viewGroupId}: any) {
         let duplicate = false
         let usersToAdd: any = []
         let usersToAddIds: number[] = []
-        allGroups.forEach((group) => {
-            group['users'].forEach((user) => {
+        allGroups.forEach((group: any) => {
+            group['users'].forEach((user: any) => {
                 if (currentGroupUsersSelected.includes(user.id)) {
                     usersToAdd.push(user)
                     usersToAddIds.push(user.id)
                 }
             })
         })
+        if (myGroup['shortName'] === "Non Group") {
+            let usersToRemoveIds: number[] = []
+            currentGroupUsersSelected.forEach((id) => {
+                myGroup.users.forEach((user: any, index: number) => {
+                    if (user.id === id) {
+                        myGroup.users = myGroup.users.slice(0, index).concat(myGroup.users.slice(index + 1, myGroup.users.length))
+                        usersToRemoveIds.push(user.id)
+                    }
+                })
+            })
+            allGroups.forEach((item: any, index: number) => {
+                if (item.id === myGroup.id) {
+                    allGroups[index].users = myGroup.users
+                }
+            })
+            let filteredUserIds: number[] = []
+            usersToRemoveIds.forEach((id, index) => {
+                if (membersAdded[myGroup.id] && membersAdded[myGroup.id].includes(id)) {
+                    membersAdded[myGroup.id] = membersAdded[myGroup.id].slice(0, index).concat(membersAdded[myGroup.id].slice(index + 1, membersAdded[myGroup.id].length))
+                } else {
+                    filteredUserIds.push(id)
+                }
+            })
+            if (membersRemoved[myGroup.id] === undefined) {
+                membersRemoved[myGroup.id] = filteredUserIds
+            } else {
+                filteredUserIds.forEach((id) => {
+                    membersRemoved[myGroup.id].push(id)
+                })
+            }
+        }
         otherGroupViewing[0].users.forEach((user: any) => {
             usersToAdd.forEach((userToAdd: any) => {
                 if (user.id === userToAdd.id) {
@@ -348,7 +323,7 @@ export async function EditGroupMembers({viewGroupId}: any) {
         })
         if (duplicate === false) {
             otherGroupViewing[0].users = otherGroupViewing[0].users.concat(usersToAdd)
-            allGroups.forEach((item, index) => {
+            allGroups.forEach((item: any, index: number) => {
                 if (item.id === otherGroupViewing[0].id) {
                     allGroups[index].users = otherGroupViewing[0].users
                 }
@@ -376,9 +351,9 @@ export async function EditGroupMembers({viewGroupId}: any) {
 
     const addToNonGroupIfNeeded = (user: any) => {
         let userInAnotherGroup = false
-        allGroups.forEach((group) => {
+        allGroups.forEach((group: any) => {
             if (group.id !== otherGroupViewing[0].id) {
-                group['users'].forEach((otherUser) => {
+                group['users'].forEach((otherUser: any) => {
                     if (otherUser.id === user.id) {
                         userInAnotherGroup = true
                     }
@@ -386,9 +361,18 @@ export async function EditGroupMembers({viewGroupId}: any) {
             }
         })
         if (userInAnotherGroup === false) {
-            allGroups.forEach((group) => {
-                if (group.longName === "Users without a group") {
+            allGroups.forEach((group: any) => {
+                if (group.shortName === "Non Group") {
                     group.users.push(user)
+                    allGroups.forEach((otherGroup: any) => {
+                        if (otherGroup['shortName'] === "Non Group") {
+                            if (membersAdded[otherGroup.id] === undefined) {
+                                membersAdded[otherGroup.id] = [user.id]
+                            } else {
+                                membersAdded[otherGroup.id].push(user.id)
+                            }
+                        }
+                    })
                 }
             })
         }
@@ -406,7 +390,7 @@ export async function EditGroupMembers({viewGroupId}: any) {
                     }
                 })
             })
-            allGroups.forEach((item, index) => {
+            allGroups.forEach((item: any, index: number) => {
                 if (item.id === myGroup.id) {
                     allGroups[index].users = myGroup.users
                 }
@@ -439,7 +423,7 @@ export async function EditGroupMembers({viewGroupId}: any) {
                     }
                 })
             })
-            allGroups.forEach((item, index) => {
+            allGroups.forEach((item: any, index: number) => {
                 if (item.id === otherGroupViewing[0].id) {
                     allGroups[index].users = otherGroupViewing[0].users
                 }
@@ -465,12 +449,7 @@ export async function EditGroupMembers({viewGroupId}: any) {
         }
     }
 
-    const handleMemberEditSubmit = () => {
-        document.getElementById("modal-edit-group-members-open").style.display = "none"
-        window.location.reload()
-    }
-
-    const handleCancel = async () => {
+    const handleMemberEditSubmit = async () => {
         let response
         /* Taken from https://stackoverflow.com/questions/34913675/how-to-iterate-keys-values-in-javascript */
         for (const [key, value] of Object.entries(membersRemoved)) {
@@ -491,12 +470,25 @@ export async function EditGroupMembers({viewGroupId}: any) {
                 body: JSON.stringify(value)
             });
         }
+        document.getElementById("modal-edit-group-members-open").style.display = "none"
+        window.location.reload()
+    }
 
+    const handleCancel = async () => {
         document.getElementById("modal-edit-group-members-open").style.display = "none"
         window.location.reload()
     }
 
     if (document.getElementById("group-edit-members-confirm")) {
+        let oldConfirm = document.getElementById("group-edit-members-confirm")
+        let newConfirm = oldConfirm.cloneNode(true)
+        oldConfirm.parentNode.replaceChild(newConfirm, oldConfirm);
+        let oldCancel = document.getElementById("group-edit-members-cancel")
+        let newCancel = oldCancel.cloneNode(true)
+        oldCancel.parentNode.replaceChild(newCancel, oldCancel);
+        let oldX = document.getElementById("group-edit-members-confirm")
+        let newX = oldX.cloneNode(true)
+        oldX.parentNode.replaceChild(newX, oldX);
         document.getElementById("group-edit-members-confirm").addEventListener("click", () => handleMemberEditSubmit())
         document.getElementById("group-edit-members-cancel").addEventListener("click", () => handleCancel())
         document.getElementById("group-edit-members-x").addEventListener("click", () => handleCancel())
@@ -517,6 +509,8 @@ export async function EditGroupMembers({viewGroupId}: any) {
     }
 
     const getOtherViewingUsers = (): any => {
+
+
         let otherGroupViewingNoDuplicates: any = []
         otherGroupViewing.forEach((group) => {
             group['users'].forEach((user) => {
@@ -556,9 +550,9 @@ export async function EditGroupMembers({viewGroupId}: any) {
                                     {myGroup['users'].map((user: any) => (
                                         <div className="groups-row" id={`current-group-users-${user.id}`} key={user.id}
                                              onClick={(event => handleCurrentGroupUserSelect(event, user))}>
-                                            <div className="tableCell">{user['name']}</div>
+                                            <div className="tableCell">{user['firstName']} {user['lastName']}</div>
                                             <div className="tableCell">{user['username']}</div>
-                                            <div className="tableCell">{user['alias']}</div>
+                                            <div className="tableCell">{user['nickName']}</div>
                                             <div className="tableCell">{user['roles'].toString()}</div>
                                         </div>
                                     ))}
@@ -568,7 +562,7 @@ export async function EditGroupMembers({viewGroupId}: any) {
                     </div>
                     <div>
                         <div className={"edit-group-members-buttons"}>
-                            <button className={"edit-group-members-button"} disabled={otherUsersSelected.length === 0}
+                            <button className={"edit-group-members-button"} disabled={otherUsersSelected.length === 0 || myGroup.shortName === "Non Group"}
                                     onClick={() => addToCurrent()}><span className="material-icons"
                                                                          style={{fontSize: 14}}>arrow_back</span> Add to
                                 current
@@ -579,7 +573,7 @@ export async function EditGroupMembers({viewGroupId}: any) {
                                                                                       style={{fontSize: 14}}>arrow_forward</span>
                             </button>
                             <button className={"edit-group-members-button"}
-                                    disabled={currentGroupUsersSelected.length === 0 && (otherUsersSelected.length === 0 || document.getElementById("filter-groups-button").innerText === "All users")}
+                                    disabled={(currentGroupUsersSelected.length === 0 || myGroup.shortName === "Non Group") && (otherUsersSelected.length === 0 || document.getElementById("filter-groups-button").innerText === "All users")}
                                     onClick={() => openRemoveModal()}>Remove from group
                             </button>
                         </div>
@@ -598,7 +592,7 @@ export async function EditGroupMembers({viewGroupId}: any) {
                                         <button className={"filter-option-button"}
                                                 onClick={() => showFilter("All users")}>All users
                                         </button>
-                                        {allGroups.filter((item) => item.id != myGroup.id && item.longName !== "Users without a group").map((item) => (
+                                        {allGroups.filter((item: any) => item.id != myGroup.id && item.longName !== "Users without a group").map((item: any) => (
                                             <button className={"filter-option-button"} key={item.id}
                                                     onClick={() => showFilter(item['shortName'])}>{item['shortName']}</button>
                                         ))}
@@ -623,9 +617,9 @@ export async function EditGroupMembers({viewGroupId}: any) {
                                     {getOtherViewingUsers().map((user: any) => (
                                         <div className="groups-row" id={`other-users-${user.id}`} key={user.id}
                                              onClick={(event => handleOtherUserSelect(event, user))}>
-                                            <div className="tableCell">{user['name']}</div>
+                                            <div className="tableCell">{user['firstName']} {user['lastName']}</div>
                                             <div className="tableCell">{user['username']}</div>
-                                            <div className="tableCell">{user['alias']}</div>
+                                            <div className="tableCell">{user['nickName']}</div>
                                             <div className="tableCell">{user['roles'].toString()}</div>
                                         </div>
                                     ))}

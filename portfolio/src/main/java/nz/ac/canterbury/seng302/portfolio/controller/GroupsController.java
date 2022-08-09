@@ -5,15 +5,14 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
+import nz.ac.canterbury.seng302.portfolio.model.contract.GroupContract;
+import nz.ac.canterbury.seng302.portfolio.model.contract.UserContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseGroupContract;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
 import nz.ac.canterbury.seng302.portfolio.service.GroupsClientService;
 import nz.ac.canterbury.seng302.portfolio.service.RolesService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
-import nz.ac.canterbury.seng302.shared.identityprovider.GroupDetailsResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedGroupsResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
+import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 /** Handles the GET request on the /groups endpoint. */
 @Controller
+@RequestMapping("/api/v1")
 public class GroupsController {
   @Autowired
   private UserAccountService userAccountService;
@@ -37,32 +37,6 @@ public class GroupsController {
   @Autowired
   private RolesService rolesService;
 
-
-  private static final String TEACHER = "TEACHER";
-  private static final String COURSE_ADMINISTRATOR = "COURSE_ADMINISTRATOR";
-  /**
-   * GET /groups fetches the groups page. The groups page shows all groups
-   *
-   * @param principal Principal for the currently logged-in user, used to get userId
-   * @param model     Parameters sent to thymeleaf template to be rendered into HTML
-   * @return The groups html page
-   */
-  @GetMapping(value = "/groups")
-  public String getGroups(@AuthenticationPrincipal PortfolioPrincipal principal, Model model) {
-    Integer userId = authStateService.getId(principal);
-
-    UserResponse userDetails = userAccountService.getUserById(userId);
-    List<UserRole> roles = userDetails.getRolesList();
-
-    model.addAttribute("userId", userId);
-    model.addAttribute(
-            "canEdit",
-            roles.contains(UserRole.TEACHER) || roles.contains(UserRole.COURSE_ADMINISTRATOR));
-    model.addAttribute("username", userDetails.getUsername());
-
-    return "groups";
-  }
-
   /**
    * This method will be invoked when API receives a GET request, and will produce a list of all the groups.
    * @return List of groups converted into project contract (JSON) type.
@@ -71,13 +45,39 @@ public class GroupsController {
   public ResponseEntity<?> getAll() {
     try {
       PaginatedGroupsResponse groupsResponse = groupsClientService.getAllGroupDetails();
-      List<GroupDetailsResponse> groups = groupsResponse.getGroupsList();
+      List<GroupDetailsResponse> groupsList = groupsResponse.getGroupsList();
+      ArrayList<GroupContract> groups = new ArrayList<>();
+      for (GroupDetailsResponse groupDetails: groupsList) {
+        groups.add(new GroupContract(groupDetails.getGroupId(),
+                groupDetails.getShortName(),
+                groupDetails.getLongName(),
+                getUsers(groupDetails.getMembersList())
+                ));
+      }
       return ResponseEntity.ok(groups);
     } catch (NoSuchElementException error) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
   }
 
+  private ArrayList<UserContract> getUsers(List<UserResponse> userList) {
+    ArrayList<UserContract> users = new ArrayList<>();
+    for (UserResponse user: userList) {
+      users.add(new UserContract(
+              user.getId(),
+              user.getFirstName(),
+              user.getMiddleName(),
+              user.getLastName(),
+              user.getNickname(),
+              user.getUsername(),
+              user.getEmail(),
+              user.getPersonalPronouns(),
+              user.getBio(),
+              user.getRolesList()
+              ));
+    }
+    return users;
+  }
 
   /**
    * This method will be invoked when API receives a POST request to delete members. Invokes the client service to delete the members
@@ -87,9 +87,8 @@ public class GroupsController {
   @PostMapping(value = "/groups/{groupId}/delete-members", produces = "application/json")
   public ResponseEntity<?> deleteMembers(@AuthenticationPrincipal PortfolioPrincipal principal, @PathVariable("groupId") String groupId,
                                          @RequestBody List<Integer> members) {
-
-    ArrayList<String> roles = rolesService.getRolesByToken(principal);
-    if (roles.contains(TEACHER) || roles.contains(COURSE_ADMINISTRATOR)) {
+    List<UserRole> roles = rolesService.getRolesByToken(principal);
+    if (roles.contains(UserRole.TEACHER) || roles.contains(UserRole.COURSE_ADMINISTRATOR)) {
       try {
         groupsClientService.removeGroupMembers(Integer.parseInt(groupId), members);
         return ResponseEntity.ok().build();
@@ -111,8 +110,8 @@ public class GroupsController {
   public ResponseEntity<?> addMembers(@AuthenticationPrincipal PortfolioPrincipal principal, @PathVariable("groupId") String groupId,
                                          @RequestBody List<Integer> members) {
 
-    ArrayList<String> roles = rolesService.getRolesByToken(principal);
-    if (roles.contains(TEACHER) || roles.contains(COURSE_ADMINISTRATOR)) {
+    List<UserRole> roles = rolesService.getRolesByToken(principal);
+    if (roles.contains(UserRole.TEACHER) || roles.contains(UserRole.COURSE_ADMINISTRATOR)) {
       try {
         groupsClientService.addGroupMembers(Integer.parseInt(groupId), members);
         return ResponseEntity.ok().build();
@@ -130,12 +129,15 @@ public class GroupsController {
    */
   @DeleteMapping(value = "/groups/{groupId}", produces = "application/json")
   public ResponseEntity<?> deleteGroup(@AuthenticationPrincipal PortfolioPrincipal principal, @PathVariable("groupId") String groupId) {
-
-    ArrayList<String> roles = rolesService.getRolesByToken(principal);
-    if (roles.contains(TEACHER) || roles.contains(COURSE_ADMINISTRATOR)) {
+    List<UserRole> roles = rolesService.getRolesByToken(principal);
+    if (roles.contains(UserRole.TEACHER) || roles.contains(UserRole.COURSE_ADMINISTRATOR)) {
       try {
-        groupsClientService.deleteGroup(Integer.parseInt(groupId));
-        return ResponseEntity.ok().build();
+        DeleteGroupResponse response = groupsClientService.deleteGroup(Integer.parseInt(groupId));
+        if (response.getIsSuccess()) {
+          return ResponseEntity.ok().build();
+        } else {
+          return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
       } catch (Exception error) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
       }
@@ -148,14 +150,17 @@ public class GroupsController {
    * This method will be invoked when API receives a POST request to create a group. Invokes the client service to create the group
    * @param newGroup The contract for the group to create
    */
-  @PostMapping(value = "/groups/", produces = "application/json")
+  @PostMapping(value = "/groups", produces = "application/json")
   public ResponseEntity<?> createGroup(@AuthenticationPrincipal PortfolioPrincipal principal, @RequestBody BaseGroupContract newGroup) {
-
-    ArrayList<String> roles = rolesService.getRolesByToken(principal);
-    if (roles.contains(TEACHER) || roles.contains(COURSE_ADMINISTRATOR)) {
+    List<UserRole> roles = rolesService.getRolesByToken(principal);
+    if (roles.contains(UserRole.TEACHER) || roles.contains(UserRole.COURSE_ADMINISTRATOR)) {
       try {
-        groupsClientService.createGroup(newGroup);
-        return ResponseEntity.ok().build();
+        CreateGroupResponse response = groupsClientService.createGroup(newGroup);
+        if (response.getIsSuccess()) {
+          return ResponseEntity.ok().build();
+        } else {
+          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Fuck");
+        }
       } catch (Exception error) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
       }

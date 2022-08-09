@@ -92,6 +92,19 @@ input, textarea {
   width: 100%;
 }
 
+.modal-delete-container {
+  display: none;
+  z-index:1;
+  background-color: rgba(0,0,0,0.3);
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+}
+
 .modal-header{
   display: flex;
 }
