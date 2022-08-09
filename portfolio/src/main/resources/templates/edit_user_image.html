@@ -8,7 +8,8 @@
     <link rel="stylesheet" th:href="@{styles/pages/project_details.css}">
     <link rel="stylesheet" th:href="@{styles/navbar.css}"/>
     <link rel="stylesheet" th:href="@{styles/pages/edit_account.css}" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.2/croppie.min.css" />
+<!--    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.2/croppie.min.css" />-->
+    <link rel="stylesheet" th:href="@{styles/croppie.min.css}"/>
 
 </head>
 <body>
@@ -57,7 +58,7 @@
     <form id='form' action="#" th:action="@{edit_account/editImage}" th:object="${imageData}" method="post" enctype="multipart/form-data">
         <div id="mainImageDiv" style="display: flex">
             <div class="edit-crop-photo">
-                <div id="croppie">Croppie Div...</div>
+                <div id="croppie"></div>
             </div>
             <div class="edit-crop-photo" style="border: 2px solid #7f7e82; width: 300px; height: 300px">
                 <h3 id="previewText" hidden="true">Preview Box</h3>
@@ -114,7 +115,7 @@
 
 </body>
 
-<script type="text/javascript" th:src="@{../frontend/cropping_image.js}"></script>
+<script type="text/javascript" th:src="@{../frontend/cropping_image.js}" defer></script>
 <script type="text/javascript" th:src="@{scripts/edit_user_photo.js}"></script>
 
 <style>
