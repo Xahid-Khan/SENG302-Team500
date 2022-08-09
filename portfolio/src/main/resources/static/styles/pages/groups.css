@@ -1,0 +1,22 @@
+.add-group {
+    display: flex;
+    justify-content: right;
+    padding-right: 50px;
+}
+
+.add-group-button {
+    margin: 15px 5px;
+}
+
+.groups {
+    padding: 10px 50px 50px 50px;
+    margin: 0 40px
+}
+
+.group {
+    padding: 20px;
+}
+
+.groups-header {
+    display: table-row;
+}
