@@ -184,7 +184,7 @@ public class GroupsServerService {
 //        return GetGroupDetailsResponse.newBuilder()
 //                .setShortName(group.getShortName())
 //                .setLongName(group.getLongName())
-//                .addMembers()
+//                .addMembers();
 //
 //    }
 }

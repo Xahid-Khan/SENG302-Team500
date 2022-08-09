@@ -80,4 +80,17 @@ public class GroupsClientService {
       return groupBlockingStub.getGroupDetails(
               GetGroupDetailsRequest.newBuilder().setGroupId(groupId).build());
     }
+
+//  private PaginationRequestOptions.Builder paginationRequestOptions =
+//          PaginationRequestOptions.newBuilder()
+//                  .setOffset(0)
+//  /**
+//   * Handles getting a group's details when given a group id
+//   * @param groupId the ID of the group to get the details of
+//   * @return a GetGroupDetailsResponse which has the groups details
+//   */
+//  public PaginatedGroupsResponse getAllGroupDetails(PaginationRequestOptions ) {
+//    return groupBlockingStub.getGroupDetails(
+//            GetGroupDetailsRequest.newBuilder().setGroupId(groupId).build());
+//  }
 }
