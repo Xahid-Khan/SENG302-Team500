@@ -1,12 +1,11 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
 import nz.ac.canterbury.seng302.portfolio.mapping.MilestoneMapper;
-import nz.ac.canterbury.seng302.portfolio.model.contract.BaseMilestoneContract;
+import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseMilestoneContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.MilestoneContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.MilestoneEntity;
 import nz.ac.canterbury.seng302.portfolio.repository.MilestoneRepository;
 import nz.ac.canterbury.seng302.portfolio.repository.ProjectRepository;
-import nz.ac.canterbury.seng302.portfolio.repository.SprintRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,7 +38,7 @@ public class MilestoneService {
      */
     public MilestoneContract get(String milestoneId) {
         var milestone= milestoneRepository.findById(milestoneId).orElseThrow();
-        return milestoneMapper.toContract(milestone, milestone.getOrderNumber());
+        return milestoneMapper.toContract(milestone);
     }
 
     /**
@@ -56,7 +55,7 @@ public class MilestoneService {
         milestoneRepository.save(milestone);
         projectRepository.save(project);
 
-        return milestoneMapper.toContract(milestone, milestone.getOrderNumber());
+        return milestoneMapper.toContract(milestone);
     }
 
 

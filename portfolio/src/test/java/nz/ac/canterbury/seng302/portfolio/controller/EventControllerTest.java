@@ -8,6 +8,7 @@ import nz.ac.canterbury.seng302.portfolio.model.entity.EventEntity;
 import nz.ac.canterbury.seng302.portfolio.model.entity.ProjectEntity;
 import nz.ac.canterbury.seng302.portfolio.repository.EventRepository;
 import nz.ac.canterbury.seng302.portfolio.repository.ProjectRepository;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +55,7 @@ public class EventControllerTest {
         eventRepository.deleteAll();
         projectRepository.deleteAll();
 
-        AuthorisationParamsHelper.setParams("role", "TEACHER");
+        AuthorisationParamsHelper.setParams("role", UserRole.TEACHER);
     }
 
     /**
@@ -77,7 +78,7 @@ public class EventControllerTest {
      */
     @Test
     public void getById() throws Exception {
-        AuthorisationParamsHelper.setParams("role", "STUDENT");
+        AuthorisationParamsHelper.setParams("role", UserRole.STUDENT);
         var project = new ProjectEntity("test project", null, Instant.EPOCH, Instant.parse("2007-12-03T10:15:30.00Z"));
         var event = new EventEntity("test event", "test description", Instant.ofEpochSecond(120), Instant.ofEpochSecond(360));
         project.addEvent(event);
@@ -108,7 +109,7 @@ public class EventControllerTest {
      */
     @Test
     public void getManyByProjectId() throws Exception {
-        AuthorisationParamsHelper.setParams("role", "STUDENT");
+        AuthorisationParamsHelper.setParams("role", UserRole.STUDENT);
         var project = new ProjectEntity("test project", null, Instant.EPOCH, Instant.parse("2007-12-03T10:15:30.00Z"));
         var event = new EventEntity("event", "test description", Instant.ofEpochSecond(120), Instant.ofEpochSecond(360));
         var event2 = new EventEntity("testevent", "test description 2", Instant.ofEpochSecond(420), Instant.ofEpochSecond(480));
@@ -150,7 +151,7 @@ public class EventControllerTest {
      */
     @Test
     public void getManyByNonExistentProjectId() throws Exception {
-        AuthorisationParamsHelper.setParams("role", "STUDENT");
+        AuthorisationParamsHelper.setParams("role", UserRole.STUDENT);
         this.mockMvc.perform(
                         get("/api/v1/projects/fake_project/events")
                 )
@@ -363,7 +364,7 @@ public class EventControllerTest {
      */
     @Test
     public void tryCreateNewAsStudent() throws Exception {
-        AuthorisationParamsHelper.setParams("role", "STUDENT");
+        AuthorisationParamsHelper.setParams("role", UserRole.STUDENT);
 
         var project = new ProjectEntity("test project", null, Instant.parse("2022-12-01T10:15:30.00Z"), Instant.parse("2023-01-20T10:15:30.00Z"));
         projectRepository.save(project);
@@ -392,7 +393,7 @@ public class EventControllerTest {
      */
     @Test
     public void tryUpdateValidEventAsStudent() throws Exception {
-        AuthorisationParamsHelper.setParams("role", "STUDENT");
+        AuthorisationParamsHelper.setParams("role", UserRole.STUDENT);
 
         var project = new ProjectEntity("test project", null, Instant.parse("2022-12-01T10:15:30.00Z"), Instant.parse("2023-01-20T10:15:30.00Z"));
         var event = new EventEntity("event", "pre-test description", Instant.parse("2023-01-01T10:15:30.00Z"), Instant.parse("2023-01-03T10:15:30.00Z"));
@@ -427,7 +428,7 @@ public class EventControllerTest {
      */
     @Test
     public void tryDeleteEventAsStudent() throws Exception {
-        AuthorisationParamsHelper.setParams("role", "STUDENT");
+        AuthorisationParamsHelper.setParams("role", UserRole.STUDENT);
         var project = new ProjectEntity("test project", null, Instant.EPOCH, Instant.parse("2007-12-03T10:15:30.00Z"));
         var event = new EventEntity("testevent", "pre-test description", Instant.EPOCH, Instant.parse("2007-12-03T10:15:30.00Z"));
         project.addEvent(event);

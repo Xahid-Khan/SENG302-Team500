@@ -4,49 +4,45 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import nz.ac.canterbury.seng302.portfolio.model.GetPaginatedUsersOrderingElement;
 
+/** This entity class handles everything to do with a user owning sorting parameters. */
 @Entity
-@Table(name="parameters")
+@Table(name = "parameters")
 public class SortingParameterEntity {
-  @Id
-  private int id;
+  @Id private int userId;
 
-  @Column
-  private String  sortAttribute;
+  @Column private String sortAttribute;
 
-  @Column
-  private boolean sortOrder;
+  @Column private boolean sortOrder;
 
-  protected SortingParameterEntity() {};
+  protected SortingParameterEntity() {}
 
-  public SortingParameterEntity(int id, String sort, boolean order) {
-    this.id = id;
-    this.sortAttribute = sort;
-    this.sortOrder = order;
+  /**
+   * Creates a new SortingParameterEntity bound to a userId.
+   *
+   * @param userId the userID of whom owns these sorting parameters
+   * @param sortAttribute the attribute to be sorted for
+   * @param sortOrder the sorting direction
+   */
+  public SortingParameterEntity(int userId, String sortAttribute, boolean sortOrder) {
+    this.userId = userId;
+    this.sortAttribute = sortAttribute;
+    this.sortOrder = sortOrder;
   }
 
-  public int getId() {
-    return id;
+  public int getUserId() {
+    return userId;
   }
 
-  public void setId(int id) {
-    this.id = id;
+  public void setUserId(int id) {
+    this.userId = id;
   }
 
   public String getSortAttribute() {
     return sortAttribute;
   }
 
-  public void setSortAttribute(String sortAttribute) {
-    this.sortAttribute = sortAttribute;
-  }
-
   public boolean isSortOrder() {
     return sortOrder;
-  }
-
-  public void setSortOrder(boolean sortOrder) {
-    this.sortOrder = sortOrder;
   }
 }

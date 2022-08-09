@@ -102,6 +102,7 @@ class EventView {
         this.modalDeleteCancel.removeEventListener("click",()=>this.cancelDeleteModal())
         this.modalDeleteConfirm.removeEventListener("click",()=>this.confirmDeleteModal())
         Socket.saveEdit(this.event.eventId)
+        window.removeEventListener('beforeunload', () => Socket.cancelEdit(this.entityId))
         this.deleteCallback()
     }
     wireView() {
