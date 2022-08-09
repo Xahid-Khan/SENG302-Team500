@@ -17,38 +17,6 @@ const croppieOptions : CroppieOptions = {
     },
 };
 
-const CheckFileTypeAndSize = (file : any) : boolean => {
-    const errorElement = document.getElementById("image-preview-error");
-    const warningElement = document.getElementById("image-preview-warning")
-
-    if (!(file.type == "image/jpeg" || file.type == "image/png" || file.type == "image/gif")) {
-        errorElement.innerHTML = "Invalid File Type - Only JPEG, PNG, and GIF are allowed.";
-        document.getElementById("image-preview-error").removeAttribute("hidden");
-        document.getElementById('submit').setAttribute('disabled', "true");
-        warningElement.setAttribute("hidden", "true");
-        return false
-    }
-
-    if (file.size > 10 * 1024 * 1024) {
-
-        errorElement.innerHTML = "Image size is too big - 10MB max is allowed";
-        warningElement.setAttribute("hidden", "true");
-        document.getElementById("image-preview-error").removeAttribute("hidden");
-        document.getElementById('submit').setAttribute('disabled', "true");
-        return false
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-        errorElement.setAttribute("hidden", "true");
-        warningElement.removeAttribute("hidden")
-        warningElement.innerHTML = "Your file is greater than 5MB - it will be compressed to save space.";
-        document.getElementById('submit').setAttribute('disabled', "true");
-    }
-
-    errorElement.setAttribute("hidden", "true");
-    return true;
-}
-
 const croppieElement = document.getElementById("croppie");
 const croppie = new Croppie(croppieElement, croppieOptions);
 
@@ -66,8 +34,9 @@ class CroppingImage extends React.Component {
             const reader = new FileReader();
             const file = this.file.current.files[0];
 
-            if (CheckFileTypeAndSize(file)) {
+            if (this.checkFileTypeAndSize(file)) {
                 reader.readAsDataURL(file);
+                document.getElementById("cropImageButton").removeAttribute("disabled");
 
                 reader.onload = () => {
                     croppie.bind({url: "" + reader.result});
@@ -75,7 +44,10 @@ class CroppingImage extends React.Component {
                 reader.onerror = function (error) {
                     console.log("Error: ", error);
                 };
-            };
+            } else {
+                this.img.current.src = "https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png";
+                document.getElementById("userProfileImage").setAttribute("src", "https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png");
+            }
         });
     };
 
@@ -92,6 +64,43 @@ class CroppingImage extends React.Component {
 
         });
     };
+
+
+    checkFileTypeAndSize = (file : any) : boolean => {
+        const errorElement = document.getElementById("image-preview-error");
+        const warningElement = document.getElementById("image-preview-warning")
+
+        if (!(file.type == "image/jpeg" || file.type == "image/png" || file.type == "image/gif")) {
+            errorElement.innerHTML = "Invalid File Type - Only JPEG, PNG, and GIF are allowed.";
+            document.getElementById("image-preview-error").removeAttribute("hidden");
+            document.getElementById('submit').setAttribute('disabled', "true");
+            document.getElementById('cropImageButton').setAttribute('disabled', "true");
+            warningElement.setAttribute("hidden", "true");
+            return false
+        }
+
+        if (file.size > 10 * 1024 * 1024) {
+
+            errorElement.innerHTML = "Image size is too big - 10MB max is allowed";
+            warningElement.setAttribute("hidden", "true");
+            document.getElementById("image-preview-error").removeAttribute("hidden");
+            document.getElementById('submit').setAttribute('disabled', "true");
+            document.getElementById('cropImageButton').setAttribute('disabled', "true");
+
+            return false
+        }
+
+        if (file.size > 5 * 1024 * 1024) {
+            errorElement.setAttribute("hidden", "true");
+            warningElement.removeAttribute("hidden")
+            warningElement.innerHTML = "Your file is greater than 5MB - it will be compressed to save space.";
+            document.getElementById('submit').setAttribute('disabled', "true");
+        }
+
+        errorElement.setAttribute("hidden", "true");
+        return true;
+    }
+
 
     render() {
         const { isFileUploaded, croppedImage } = this.state;
@@ -114,6 +123,7 @@ class CroppingImage extends React.Component {
 
                 <button
                     type="button"
+                    id={"cropImageButton"}
                     disabled={!isFileUploaded}
                     onClick={this.onResult}
                     style={{float:"right", marginTop:"-30px"}}
