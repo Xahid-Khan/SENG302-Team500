@@ -101,15 +101,15 @@ public class AddingBaseGroups {
      * This method creates 2 groups.
      */
     public void createTeacherAndNonGroup() {
-        teachers = new GroupModel("Teaching Staff", "This group contain all the members who are teachers");
-        nonGroup = new GroupModel("Non Group", "This group contain all the members who are not part of any other groups");
+        teachers = new GroupModel("Teachers", "Teaching Team");
+        nonGroup = new GroupModel("Non Group", "Users without a group");
         groupRepository.save(teachers);
         groupRepository.save(nonGroup);
 
     }
 
     /**
-     * This method adds users to the group based on thier roles.
+     * This method adds users to the group based on their roles.
      */
     public void addTeachersAndNonGroupMembers() {
         List<Integer> areTeachers = new ArrayList<>();
