@@ -36,13 +36,14 @@ button {
   background-color: red;
 }
 
-
 button:hover {
   background-color: #0332D1;
 }
+
 .dangerous-button:hover{
   background-color: darkred;
 }
+
 button[disabled],
 button[disabled]:hover {
   background-color: rgba(0,0,0,0.24);

@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 import javax.persistence.Query;
 import nz.ac.canterbury.seng302.identityprovider.database.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.database.UserRepository;
-import nz.ac.canterbury.seng302.identityprovider.exceptions.UserDoesNotExistException;
 import nz.ac.canterbury.seng302.identityprovider.mapping.UserMapper;
 import nz.ac.canterbury.seng302.shared.identityprovider.GetPaginatedUsersRequest;
 import nz.ac.canterbury.seng302.shared.identityprovider.GetUserByIdRequest;

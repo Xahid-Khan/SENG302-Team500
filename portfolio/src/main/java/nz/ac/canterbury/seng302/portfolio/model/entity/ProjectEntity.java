@@ -184,8 +184,7 @@ public class ProjectEntity extends PortfolioEntity {
 
   /**
    * Inserts the given deadline to the deadlines list, retaining sorted order.
-   *
-   * <p>Adapted from: <a href="https://stackoverflow.com/a/51893026">StackOverflow</a>
+   * <p>Adapted from: <a href="https://stackoverflow.com/a/51893026">StackOverflow</a></p>
    *
    * @param deadline to insert
    */
@@ -212,8 +211,7 @@ public class ProjectEntity extends PortfolioEntity {
 
   /**
    * Inserts the given milestone to the milestones list, retaining sorted order.
-   *
-   * <p>Adapted from: <a href="https://stackoverflow.com/a/51893026">StackOverflow</a>
+   * <p>Adapted from: <a href="https://stackoverflow.com/a/51893026">StackOverflow</a></p>
    *
    * @param milestone to insert
    */
