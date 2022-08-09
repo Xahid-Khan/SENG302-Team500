@@ -125,7 +125,7 @@ public class EditAccountController {
      * sure it's lower than 5mb. Then it used the gRPC protocols provided in registerClientService to
      * save the file in the DataBase in bytes (ByteString) format.
      *
-     * @param user A User of ty User.
+     * @param user A User of type User.
      * @param bindingResult An interface that extends errors
      * @param model HTML model DTO
      * @param principal An Authority State to verify user.
@@ -180,9 +180,7 @@ public class EditAccountController {
     @GetMapping(value="/edit_user_image")
     public String getPage(@AuthenticationPrincipal PortfolioPrincipal principal, Model model) {
         Integer userId = authStateService.getId(principal);
-
         model.addAttribute("userId", userId);
-
         return "edit_user_image";
     }
 
