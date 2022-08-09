@@ -42,40 +42,8 @@
     <div class="container">
         <div class="name-container">
             <div class="left-padding">
-                <form id='form' action="#" th:action="@{edit_account}" th:object="${user}" method="post" enctype="multipart/form-data">
+                <form id='form' action="#" th:action="@{edit_account}" th:object="${user}" method="post">
                     <h1 class="edit-title">Edit Account Details</h1>
-
-                    <!--    Submits a populated UserDTO to endpoint register -->
-
-                    <!--    Submits a populated UserDTO to endpoint register -->
-                    <input id="newUploadedImage" type="file" name="image" accept="image/jpeg,image/png,image/gif" hidden>
-
-                    <div class="image-container">
-                        <div class="imagePreviewOverlayContainer">
-                            <img
-                                class="current-image"
-                                th:src="'//' + ${globalImagePath} + ${userId}"
-                                onerror="this.onerror=null;this.src='https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png'"
-                                width="150"
-                                height="150"
-                                alt="No Photo"
-                            >
-
-                            <canvas id="image-preview" class="imagePreviewOverlay" width="150" height="150"></canvas>
-                        </div>
-
-                        <label for="newUploadedImage">
-                            <span class="image-upload-button">Choose profile picture</span>
-                        </label>
-
-                        <div class="image-upload-comment">
-                            <div>Please choose a JPEG, PNG, or GIF of less than 10MB size.</div>
-                            <div>Images above 5MB in size will be compressed.</div>
-                        </div>
-
-                        <div id="image-preview-warning" style="display: none; max-width: 400px; color: darkorange; margin-bottom: 8px" class="form-error"></div>
-                        <div id="image-preview-error" style="display: none; max-width: 400px;" class="form-error"></div>
-                    </div>
 
                     <th:block th:if="${imageError}">
                         <div class="form-error" id="errorMessageImage"><span th:text="${imageError}" aria-valuenow="test"></span></div>

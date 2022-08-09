@@ -60,9 +60,7 @@ class DeadlineView {
                 document.getElementById(`deadline-sprint-name-${this.deadline.deadlineId}-${sprint.sprintId}`).innerText = sprint.name + ':'
             }
         })
-        document.getElementById(`start-date-${this.deadline.deadlineId}`).innerText = DatetimeUtils.localToUserDMY(this.deadline.startDate);
-        const displayedDate = new Date(this.deadline.endDate.valueOf());
-        displayedDate.setDate(displayedDate.getDate() - 1);
+        document.getElementById(`start-date-${this.deadline.deadlineId}`).innerText = DatetimeUtils.localToDMYWithTime(this.deadline.startDate);
     }
 
     /**
