@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.stream.Collectors;
 
 /**
  * Provides utility methods for mapping between different representations of a GroupMember.
@@ -32,10 +31,10 @@ public class GroupMapper {
     private UserRepository userRepository;
 
     public GroupDetailsResponse toGroupDetailsResponse(GroupModel group) {
-        //gets all users from ids in userepository
+        //gets all users from ids in useRepository
         var groupMembersIds = groupMemberRepository.findById(group.getId()).get().getUserId();
         var groupMembersIterable = userRepository.findAllById(groupMembersIds);
-        ArrayList<UserResponse> groupMembers = new ArrayList<UserResponse>();
+        ArrayList<UserResponse> groupMembers = new ArrayList<>();
 
         //adds all the users to a list and maps them to userResponse
         for (var user : groupMembersIterable) {
@@ -43,26 +42,11 @@ public class GroupMapper {
         }
 
         return GroupDetailsResponse.newBuilder()
-                .setId(group.getId())
-                .setName(group.getName())
-                .setDescription(group.getDescription())
-                .setMembers(groupMembers)
+                .setGroupId(group.getId())
+                .setShortName(group.getShortName())
+                .setLongName(group.getLongName())
+                .addAllMembers(groupMembers)
                 .build();
 
-
-//    /**
-//     * Map a GroupMemberModel from the database to a GetGroupDetailsResponse for sending to clients;
-//     *
-//     * @param user GroupMemberModel to map
-//     * @return GetGroupDetailsResponse representing the given group
-//     */
-//    public GetGroupDetailsResponse toGetGroupDetailsResponse(Integer groupId, GroupMemberModel user) {
-//
-//        return GetGroupDetailsResponse.newBuilder()
-//                .setShortName(groupRepository.findById(groupId).get().getShortName())
-//                .setLongName(groupRepository.findById(groupId).get().getLongName())
-//                .addAllMembers(user.getUserIdIterator())
-//                .build();
-//    }
     }
 }

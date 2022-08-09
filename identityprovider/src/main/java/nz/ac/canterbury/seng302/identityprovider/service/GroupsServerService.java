@@ -32,6 +32,8 @@ public class GroupsServerService {
     @Autowired
     private GroupMapper groupMapper;
 
+    private String groupDoesntExistMessage = "Error: Group does not exist";
+
     /**
      * Handles the functionality on the server side for creating groups. It will ensure that both the
      * short name and the long name of the group are unique. If they are, it will add the group to the
@@ -63,9 +65,11 @@ public class GroupsServerService {
 
         if (validationErrors.isEmpty()) {
             GroupModel group = new GroupModel(groupRequest.getShortName(), groupRequest.getLongName());
-            GroupMemberModel groupMembers = new GroupMemberModel(group.getId(), null);
             groupRepository.save(group);
-            groupMemberRepository.save(groupMembers);
+
+            //Creates a groupMember entity with the same id as the group
+            GroupMemberModel groupMember = new GroupMemberModel(group.getId(), new ArrayList<>());
+            groupMemberRepository.save(groupMember);
 
             return CreateGroupResponse.newBuilder()
                     .setIsSuccess(true)
@@ -94,7 +98,7 @@ public class GroupsServerService {
         if (groupRepository.findById(groupRequest.getGroupId()).isEmpty()) {
             return DeleteGroupResponse.newBuilder()
                     .setIsSuccess(false)
-                    .setMessage("Error: Group does not exist")
+                    .setMessage(groupDoesntExistMessage)
                     .build();
         } else {
             groupRepository.deleteById(groupRequest.getGroupId());
@@ -118,30 +122,31 @@ public class GroupsServerService {
      */
     public AddGroupMembersResponse addGroupMembers(AddGroupMembersRequest groupRequest) {
         //Checks groups existence
-        if (groupRepository.findById(groupRequest.getGroupId()).isEmpty()) {
+        if (groupRepository.findById(groupRequest.getGroupId()).isEmpty() || groupMemberRepository.findById(groupRequest.getGroupId()).isEmpty()) {
             return AddGroupMembersResponse.newBuilder()
                     .setIsSuccess(false)
-                    .setMessage("Error: Group does not exist")
+                    .setMessage(groupDoesntExistMessage)
                     .build();
         } else {
-            //Checks if group exists in groupMember table
-            if (groupMemberRepository.findById(groupRequest.getGroupId()).isEmpty()) {
-                //create new entry in groupMember table
-                GroupMemberModel groupMember = new GroupMemberModel(groupRequest.getGroupId(), groupRequest.getUserIdsList());
-                groupMemberRepository.save(groupMember);
+
+            //update groupMember table
+            GroupMemberModel groupMember = groupMemberRepository.findById(groupRequest.getGroupId()).get();
+            String message = groupMember.addUserIds(groupRequest.getUserIdsList());
+
+            if (!message.equals("Success")) {
+                return AddGroupMembersResponse.newBuilder()
+                        .setIsSuccess(false)
+                        .setMessage(message)
+                        .build();
             } else {
-                //update groupMember table
-                GroupMemberModel groupMember = groupMemberRepository.findById(groupRequest.getGroupId()).get();
-                String message = groupMember.addUserIds(groupRequest.getUserIdsList());
                 groupMemberRepository.save(groupMember);
+                return AddGroupMembersResponse.newBuilder()
+                        .setIsSuccess(true)
+                        .setMessage("Members successfully added")
+                        .build();
             }
 
-            return AddGroupMembersResponse.newBuilder()
-                    .setIsSuccess(true)
-                    .setMessage("Members successfully added")
-                    .build();
         }
-
     }
 
     /**
@@ -158,7 +163,7 @@ public class GroupsServerService {
         if (groupRepository.findById(groupRequest.getGroupId()).isEmpty()) {
             return RemoveGroupMembersResponse.newBuilder()
                     .setIsSuccess(false)
-                    .setMessage("Error: Group does not exist")
+                    .setMessage(groupDoesntExistMessage)
                     .build();
         } else {
             //Gets the group from the repository and adds the user Ids to the group
@@ -183,20 +188,6 @@ public class GroupsServerService {
         }
     }
 
-//    public GetGroupDetailsResponse getGroupDetails(GetGroupDetailsRequest groupRequest) {
-//        var group = groupRepository.findById(groupRequest.getGroupId()).orElseThrow();
-//        var groupMembers = groupMemberRepository.findById(groupRequest.getGroupId()).orElseThrow();
-//        List<UserResponse> userList = new ArrayList<>();
-//        for (Integer userId : groupMembers.getUserId()) {
-//          var userFound = userRepository.findById(userId);
-//          return userMapper.toUserResponse(userFound.orElseThrow());
-//        }
-//        return GetGroupDetailsResponse.newBuilder()
-//                .setShortName(group.getShortName())
-//                .setLongName(group.getLongName())
-//                .addMembers();
-//
-//    }
 
     /**
      * Handles the functionality on the server side for getting all groups. If the database does not have

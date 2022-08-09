@@ -44,7 +44,7 @@ public class GroupMemberModel {
                 this.userId.add(id);
 
             } else {
-                return "User already in group";
+                return "Error: User already in group";
             }
         }
         return "Success";
@@ -62,7 +62,7 @@ public class GroupMemberModel {
                 this.userId.remove(id);
 
             } else {
-                return "User not in group";
+                return "Error: User not in group";
             }
         }
         return "Success";
