@@ -3,13 +3,12 @@ import React from "react";
 import {action, computed, makeObservable, observable, runInAction} from "mobx";
 import {
     LoadingDone,
-    LoadingError,
     LoadingNotYetAttempted,
     LoadingPending,
     LoadingStatus
 } from "../util/network/loading_status";
 import SockJS from "sockjs-client";
-import {Client as StompClient, Frame, Message as StompMessage, Stomp} from "@stomp/stompjs";
+import {Message as StompMessage, Stomp} from "@stomp/stompjs";
 
 /**
  * MobX-enabled store for the Ping/Socket Test page.

@@ -17,6 +17,8 @@ const croppieOptions : CroppieOptions = {
     },
 };
 
+console.log("I'm here...")
+
 const CheckFileTypeAndSize = (file : any) : boolean => {
     const errorElement = document.getElementById("image-preview-error");
     const warningElement = document.getElementById("image-preview-warning")
@@ -75,7 +77,7 @@ class CroppingImage extends React.Component {
                 reader.onerror = function (error) {
                     console.log("Error: ", error);
                 };
-            };
+            }
         });
     };
 
