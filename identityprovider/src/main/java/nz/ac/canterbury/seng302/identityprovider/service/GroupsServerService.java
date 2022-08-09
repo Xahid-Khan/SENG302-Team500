@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nz.ac.canterbury.seng302.identityprovider.database.*;
+import nz.ac.canterbury.seng302.identityprovider.mapping.GroupMapper;
 import nz.ac.canterbury.seng302.identityprovider.mapping.UserMapper;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
+import nz.ac.canterbury.seng302.shared.util.PaginationResponseOptions;
 import nz.ac.canterbury.seng302.shared.util.ValidationError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,6 +28,9 @@ public class GroupsServerService {
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private GroupMapper groupMapper;
 
     /**
      * Handles the functionality on the server side for creating groups. It will ensure that both the
@@ -58,7 +63,10 @@ public class GroupsServerService {
 
         if (validationErrors.isEmpty()) {
             GroupModel group = new GroupModel(groupRequest.getShortName(), groupRequest.getLongName());
+            GroupMemberModel groupMembers = new GroupMemberModel(group.getId(), null);
             groupRepository.save(group);
+            groupMemberRepository.save(groupMembers);
+
             return CreateGroupResponse.newBuilder()
                     .setIsSuccess(true)
                     .setNewGroupId(group.getId())
@@ -90,6 +98,8 @@ public class GroupsServerService {
                     .build();
         } else {
             groupRepository.deleteById(groupRequest.getGroupId());
+            groupMemberRepository.deleteById(groupRequest.getGroupId());
+
             return DeleteGroupResponse.newBuilder()
                     .setIsSuccess(true)
                     .setMessage("Group successfully deleted")
@@ -187,5 +197,34 @@ public class GroupsServerService {
 //                .addMembers();
 //
 //    }
+
+    /**
+     * Handles the functionality on the server side for getting all groups. If the database does not have
+     * any groups, then a failure will be returned. Otherwise, the all the groups in the database will be returned.
+     *
+     * @return a GetAllGroupsResponse gRPC message with all the groups
+     */
+    public PaginatedGroupsResponse getAllGroupDetails(GetPaginatedGroupsRequest groupInfoRequest) {
+        //all groups
+        var allGroupsIterator = groupRepository.findAll();
+        List<GroupDetailsResponse> allGroups = new ArrayList<>();
+        for (GroupModel group : allGroupsIterator) {
+            allGroups.add(groupMapper.toGroupDetailsResponse(group));
+        }
+
+        //if groups repository is empty
+        if (allGroups.isEmpty()) {
+            return PaginatedGroupsResponse.newBuilder()
+                    .setPaginationResponseOptions(PaginationResponseOptions.newBuilder()
+                            .setResultSetSize(0).build())
+                    .build();
+        } else {
+            return PaginatedGroupsResponse.newBuilder()
+                    .setPaginationResponseOptions(PaginationResponseOptions.newBuilder()
+                            .setResultSetSize(allGroups.size()).build())
+                    .addAllGroups(allGroups)
+                    .build();
+        }
+    }
 }
 

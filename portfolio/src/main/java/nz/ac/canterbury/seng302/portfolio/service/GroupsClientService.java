@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.portfolio.service;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseGroupContract;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
+import nz.ac.canterbury.seng302.shared.util.PaginationRequestOptions;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -71,26 +72,35 @@ public class GroupsClientService {
                       .build());
     }
 
-  /**
-   * Handles getting a group's details when given a group id
-   * @param groupId the ID of the group to get the details of
-   * @return a GetGroupDetailsResponse which has the groups details
-   */
-  public GetGroupDetailsResponse getGroupDetails(int groupId) {
-      return groupBlockingStub.getGroupDetails(
-              GetGroupDetailsRequest.newBuilder().setGroupId(groupId).build());
-    }
-
-//  private PaginationRequestOptions.Builder paginationRequestOptions =
-//          PaginationRequestOptions.newBuilder()
-//                  .setOffset(0)
 //  /**
 //   * Handles getting a group's details when given a group id
 //   * @param groupId the ID of the group to get the details of
 //   * @return a GetGroupDetailsResponse which has the groups details
 //   */
-//  public PaginatedGroupsResponse getAllGroupDetails(PaginationRequestOptions ) {
-//    return groupBlockingStub.getGroupDetails(
-//            GetGroupDetailsRequest.newBuilder().setGroupId(groupId).build());
-//  }
+//  public GetGroupDetailsResponse getGroupDetails(int groupId) {
+//      return groupBlockingStub.getGroupDetails(
+//              GetGroupDetailsRequest.newBuilder().setGroupId(groupId).build());
+//    }
+
+//  private PaginationRequestOptions.Builder paginationRequestOptions =
+//          PaginationRequestOptions.newBuilder()
+//                  .setOffset(0)
+  /**
+   * Sends a request to the server to get all the information for every group
+   * @return a GetGroupDetailsResponse which has all the groups details
+   */
+  public PaginatedGroupsResponse getAllGroupDetails() {
+    //Pagination request for all groups in order of id
+    PaginationRequestOptions.Builder paginationRequestOptions =
+            PaginationRequestOptions.newBuilder()
+                    .setOffset(0)//skip none
+                    .setLimit(1000)//get all the groups (a high number)
+                    .setOrderBy("id")
+                    .setIsAscendingOrder(true);
+
+    return groupBlockingStub.getPaginatedGroups(
+            GetPaginatedGroupsRequest.newBuilder()
+                    .setPaginationRequestOptions(paginationRequestOptions.build())
+                    .build());
+  }
 }
