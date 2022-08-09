@@ -28,6 +28,8 @@ public class RolesService {
             .orElse(UserRole.UNRECOGNIZED.toString());
 
     // Maps each role to UserRole enum if possible.
-    return Arrays.stream(roles.split(", ")).map(UserRole::valueOf).toList();
+    return roles.contains(" ")
+        ? Arrays.stream(roles.split(", ")).map(String::toUpperCase).map(UserRole::valueOf).toList()
+        : Arrays.stream(roles.split(",")).map(String::toUpperCase).map(UserRole::valueOf).toList();
   }
 }
