@@ -45,7 +45,7 @@ public class GroupsClientService {
   }
 
     /**
-     * Handles adding a group's members when given a group id
+     * Handles adding a group's members when given a group id. Sends the request to the identityprovider service to handle the adding.
      * @param groupId the ID of the group to add to
      * @param userIds the user ids of the updated group
      * @return a AddGroupMembersResponse with either a success or errors(s)
@@ -59,7 +59,7 @@ public class GroupsClientService {
     }
 
   /**
-   * Handles deleting a group's members when given a group id
+   * Handles deleting a group's members when given a group id. Sends the request to the identityprovider service to handle the deletion.
    * @param groupId the ID of the group to add to
    * @param userIds the user ids of the updated group
    * @return a AddGroupMembersResponse with either a success or errors(s)
@@ -72,21 +72,9 @@ public class GroupsClientService {
                       .build());
     }
 
-//  /**
-//   * Handles getting a group's details when given a group id
-//   * @param groupId the ID of the group to get the details of
-//   * @return a GetGroupDetailsResponse which has the groups details
-//   */
-//  public GetGroupDetailsResponse getGroupDetails(int groupId) {
-//      return groupBlockingStub.getGroupDetails(
-//              GetGroupDetailsRequest.newBuilder().setGroupId(groupId).build());
-//    }
 
-//  private PaginationRequestOptions.Builder paginationRequestOptions =
-//          PaginationRequestOptions.newBuilder()
-//                  .setOffset(0)
   /**
-   * Sends a request to the server to get all the information for every group
+   * Sends a request to the server to get all the information for every group. Sends the request to the identityprovider service to handle.
    * @return a GetGroupDetailsResponse which has all the groups details
    */
   public PaginatedGroupsResponse getAllGroupDetails() {
