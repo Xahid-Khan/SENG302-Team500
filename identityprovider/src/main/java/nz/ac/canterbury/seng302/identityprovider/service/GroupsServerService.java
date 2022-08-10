@@ -219,7 +219,7 @@ public class GroupsServerService extends GroupsServiceGrpc.GroupsServiceImplBase
                             }
                         }
                     }
-                    if (!inOtherGroup) {
+                    if (!inOtherGroup && nonGroupId != null) {
                         GroupMemberModel nonGroup = groupMemberRepository.findById(nonGroupId).orElseThrow();
                         nonGroup.addNewMember(userId);
                         groupMemberRepository.save(nonGroup);
