@@ -39,6 +39,10 @@ public class EditAccountController {
     public static final int PROFILE_PICTURE_COMPRESSION_THRESHOLD = 5 * 1024 * 1024;
     public static final int MAX_PROFILE_PICTURE_SIZE = 10 * 1024 * 1024;
 
+    /**
+     * This method removes the left and right trailing white-spaces from the form data.
+     * @param binder a data binder from web-request
+     */
     @InitBinder
     public void initBinder(WebDataBinder binder) {
         binder.registerCustomEditor(String.class, new StringTrimmerEditor(false));
