@@ -542,11 +542,13 @@ export function EditGroupMembers({viewGroupId}: any) {
                     }
                 })
                 let inMyGroup = false
-                myGroup.users.forEach((myUser) => {
-                    if (myUser.id === user.id) {
-                        inMyGroup = true
-                    }
-                })
+                if (document.getElementById("filter-groups-button").innerText === "All users") {
+                    myGroup.users.forEach((myUser) => {
+                        if (myUser.id === user.id) {
+                            inMyGroup = true
+                        }
+                    })
+                }
                 if (duplicate === false && inMyGroup === false) {
                     otherGroupViewingNoDuplicates.push(user)
                 }
