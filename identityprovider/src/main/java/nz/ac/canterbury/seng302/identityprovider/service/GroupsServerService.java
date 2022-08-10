@@ -106,19 +106,29 @@ public class GroupsServerService extends GroupsServiceGrpc.GroupsServiceImplBase
      */
     @Override
     public void deleteGroup(DeleteGroupRequest request, StreamObserver<DeleteGroupResponse> responseObserver) {
+        //Checks groups existence
         if (groupRepository.findById(request.getGroupId()).isEmpty()) {
             responseObserver.onNext(DeleteGroupResponse.newBuilder()
                     .setIsSuccess(false)
                     .setMessage(groupDoesntExistMessage)
                     .build());
         } else {
-            groupRepository.deleteById(request.getGroupId());
-            groupMemberRepository.deleteById(request.getGroupId());
+            // if group id is 6006 or 6005 (teacher or no group) then it can't be deleted. WARNING this is hard coded based off the values in the database
+            if (request.getGroupId() == 6006 || request.getGroupId() == 6005) {
+                responseObserver.onNext(DeleteGroupResponse.newBuilder()
+                        .setIsSuccess(false)
+                        .setMessage("Error: Cannot delete default group")
+                        .build());
+            } else {
+                //adds group
+                groupRepository.deleteById(request.getGroupId());
+                groupMemberRepository.deleteById(request.getGroupId());
 
-            responseObserver.onNext(DeleteGroupResponse.newBuilder()
-                    .setIsSuccess(true)
-                    .setMessage("Group successfully deleted")
-                    .build());
+                responseObserver.onNext(DeleteGroupResponse.newBuilder()
+                        .setIsSuccess(true)
+                        .setMessage("Group successfully deleted")
+                        .build());
+            }
         }
         responseObserver.onCompleted();
     }
