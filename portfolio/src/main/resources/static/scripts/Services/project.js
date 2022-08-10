@@ -2,10 +2,9 @@
  * Handles switching between the editor and view screens.
  */
 class Project {
-    constructor(containerElement, data, deleteCallback, pingCallback) {
+    constructor(containerElement, data, deleteCallback) {
         this.containerElement = containerElement;
         this.project = data;
-        this.pingCallback = pingCallback;
 
         this.currentView = null;
         this.showViewer();
@@ -200,9 +199,6 @@ class Project {
         this.currentView.dispose();
     }
 
-    pingCallbackCallback() {
-        this.pingCallback();
-    }
 
     /**
      * Handles showing of project or sprint editor.
@@ -224,7 +220,7 @@ class Project {
      */
     showViewer() {
         this.currentView?.dispose();
-        this.currentView = new ProjectView(this.containerElement, this.project, this.pingCallbackCallback.bind(this), this.showEditor.bind(this), this.deleteProject.bind(this), this.deleteSprint.bind(this), this.onSprintUpdate.bind(this), this.deleteEvent.bind(this), this.onEventUpdate.bind(this), this.deleteDeadline.bind(this), this.onDeadlineUpdate.bind(this), this.deleteMilestone.bind(this), this.onMilestoneUpdate.bind(this), this.onEventEdit.bind(this), this.onDeadlineEdit.bind(this), this.onMilestoneEdit.bind(this));
+        this.currentView = new ProjectView(this.containerElement, this.project, this.showEditor.bind(this), this.deleteProject.bind(this), this.deleteSprint.bind(this), this.onSprintUpdate.bind(this), this.deleteEvent.bind(this), this.onEventUpdate.bind(this), this.deleteDeadline.bind(this), this.onDeadlineUpdate.bind(this), this.deleteMilestone.bind(this), this.onMilestoneUpdate.bind(this), this.onEventEdit.bind(this), this.onDeadlineEdit.bind(this), this.onMilestoneEdit.bind(this));
         if (this.currentlyEditing) {
             this.currentView.toggleSprints();
             this.currentView.toggleMilestones();
@@ -345,6 +341,7 @@ class Project {
 
         const showingEvents = this.currentView.showingEvents;
         const showingMilestones = this.currentView.showingMilestones;
+        const showingDeadlines = this.currentView.showingDeadlines;
         this.showViewer();
         this.currentView.toggleSprints();
         if (showingEvents) {
@@ -352,6 +349,9 @@ class Project {
         }
         if (showingMilestones) {
             this.currentView.toggleMilestones();
+        }
+        if (showingDeadlines) {
+            this.currentView.toggleDeadlines();
         }
     }
 

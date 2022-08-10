@@ -8,12 +8,10 @@ import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.portfolio.model.GetPaginatedUsersOrderingElement;
 import nz.ac.canterbury.seng302.portfolio.model.entity.SortingParameterEntity;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
+import nz.ac.canterbury.seng302.portfolio.service.GroupsClientService;
 import nz.ac.canterbury.seng302.portfolio.service.SortingParametersService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
-import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserRoleChangeResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -32,6 +30,9 @@ public class UserListController {
 
     @Autowired
     private SortingParametersService sortingParametersService;
+
+    @Autowired
+    private GroupsClientService groupsClientService;
 
 
     @GetMapping("/user-list")
@@ -96,7 +97,7 @@ public class UserListController {
         // Construct response
         model.addAttribute("userId", userId);
         model.addAttribute("users", response.getUsersList());
-        model.addAttribute("totalUserCount", response.getResultSetSize());
+        model.addAttribute("totalUserCount", response.getPaginationResponseOptions().getResultSetSize());
         model.addAttribute("pageOffset", offset);
         model.addAttribute("currentPage", page);
         model.addAttribute("sortDir", ascending);
@@ -135,6 +136,27 @@ public class UserListController {
                           @RequestParam(name="roleNumber") Integer roleNumber) {
 
         modifyRole(principal, model, id, roleNumber, true);
+        if (roleNumber == 1) {
+            PaginatedGroupsResponse allGroupDetails = groupsClientService.getAllGroupDetails();
+            boolean inNonMembersGroup = false;
+            Integer nonGroupID = null;
+            for (GroupDetailsResponse group : allGroupDetails.getGroupsList()) {
+                if (group.getShortName().equals("Non Group")) {
+                    nonGroupID = group.getGroupId();
+                    for (UserResponse user: group.getMembersList()) {
+                        if (user.getId() == id) {
+                            inNonMembersGroup = true;
+                        }
+                    }
+                }
+                if (group.getShortName().equals("Teachers")) {
+                    groupsClientService.addGroupMembers(group.getGroupId(), List.of(id));
+                }
+            }
+            if (inNonMembersGroup) {
+                groupsClientService.removeGroupMembers(nonGroupID, List.of(id));
+            }
+        }
 
         return listUsers(principal, Optional.empty(), Optional.empty(), Optional.empty(), model);
     }
@@ -146,6 +168,29 @@ public class UserListController {
                              @RequestParam(name="roleNumber") Integer roleNumber) {
 
         modifyRole(principal, model, id, roleNumber, false);
+
+        if (roleNumber == 1) {
+            PaginatedGroupsResponse allGroupDetails = groupsClientService.getAllGroupDetails();
+            boolean inOtherGroup = false;
+            Integer nonGroupID = null;
+            for (GroupDetailsResponse group : allGroupDetails.getGroupsList()) {
+                if (group.getShortName().equals("Non Group")) {
+                    nonGroupID = group.getGroupId();
+                }
+                if (group.getShortName().equals("Teachers")) {
+                    groupsClientService.removeGroupMembers(group.getGroupId(), List.of(id));
+                } else {
+                    for (UserResponse otherUser: group.getMembersList()) {
+                        if (otherUser.getId() == id) {
+                            inOtherGroup = true;
+                        }
+                    }
+                }
+            }
+            if (!inOtherGroup) {
+                groupsClientService.addGroupMembers(nonGroupID, List.of(id));
+            }
+        }
 
         return listUsers(principal, Optional.empty(), Optional.empty(), Optional.empty(), model);
     }

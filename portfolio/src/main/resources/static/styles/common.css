@@ -16,7 +16,7 @@ body {
 /* Raised Card */
 .raised-card {
   border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.30);
   background: white;
 }
 
@@ -32,8 +32,16 @@ button {
   font-size: 14px;
 }
 
+.dangerous-button{
+  background-color: red;
+}
+
 button:hover {
   background-color: #0332D1;
+}
+
+.dangerous-button:hover{
+  background-color: darkred;
 }
 
 button[disabled],
@@ -61,3 +69,68 @@ input, textarea {
    border-right: 5px solid #2C3E50;
    border-left: 5px solid #2C3E50;
  }
+
+.modal-delete {
+  background-color: #fff;
+  margin: 20% auto;
+  width: 40%;
+  border: black solid 1px;
+  border-radius: 20px;
+  padding: 20px 20px 50px 20px;
+}
+
+.modal-container{
+  display: none;
+  z-index:1;
+  background-color: rgba(0,0,0,0.3);
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+}
+
+.modal-delete-container {
+  display: none;
+  z-index:1;
+  background-color: rgba(0,0,0,0.3);
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+}
+
+.modal-header{
+  display: flex;
+}
+
+.modal-buttons{
+  flex: 1;
+  float: right;
+}
+.modal-close-button{
+  flex: 1;
+  float: right;
+}
+.modal-close-button:hover{
+  cursor: pointer;
+}
+.modal-title{
+  font-size: 20px;
+  width: 100%;
+}
+
+.modal-body{
+  width: 90%;
+  font-size: 16px;
+  padding-bottom: 10px;
+}
+.border-line{
+  border-top: black solid 1px;
+  margin: 10px 0px;
+}

@@ -8,7 +8,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import nz.ac.canterbury.seng302.portfolio.mapping.SprintMapper;
-import nz.ac.canterbury.seng302.portfolio.model.contract.BaseSprintContract;
+import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseSprintContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.SprintContract;
 import nz.ac.canterbury.seng302.portfolio.repository.ProjectRepository;
 import nz.ac.canterbury.seng302.portfolio.repository.SprintRepository;
@@ -40,7 +40,7 @@ public class SprintService {
      */
     public SprintContract get(String id) {
         var sprint = sprintRepository.findById(id).orElseThrow();
-        return sprintMapper.toContract(sprint, sprint.getOrderNumber());
+        return sprintMapper.toContract(sprint);
     }
 
     /**
@@ -59,7 +59,7 @@ public class SprintService {
         sprintRepository.save(entity);
         projectRepository.save(project);
 
-        return sprintMapper.toContract(entity, entity.getOrderNumber());
+        return sprintMapper.toContract(entity);
     }
 
     /**

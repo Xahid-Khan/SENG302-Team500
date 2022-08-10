@@ -9,13 +9,13 @@ import java.util.stream.Collectors;
 import javax.persistence.Query;
 import nz.ac.canterbury.seng302.identityprovider.database.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.database.UserRepository;
-import nz.ac.canterbury.seng302.identityprovider.exceptions.UserDoesNotExistException;
 import nz.ac.canterbury.seng302.identityprovider.mapping.UserMapper;
 import nz.ac.canterbury.seng302.shared.identityprovider.GetPaginatedUsersRequest;
 import nz.ac.canterbury.seng302.shared.identityprovider.GetUserByIdRequest;
 import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedUsersResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
+import nz.ac.canterbury.seng302.shared.util.PaginationResponseOptions;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class GetUserService {
   private static final HashSet<String> validOrderByFieldNames = new HashSet<String>(
-      List.of(new String[]{"name", "username", "nickname", "roles"}));
+          List.of(new String[]{"name", "username", "nickname", "roles"}));
 
   @Autowired private UserRepository repository;
 
@@ -35,6 +35,7 @@ public class GetUserService {
 
   @Value("${spring.datasource.driverClassName}")
   private String dbDriverClassName;
+
 
   /**
    * This is a GRPC user serivce method that is beign over-ridden to get the user details and encase
@@ -58,7 +59,7 @@ public class GetUserService {
    * @return a PaginatedUsersResponse filled in
    */
   public PaginatedUsersResponse getPaginatedUsers(GetPaginatedUsersRequest request) throws Exception {
-    var orderByFields = request.getOrderBy().split("\\|", 2);
+    var orderByFields = request.getPaginationRequestOptions().getOrderBy().split("\\|", 2);
 
     if (orderByFields.length != 2) {
       throw new IllegalArgumentException("Please provide an orderBy field name, pipe symbol, followed by 'asc' or 'desc'.");
@@ -66,8 +67,8 @@ public class GetUserService {
     boolean ascending = orderByFields[1].equals("asc");
     var orderByField = orderByFields[0];
 
-    var limit = request.getLimit();
-    var offset = request.getOffset();
+    var limit = request.getPaginationRequestOptions().getLimit();
+    var offset = request.getPaginationRequestOptions().getOffset();
 
     // Validate inputs
     if (!validOrderByFieldNames.contains(orderByField) || limit <= 0 || offset < 0) {
@@ -142,8 +143,9 @@ public class GetUserService {
 
       return PaginatedUsersResponse.newBuilder()
           .addAllUsers(resultList.stream().map(userMapper::toUserResponse).toList())
-          .setResultSetSize(totalCount)
-          .build();
+              .setPaginationResponseOptions(PaginationResponseOptions.newBuilder()
+                      .setResultSetSize(totalCount)
+          .build() ).build();
     }
   }
 }

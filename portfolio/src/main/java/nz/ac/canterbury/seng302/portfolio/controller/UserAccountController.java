@@ -74,7 +74,7 @@ public class UserAccountController {
         model.addAttribute("delegate", this);
         model.addAttribute("user", userDetails);
         model.addAttribute("registration_date", dateString);
-        model.addAttribute("userId", userId);
+        model.addAttribute("username", userDetails.getUsername());
 
         return "account_details";
     }
@@ -91,6 +91,7 @@ public class UserAccountController {
         model.addAttribute("user", userDetails);
         model.addAttribute("registration_date", dateString);
         model.addAttribute("userId", id);
+        model.addAttribute("username", userDetails.getUsername());
 
         return "account_details";
     }
@@ -108,11 +109,13 @@ public class UserAccountController {
 
         long years = ChronoUnit.YEARS.between(date, LocalDate.now());
         long months = ChronoUnit.MONTHS.between(date, LocalDate.now()) % 12;
+        long days = ChronoUnit.DAYS.between(date, LocalDate.now());
 
         return dateString +
                 " (" +
                 ((years == 0) ? "" : years + " years ") +
-                ((years != 0 && months == 0) ? "" : months + " months") +
+                ((months == 0) ? "" : months + " months ") +
+                ((months != 0) ? "" : days + " days") +
                 ")";
     }
 
