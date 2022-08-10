@@ -8,6 +8,7 @@ import nz.ac.canterbury.seng302.portfolio.model.entity.ProjectEntity;
 import nz.ac.canterbury.seng302.portfolio.model.entity.SprintEntity;
 import nz.ac.canterbury.seng302.portfolio.repository.ProjectRepository;
 import nz.ac.canterbury.seng302.portfolio.repository.SprintRepository;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +46,7 @@ public class SprintControllerTest {
         sprintRepository.deleteAll();
         projectRepository.deleteAll();
 
-        AuthorisationParamsHelper.setParams("role", "TEACHER");
+        AuthorisationParamsHelper.setParams("role", UserRole.TEACHER);
     }
 
     @Test
@@ -59,7 +60,7 @@ public class SprintControllerTest {
 
     @Test
     public void getById() throws Exception {
-        AuthorisationParamsHelper.setParams("role", "STUDENT");
+        AuthorisationParamsHelper.setParams("role", UserRole.STUDENT);
         var project = new ProjectEntity("test project", null, Instant.EPOCH, Instant.parse("2007-12-03T10:15:30.00Z"));
         var sprint = new SprintEntity("test sprint", "test description", Instant.ofEpochSecond(120), Instant.ofEpochSecond(360), "#fff");
         project.addSprint(sprint);
@@ -85,7 +86,7 @@ public class SprintControllerTest {
 
     @Test
     public void getManyByProjectId() throws Exception {
-        AuthorisationParamsHelper.setParams("role", "STUDENT");
+        AuthorisationParamsHelper.setParams("role", UserRole.STUDENT);
         var project = new ProjectEntity("test project", null, Instant.EPOCH, Instant.parse("2007-12-03T10:15:30.00Z"));
         var sprint = new SprintEntity("test sprint", "test description", Instant.ofEpochSecond(120), Instant.ofEpochSecond(360), "#fff");
         var sprint2 = new SprintEntity("test sprint 2", "test description 2", Instant.ofEpochSecond(420), Instant.ofEpochSecond(480), "#fff");
@@ -123,7 +124,7 @@ public class SprintControllerTest {
 
     @Test
     public void getManyByNonExistentProjectId() throws Exception {
-        AuthorisationParamsHelper.setParams("role", "STUDENT");
+        AuthorisationParamsHelper.setParams("role", UserRole.STUDENT);
         var result = this.mockMvc.perform(
                 get("/api/v1/projects/fake_project/sprints")
             )
@@ -307,7 +308,7 @@ public class SprintControllerTest {
 
     @Test
     public void tryCreateNewAsStudent() throws Exception {
-        AuthorisationParamsHelper.setParams("role", "STUDENT");
+        AuthorisationParamsHelper.setParams("role", UserRole.STUDENT);
 
         var project = new ProjectEntity("test project", null, Instant.parse("2022-12-01T10:15:30.00Z"), Instant.parse("2023-01-20T10:15:30.00Z"));
         projectRepository.save(project);
@@ -332,7 +333,7 @@ public class SprintControllerTest {
 
     @Test
     public void tryUpdateValidSprintAsStudent() throws Exception {
-        AuthorisationParamsHelper.setParams("role", "STUDENT");
+        AuthorisationParamsHelper.setParams("role", UserRole.STUDENT);
 
         var project = new ProjectEntity("test project", null, Instant.parse("2022-12-01T10:15:30.00Z"), Instant.parse("2023-01-20T10:15:30.00Z"));
         var sprint = new SprintEntity("pre-edit test sprint", "pre-test description", Instant.parse("2023-01-01T10:15:30.00Z"), Instant.parse("2023-01-03T10:15:30.00Z"), "#fff");
@@ -363,7 +364,7 @@ public class SprintControllerTest {
 
     @Test
     public void tryDeleteSprintAsStudent() throws Exception {
-        AuthorisationParamsHelper.setParams("role", "STUDENT");
+        AuthorisationParamsHelper.setParams("role", UserRole.STUDENT);
         var project = new ProjectEntity("test project", null, Instant.EPOCH, Instant.parse("2007-12-03T10:15:30.00Z"));
         var sprint = new SprintEntity("pre-edit test sprint", "pre-test description", Instant.EPOCH, Instant.parse("2007-12-03T10:15:30.00Z"), "#fff");
         project.addSprint(sprint);

@@ -5,12 +5,13 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import nz.ac.canterbury.seng302.identityprovider.database.UserModel;
-import nz.ac.canterbury.seng302.identityprovider.database.UserRepository;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterRequest;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
+
+import io.grpc.stub.StreamObserver;
+import net.devh.boot.grpc.client.inject.GrpcClient;
+import nz.ac.canterbury.seng302.identityprovider.database.*;
+import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import nz.ac.canterbury.seng302.shared.util.ValidationError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,12 @@ public class RegisterServerService {
   @Autowired private UserRepository repository;
 
   @Autowired private PasswordService passwordService;
+
+  @Autowired private GroupsServerService groupsServerService;
+
+  @Autowired private GroupRepository groupRepository;
+
+  @Autowired private GroupMemberRepository groupMemberRepository;
 
   /**
    * Registers a new user, including hashing their password and saving the current timestamp.
@@ -35,7 +42,6 @@ public class RegisterServerService {
   public UserRegisterResponse register(UserRegisterRequest request)
       throws NoSuchAlgorithmException, InvalidKeySpecException {
     UserRegisterResponse.Builder reply = UserRegisterResponse.newBuilder();
-
     var passwordHash = passwordService.hashPassword(request.getPassword());
     List<UserRole> roles = new ArrayList<>();
     roles.add(UserRole.TEACHER);
@@ -76,6 +82,11 @@ public class RegisterServerService {
 
     if (validationErrors.isEmpty()) {
       repository.save(user);
+      UserModel newUser = repository.findByUsername(request.getUsername());
+      GroupModel group = groupRepository.findByShortName("Non Group");
+      GroupMemberModel groupMember = groupMemberRepository.findById(group.getId()).get();
+      groupMember.addUserIds(Collections.singletonList(newUser.getId()));
+      groupMemberRepository.save(groupMember);
       reply
           .setIsSuccess(true)
           .setNewUserId(user.getId())

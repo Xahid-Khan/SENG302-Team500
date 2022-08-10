@@ -28,8 +28,9 @@ class SprintView {
     constructView() {
         this.containerElement.innerHTML = `
     <div id = "${this.sprint.sprintId}" class = "raised-card">
-    <div class="colour-block" id="sprint-colour-block-${this.sprint.sprintId}"></div>
-        <div class="card-contents">
+        <div class="colour-block" id="sprint-colour-block-${this.sprint.sprintId}"></div>
+    
+        <div class="card-content">
             <div class="sprints" id="sprints-container-${this.sprint.sprintId}"></div>
             <div class="events-title">
                 <span id="sprint-order-text-${this.sprint.sprintId}"></span>: <span id="sprint-title-text-${this.sprint.sprintId}" style="font-style: italic;"></span> | <span id="start-date-${this.sprint.sprintId}"></span> - <span id="end-date-${this.sprint.sprintId}"></span>
@@ -42,10 +43,16 @@ class SprintView {
             </div>
         
             <div class="events-details" id="sprint-details-${this.sprint.sprintId}">
-                <div class="sprint-description"><span><label>Description: </label></span> <span  id="sprint-description-${this.sprint.sprintId}"></span></div>
-                <div class="sprint-events" id="sprint-events-${this.sprint.sprintId}"></div>
-                <div class="sprint-deadlines" id="sprint-deadlines-${this.sprint.sprintId}"></div>
-                <div class="sprint-milestones" id="sprint-milestones-${this.sprint.sprintId}"></div>
+                <label class="event-description-label" id="event-description-label-${this.sprint.sprintId}"></label>
+                <div  id="sprint-description-${this.sprint.sprintId}" class="event-description"></div>
+                <div class="events-sprints">
+                    <label id="occurences-label-${this.sprint.sprintId}">Occurences during this sprint:</label>
+                    <div>
+                        <div class="sprint-events" id="sprint-events-${this.sprint.sprintId}"></div>
+                        <div class="sprint-deadlines" id="sprint-deadlines-${this.sprint.sprintId}"></div>
+                        <div class="sprint-milestones" id="sprint-milestones-${this.sprint.sprintId}"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -61,6 +68,9 @@ class SprintView {
         this.sprintMilestones = document.getElementById(`sprint-milestones-${this.sprint.sprintId}`);
         document.getElementById(`sprint-order-text-${this.sprint.sprintId}`).innerText = `Sprint ${this.sprint.orderNumber}`;
         document.getElementById(`sprint-title-text-${this.sprint.sprintId}`).innerText = this.sprint.name;
+        if(this.sprint.description.trim().length !== 0){
+            this.descriptionLabel.innerText = "Description:\n";
+        }
         this.description.innerText = this.sprint.description;
         this.sprintEvents.innerHTML = this.getEvents();
         this.events.forEach((event) => {

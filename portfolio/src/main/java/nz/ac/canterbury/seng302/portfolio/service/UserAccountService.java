@@ -4,6 +4,7 @@ import net.devh.boot.grpc.client.inject.GrpcClient;
 import nz.ac.canterbury.seng302.portfolio.mapping.UserMapper;
 import nz.ac.canterbury.seng302.portfolio.model.GetPaginatedUsersOrderingElement;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
+import nz.ac.canterbury.seng302.shared.util.PaginationRequestOptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -56,11 +57,15 @@ public class UserAccountService {
             case ROLES -> "roles";
         };
 
-        GetPaginatedUsersRequest allUsers = GetPaginatedUsersRequest.newBuilder()
-            .setOffset(offset)
-            .setLimit(limit)
-            .setOrderBy(String.format("%s|%s", orderByAttributeName, ascending ? "asc" : "desc"))
-            .build();
+        GetPaginatedUsersRequest allUsers = GetPaginatedUsersRequest.newBuilder().setPaginationRequestOptions(
+                PaginationRequestOptions.newBuilder()
+                        .setOffset(offset)
+                        .setLimit(limit)
+                        .setOrderBy(String.format("%s|%s", orderByAttributeName, ascending ? "asc" : "desc"))
+                        .build() ).build();
+
+
+
 
         return userAccountServiceBlockingStub.getPaginatedUsers(allUsers);
     }

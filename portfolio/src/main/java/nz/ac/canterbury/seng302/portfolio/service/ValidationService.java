@@ -1,14 +1,17 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
 import nz.ac.canterbury.seng302.portfolio.model.contract.*;
+import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseDeadlineContract;
+import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseEventContract;
+import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseMilestoneContract;
+import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseProjectContract;
+import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseSprintContract;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.xml.bind.SchemaOutputResolver;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Locale;
 import java.util.NoSuchElementException;
 
 @Service

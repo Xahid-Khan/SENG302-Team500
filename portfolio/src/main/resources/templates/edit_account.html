@@ -1,131 +1,157 @@
 <!DOCTYPE HTML>
 <html lang="en" xmlns:th="http://thymeleaf.org">
 <head>
-    <title>My Account</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <link rel="stylesheet" th:href="@{styles/common.css}"/>
-    <link rel="stylesheet" th:href="@{styles/pages/account_details.css}"/>
-    <link rel="stylesheet" th:href="@{styles/pages/project_details.css}">
-    <link rel="stylesheet" th:href="@{styles/navbar.css}"/>
-    <link rel="stylesheet" th:href="@{styles/pages/edit_account.css}" />
+  <title>My Account</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <link rel="stylesheet" th:href="@{styles/common.css}"/>
+  <link rel="stylesheet" th:href="@{styles/pages/account_details.css}"/>
+  <link rel="stylesheet" th:href="@{styles/pages/project_details.css}">
+  <link rel="stylesheet" th:href="@{styles/pages/edit_account.css}"/>
+  <link rel="stylesheet" th:href="@{styles/navbar.css}"/>
 
 </head>
 <body>
-    <div class="navbar">
-        <div class="navbar-items">
-            <div>
-                <p class="title">SENG 302</p>
-            </div>
-            <div>
-                <a href="project-details" id="home-page">Projects</a>
-                <a href="user-list">View Users</a>
-            </div>
-        </div>
-        <div class="account">
-            <div class="dropdown">
-                <button class="button dropbutton"><div class="username" th:text="${username}"></div>
-                    <div style="width: 46px;height: 46px;object-fit: cover;overflow: clip;">
-                        <img th:src="'//' + ${globalImagePath} + ${userId}"
-                             onerror="this.onerror=null;this.src='https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png'"
-                             alt="Placeholder Profile Photo" style="height: 50px;" width="46" height="46">
-                    </div>
-                </button>
-                <div class="dropdown-content">
-                    <a class="dropdown-content-links" href="my_account">My Account</a>
-                    <a class="dropdown-content-links" href="logout">Log Out</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
+<div th:replace="fragments/header :: header" class="navbar"></div>
 <div class="raised-card card-padding" style="display: flex;justify-content: center;">
-    <div class="container">
-        <div class="name-container">
-            <div class="left-padding">
-                <form id='form' action="#" th:action="@{edit_account}" th:object="${user}" method="post">
-                    <h1 class="edit-title">Edit Account Details</h1>
+  <div class="container">
+    <div class="name-container">
+      <div class="left-padding">
+        <form id='form' action="#" th:action="@{edit_account}" th:object="${user}" method="post"
+              enctype="multipart/form-data">
+          <h1 class="edit-title">Edit Account Details</h1>
 
-                    <th:block th:if="${imageError}">
-                        <div class="form-error" id="errorMessageImage"><span th:text="${imageError}" aria-valuenow="test"></span></div>
-                    </th:block>
+          <!--    Submits a populated UserDTO to endpoint register -->
 
-                    <div class="form-row">
-                        <label th:for="email">Email *</label>
-                        <input type="email" th:field="*{email}" th:required="required"/>
-                        <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="form-error">Email Error</div>
-                    </div>
+          <!--    Submits a populated UserDTO to endpoint register -->
+          <input id="newUploadedImage" type="file" name="image"
+                 accept="image/jpeg,image/png,image/gif" hidden>
 
-                    <div class="form-row">
-                        <label th:for="firstName">First Name *</label>
-                        <input type="text" th:field="*{firstName}" th:required="required"/>
-                        <div th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}" class="form-error">First Name Error</div>
-                    </div>
+          <div class="image-container">
+            <div class="imagePreviewOverlayContainer">
+              <img
+                  class="current-image"
+                  th:src="'//' + ${globalImagePath} + ${userId}"
+                  onerror="this.onerror=null;this.src='https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png'"
+                  width="150"
+                  height="150"
+                  alt="No Photo"
+              >
 
-                    <div class="form-row">
-                        <label th:for="middleName">Middle Name(s)</label>
-                        <input type="text" th:field="*{middleName}"/>
-                        <div th:if="${#fields.hasErrors('middleName')}" th:errors="*{middleName}" class="form-error">Middle Name Error</div>
-                    </div>
-
-                    <div class="form-row">
-                        <label th:for="lastName">Last Name *</label>
-                        <input type="text" th:field="*{lastName}" th:required="required"/>
-                        <div th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}" class="form-error">Last Name Error</div>
-                    </div>
-
-                    <div class="form-row">
-                        <label th:for="nickname">Nickname</label>
-                        <input type="text" th:field="*{nickname}"/>
-                        <div th:if="${#fields.hasErrors('nickname')}" th:errors="*{nickname}" class="form-error">Nickname Error</div>
-                    </div>
-
-                    <div class="form-row">
-                        <label th:for="personalPronouns">Personal Pronouns</label>
-                        <input type="text" th:field="*{personalPronouns}"/>
-                        <div th:if="${#fields.hasErrors('personalPronouns')}" th:errors="*{personalPronouns}" class="form-error">Pronouns Error</div>
-                    </div>
-
-                    <div class="form-row">
-                        <label th:for="bio">Bio</label>
-                        <textarea th:field="*{bio}"></textarea>
-                        <div th:if="${#fields.hasErrors('bio')}" th:errors="*{bio}" class="form-error">Bio Error</div>
-                    </div>
-
-                    <div th:if="${error != null}">
-                        <p id="field-error" class="form-error" th:text="${error}"></p>
-                    </div>
-
-                    <p>*: Required field</p>
-
-                    <button id='submit' name="save" type="Submit" value="0">Save</button>
-                    <button type="button" onclick="window.location.href='my_account'">Cancel</button>
-
-                </form>
+              <canvas id="image-preview" class="imagePreviewOverlay" width="150"
+                      height="150"></canvas>
             </div>
-        </div>
-        <div>
-        </div>
-        <div class="right-padding">
-        </div>
+
+            <label for="newUploadedImage">
+              <span class="image-upload-button">Choose profile picture</span>
+            </label>
+
+            <div class="image-upload-comment">
+              <div>Please choose a JPEG, PNG, or GIF of less than 10MB size.</div>
+              <div>Images above 5MB in size will be compressed.</div>
+            </div>
+
+            <div id="image-preview-warning"
+                 style="display: none; max-width: 400px; color: darkorange; margin-bottom: 8px"
+                 class="form-error"></div>
+            <div id="image-preview-error" style="display: none; max-width: 400px;"
+                 class="form-error"></div>
+          </div>
+
+          <th:block th:if="${imageError}">
+            <div class="form-error" id="errorMessageImage"><span th:text="${imageError}"
+                                                                 aria-valuenow="test"></span></div>
+          </th:block>
+
+          <div class="form-row">
+            <label th:for="email">Email *</label>
+            <input type="email" th:field="*{email}" th:required="required"/>
+            <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="form-error">Email
+              Error
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label th:for="firstName">First Name *</label>
+            <input type="text" th:field="*{firstName}" th:required="required"/>
+            <div th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"
+                 class="form-error">First Name Error
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label th:for="middleName">Middle Name(s)</label>
+            <input type="text" th:field="*{middleName}"/>
+            <div th:if="${#fields.hasErrors('middleName')}" th:errors="*{middleName}"
+                 class="form-error">Middle Name Error
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label th:for="lastName">Last Name *</label>
+            <input type="text" th:field="*{lastName}" th:required="required"/>
+            <div th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"
+                 class="form-error">Last Name Error
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label th:for="nickname">Nickname</label>
+            <input type="text" th:field="*{nickname}"/>
+            <div th:if="${#fields.hasErrors('nickname')}" th:errors="*{nickname}"
+                 class="form-error">Nickname Error
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label th:for="personalPronouns">Personal Pronouns</label>
+            <input type="text" th:field="*{personalPronouns}"/>
+            <div th:if="${#fields.hasErrors('personalPronouns')}" th:errors="*{personalPronouns}"
+                 class="form-error">Pronouns Error
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label th:for="bio">Bio</label>
+            <textarea th:field="*{bio}"></textarea>
+            <div th:if="${#fields.hasErrors('bio')}" th:errors="*{bio}" class="form-error">Bio
+              Error
+            </div>
+          </div>
+
+          <div th:if="${error != null}">
+            <p id="field-error" class="form-error" th:text="${error}"></p>
+          </div>
+
+          <p>*: Required field</p>
+
+          <button id='submit' name="save" type="Submit" value="0">Save</button>
+          <button type="button" onclick="window.location.href='my_account'">Cancel</button>
+
+        </form>
+      </div>
     </div>
     <div>
     </div>
+    <div class="right-padding">
+    </div>
+  </div>
+  <div>
+  </div>
 </div>
-
 <script type="text/javascript" th:src="@{scripts/popup_form.js}"></script>
 <script type="text/javascript" th:src="@{scripts/edit_account.js}"></script>
 </body>
 
 <style>
-    input, textarea {
-        width: 100%;
-        max-width: 100%;
-    }
+  input, textarea {
+    width: 100%;
+    max-width: 100%;
+  }
 
-    .form-row {
-        width: 100%;
-        padding-bottom: 20px;
-    }
+  .form-row {
+    width: 100%;
+    padding-bottom: 20px;
+  }
 
 </style>
 </html>

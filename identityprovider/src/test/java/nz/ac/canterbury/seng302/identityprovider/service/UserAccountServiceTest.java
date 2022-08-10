@@ -19,6 +19,7 @@ import nz.ac.canterbury.seng302.shared.identityprovider.GetPaginatedUsersRequest
 import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedUsersResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
+import nz.ac.canterbury.seng302.shared.util.PaginationRequestOptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -92,47 +93,50 @@ public class UserAccountServiceTest {
   @Test
   public void given3UsersExist_whenRequestOffset0Limit5_Receive3() {
     var request =
-        GetPaginatedUsersRequest.newBuilder()
+        GetPaginatedUsersRequest.newBuilder().setPaginationRequestOptions(
+                PaginationRequestOptions.newBuilder()
             .setLimit(5)
             .setOffset(0)
             .setOrderBy("username|asc")
-            .build();
+            .build() ).build();
 
     service.getPaginatedUsers(request, responseObserver);
 
     verify(responseObserver).onNext(onNextArgumentCaptor.capture());
     var response = onNextArgumentCaptor.getValue();
 
-    assertEquals(3, response.getResultSetSize());
+    assertEquals(3, response.getPaginationResponseOptions().getResultSetSize());
     assertEquals(3, response.getUsersList().size());
   }
 
   @Test
   public void given3UsersExist_whenRequestOffset0Limit2_Receive2ResultSetSize3() {
     var request =
-        GetPaginatedUsersRequest.newBuilder()
+        GetPaginatedUsersRequest.newBuilder().setPaginationRequestOptions(
+                PaginationRequestOptions.newBuilder()
             .setLimit(2)
             .setOffset(0)
             .setOrderBy("username|asc")
-            .build();
+            .build() ).build();
 
     service.getPaginatedUsers(request, responseObserver);
 
     verify(responseObserver).onNext(onNextArgumentCaptor.capture());
     var response = onNextArgumentCaptor.getValue();
 
-    assertEquals(3, response.getResultSetSize());
+    assertEquals(3, response.getPaginationResponseOptions().getResultSetSize());
     assertEquals(2, response.getUsersList().size());
   }
 
   @Test
   public void given3UsersExist_whenRequestOffset0Limit2OrderByUsername_ReceiveFirst2Users() {
     var request =
-        GetPaginatedUsersRequest.newBuilder()
+        GetPaginatedUsersRequest.newBuilder().setPaginationRequestOptions(
+                PaginationRequestOptions.newBuilder()
             .setLimit(2)
             .setOffset(0)
             .setOrderBy("username|asc")
-            .build();
+            .build() ).build();
 
     service.getPaginatedUsers(request, responseObserver);
 
@@ -147,11 +151,12 @@ public class UserAccountServiceTest {
   @Test
   public void given3UsersExist_whenRequestOffset1Limit5OrderByUsername_ReceiveLast2Users() {
     var request =
-        GetPaginatedUsersRequest.newBuilder()
+        GetPaginatedUsersRequest.newBuilder().setPaginationRequestOptions(
+                PaginationRequestOptions.newBuilder()
             .setLimit(5)
             .setOffset(1)
             .setOrderBy("username|asc")
-            .build();
+            .build() ).build();
 
     service.getPaginatedUsers(request, responseObserver);
 
@@ -166,29 +171,31 @@ public class UserAccountServiceTest {
   @Test
   public void given3UsersExist_whenRequestOffset3_ReceiveNoUsersResultSetSize3() {
     var request =
-        GetPaginatedUsersRequest.newBuilder()
+        GetPaginatedUsersRequest.newBuilder().setPaginationRequestOptions(
+                PaginationRequestOptions.newBuilder()
             .setLimit(5)
             .setOffset(3)
             .setOrderBy("username|asc")
-            .build();
+            .build() ).build();
 
     service.getPaginatedUsers(request, responseObserver);
 
     verify(responseObserver).onNext(onNextArgumentCaptor.capture());
     var response = onNextArgumentCaptor.getValue();
 
-    assertEquals(3, response.getResultSetSize());
+    assertEquals(3, response.getPaginationResponseOptions().getResultSetSize());
     assertEquals(0, response.getUsersList().size());
   }
 
   @Test
   public void whenRequestNegativeOffset_ReceiveIllegalArgumentException() {
     var request =
-        GetPaginatedUsersRequest.newBuilder()
+        GetPaginatedUsersRequest.newBuilder().setPaginationRequestOptions(
+                PaginationRequestOptions.newBuilder()
             .setLimit(5)
             .setOffset(-1)
             .setOrderBy("username|asc")
-            .build();
+            .build() ).build();
 
     service.getPaginatedUsers(request, responseObserver);
 
@@ -201,11 +208,12 @@ public class UserAccountServiceTest {
   @Test
   public void whenRequestZeroLimit_ReceiveIllegalArgumentException() {
     var request =
-        GetPaginatedUsersRequest.newBuilder()
+        GetPaginatedUsersRequest.newBuilder().setPaginationRequestOptions(
+                PaginationRequestOptions.newBuilder()
             .setLimit(0)
             .setOffset(1)
             .setOrderBy("username|asc")
-            .build();
+            .build() ).build();
 
     service.getPaginatedUsers(request, responseObserver);
 
@@ -218,11 +226,12 @@ public class UserAccountServiceTest {
   @Test
   public void whenRequestOrderByInvalid_ReceiveIllegalArgumentException() {
     var request =
-        GetPaginatedUsersRequest.newBuilder()
+        GetPaginatedUsersRequest.newBuilder().setPaginationRequestOptions(
+                PaginationRequestOptions.newBuilder()
             .setLimit(5)
             .setOffset(1)
             .setOrderBy("middleName|asc")
-            .build();
+            .build() ).build();
 
     service.getPaginatedUsers(request, responseObserver);
 
@@ -247,11 +256,12 @@ public class UserAccountServiceTest {
   @Test
   public void given3UsersExist_whenOrderByUsername_receiveInAscendingOrder() {
     var request =
-        GetPaginatedUsersRequest.newBuilder()
+        GetPaginatedUsersRequest.newBuilder().setPaginationRequestOptions(
+                PaginationRequestOptions.newBuilder()
             .setLimit(5)
             .setOffset(0)
             .setOrderBy("username|asc")
-            .build();
+            .build() ).build();
 
     service.getPaginatedUsers(request, responseObserver);
 
@@ -266,11 +276,12 @@ public class UserAccountServiceTest {
   @Test
   public void given3UsersExist_whenOrderByName_receiveInAscendingOrder() {
     var request =
-        GetPaginatedUsersRequest.newBuilder()
+        GetPaginatedUsersRequest.newBuilder().setPaginationRequestOptions(
+                PaginationRequestOptions.newBuilder()
             .setLimit(5)
             .setOffset(0)
             .setOrderBy("name|asc")
-            .build();
+            .build() ).build();
 
     service.getPaginatedUsers(request, responseObserver);
 
@@ -285,11 +296,12 @@ public class UserAccountServiceTest {
   @Test
   public void given3UsersExist_whenOrderByAlias_receiveInAscendingOrder() {
     var request =
-        GetPaginatedUsersRequest.newBuilder()
+        GetPaginatedUsersRequest.newBuilder().setPaginationRequestOptions(
+                PaginationRequestOptions.newBuilder()
             .setLimit(5)
             .setOffset(0)
             .setOrderBy("nickname|asc")
-            .build();
+            .build() ).build();
 
     service.getPaginatedUsers(request, responseObserver);
 
@@ -304,11 +316,12 @@ public class UserAccountServiceTest {
   @Test
   public void given3UsersExist_whenOrderByAlias_receiveInAscendingOrderAlphabetically() {
     var request =
-        GetPaginatedUsersRequest.newBuilder()
+        GetPaginatedUsersRequest.newBuilder().setPaginationRequestOptions(
+                PaginationRequestOptions.newBuilder()
             .setLimit(5)
             .setOffset(0)
             .setOrderBy("roles|asc")
-            .build();
+            .build() ).build();
 
     service.getPaginatedUsers(request, responseObserver);
 
@@ -323,11 +336,12 @@ public class UserAccountServiceTest {
   @Test
   public void given3UsersExist_whenOrderByUsernameDescending_receiveInDescendingOrder() {
     var request =
-        GetPaginatedUsersRequest.newBuilder()
+        GetPaginatedUsersRequest.newBuilder().setPaginationRequestOptions(
+                PaginationRequestOptions.newBuilder()
             .setLimit(5)
             .setOffset(0)
             .setOrderBy("username|desc")
-            .build();
+            .build() ).build();
 
     service.getPaginatedUsers(request, responseObserver);
 
