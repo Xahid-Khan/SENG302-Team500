@@ -41,7 +41,7 @@ public class AddingBaseGroups {
      */
     @EventListener({ApplicationReadyEvent.class})
     public void addUsersToDatabase() throws NoSuchAlgorithmException, InvalidKeySpecException {
-        var passwordHash = passwordService.hashPassword("123456789");
+        var passwordHash = passwordService.hashPassword("qwerty123");
         List<UserRole> userRole = new ArrayList<>();
         userRole.add(UserRole.STUDENT);
         String pronouns = "His/Him";
@@ -49,45 +49,30 @@ public class AddingBaseGroups {
                 new UserModel(
                         "student",
                         passwordHash,
-                        "Justin",
-                        "T",
-                        "Lake",
-                        "JTL",
-                        "I am a new Student",
+                        "Default",
+                        "",
+                        "Student",
+                        "Def",
+                        "I am a default student",
                         pronouns,
-                        "student@nomail.com",
+                        "default@student.com",
                         userRole,
                         currentTimestamp());
 
         userRepository.save(student);
-
-        UserModel student2 =
-                new UserModel(
-                        "studentTow",
-                        passwordHash,
-                        "Justin",
-                        "T",
-                        "Lake",
-                        "JTL",
-                        "I am a new Student",
-                        pronouns,
-                        "student2@nomail.com",
-                        userRole,
-                        currentTimestamp());
-        userRepository.save(student2);
 
         userRole.add(UserRole.TEACHER);
         UserModel teacher =
                 new UserModel(
                         "teacher",
                         passwordHash,
-                        "George",
-                        "T",
-                        "Smith",
+                        "Default",
                         "",
-                        "I am a new Teacher",
+                        "Teacher",
+                        "",
+                        "I am a default Teacher",
                         pronouns,
-                        "teacher@nomail.com",
+                        "default@teacher.com",
                         userRole,
                         currentTimestamp());
         userRepository.save(teacher);
