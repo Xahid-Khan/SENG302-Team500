@@ -46,6 +46,11 @@ const clearEventListeners = (id: number, groups: any[]) => {
 
 const wireModal = (id: number, groups: any[]) => {
     document.getElementById("modal-delete-group-open").style.display = "block"
+    groups.forEach((group) => {
+        if (group.id === id) {
+            document.getElementById("group-delete-modal-body").innerText = `Are you sure you want to delete this group? All ${group['users'].length} users will be removed from the group`
+        }
+    })
     document.getElementById("group-delete-confirm").addEventListener("click", () => deleteGroup(id, groups))
     document.getElementById("group-delete-x").addEventListener("click", () => clearEventListeners(id, groups))
     document.getElementById("group-delete-cancel").addEventListener("click", () => clearEventListeners(id, groups))

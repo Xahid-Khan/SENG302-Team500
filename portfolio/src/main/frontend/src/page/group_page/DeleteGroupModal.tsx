@@ -11,7 +11,7 @@ export function DeleteGroupModal() {
                     <div className={"modal-close-button"} id={"group-delete-x"}>&times;</div>
                 </div>
                 <div className={"border-line"}/>
-                <div className="modal-body">
+                <div className="modal-body" id={"group-delete-modal-body"}>
                     Are you sure you want to delete this group? All users will be removed from the group
                 </div>
                 <div className="modal-buttons">
