@@ -17,6 +17,7 @@ import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
  * @param roles               the roles of the user
  */
 public record UserContract(
+    Integer id,
     String firstName,
     String middleName,
     String lastName,

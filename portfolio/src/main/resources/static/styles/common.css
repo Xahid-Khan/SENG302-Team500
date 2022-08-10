@@ -70,8 +70,7 @@ input, textarea {
    border-left: 5px solid #2C3E50;
  }
 
-
-.modal-delete{
+.modal-delete {
   background-color: #fff;
   margin: 20% auto;
   width: 40%;
@@ -79,7 +78,8 @@ input, textarea {
   border-radius: 20px;
   padding: 20px 20px 50px 20px;
 }
-.modal-delete-container{
+
+.modal-container{
   display: none;
   z-index:1;
   background-color: rgba(0,0,0,0.3);
@@ -92,26 +92,40 @@ input, textarea {
   width: 100%;
 }
 
-.modal-delete-header{
+.modal-delete-container {
+  display: none;
+  z-index:1;
+  background-color: rgba(0,0,0,0.3);
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+}
+
+.modal-header{
   display: flex;
 }
 
-.modal-delete-buttons{
+.modal-buttons{
   flex: 1;
   float: right;
 }
-.modal-delete-close-button{
+.modal-close-button{
   flex: 1;
   float: right;
 }
-.modal-delete-close-button:hover{
+.modal-close-button:hover{
   cursor: pointer;
 }
-.modal-delete-title{
+.modal-title{
   font-size: 20px;
   width: 100%;
 }
-.modal-delete-body{
+
+.modal-body{
   width: 90%;
   font-size: 16px;
   padding-bottom: 10px;
