@@ -81,7 +81,7 @@ class CroppingImage extends React.Component {
             return false
         }
 
-        if (file.size < 5 * 1024 && file.size > 10 * 1024 * 1024) {
+        if (file.size < 5 * 1024 || file.size > 10 * 1024 * 1024) {
 
             errorElement.innerHTML = "Image size must be greater than 5KB and lower than 10MB";
             warningElement.setAttribute("hidden", "true");
