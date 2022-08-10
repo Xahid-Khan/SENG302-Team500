@@ -105,7 +105,6 @@ public class RegisterServerServiceTest {
     assertEquals(1, userRepository.count());
     // Ensure it failed
     assertFalse(response.getIsSuccess());
-    System.out.println(response.getValidationErrorsList());
     // Ensures two validation error messages were sent
     assertEquals(2, response.getValidationErrorsList().size());
   }

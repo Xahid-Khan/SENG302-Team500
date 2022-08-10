@@ -1,78 +1,54 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <link rel="stylesheet" th:href="@{styles/common.css}"/>
-    <link rel="stylesheet" th:href="@{styles/pages/project_details.css}">
-    <link rel="stylesheet" th:href="@{styles/navbar.css}"/>
+  <link rel="stylesheet" th:href="@{styles/common.css}"/>
+  <link rel="stylesheet" th:href="@{styles/pages/project_details.css}">
+  <link rel="stylesheet" th:href="@{styles/navbar.css}"/>
 
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-    <title>SENG302 Homepage</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SENG302 Homepage</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body class="fullscreen" th:classappend="${(isStudent) ? 'studentMode' : ''}">
-<div class="navbar">
-    <div class="navbar-items">
-        <div>
-            <p class="title">SENG 302</p>
-        </div>
-        <div>
-            <a href="project-details" id="home-page">Projects</a>
-            <a href="user-list">View Users</a>
-        </div>
-    </div>
-    <div class="account">
-        <div class="dropdown">
-            <button class="button dropbutton">
-                <div class="username" th:text="${username}"></div>
-                <div style="width: 46px;height: 46px;object-fit: cover;overflow: clip;">
-                    <img th:src="'//' + ${globalImagePath} + ${userId}"
-                         onerror="this.onerror=null;this.src='https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png'"
-                         alt="Placeholder Profile Photo" style="height: 50px;" width="46" height="46">
-                </div>
-            </button>
-            <div class="dropdown-content">
-                <a class="dropdown-content-links" href="my_account">My Account</a>
-                <a class="dropdown-content-links" href="logout">Log Out</a>
-            </div>
-        </div>
-    </div>
-</div>
+<div th:replace="fragments/header :: header" class="navbar"></div>
 <div id="update-insert">
 
 </div>
 <div class="errors">
-    <div id="error" class="error raised-card"></div>
+  <div id="error" class="error raised-card"></div>
 </div>
 
 <div class="add-project">
-    <div>
-        <button class="button add-project-button" id="add-project" data-privilege="teacher"> Add Project</button>
-    </div>
+  <div>
+    <button class="button add-project-button" id="add-project" data-privilege="teacher"> Add
+      Project
+    </button>
+  </div>
 </div>
 
 <div class="projects" id="project-list"></div>
 
 
 <div class="modal-delete-container" id="modal-delete-open">
-    <div class="modal-delete">
-        <div class="modal-delete-header">
-            <div class="modal-delete-title">
-               Delete Confirmation
-            </div>
+  <div class="modal-delete">
+    <div class="modal-delete-header">
+      <div class="modal-delete-title">
+        Delete Confirmation
+      </div>
 
-            <div class="modal-delete-close-button" id="modal-delete-x">&times;</div>
-        </div>
-        <div class="border-line"></div>
-        <div class="modal-delete-body">
-            Are you sure you want to delete?
-        </div>
-        <div class="modal-delete-buttons">
-            <button class="button" id="modal-delete-cancel">Cancel</button>
-            <button class="button dangerous-button" id="modal-delete-confirm">Delete</button>
-        </div>
+      <div class="modal-delete-close-button" id="modal-delete-x">&times;</div>
     </div>
+    <div class="border-line"></div>
+    <div class="modal-delete-body">
+      Are you sure you want to delete?
+    </div>
+    <div class="modal-delete-buttons">
+      <button class="button" id="modal-delete-cancel">Cancel</button>
+      <button class="button dangerous-button" id="modal-delete-confirm">Delete</button>
+    </div>
+  </div>
 </div>
 
 </body>

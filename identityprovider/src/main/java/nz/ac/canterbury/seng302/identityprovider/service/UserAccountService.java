@@ -10,13 +10,10 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import net.devh.boot.grpc.server.service.GrpcService;
-import nz.ac.canterbury.seng302.identityprovider.exceptions.IrremovableRoleException;
-import nz.ac.canterbury.seng302.identityprovider.exceptions.UserDoesNotExistException;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import nz.ac.canterbury.seng302.shared.util.FileUploadStatus;
 import nz.ac.canterbury.seng302.shared.util.FileUploadStatusResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import nz.ac.canterbury.seng302.shared.util.ValidationError;
 
 /**
  * This base service contains multiple other services, and is used as a hub so GRPC does not
@@ -127,15 +124,11 @@ public class UserAccountService extends UserAccountServiceGrpc.UserAccountServic
   public void addRoleToUser(
       ModifyRoleOfUserRequest modificationRequest,
       StreamObserver<UserRoleChangeResponse> responseObserver) {
-    try {
-      var response = roleService.addRoleToUser(modificationRequest);
 
-      responseObserver.onNext(response);
-      responseObserver.onCompleted();
-    } catch (UserDoesNotExistException e) {
-      e.printStackTrace();
-      responseObserver.onError(e);
-    }
+    var response = roleService.addRoleToUser(modificationRequest);
+
+    responseObserver.onNext(response);
+    responseObserver.onCompleted();
   }
 
   /**
@@ -148,15 +141,10 @@ public class UserAccountService extends UserAccountServiceGrpc.UserAccountServic
   public void removeRoleFromUser(
       ModifyRoleOfUserRequest modificationRequest,
       StreamObserver<UserRoleChangeResponse> responseObserver) {
-    try {
-      var response = roleService.removeRoleFromUser(modificationRequest);
+    var response = roleService.removeRoleFromUser(modificationRequest);
 
-      responseObserver.onNext(response);
-      responseObserver.onCompleted();
-    } catch (UserDoesNotExistException | IrremovableRoleException e) {
-      e.printStackTrace();
-      responseObserver.onError(e);
-    }
+    responseObserver.onNext(response);
+    responseObserver.onCompleted();
   }
 
   /**
@@ -234,13 +222,16 @@ public class UserAccountService extends UserAccountServiceGrpc.UserAccountServic
   }
 
   /**
-   * Overriding a gRPC service to delete a photo from the DB and generate a response stream to send back to user
+   * Overriding a gRPC service to delete a photo from the DB and generate a response stream to send
+   * back to user
+   *
    * @param request DeleteUserProfilePhotoRequest form user with the user Id as an element
    * @param responseObserver returns a response observer stream with status.
    */
   @Override
-  public void deleteUserProfilePhoto(DeleteUserProfilePhotoRequest request,
-                                     StreamObserver<DeleteUserProfilePhotoResponse> responseObserver) {
+  public void deleteUserProfilePhoto(
+      DeleteUserProfilePhotoRequest request,
+      StreamObserver<DeleteUserProfilePhotoResponse> responseObserver) {
     try {
       DeleteUserProfilePhotoResponse response = editUserService.deletePhoto(request);
       responseObserver.onNext(response);
@@ -248,7 +239,6 @@ public class UserAccountService extends UserAccountServiceGrpc.UserAccountServic
     } catch (Exception e) {
       responseObserver.onError(e);
     }
-
   }
 
   @Override
@@ -260,9 +250,6 @@ public class UserAccountService extends UserAccountServiceGrpc.UserAccountServic
       responseObserver.onNext(response);
       responseObserver.onCompleted();
 
-    } catch (UserDoesNotExistException e) {
-      e.printStackTrace();
-      responseObserver.onError(e);
     } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
       e.printStackTrace();
     }

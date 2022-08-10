@@ -1,6 +1,8 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
+import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
+import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -8,7 +10,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.stereotype.Controller;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Controller for handling and dispatching live project update notifications.
@@ -17,7 +20,10 @@ import java.util.List;
 public class LiveProjectUpdatesController {
 
   @Autowired
-  private ProjectDetailsController projectDetailsController;
+  private UserAccountService userAccountService;
+
+  @Autowired
+  private AuthStateService authStateService;
 
   /**
    * STOMP endpoint that receives a message string and echos it back with metadata attached.
@@ -27,27 +33,15 @@ public class LiveProjectUpdatesController {
    *   is working as expected.
    * </p>
    */
-  @MessageMapping("/show")
-  @SendTo("/topic/pongs")
-  public String show(@AuthenticationPrincipal PreAuthenticatedAuthenticationToken principal,
-                 String location) {
+  @MessageMapping("/alert")
+  @SendTo("/topic/edit-project")
+  public Map<String, String> alert(@AuthenticationPrincipal PreAuthenticatedAuthenticationToken principal, String alert) {
     var authState = (PortfolioPrincipal) principal.getPrincipal();
-    return "show~" + location + "~" + authState.getName();
-  }
-
-  @MessageMapping("/cancel")
-  @SendTo("/topic/pongs")
-  public String cancel(@AuthenticationPrincipal PreAuthenticatedAuthenticationToken principal,
-                     String location) {
-    var authState = (PortfolioPrincipal) principal.getPrincipal();
-    return "cancel~" + location + "~" + authState.getName();
-  }
-
-  @MessageMapping("/save")
-  @SendTo("/topic/pongs")
-  public String save(@AuthenticationPrincipal PreAuthenticatedAuthenticationToken principal,
-                     String location) {
-    var authState = (PortfolioPrincipal) principal.getPrincipal();
-    return "save~" + location + "~" + authState.getName();
+    Map<String, String> message = new HashMap<>();
+    message.put("username", alert.split("~")[2]);
+    message.put("action", alert.split("~")[1]);
+    message.put("location", alert.split("~")[0]);
+    message.put("name", authState.getName());
+    return message;
   }
 }

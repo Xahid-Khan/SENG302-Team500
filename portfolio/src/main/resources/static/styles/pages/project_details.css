@@ -98,6 +98,7 @@ body {
     display: none;
     overflow: hidden;
     font-size: 14px;
+    padding-left: 10px;
 }
 
 .events-sprints {
@@ -287,6 +288,7 @@ textarea {
 }
 
 .event-sprint-details {
+    font-size: 14px;
 }
 
 .event-sprint-name {
@@ -316,6 +318,19 @@ textarea {
 
 .event-description-label {
     font-weight: bold;
+}
+
+.sprint-events-details {
+    margin: 3px;
+}
+
+.sprint-event-name {
+    border-radius: 3px;
+    padding: 0px 5px;
+}
+
+.card-content {
+    padding: 25px;
 }
 
 
