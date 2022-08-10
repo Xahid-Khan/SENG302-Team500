@@ -138,13 +138,19 @@ public class EditAccountController {
       @AuthenticationPrincipal PortfolioPrincipal principal,
       @RequestParam(value = "image", required = false) MultipartFile file) {
 
+    model.addAttribute("user", user);
+    // Rely on the authstate to get the user, since otherwise the submitted user is used leading
+    //  to the username being blank.
+    Integer userId = authStateService.getId(principal);
+    UserResponse userDetails = userAccountService.getUserById(userId);
+
+    if (userDetails != null) {
+      model.addAttribute("username", userDetails.getUsername());
+    }
     if (bindingResult.hasErrors()) {
       return "edit_account";
     }
-    model.addAttribute("user", user);
     try {
-      Integer userId = authStateService.getId(principal);
-      model.addAttribute("userId", userId);
       if (file != null && !file.isEmpty()) {
         if (
             MIN_PROFILE_PICTURE_SIZE <= file.getSize()
@@ -196,6 +202,7 @@ public class EditAccountController {
         int userId = authStateService.getId(principal);
         registerClientService.deleteUserPhoto(userId);
         model.addAttribute("user", user);
+        model.addAttribute("username", user.username());
         return "redirect:/my_account";
     }
 
