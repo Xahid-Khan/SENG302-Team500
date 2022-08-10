@@ -3,6 +3,9 @@ import {useEffect} from "react";
 
 export function EditGroupMembers({viewGroupId}: any) {
 
+    const isAdmin = window.localStorage.getItem("isAdmin") === "true"
+    const userId = parseInt(window.localStorage.getItem("userId"))
+
     const getAllGroups = async ()  => {
         const allGroupsResponse = await fetch('api/v1/groups/all')
         return allGroupsResponse.json()
@@ -225,7 +228,11 @@ export function EditGroupMembers({viewGroupId}: any) {
         let duplicate = false
         let usersToAdd: any = []
         let usersToAddIds: number[] = []
+        let nonGroup: any = null
         allGroups.forEach((group: any) => {
+            if (group['shortName'] === "Non Group") {
+                nonGroup = group
+            }
             group['users'].forEach((user: any) => {
                 if (otherUsersSelected.includes(user.id)) {
                     usersToAdd.push(user)
@@ -238,6 +245,18 @@ export function EditGroupMembers({viewGroupId}: any) {
                 if (user.id === userToAdd.id) {
                     duplicate = true
                     setErrorMessage("One or more of the users selected are already in this group. Please deselect these users and try again")
+                }
+            })
+        })
+
+        usersToAdd.forEach((user: any) => {
+            nonGroup['users'].forEach((nonGroupUser: any) => {
+                if (user.id === nonGroupUser.id) {
+                    if (membersRemoved[nonGroup.id] === undefined) {
+                        membersRemoved[nonGroup.id] = [user.id]
+                    } else {
+                        membersRemoved[nonGroup.id].push(user.id)
+                    }
                 }
             })
         })
@@ -264,10 +283,11 @@ export function EditGroupMembers({viewGroupId}: any) {
                 filteredUserIds.forEach((id) => {
                     membersAdded[myGroup.id].push(id)
                 })
-
             }
             setMyGroupUpdate(!myGroupUpdate)
         }
+        setOtherUsersSelected([])
+        otherUsersSelected.forEach((id) => document.getElementById(`other-users-${id}`).style.backgroundColor = "transparent")
     }
 
     const copyToOther = () => {
@@ -347,6 +367,8 @@ export function EditGroupMembers({viewGroupId}: any) {
             }
             setOtherGroupViewingUpdate(!otherGroupViewingUpdate)
         }
+        currentGroupUsersSelected.forEach((id) => document.getElementById(`current-group-users-${id}`).style.backgroundColor = "transparent")
+        setCurrentGroupUsersSelected([])
     }
 
     const addToNonGroupIfNeeded = (user: any) => {
@@ -510,7 +532,6 @@ export function EditGroupMembers({viewGroupId}: any) {
 
     const getOtherViewingUsers = (): any => {
 
-
         let otherGroupViewingNoDuplicates: any = []
         otherGroupViewing.forEach((group) => {
             group['users'].forEach((user) => {
@@ -520,12 +541,54 @@ export function EditGroupMembers({viewGroupId}: any) {
                         duplicate = true
                     }
                 })
-                if (duplicate === false) {
+                let inMyGroup = false
+                myGroup.users.forEach((myUser) => {
+                    if (myUser.id === user.id) {
+                        inMyGroup = true
+                    }
+                })
+                if (duplicate === false && inMyGroup === false) {
                     otherGroupViewingNoDuplicates.push(user)
                 }
             })
         })
         return otherGroupViewingNoDuplicates
+    }
+
+    const formatRoles = (roles: any) => {
+        let toReturn: string = ""
+        roles.forEach((role: string) => {
+            if (role === "COURSE_ADMINISTRATOR") {
+                if (toReturn === "") {
+                    toReturn += "Course Admin"
+                } else {
+                    toReturn += ", Course Admin"
+                }
+            } else {
+                if (toReturn === "") {
+                    toReturn += role[0] + role.slice(1, role.length).toLowerCase()
+                } else {
+                    toReturn += ", " + role[0] + role.slice(1, role.length).toLowerCase()
+                }
+            }
+        })
+        return toReturn
+    }
+
+    const isEditingSelf = () => {
+        let found = false;
+        otherUsersSelected.forEach((id) => {
+            if (id === userId) {
+                found = true
+            }
+        })
+        currentGroupUsersSelected.forEach((id) => {
+            if (id === userId) {
+                console.log("yea")
+                found = true
+            }
+        })
+        return found
     }
 
     return (
@@ -553,7 +616,7 @@ export function EditGroupMembers({viewGroupId}: any) {
                                             <div className="tableCell">{user['firstName']} {user['lastName']}</div>
                                             <div className="tableCell">{user['username']}</div>
                                             <div className="tableCell">{user['nickName']}</div>
-                                            <div className="tableCell">{user['roles'].toString()}</div>
+                                            <div className="tableCell">{formatRoles(user['roles'])}</div>
                                         </div>
                                     ))}
                                 </div>
@@ -573,7 +636,7 @@ export function EditGroupMembers({viewGroupId}: any) {
                                                                                       style={{fontSize: 14}}>arrow_forward</span>
                             </button>
                             <button className={"edit-group-members-button"}
-                                    disabled={(currentGroupUsersSelected.length === 0 || myGroup.shortName === "Non Group") && (otherUsersSelected.length === 0 || document.getElementById("filter-groups-button").innerText === "All users")}
+                                    disabled={((currentGroupUsersSelected.length === 0 || myGroup.shortName === "Non Group") && (otherUsersSelected.length === 0 || document.getElementById("filter-groups-button").innerText === "All users")) || (!isAdmin && (isEditingSelf()))}
                                     onClick={() => openRemoveModal()}>Remove from group
                             </button>
                         </div>
@@ -620,7 +683,7 @@ export function EditGroupMembers({viewGroupId}: any) {
                                             <div className="tableCell">{user['firstName']} {user['lastName']}</div>
                                             <div className="tableCell">{user['username']}</div>
                                             <div className="tableCell">{user['nickName']}</div>
-                                            <div className="tableCell">{user['roles'].toString()}</div>
+                                            <div className="tableCell">{formatRoles(user['roles'])}</div>
                                         </div>
                                     ))}
                                 </div>

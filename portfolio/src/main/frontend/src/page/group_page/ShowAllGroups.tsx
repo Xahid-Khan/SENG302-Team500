@@ -7,7 +7,23 @@ const getAllGroups = async ()  => {
     return allGroupsResponse.json()
 }
 
-const deleteGroup = async (id: number) => {
+const deleteGroup = async (id: number, groups: any) => {
+    let usersToRemoveIds: any = []
+    groups.forEach((group: any) => {
+        if (group.id === id) {
+            group['users'].forEach((user: any) => {
+                usersToRemoveIds.push(user.id)
+            })
+        }
+    })
+    const deleteResponse = await fetch(`api/v1/groups/${id}/delete-members`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(usersToRemoveIds)
+    });
+
     const response = await fetch(`api/v1/groups/${id}`, {
         method: 'DELETE',
         headers: {
@@ -17,21 +33,22 @@ const deleteGroup = async (id: number) => {
     if (response.ok === true) {
         document.getElementById(`group-${id}`).style.display = "none"
         document.getElementById("modal-delete-group-open").style.display = "none"
+        window.location.reload()
     }
 }
 
-const clearEventListeners = (id: number) => {
-    document.getElementById("group-delete-confirm").removeEventListener("click", () => deleteGroup(id))
-    document.getElementById("group-delete-x").removeEventListener("click", () => clearEventListeners(id))
-    document.getElementById("group-delete-cancel").removeEventListener("click", () => clearEventListeners(id))
+const clearEventListeners = (id: number, groups: any[]) => {
+    document.getElementById("group-delete-confirm").removeEventListener("click", () => deleteGroup(id, groups))
+    document.getElementById("group-delete-x").removeEventListener("click", () => clearEventListeners(id, groups))
+    document.getElementById("group-delete-cancel").removeEventListener("click", () => clearEventListeners(id, groups))
     document.getElementById("modal-delete-group-open").style.display = "none"
 }
 
-const wireModal = (id: number) => {
+const wireModal = (id: number, groups: any[]) => {
     document.getElementById("modal-delete-group-open").style.display = "block"
-    document.getElementById("group-delete-confirm").addEventListener("click", () => deleteGroup(id))
-    document.getElementById("group-delete-x").addEventListener("click", () => clearEventListeners(id))
-    document.getElementById("group-delete-cancel").addEventListener("click", () => clearEventListeners(id))
+    document.getElementById("group-delete-confirm").addEventListener("click", () => deleteGroup(id, groups))
+    document.getElementById("group-delete-x").addEventListener("click", () => clearEventListeners(id, groups))
+    document.getElementById("group-delete-cancel").addEventListener("click", () => clearEventListeners(id, groups))
 }
 
 const toggleGroupView = (id: number) => {
@@ -49,16 +66,40 @@ export function ShowAllGroups({setViewGroupId}: any) {
         })
     }, [])
 
+    const isStudent = localStorage.getItem("isStudent") === "true"
+
+    const formatRoles = (roles: any) => {
+        let toReturn: string = ""
+        roles.forEach((role: string) => {
+            if (role === "COURSE_ADMINISTRATOR") {
+                if (toReturn === "") {
+                    toReturn += "Course Admin"
+                } else {
+                    toReturn += ", Course Admin"
+                }
+            } else {
+                if (toReturn === "") {
+                    toReturn += role[0] + role.slice(1, role.length).toLowerCase()
+                } else {
+                    toReturn += ", " + role[0] + role.slice(1, role.length).toLowerCase()
+                }
+            }
+        })
+        return toReturn
+    }
+
     return (
         <div>
             {groups.map((group: any) => (
                 <div className={'raised-card group'} id={`group-${group['id']}`} key={group['id']}>
                     <div className={"group-header"}>
-                        {group['shortName'] !== 'Teachers' && group['shortName'] !== 'Non Group' ? <div className={"delete-group"}>
-                            <span className={"material-icons"} onClick={() => wireModal(group['id'])}>clear</span>
+                        {group['shortName'] !== 'Teachers' && group['shortName'] !== 'Non Group' && !isStudent ? <div className={"delete-group"}>
+                            <span className={"material-icons"} onClick={() => wireModal(group['id'], groups)}>clear</span>
                         </div>
                         : "" }
+                        {!isStudent ?
                         <button className="button edit-group-button" id="edit-group" data-privilege="teacher" onClick={() => {document.getElementById("modal-edit-group-members-open").style.display = "block"; setViewGroupId(group.id)}}> Manage Group Members</button>
+                        : ""}
                         <div id={`toggle-group-details-${group['id']}`}>
                             <span className={"material-icons toggle-group-details"} id={`group-toggle-button-${group['id']}`} onClick={() => toggleGroupView(group['id'])}>visibility</span>
                         </div>
@@ -78,7 +119,7 @@ export function ShowAllGroups({setViewGroupId}: any) {
                                     <div className="tableCell">{user['firstName']} {user['lastName']}</div>
                                     <div className="tableCell">{user['username']}</div>
                                     <div className="tableCell">{user['nickName']}</div>
-                                    <div className="tableCell">{user['roles'].toString()}</div>
+                                    <div className="tableCell">{formatRoles(user['roles'])}</div>
                                 </div>
                             ))}
                         </div>

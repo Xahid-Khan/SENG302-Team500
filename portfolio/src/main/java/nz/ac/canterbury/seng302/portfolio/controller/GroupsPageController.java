@@ -40,8 +40,9 @@ public class GroupsPageController {
 
         model.addAttribute("userId", userId);
         model.addAttribute(
-                "canEdit",
-                roles.contains(UserRole.TEACHER) || roles.contains(UserRole.COURSE_ADMINISTRATOR));
+                "isStudent",
+                !roles.contains(UserRole.TEACHER) && !roles.contains(UserRole.COURSE_ADMINISTRATOR));
+        model.addAttribute("isAdmin", roles.contains(UserRole.COURSE_ADMINISTRATOR));
         model.addAttribute("username", userDetails.getUsername());
 
         return "groups";

@@ -12,7 +12,7 @@ export function DeleteGroupModal() {
                 </div>
                 <div className={"border-line"}/>
                 <div className="modal-body">
-                    Are you sure you want to delete?
+                    Are you sure you want to delete this group? All users will be removed from the group
                 </div>
                 <div className="modal-buttons">
                     <button className="button dangerous-button" id="group-delete-confirm">Delete</button>

@@ -15,9 +15,9 @@
     <script th:inline="javascript">
         /*<![CDATA[*/
 
-        window.userCanEdit = /*[[${canEdit}]]*/ 'default';
-        window.localStorage.setItem("canEdit", [[${canEdit}]] + "")
-
+        window.localStorage.setItem("userId", [[${userId}]] + "")
+        window.localStorage.setItem("isStudent", [[${isStudent}]] + "")
+        window.localStorage.setItem("isAdmin", [[${isAdmin}]] + "")
         /*]]>*/
     </script>
     <script type="text/javascript" th:src="@{../frontend/groups.js}" defer></script>

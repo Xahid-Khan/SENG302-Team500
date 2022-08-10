@@ -136,16 +136,16 @@ public class UserListController {
                           @RequestParam(name="roleNumber") Integer roleNumber) {
 
         modifyRole(principal, model, id, roleNumber, true);
-        if (roleNumber == 1 || roleNumber == 2) {
+        if (roleNumber == 1) {
             PaginatedGroupsResponse allGroupDetails = groupsClientService.getAllGroupDetails();
-            boolean inNoOtherGroup = false;
+            boolean inNonMembersGroup = false;
             Integer nonGroupID = null;
             for (GroupDetailsResponse group : allGroupDetails.getGroupsList()) {
                 if (group.getShortName().equals("Non Group")) {
                     nonGroupID = group.getGroupId();
                     for (UserResponse user: group.getMembersList()) {
                         if (user.getId() == id) {
-                            inNoOtherGroup = true;
+                            inNonMembersGroup = true;
                         }
                     }
                 }
@@ -153,7 +153,7 @@ public class UserListController {
                     groupsClientService.addGroupMembers(group.getGroupId(), List.of(id));
                 }
             }
-            if (inNoOtherGroup) {
+            if (inNonMembersGroup) {
                 groupsClientService.removeGroupMembers(nonGroupID, List.of(id));
             }
         }
@@ -167,31 +167,28 @@ public class UserListController {
                              @RequestParam(name="id") Integer id,
                              @RequestParam(name="roleNumber") Integer roleNumber) {
 
-        UserResponse user = userAccountService.getUserById(id);
         modifyRole(principal, model, id, roleNumber, false);
 
-        if (roleNumber == 1 || roleNumber == 2) {
-            if (!user.getRolesList().contains(UserRole.TEACHER) || !user.getRolesList().contains(UserRole.COURSE_ADMINISTRATOR)) {
-                PaginatedGroupsResponse allGroupDetails = groupsClientService.getAllGroupDetails();
-                boolean inOtherGroup = false;
-                Integer nonGroupID = null;
-                for (GroupDetailsResponse group : allGroupDetails.getGroupsList()) {
-                    if (group.getShortName().equals("Non Group")) {
-                        nonGroupID = group.getGroupId();
-                    }
-                    if (group.getShortName().equals("Teachers")) {
-                        groupsClientService.removeGroupMembers(group.getGroupId(), List.of(id));
-                    } else {
-                        for (UserResponse otherUser: group.getMembersList()) {
-                            if (otherUser.getId() == id) {
-                                inOtherGroup = true;
-                            }
+        if (roleNumber == 1) {
+            PaginatedGroupsResponse allGroupDetails = groupsClientService.getAllGroupDetails();
+            boolean inOtherGroup = false;
+            Integer nonGroupID = null;
+            for (GroupDetailsResponse group : allGroupDetails.getGroupsList()) {
+                if (group.getShortName().equals("Non Group")) {
+                    nonGroupID = group.getGroupId();
+                }
+                if (group.getShortName().equals("Teachers")) {
+                    groupsClientService.removeGroupMembers(group.getGroupId(), List.of(id));
+                } else {
+                    for (UserResponse otherUser: group.getMembersList()) {
+                        if (otherUser.getId() == id) {
+                            inOtherGroup = true;
                         }
                     }
                 }
-                if (!inOtherGroup) {
-                    groupsClientService.addGroupMembers(nonGroupID, List.of(id));
-                }
+            }
+            if (!inOtherGroup) {
+                groupsClientService.addGroupMembers(nonGroupID, List.of(id));
             }
         }
 

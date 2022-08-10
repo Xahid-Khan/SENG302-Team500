@@ -203,6 +203,29 @@ public class GroupsServerService extends GroupsServiceGrpc.GroupsServiceImplBase
                         .build());
             } else {
 
+                Integer nonGroupId = null;
+                for (Integer userId: request.getUserIdsList()) {
+                    boolean inOtherGroup = false;
+                    for (GroupModel otherGroup: groupRepository.findAll()) {
+                        if (otherGroup.getShortName().equals("Non Group")) {
+                            nonGroupId = otherGroup.getId();
+                        }
+                        if (otherGroup.getId() != request.getGroupId()) {
+                            GroupMemberModel groupInfo = groupMemberRepository.findById(otherGroup.getId()).orElseThrow();
+                            for (Integer id : groupInfo.getUserIds()) {
+                                if (id == userId) {
+                                    inOtherGroup = true;
+                                }
+                            }
+                        }
+                    }
+                    if (!inOtherGroup) {
+                        GroupMemberModel nonGroup = groupMemberRepository.findById(nonGroupId).orElseThrow();
+                        nonGroup.addNewMember(userId);
+                        groupMemberRepository.save(nonGroup);
+                    }
+                }
+
                 for (Integer userId : request.getUserIdsList()) {
                     if (groupRepository.findById(request.getGroupId()).get().getShortName().equals("Teachers")) {
                         UserResponse user = getUserService.getUserAccountById(GetUserByIdRequest.newBuilder()
@@ -212,12 +235,6 @@ public class GroupsServerService extends GroupsServiceGrpc.GroupsServiceImplBase
                             roleService.removeRoleFromUser(ModifyRoleOfUserRequest.newBuilder()
                                     .setUserId(userId)
                                     .setRole(UserRole.TEACHER)
-                                    .build());
-                        }
-                        if (user.getRolesList().contains(UserRole.COURSE_ADMINISTRATOR)) {
-                            roleService.removeRoleFromUser(ModifyRoleOfUserRequest.newBuilder()
-                                    .setUserId(userId)
-                                    .setRole(UserRole.COURSE_ADMINISTRATOR)
                                     .build());
                         }
                     }

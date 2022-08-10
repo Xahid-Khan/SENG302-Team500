@@ -17,14 +17,18 @@ export const GroupPage = () => {
 
     const [viewGroupId, setViewGroupId] = React.useState(-1)
 
+    const isStudent = localStorage.getItem("isStudent") === "true"
+
     return (
             <ToasterRoot>
                 <div className="add-group">
                     <div>
-                        <button className="button add-group-button" id="add-group" data-privilege="teacher"
+                        {isStudent ? "" :
+                        <button className="button add-group-button" id="add-group"
                                 onClick={() => document.getElementById("modal-create-group-open").style.display = "block"}> Create
                             Group
                         </button>
+                        }
                     </div>
                 </div>
                 <div className={"raised-card groups"}>
