@@ -48,8 +48,11 @@
                 <div>Images above 5MB in size will be compressed.</div>
             </div>
             <div style="min-height: 50px">
-            <div id="image-preview-warning" style="color: darkorange; margin-bottom: 8px" hidden class="form-error"></div>
-            <div id="image-preview-error" hidden class="form-error"></div>
+                <div id="image-preview-warning" style="color: darkorange; margin-bottom: 8px" hidden class="form-error"></div>
+                <div id="image-preview-error" hidden class="form-error"></div>
+                <th:block th:if="${imageError}">
+                    <div class="form-error" id="errorMessageImage"><span th:text="${imageError}" aria-valuenow="test"></span></div>
+                </th:block>
             </div>
         </div>
 
