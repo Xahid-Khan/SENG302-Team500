@@ -55,7 +55,7 @@ public class AddingBaseGroups {
             nonGroup = new GroupModel("Non Group", "Users without a group");
             groupRepository.save(teachers);
             groupRepository.save(nonGroup);
-            GroupMemberModel teacherGroupMembers = new GroupMemberModel(teachers.getId(), List.of());
+            GroupMemberModel teacherGroupMembers = new GroupMemberModel(groupRepository.findByShortName("Teachers").getId(), List.of());
             groupMemberRepository.save(teacherGroupMembers);
         }
     }
