@@ -88,7 +88,6 @@ public class RegisterServerService {
         GroupMemberModel groupMember = groupMemberRepository.findById(nonGroup.getId()).get();
         groupMember.addUserIds(Collections.singletonList(newUser.getId()));
         groupMemberRepository.save(groupMember);
-
       } catch (NullPointerException e) {
         e.getMessage();
       }
