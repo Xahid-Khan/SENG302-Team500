@@ -41,65 +41,8 @@ public class AddingBaseGroups {
      * @throws InvalidKeySpecException this exception is thrown by password service
      */
     @EventListener({ApplicationReadyEvent.class})
-    public void addUsersToDatabase() throws NoSuchAlgorithmException, InvalidKeySpecException {
-        UserModel user = userRepository.findByUsername("student");
-        if (user == null) {
-            var passwordHash = passwordService.hashPassword("password");
-            List<UserRole> userRole = new ArrayList<>();
-            userRole.add(UserRole.STUDENT);
-            String pronouns = "His/Him";
-            UserModel student =
-                    new UserModel(
-                            "student",
-                            passwordHash,
-                            "Default",
-                            "",
-                            "Student",
-                            "Def",
-                            "I am a default student",
-                            pronouns,
-                            "default@student.com",
-                            userRole,
-                            currentTimestamp());
-
-            userRepository.save(student);
-
-            userRole.add(UserRole.TEACHER);
-            UserModel teacher =
-                    new UserModel(
-                            "teacher",
-                            passwordHash,
-                            "Default",
-                            "",
-                            "Teacher",
-                            "",
-                            "I am a default Teacher",
-                            pronouns,
-                            "default@teacher.com",
-                            userRole,
-                            currentTimestamp());
-            userRepository.save(teacher);
-
-            userRole.add(UserRole.COURSE_ADMINISTRATOR);
-
-            UserModel admin =
-                    new UserModel(
-                            "admin",
-                            passwordHash,
-                            "Default",
-                            "",
-                            "Admin",
-                            "",
-                            "I am a default Admin",
-                            pronouns,
-                            "default@admin.com",
-                            userRole,
-                            currentTimestamp());
-            userRepository.save(admin);
-
-            createTeacherAndNonGroup();
-            addTeachersAndNonGroupMembers();
-        }
+    public void addUsersToDatabase() {
+        createTeacherAndNonGroup();
     }
 
 
@@ -107,40 +50,14 @@ public class AddingBaseGroups {
      * This method creates 2 groups.
      */
     public void createTeacherAndNonGroup() {
-        teachers = new GroupModel("Teachers", "Teaching Team");
-        nonGroup = new GroupModel("Non Group", "Users without a group");
-        groupRepository.save(teachers);
-        groupRepository.save(nonGroup);
+        if (groupRepository.findByShortName("Teachers") == null) {
+            teachers = new GroupModel("Teachers", "Teaching Team");
+            nonGroup = new GroupModel("Non Group", "Users without a group");
+            groupRepository.save(teachers);
+            groupRepository.save(nonGroup);
+            GroupMemberModel teacherGroupMembers = new GroupMemberModel(teachers.getId(), List.of());
+            groupMemberRepository.save(teacherGroupMembers);
+        }
     }
 
-    /**
-     * This method adds users to the group based on their roles.
-     */
-    public void addTeachersAndNonGroupMembers() {
-        List<Integer> areTeachers = new ArrayList<>();
-        List<Integer> allOtherUsers = new ArrayList<>();
-
-        Iterable<UserModel> allUsers = userRepository.findAll();
-        allUsers.forEach(userModel -> {
-            if(userModel.getRoles().contains(UserRole.TEACHER)) {
-                areTeachers.add(userModel.getId());
-            } else {
-                allOtherUsers.add(userModel.getId());
-            }
-        });
-
-        GroupMemberModel allTeachers = new GroupMemberModel(teachers.getId(), areTeachers);
-        groupMemberRepository.save(allTeachers);
-        GroupMemberModel notTeachers = new GroupMemberModel(nonGroup.getId(), allOtherUsers);
-        groupMemberRepository.save(notTeachers);
-    }
-
-    /**
-     * Helper function to get the current timestamp.
-     *
-     * @return the current timestamp
-     */
-    private static Timestamp currentTimestamp() {
-        return Timestamp.newBuilder().setSeconds(Instant.now().getEpochSecond()).build();
-    }
 }
