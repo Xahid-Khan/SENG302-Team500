@@ -13,9 +13,9 @@
           <p class="title">SENG302</p>
         </div>
         <div>
-          <a th:data-global-url-path-prefix="${globalUrlPathPrefix}" href="/project-details" id="home-page">Projects</a>
-          <a th:data-global-url-path-prefix="${globalUrlPathPrefix}" href="/user-list">View Users</a>
-          <a th:data-global-url-path-prefix="${globalUrlPathPrefix}" href="/groups">Groups</a>
+          <a th:href="${globalUrlPathPrefix} + '/project-details'" id="home-page">Projects</a>
+          <a th:href="${globalUrlPathPrefix} + '/user-list'">View Users</a>
+          <a th:href="${globalUrlPathPrefix} + '/groups'">Groups</a>
         </div>
       </div>
       <div class="account">
@@ -29,8 +29,8 @@
             </div>
           </button>
           <div class="dropdown-content">
-            <a th:data-global-url-path-prefix="${globalUrlPathPrefix}" class="dropdown-content-links" href="/my_account">My Account</a>
-            <a th:data-global-url-path-prefix="${globalUrlPathPrefix}" class="dropdown-content-links" href="/logout">Log Out</a>
+            <a class="dropdown-content-links" th:href="${globalUrlPathPrefix} + '/my_account'">My Account</a>
+            <a class="dropdown-content-links" th:href="${globalUrlPathPrefix} + '/logout'">Log Out</a>
           </div>
         </div>
       </div>
