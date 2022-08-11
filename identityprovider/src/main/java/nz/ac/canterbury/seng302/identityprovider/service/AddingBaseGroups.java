@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.identityprovider.service;
 
 import com.google.protobuf.Timestamp;
 import nz.ac.canterbury.seng302.identityprovider.database.*;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -41,61 +42,64 @@ public class AddingBaseGroups {
      */
     @EventListener({ApplicationReadyEvent.class})
     public void addUsersToDatabase() throws NoSuchAlgorithmException, InvalidKeySpecException {
-        var passwordHash = passwordService.hashPassword("password");
-        List<UserRole> userRole = new ArrayList<>();
-        userRole.add(UserRole.STUDENT);
-        String pronouns = "His/Him";
-        UserModel student =
-                new UserModel(
-                        "student",
-                        passwordHash,
-                        "Default",
-                        "",
-                        "Student",
-                        "Def",
-                        "I am a default student",
-                        pronouns,
-                        "default@student.com",
-                        userRole,
-                        currentTimestamp());
+        UserModel user = userRepository.findByUsername("student");
+        if (user == null) {
+            var passwordHash = passwordService.hashPassword("password");
+            List<UserRole> userRole = new ArrayList<>();
+            userRole.add(UserRole.STUDENT);
+            String pronouns = "His/Him";
+            UserModel student =
+                    new UserModel(
+                            "student",
+                            passwordHash,
+                            "Default",
+                            "",
+                            "Student",
+                            "Def",
+                            "I am a default student",
+                            pronouns,
+                            "default@student.com",
+                            userRole,
+                            currentTimestamp());
 
-        userRepository.save(student);
+            userRepository.save(student);
 
-        userRole.add(UserRole.TEACHER);
-        UserModel teacher =
-                new UserModel(
-                        "teacher",
-                        passwordHash,
-                        "Default",
-                        "",
-                        "Teacher",
-                        "",
-                        "I am a default Teacher",
-                        pronouns,
-                        "default@teacher.com",
-                        userRole,
-                        currentTimestamp());
-        userRepository.save(teacher);
+            userRole.add(UserRole.TEACHER);
+            UserModel teacher =
+                    new UserModel(
+                            "teacher",
+                            passwordHash,
+                            "Default",
+                            "",
+                            "Teacher",
+                            "",
+                            "I am a default Teacher",
+                            pronouns,
+                            "default@teacher.com",
+                            userRole,
+                            currentTimestamp());
+            userRepository.save(teacher);
 
-        userRole.add(UserRole.COURSE_ADMINISTRATOR);
+            userRole.add(UserRole.COURSE_ADMINISTRATOR);
 
-        UserModel admin =
-                new UserModel(
-                        "admin",
-                        passwordHash,
-                        "Default",
-                        "",
-                        "Admin",
-                        "",
-                        "I am a default Admin",
-                        pronouns,
-                        "default@admin.com",
-                        userRole,
-                        currentTimestamp());
-        userRepository.save(admin);
+            UserModel admin =
+                    new UserModel(
+                            "admin",
+                            passwordHash,
+                            "Default",
+                            "",
+                            "Admin",
+                            "",
+                            "I am a default Admin",
+                            pronouns,
+                            "default@admin.com",
+                            userRole,
+                            currentTimestamp());
+            userRepository.save(admin);
 
-        createTeacherAndNonGroup();
-        addTeachersAndNonGroupMembers();
+            createTeacherAndNonGroup();
+            addTeachersAndNonGroupMembers();
+        }
     }
 
 
