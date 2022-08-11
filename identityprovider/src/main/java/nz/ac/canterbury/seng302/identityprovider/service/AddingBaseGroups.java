@@ -36,16 +36,16 @@ public class AddingBaseGroups {
      * This method creates 2 groups.
      */
     public void createTeacherAndNonGroup() {
-//        if (groupRepository.findByShortName("Teachers") == null) {
-//            GroupModel teachers = new GroupModel("Teachers", "Teaching Team");
-//            GroupModel nonGroup = new GroupModel("Non Group", "Users without a group");
-//            groupRepository.save(teachers);
-//            groupRepository.save(nonGroup);
-//            GroupMemberModel teacherGroupMembers = new GroupMemberModel(groupRepository.findByShortName("Teachers").getId(), List.of());
-//            groupMemberRepository.save(teacherGroupMembers);
-//            GroupMemberModel nonGroupMembers = new GroupMemberModel(groupRepository.findByShortName("Non Group").getId(), List.of());
-//            groupMemberRepository.save(nonGroupMembers);
-//        }
+        if (groupRepository.findByShortName("Teachers") == null) {
+            GroupModel teachers = new GroupModel("Teachers", "Teaching Team");
+            GroupModel nonGroup = new GroupModel("Non Group", "Users without a group");
+            groupRepository.save(teachers);
+            groupRepository.save(nonGroup);
+            GroupMemberModel teacherGroupMembers = new GroupMemberModel(groupRepository.findByShortName("Teachers").getId(), List.of());
+            groupMemberRepository.save(teacherGroupMembers);
+            GroupMemberModel nonGroupMembers = new GroupMemberModel(groupRepository.findByShortName("Non Group").getId(), List.of());
+            groupMemberRepository.save(nonGroupMembers);
+        }
     }
 
 }
