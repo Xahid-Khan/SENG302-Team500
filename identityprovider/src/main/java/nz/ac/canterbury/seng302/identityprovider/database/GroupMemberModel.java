@@ -8,7 +8,7 @@ import java.util.List;
 @Entity
 public class GroupMemberModel {
     @Id
-    private int id;
+    private int id = -1;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Column(nullable = false)
