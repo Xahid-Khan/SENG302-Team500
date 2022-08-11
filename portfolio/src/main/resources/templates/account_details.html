@@ -16,8 +16,8 @@
         <div class="name-container">
             <div class="image-container" style="padding:0">
                 <img id="userPhoto" th:src="'//' + ${globalImagePath} + ${userId}"
-                     onerror="this.onerror=null;document.getElementById('deleteUserPhoto').setAttribute('disabled', 'true');this.src='https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png'"
-                       width="150" height="150" alt="Placeholder Profile Photo">
+                     onerror="this.onerror=null;this.src='https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png'"
+                     width="150" height="150" alt="Placeholder Profile Photo">
             </div>
             <div class="left-padding">
                 <h1 th:text="${user.firstName} + ' ' + ${user.middleName} + ' ' + ${user.lastName}" />
@@ -27,12 +27,8 @@
         </div>
         <div class="right-padding">
             <div>
-                <form id="deletePhotoForm" action="#" th:action="@{edit_account/imageDelete}" th:object="${user}" method="post"
-                    style="float:right; margin-left: 4px">
-                    <button class="button" id="deleteUserPhoto" type="button">Delete Photo</button>
-                    <button type="submit" id="deletePhotoSubmissionForm" style="display: none" hidden></button>
-                </form>
-                <button class="button" onclick="location.href='edit_account'" th:disabled="false" type="button">Edit Details</button>
+                <button class="button" onclick="location.href='edit_user_image'" type="button">Edit Profile Photo</button>
+                <button class="button" onclick="location.href='edit_account'" type="button">Edit Details</button>
                 <button class="button" onclick="location.href='edit_password'" type="button">Edit Password</button>
             </div>
             <div class="edit-message" th:if="${editMessage != null}" th:text="${editMessage}">
