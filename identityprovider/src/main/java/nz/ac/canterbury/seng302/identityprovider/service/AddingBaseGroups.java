@@ -41,7 +41,7 @@ public class AddingBaseGroups {
      */
     @EventListener({ApplicationReadyEvent.class})
     public void addUsersToDatabase() throws NoSuchAlgorithmException, InvalidKeySpecException {
-        var passwordHash = passwordService.hashPassword("qwerty123");
+        var passwordHash = passwordService.hashPassword("password");
         List<UserRole> userRole = new ArrayList<>();
         userRole.add(UserRole.STUDENT);
         String pronouns = "His/Him";
@@ -77,6 +77,23 @@ public class AddingBaseGroups {
                         currentTimestamp());
         userRepository.save(teacher);
 
+        userRole.add(UserRole.COURSE_ADMINISTRATOR);
+
+        UserModel admin =
+                new UserModel(
+                        "admin",
+                        passwordHash,
+                        "Default",
+                        "",
+                        "Admin",
+                        "",
+                        "I am a default Admin",
+                        pronouns,
+                        "default@admin.com",
+                        userRole,
+                        currentTimestamp());
+        userRepository.save(admin);
+
         createTeacherAndNonGroup();
         addTeachersAndNonGroupMembers();
     }
@@ -90,7 +107,6 @@ public class AddingBaseGroups {
         nonGroup = new GroupModel("Non Group", "Users without a group");
         groupRepository.save(teachers);
         groupRepository.save(nonGroup);
-
     }
 
     /**
