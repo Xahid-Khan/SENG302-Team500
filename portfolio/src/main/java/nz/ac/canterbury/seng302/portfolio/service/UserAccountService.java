@@ -64,9 +64,6 @@ public class UserAccountService {
                         .setOrderBy(String.format("%s|%s", orderByAttributeName, ascending ? "asc" : "desc"))
                         .build() ).build();
 
-
-
-
         return userAccountServiceBlockingStub.getPaginatedUsers(allUsers);
     }
 
@@ -85,6 +82,4 @@ public class UserAccountService {
                 .build();
         return userAccountServiceBlockingStub.addRoleToUser(req);
     }
-
-
 }

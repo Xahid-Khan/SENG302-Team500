@@ -25,8 +25,7 @@ export const GroupPage = () => {
                     <div>
                         {isStudent ? "" :
                         <button className="button add-group-button" id="add-group"
-                                onClick={() => document.getElementById("modal-create-group-open").style.display = "block"}> Create
-                            Group
+                                onClick={() => document.getElementById("modal-create-group-open").style.display = "block"}> Create Group
                         </button>
                         }
                     </div>
@@ -39,8 +38,6 @@ export const GroupPage = () => {
                 <DeleteGroupModal/>
                 <EditGroupMembersModal viewGroupId={viewGroupId}/>
                 <RemoveMemberModal/>
-
-
             </ToasterRoot>
 
     )

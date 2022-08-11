@@ -39,6 +39,10 @@ public class EditAccountController {
     public static final int PROFILE_PICTURE_COMPRESSION_THRESHOLD = 5 * 1024 * 1024;
     public static final int MAX_PROFILE_PICTURE_SIZE = 10 * 1024 * 1024;
 
+    /**
+     * This method removes the left and right trailing white-spaces from the form data.
+     * @param binder a data binder from web-request
+     */
     @InitBinder
     public void initBinder(WebDataBinder binder) {
         binder.registerCustomEditor(String.class, new StringTrimmerEditor(false));
@@ -125,7 +129,7 @@ public class EditAccountController {
      * sure it's lower than 5mb. Then it used the gRPC protocols provided in registerClientService to
      * save the file in the DataBase in bytes (ByteString) format.
      *
-     * @param user A User of ty User.
+     * @param user A User of type User.
      * @param bindingResult An interface that extends errors
      * @param model HTML model DTO
      * @param principal An Authority State to verify user.
@@ -180,9 +184,7 @@ public class EditAccountController {
     @GetMapping(value="/edit_user_image")
     public String getPage(@AuthenticationPrincipal PortfolioPrincipal principal, Model model) {
         Integer userId = authStateService.getId(principal);
-
         model.addAttribute("userId", userId);
-
         return "edit_user_image";
     }
 

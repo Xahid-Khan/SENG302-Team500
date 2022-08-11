@@ -44,8 +44,6 @@ export function CreateGroupForm() {
             }).catch((e) => {
                 console.log("error ", e)
             })
-
-
         }
     }
 

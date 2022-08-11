@@ -26,7 +26,8 @@ public class GroupsControllerTest {
     @MockBean
     private RegisterClientService service;
 
-    @MockBean private AuthenticateClientService authService;
+    @MockBean
+    private AuthenticateClientService authService;
 
     @BeforeEach
     public void beforeEach() {
@@ -43,8 +44,5 @@ public class GroupsControllerTest {
                                 .setMessage("Login successful")
                                 .build());
     }
-
-
-
 
 }

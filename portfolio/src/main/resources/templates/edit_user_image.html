@@ -13,35 +13,7 @@
     <script type="text/javascript" th:src="@{frontend/cropping_image.js}" defer></script>
 </head>
 <body>
-<div class="navbar">
-    <div class="navbar-items">
-        <div>
-            <p class="title">SENG 302</p>
-        </div>
-        <div>
-            <a href="project-details" id="home-page">Projects</a>
-            <a href="user-list">View Users</a>
-        </div>
-    </div>
-
-
-    <div class="account">
-        <div class="dropdown">
-            <button class="button dropbutton"><div class="username" th:text="${username}"></div>
-                <div style="width: 46px;height: 46px;object-fit: cover;overflow: clip;">
-                    <img th:src="'//' + ${globalImagePath} + ${userId}"
-                         onerror="this.onerror=null;this.src='https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png'"
-                         alt="Placeholder Profile Photo" style="height: 50px;" width="46" height="46">
-                </div>
-            </button>
-            <div class="dropdown-content">
-                <a class="dropdown-content-links" href="my_account">My Account</a>
-                <a class="dropdown-content-links" href="logout">Log Out</a>
-            </div>
-        </div>
-    </div>
-</div>
-
+<div th:replace="fragments/header :: header" class="navbar"></div>
 
 <div class="raised-card card-padding" style="display: grid; justify-content: center;">
     <div id="headingAndButton">
@@ -70,9 +42,9 @@
             <input id="newCroppedUserImage" name="croppedUserImage" value="" hidden/>
         </div>
         <div>
-            <div id="croppieTestId"></div>
+            <div id="croppieDivId"></div>
             <div class="image-upload-comment">
-                <div>Please choose a JPEG, PNG, or GIF of less than 10MB size.</div>
+                <div>Please choose a JPEG, PNG, or GIF of greater than 5KB and less than 10MB size.</div>
                 <div>Images above 5MB in size will be compressed.</div>
             </div>
             <div style="min-height: 50px">

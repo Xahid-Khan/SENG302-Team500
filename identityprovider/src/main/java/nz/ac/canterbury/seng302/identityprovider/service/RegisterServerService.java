@@ -83,10 +83,19 @@ public class RegisterServerService {
     if (validationErrors.isEmpty()) {
       repository.save(user);
       UserModel newUser = repository.findByUsername(request.getUsername());
-      GroupModel group = groupRepository.findByShortName("Non Group");
-      GroupMemberModel groupMember = groupMemberRepository.findById(group.getId()).get();
-      groupMember.addUserIds(Collections.singletonList(newUser.getId()));
-      groupMemberRepository.save(groupMember);
+      try {
+        GroupModel nonGroup = groupRepository.findByShortName("Non Group");
+        if (groupMemberRepository.findById(nonGroup.getId()).isPresent()) {
+          GroupMemberModel groupMember = groupMemberRepository.findById(nonGroup.getId()).get();
+          groupMember.addUserIds(Collections.singletonList(newUser.getId()));
+          groupMemberRepository.save(groupMember);
+        } else {
+          GroupMemberModel newGroup = new GroupMemberModel(nonGroup.getId(), List.of(newUser.getId()));
+          groupMemberRepository.save(newGroup);
+        }
+      } catch (NullPointerException e) {
+        e.getMessage();
+      }
       reply
           .setIsSuccess(true)
           .setNewUserId(user.getId())
