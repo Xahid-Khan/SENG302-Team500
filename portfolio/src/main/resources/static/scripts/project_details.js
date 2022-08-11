@@ -48,9 +48,9 @@ const displayCharactersRemaining = (field, maxCharacters) => {
   let lengthField;
   // This is hacky, and should be solved when project_details.js is refactored.
   if (field.id.includes("name")) {
-    lengthField = document.getElementById("edit-name-length")
+    lengthField = field.parentNode.childNodes.item(5)
   } else {
-    lengthField = document.getElementById("edit-description-length")
+    lengthField = field.parentNode.childNodes.item(5)
   }
   lengthField.textContent = `${field.value.length} / ${maxCharacters}`;
 }
@@ -143,7 +143,6 @@ class Application {
     formContainerElement.classList.add("project-view", "raised-card");
     formContainerElement.id = 'create-project-form-container';
     this.containerElement.insertBefore(formContainerElement, this.containerElement.firstChild);
-
     const defaultProject = {
       id: '__NEW_PROJECT_FORM',
       name: `Project ${new Date().getFullYear()}`,
@@ -151,10 +150,15 @@ class Application {
       startDate: null,
       endDate: null
     };
-
     this.addProjectForm = {
       container: formContainerElement,
-      controller: new Editor(formContainerElement, "New project details:", defaultProject, this.closeAddProjectForm.bind(this), this.submitAddProjectForm.bind(this), defaultProject)
+      controller: new Editor(formContainerElement,
+          "New project details:",
+          defaultProject,
+          this.closeAddProjectForm.bind(this),
+          this.submitAddProjectForm.bind(this),
+          null,
+          defaultProject)
     };
   }
 
@@ -216,7 +220,7 @@ class Application {
     }
 
     console.log("Binding project");
-    this.projects.set(projectData.id, new Project(projectElement, projectData, this.deleteProject.bind(this), this.sendPing.bind(this)));
+    this.projects.set(projectData.id, new Project(projectElement, projectData, this.deleteProject.bind(this)));
 
     console.log("Project bound");
 
@@ -252,20 +256,9 @@ class Application {
       this.projects = new Map();
       data.map(project => this.appendProject(project));
       if (this.projects.size === 1) {
-        // Automatically expand the list of sprints if only one project is loaded.
+        // Automatically expand the project if only one project is loaded.
         this.projects.forEach((project) => {
-          if (project.currentView.toggleSprints) {
-            project.currentView.toggleSprints();
-          }
-          if (project.currentView.toggleEvents) {
-            project.currentView.toggleEvents();
-          }
-          if (project.currentView.toggleMilestones) {
-            project.currentView.toggleMilestones();
-          }
-          if (project.currentView.toggleDeadlines) {
-            project.currentView.toggleDeadlines();
-          }
+          project.currentView.toggleProjectDetails();
         })
       }
 
@@ -292,15 +285,13 @@ class Application {
     this.projects.delete(projectId);
   }
 
-  sendPing() {
-    // Socket.sendPing();
-  }
-
 }
 
 (() => {
   // Start
   const application = new Application(document.getElementById("project-list"));
-  Socket.start();
+  if (document.getElementsByClassName('studentMode').length === 0) {
+    Socket.start();
+  }
   application.fetchProjects();
 })()

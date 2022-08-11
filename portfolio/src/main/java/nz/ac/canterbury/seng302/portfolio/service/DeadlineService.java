@@ -1,13 +1,11 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
 import nz.ac.canterbury.seng302.portfolio.mapping.DeadlineMapper;
-import nz.ac.canterbury.seng302.portfolio.mapping.SprintMapper;
-import nz.ac.canterbury.seng302.portfolio.model.contract.BaseDeadlineContract;
+import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseDeadlineContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.DeadlineContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.DeadlineEntity;
 import nz.ac.canterbury.seng302.portfolio.repository.DeadlineRepository;
 import nz.ac.canterbury.seng302.portfolio.repository.ProjectRepository;
-import nz.ac.canterbury.seng302.portfolio.repository.SprintRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,7 +37,7 @@ public class DeadlineService {
      */
     public DeadlineContract get(String deadlineId) {
         var deadline= deadlineRepository.findById(deadlineId).orElseThrow();
-        return deadlineMapper.toContract(deadline, deadline.getOrderNumber());
+        return deadlineMapper.toContract(deadline);
     }
 
     /**
@@ -56,7 +54,7 @@ public class DeadlineService {
         deadlineRepository.save(entity);
         projectRepository.save(project);
 
-        return deadlineMapper.toContract(entity, entity.getOrderNumber());
+        return deadlineMapper.toContract(entity);
     }
 
 

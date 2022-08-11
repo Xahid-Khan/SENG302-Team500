@@ -3,6 +3,8 @@ package nz.ac.canterbury.seng302.portfolio.service;
 import nz.ac.canterbury.seng302.portfolio.mapping.ProjectMapper;
 import nz.ac.canterbury.seng302.portfolio.mapping.SprintMapper;
 import nz.ac.canterbury.seng302.portfolio.model.contract.*;
+import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseProjectContract;
+import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseSprintContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.ProjectEntity;
 import nz.ac.canterbury.seng302.portfolio.model.entity.SprintEntity;
 import nz.ac.canterbury.seng302.portfolio.repository.ProjectRepository;

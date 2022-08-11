@@ -60,9 +60,7 @@ class DeadlineView {
                 document.getElementById(`deadline-sprint-name-${this.deadline.deadlineId}-${sprint.sprintId}`).innerText = sprint.name + ':'
             }
         })
-        document.getElementById(`start-date-${this.deadline.deadlineId}`).innerText = DatetimeUtils.localToUserDMY(this.deadline.startDate);
-        const displayedDate = new Date(this.deadline.endDate.valueOf());
-        displayedDate.setDate(displayedDate.getDate() - 1);
+        document.getElementById(`start-date-${this.deadline.deadlineId}`).innerText = DatetimeUtils.localToDMYWithTime(this.deadline.startDate);
     }
 
     /**
@@ -101,6 +99,7 @@ class DeadlineView {
         this.modalDeleteCancel.removeEventListener("click",()=>this.cancelDeleteModal())
         this.modalDeleteConfirm.removeEventListener("click",()=>this.confirmDeleteModal())
         Socket.saveEdit(this.deadline.deadlineId)
+        window.removeEventListener('beforeunload', () => Socket.cancelEdit(this.entityId))
         this.deleteCallback()
     }
 

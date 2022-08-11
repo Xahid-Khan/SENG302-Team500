@@ -1,48 +1,23 @@
 <!DOCTYPE HTML>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>My Account</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <link rel="stylesheet" th:href="@{styles/common.css}"/>
-    <link rel="stylesheet" th:href="@{styles/pages/account_details.css}"/>
-    <link rel="stylesheet" th:href="@{styles/pages/project_details.css}">
-    <link rel="stylesheet" th:href="@{styles/navbar.css}"/>
+  <title>My Account</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <link rel="stylesheet" th:href="@{styles/common.css}"/>
+  <link rel="stylesheet" th:href="@{styles/pages/account_details.css}"/>
+  <link rel="stylesheet" th:href="@{styles/pages/project_details.css}">
+  <link rel="stylesheet" th:href="@{styles/navbar.css}"/>
 
 </head>
 <body>
-    <div class="navbar">
-        <div class="navbar-items">
-            <div>
-                <p class="title">SENG 302</p>
-            </div>
-            <div>
-                <a href="project-details" id="home-page">Projects</a>
-                <a href="user-list">View Users</a>
-            </div>
-        </div>
-        <div class="account">
-            <div class="dropdown">
-                <button class="dropbutton"><div class="username" th:text="${user.username}"></div>
-                    <div style="width: 46px;height: 46px;object-fit: cover;overflow: clip;">
-                        <img th:src="'//' + ${globalImagePath} + ${userId}"
-                             onerror="this.onerror=null;this.src='https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png'"
-                             alt="Placeholder Profile Photo" style="height: 50px;" width="46" height="46">
-                    </div>
-                </button>
-                <div class="dropdown-content">
-                    <a class="dropdown-content-links" href="my_account">My Account</a>
-                    <a class="dropdown-content-links" href="logout">Log Out</a>
-                </div>
-            </div>
-        </div>
-    </div>
+<div th:replace="fragments/header :: header" class="navbar"></div>
 <div class="raised-card card-padding">
     <div class="container">
         <div class="name-container">
             <div class="image-container" style="padding:0">
                 <img id="userPhoto" th:src="'//' + ${globalImagePath} + ${userId}"
                      onerror="this.onerror=null;this.src='https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png'"
-                       width="150" height="150" alt="Placeholder Profile Photo">
+                     width="150" height="150" alt="Placeholder Profile Photo">
             </div>
             <div class="left-padding">
                 <h1 th:text="${user.firstName} + ' ' + ${user.middleName} + ' ' + ${user.lastName}" />
@@ -52,12 +27,8 @@
         </div>
         <div class="right-padding">
             <div>
-                <form id="deletePhotoForm" action="#" th:action="@{edit_account/imageDelete}" th:object="${user}" method="post"
-                    style="float:right; margin-left: 4px">
-                    <button class="button" id="deleteUserPhoto" type="button">Delete Photo</button>
-                    <button type="submit" id="deletePhotoSubmissionForm" style="display: none" hidden></button>
-                </form>
-                <button class="button" onclick="location.href='edit_account'" th:disabled="false" type="button">Edit Details</button>
+                <button class="button" onclick="location.href='edit_user_image'" type="button">Edit Profile Photo</button>
+                <button class="button" onclick="location.href='edit_account'" type="button">Edit Details</button>
                 <button class="button" onclick="location.href='edit_password'" type="button">Edit Password</button>
             </div>
             <div class="edit-message" th:if="${editMessage != null}" th:text="${editMessage}">
@@ -98,27 +69,6 @@
         </table>
     </div>
 </div>
-
-<div class="modal-delete-container" id="modal-delete-open">
-    <div class="modal-delete">
-        <div class="modal-delete-header">
-            <div class="modal-delete-title">
-                Delete Profile Picture Confirmation
-            </div>
-
-            <div class="modal-delete-close-button" id="modal-delete-x">&times;</div>
-        </div>
-        <div class="border-line"></div>
-        <div class="modal-delete-body">
-            Are you sure you want to delete your profile picture?
-        </div>
-        <div class="modal-delete-buttons">
-            <button class="button" id="modal-delete-cancel">Cancel</button>
-            <button class="button dangerous-button" id="modal-delete-confirm">Delete</button>
-        </div>
-    </div>
-</div>
-
 </body>
 
 <script type="text/javascript" th:src="@{scripts/user_profile_page.js}"></script>

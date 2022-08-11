@@ -1,10 +1,10 @@
 package nz.ac.canterbury.seng302.portfolio.model.contract;
 
 import java.time.Instant;
-import java.util.List;
 
 /**
  * A sprint contract is a contract that is a sprint.
+ *
  * @param projectId The id of the project the sprint is in
  * @param sprintId The id of the sprint
  * @param name The name of the sprint
@@ -22,4 +22,4 @@ public record SprintContract(
     Instant endDate,
     String colour,
     Long orderNumber  // Should only be present in responses
-) {}
+) implements Contractable {}

@@ -1,6 +1,5 @@
 package nz.ac.canterbury.seng302.portfolio;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.stereotype.Controller;
@@ -36,8 +35,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
   @Override
   public void configureMessageBroker(MessageBrokerRegistry config) {
     config
-        .setApplicationDestinationPrefixes("/app")
-        .enableSimpleBroker("/topic")
+            .setApplicationDestinationPrefixes("/app")
+            .enableSimpleBroker("/topic")
     ;
   }
 

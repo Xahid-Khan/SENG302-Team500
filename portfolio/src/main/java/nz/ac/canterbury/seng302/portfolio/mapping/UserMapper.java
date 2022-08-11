@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserMapper {
     public UserContract toContract(UserResponse userResponse) {
-        return new UserContract(
+        return new UserContract(userResponse.getId(),
                 userResponse.getFirstName(),
                 userResponse.getMiddleName(),
                 userResponse.getLastName(),
