@@ -24,7 +24,7 @@ publish-protos-to-maven-local:
     - ./gradlew publishToMavenLocal
 
 ##### BUILDING #####
-# builds all branches, except dev and master
+# builds all branches, except dev, vm-testing and master
 branch-build:
   stage: build
   script:
@@ -40,6 +40,7 @@ branch-build:
     - tags
     - master
     - dev
+    - vm-testinng
 
 ##### TESTING #####
 junit-porfolio:
@@ -61,7 +62,7 @@ predeploy-copy-environment-variables:
     - python3 ./runner/export_environment_vars.py
     - cp ./runner_env.sh /home/gitlab-runner/runner_env.sh
   only:
-    - dev
+    - vm-testing
     - tags
 
 ##### SONARQUBE #####
@@ -89,7 +90,7 @@ deploy-staging-identityprovider:
     paths:
       - identityprovider/build/libs
   only:
-    - dev
+    - vm-testing
 
 deploy-staging-portfolio:
   stage: deploy
@@ -106,7 +107,7 @@ deploy-staging-portfolio:
     paths:
       - portfolio/build/libs
   only:
-    - dev
+    - vm-testing
 
 deploy-production-identityprovider:
   stage: deploy
