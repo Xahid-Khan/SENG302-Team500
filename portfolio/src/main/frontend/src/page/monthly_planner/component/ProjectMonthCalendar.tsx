@@ -21,7 +21,9 @@ import {Socket} from "../../../entry/live_updating";
 export const ProjectMonthCalendar: React.FC = observer(() => {
     const project = useProjectStore()
     const toaster = useToasterStore()
-    Socket.start()
+    if(window.localStorage.getItem("canEdit") === "true") {
+        Socket.start()
+    }
 
     /**
      * Callback that is triggered when a calendar event is updated by the user. Saves the change to the store, managing

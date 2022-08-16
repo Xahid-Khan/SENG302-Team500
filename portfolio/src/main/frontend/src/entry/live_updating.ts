@@ -100,7 +100,7 @@ class PingPageStore {
             return
         }
         let store = this;
-        let socket = new SockJS("socket")
+        let socket = new SockJS("/socket")
         store.stomp = Stomp.over(socket);
 
         store.stomp.connect({}, () => {
