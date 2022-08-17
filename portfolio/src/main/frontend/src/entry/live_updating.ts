@@ -29,9 +29,10 @@ class PingPageStore {
             showEdit: action,
             start: action
         })
-        console.log(window.localStorage.getItem("relativePath") + "/socket")
+        const path = window.localStorage.getItem("relativePath") + "/socket"
+        console.log(path)
         this.stomp = new StompClient({
-            webSocketFactory: () => new SockJS(window.localStorage.getItem("relativePath") + "/socket"),
+            webSocketFactory: () => new SockJS(path),
             connectionTimeout: 10000,
             debug: (msg) => console.log(new Date(), msg)
         })
