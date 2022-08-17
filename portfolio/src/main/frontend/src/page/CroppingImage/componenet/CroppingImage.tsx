@@ -24,7 +24,7 @@ let croppie = new Croppie(croppieElement, croppieOptions);
 
 const CroppingImage = () => {
 
-    const [croppedImage, setCroppedImage] = React.useState<any>();
+    const [croppedImage, setCroppedImage] = React.useState("");
     const [isFileUploaded, setIsFileUploaded] = React.useState(false);
     const [enableSaveImage, setEnableSaveImage] = React.useState(true);
 
@@ -32,19 +32,19 @@ const CroppingImage = () => {
 
     useEffect(() => {}, [croppedImage, isFileUploaded, enableSaveImage])
 
-    const onFileUpload = () => {
+    const onFileUpload = async () => {
         setIsFileUploaded( true);
         processFile();
     }
 
-    const processFile = () => {
+    const processFile = async () => {
         const reader = new FileReader();
         file = file.current.files[0];
 
         if (file && checkFileTypeAndSize(file)) {
             reader.readAsDataURL(file);
             reader.onload = () => {
-                croppie.bind({url: "" + reader.result});
+                croppie.bind({url: reader.result.toString()});
             };
             reader.onerror = function (error) {
                 console.log("Error: ", error);
@@ -52,7 +52,7 @@ const CroppingImage = () => {
         }
     };
 
-    const onResult = () => {
+    const onResult = async () => {
         croppie.result({type:"base64"}).then(base64 => {
             setCroppedImage(base64);
             document.getElementById("userProfileImage").setAttribute("src", base64);
@@ -64,6 +64,9 @@ const CroppingImage = () => {
     };
 
     const sendImageData = async () => {
+        if (croppedImage == "") {
+            return;
+        }
         await fetch(`edit_Image`, {
             method: 'POST',
             headers: {
