@@ -8,6 +8,7 @@ import java.util.Base64;
 import nz.ac.canterbury.seng302.portfolio.DTO.EditedUserValidation;
 import nz.ac.canterbury.seng302.portfolio.DTO.User;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
+import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseGroupContract;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
 import nz.ac.canterbury.seng302.portfolio.service.PhotoCropService;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
@@ -24,11 +25,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.UnsupportedMediaTypeStatusException;
 
@@ -190,10 +187,13 @@ public class EditAccountController {
 
     @PostMapping (value = "/edit_account/editImage")
     public String changeUserProfilePhoto(@AuthenticationPrincipal PortfolioPrincipal principal,
-                                         @RequestParam(value = "croppedUserImage") String croppedImage,
+//                                         @RequestParam(value = "croppedUserImage") String croppedImage,
                                          Model model,
-                                         @RequestParam(value = "image", required = false) MultipartFile file
+//                                         @RequestParam(value = "image", required = false) MultipartFile file
+                                         @RequestBody String croppedImage
     ) {
+
+        System.err.println("I'M HERE");
         try {
             if (croppedImage.length() != 0) {
                 int userId = authStateService.getId(principal);
@@ -204,33 +204,33 @@ public class EditAccountController {
                 try {
                     Integer userId = authStateService.getId(principal);
                     model.addAttribute("userId", userId);
-                    if (file != null && !file.isEmpty()) {
-                        if (
-                                MIN_PROFILE_PICTURE_SIZE <= file.getSize()
-                                        && file.getSize() <= MAX_PROFILE_PICTURE_SIZE
-                        ) {
-                            try {
-                                byte[] uploadImage = photoCropService.processImageFile(
-                                        file,
-                                        file.getSize() > PROFILE_PICTURE_COMPRESSION_THRESHOLD
-                                );
-
-                                registerClientService.uploadUserPhoto(userId, file.getContentType(), uploadImage);
-                            }
-                            catch (IOException e) {
-                                model.addAttribute("imageError", "Failed to save image. Please try again later or with a different image.");
-                                return "edit_user_image";
-                            }
-                            catch (UnsupportedMediaTypeStatusException e) {
-                                model.addAttribute("imageError", "Failed to save image. Please use a different image format.");
-                                return "edit_user_image";
-                            }
-
-                        } else {
-                            model.addAttribute("imageError", "File size must be more than 5KB and less than 5MB.");
-                            return "edit_user_image";
-                        }
-                    }
+//                    if (file != null && !file.isEmpty()) {
+//                        if (
+//                                MIN_PROFILE_PICTURE_SIZE <= file.getSize()
+//                                        && file.getSize() <= MAX_PROFILE_PICTURE_SIZE
+//                        ) {
+//                            try {
+//                                byte[] uploadImage = photoCropService.processImageFile(
+//                                        file,
+//                                        file.getSize() > PROFILE_PICTURE_COMPRESSION_THRESHOLD
+//                                );
+//
+//                                registerClientService.uploadUserPhoto(userId, file.getContentType(), uploadImage);
+//                            }
+//                            catch (IOException e) {
+//                                model.addAttribute("imageError", "Failed to save image. Please try again later or with a different image.");
+//                                return "edit_user_image";
+//                            }
+//                            catch (UnsupportedMediaTypeStatusException e) {
+//                                model.addAttribute("imageError", "Failed to save image. Please use a different image format.");
+//                                return "edit_user_image";
+//                            }
+//
+//                        } else {
+//                            model.addAttribute("imageError", "File size must be more than 5KB and less than 5MB.");
+//                            return "edit_user_image";
+//                        }
+//                    }
                 } catch (StatusRuntimeException e) {
                     model.addAttribute("error", "Error connecting to Identity Provider...");
                     return "edit_user_image";
