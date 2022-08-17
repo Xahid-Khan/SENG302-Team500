@@ -24,7 +24,7 @@ publish-protos-to-maven-local:
     - ./gradlew publishToMavenLocal
 
 ##### BUILDING #####
-# builds all branches, except dev, vm-testing and master
+# builds all branches, except dev, vm-testing, and master
 branch-build:
   stage: build
   script:
@@ -40,7 +40,7 @@ branch-build:
     - tags
     - master
     - dev
-    - vm-testinng
+    - vm-testing
 
 ##### TESTING #####
 junit-porfolio:
@@ -48,12 +48,16 @@ junit-porfolio:
   script:
     - cd portfolio
     - ./gradlew test
+  except:
+    - vm-testing
 
 junit-identityprovider:
   stage: test
   script:
     - cd identityprovider
     - ./gradlew test
+  except:
+    - vm-testing
 
 ##### PRE-DEPLOY #####
 predeploy-copy-environment-variables:
@@ -62,6 +66,7 @@ predeploy-copy-environment-variables:
     - python3 ./runner/export_environment_vars.py
     - cp ./runner_env.sh /home/gitlab-runner/runner_env.sh
   only:
+    - dev
     - vm-testing
     - tags
 
@@ -73,6 +78,8 @@ sonarqube-report:
     - ./gradlew sonarqube
     - cd ../portfolio
     - ./gradlew sonarqube
+  except:
+    - vm-testing
 
 ##### DEPLOY #####
 deploy-staging-identityprovider:
@@ -90,6 +97,7 @@ deploy-staging-identityprovider:
     paths:
       - identityprovider/build/libs
   only:
+    - dev
     - vm-testing
 
 deploy-staging-portfolio:
@@ -107,6 +115,7 @@ deploy-staging-portfolio:
     paths:
       - portfolio/build/libs
   only:
+    - dev
     - vm-testing
 
 deploy-production-identityprovider:
