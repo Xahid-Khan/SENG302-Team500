@@ -6,6 +6,7 @@ import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,6 +27,9 @@ public class MonthlyPlannerController {
     @Autowired
     private AuthStateService authStateService;
 
+    @Value("${nz.ac.canterbury.seng302.portfolio.urlPathPrefix}")
+    private String urlPathPrefix;
+
     /**
      * GET /monthly-planner/{projectId} fetches monthly planner view for a specific project projectId, this page
      * shows a calendar view with all sprints showing from the related project
@@ -45,6 +49,7 @@ public class MonthlyPlannerController {
         model.addAttribute("userId", userId);
         model.addAttribute("canEdit", roles.contains(UserRole.TEACHER) || roles.contains(UserRole.COURSE_ADMINISTRATOR));
         model.addAttribute("username", userDetails.getUsername());
+        model.addAttribute("relativePath", urlPathPrefix);
 
         return "monthly_planner";
     }
