@@ -37,12 +37,12 @@ const CroppingImage = () => {
         processFile();
     }
 
-    const processFile = async () => {
+    const processFile = () => {
         const reader = new FileReader();
-        file = file.current.files[0];
+        const image = file.current.files[0];
 
-        if (file && checkFileTypeAndSize(file)) {
-            reader.readAsDataURL(file);
+        if (image && checkFileTypeAndSize(image)) {
+            reader.readAsDataURL(image);
             reader.onload = () => {
                 croppie.bind({url: reader.result.toString()});
             };
