@@ -30,6 +30,8 @@ const CroppingImage = () => {
 
     let file: any = React.createRef();
 
+    useEffect(() => {}, [croppedImage, isFileUploaded, enableSaveImage])
+
     const onFileUpload = () => {
         setIsFileUploaded( true);
         processFile();
