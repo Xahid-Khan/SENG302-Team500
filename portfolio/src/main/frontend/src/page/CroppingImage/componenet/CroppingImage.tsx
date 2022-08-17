@@ -52,10 +52,8 @@ const CroppingImage = () => {
 
     const onResult = () => {
         croppie.result({type:"base64"}).then(base64 => {
+            setCroppedImage(base64);
             document.getElementById("userProfileImage").setAttribute("src", base64);
-        });
-        croppie.result({type:"blob"}).then(imageBlol => {
-            setCroppedImage(imageBlol);
         });
         setEnableSaveImage(false);
         document.getElementById('previewText').setAttribute("hidden", "true");
@@ -64,14 +62,19 @@ const CroppingImage = () => {
     };
 
     const sendImageData = async () => {
-        console.log("I'M HERE");
-
-        await fetch(`api/v1/edit_account/editImage`, {
+        await fetch(`edit_Image`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'multipart/form-data'
+                'Content-Type': 'application/json'
             },
-            body: croppedImage
+            body: JSON.stringify({"croppedImage": croppedImage})
+        }).then((response) => {
+            if (response.ok === true) {
+                window.location.href='my_account'
+            } else {
+                document.getElementById("image-preview-error").removeAttribute("hidden");
+                document.getElementById("image-preview-error").innerHTML = "Something went wrong, Try Again Later";
+            }
         });
     };
 
