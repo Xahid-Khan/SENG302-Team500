@@ -29,7 +29,7 @@ class PingPageStore {
             showEdit: action,
             start: action
         })
-
+        console.log(window.localStorage.getItem("relativePath") + "/socket")
         this.stomp = new StompClient({
             webSocketFactory: () => new SockJS(window.localStorage.getItem("relativePath") + "/socket"),
             connectionTimeout: 10000,
