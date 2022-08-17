@@ -13,7 +13,7 @@ class PingPageStore {
     stomp: any = null
 
     connectStatus: LoadingStatus = new LoadingNotYetAttempted()
-
+    path = window.localStorage.getItem("relativePath") + "/socket"
     pongArray: string[] = observable.array()
     nextPingValue: string = ""
 
@@ -29,10 +29,8 @@ class PingPageStore {
             showEdit: action,
             start: action
         })
-        const path = window.localStorage.getItem("relativePath") + "/socket"
-        console.log(path)
         this.stomp = new StompClient({
-            webSocketFactory: () => new SockJS(path),
+            webSocketFactory: () => new SockJS(this.path),
             connectionTimeout: 10000,
             debug: (msg) => console.log(new Date(), msg)
         })
@@ -101,7 +99,7 @@ class PingPageStore {
             return
         }
         let store = this;
-        let socket = new SockJS("/socket")
+        let socket = new SockJS(this.path)
         store.stomp = Stomp.over(socket);
 
         store.stomp.connect({}, () => {
