@@ -70,8 +70,7 @@ input, textarea {
   border-left: 5px solid #2C3E50;
 }
 
-
-.modal-delete{
+.modal-delete {
   background-color: #fff;
   margin: 20% auto;
   width: 40%;
@@ -80,7 +79,7 @@ input, textarea {
   padding: 20px 20px 50px 20px;
 }
 
-.modal-container{
+.modal-container {
   display: none;
   z-index:1;
   background-color: rgba(0,0,0,0.3);

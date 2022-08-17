@@ -38,37 +38,11 @@
 
 .modal-edit-group-members {
     background-color: #fff;
-    margin: 10% auto;
+    margin: 5% auto;
     width: 80%;
     border: black solid 1px;
     border-radius: 20px;
     padding: 20px 20px 50px 20px;
-}
-
-.modal-group-settings {
-    background-color: #fff;
-    margin: 10% auto;
-    width: 80%;
-    border: black solid 1px;
-    border-radius: 20px;
-    padding: 20px 20px 50px 20px;
-}
-
-.edit-group-settings-container{
-    display: flex;
-}
-
-.edit-form{
-    padding: 20px 20px 50px;
-}
-
-.group-settings-body{
-    width: 100%
-}
-
-.edit-settings{
-    width: 100%;
-    padding: 5px;
 }
 
 .modal-edit-group-members-body {
@@ -117,11 +91,26 @@
     margin-right: 25px;
 }
 
-/*Taken from https://www.w3schools.com/howto/howto_css_disable_text_selection.asp */
 .groups-table {
-    -webkit-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+    -webkit-user-select: none; /*Taken from https://www.w3schools.com/howto/howto_css_disable_text_selection.asp */
+    -ms-user-select: none; /*Taken from https://www.w3schools.com/howto/howto_css_disable_text_selection.asp */
+    user-select: none; /*Taken from https://www.w3schools.com/howto/howto_css_disable_text_selection.asp */
+}
+
+.user-list-table {
+    overflow-y: auto;
+    max-height: 40vh;
+}
+
+.groups-page-user-list {
+    overflow-y: auto;
+    max-height: 20vh;
+}
+
+.toggle-group-details {
+    float: right;
+    cursor: pointer;
+    margin-right: 15px;
 }
 
 .edit-group-members-error {
@@ -164,7 +153,7 @@
     cursor: pointer;
 }
 
-.groups-table-header {
+.groups-header {
     display: table-row;
 }
 

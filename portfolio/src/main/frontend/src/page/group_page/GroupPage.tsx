@@ -2,6 +2,10 @@ import * as React from 'react';
 
 import {ToasterRoot} from "../../component/toast/ToasterRoot";
 import {ShowAllGroups} from "./ShowAllGroups";
+import {CreateGroupModal} from "./CreateGroup";
+import {DeleteGroupModal} from "./DeleteGroupModal";
+import {EditGroupMembersModal} from "./EditGroupMembersModal";
+import {RemoveMemberModal} from "./RemoveMemberModal";
 import {GroupSettingsModal} from "./GroupSettingsModal";
 
 /**
@@ -14,21 +18,28 @@ export const GroupPage = () => {
 
     const [viewGroupId, setViewGroupId] = React.useState(-1)
 
+    const isStudent = localStorage.getItem("isStudent") === "true"
+
     return (
             <ToasterRoot>
                 <div className="add-group">
                     <div>
-                        <button className="button add-group-button" id="add-group" data-privilege="teacher"> Add
-                            Group
+                        {isStudent ? "" :
+                        <button className="button add-group-button" id="add-group"
+                                onClick={() => document.getElementById("modal-create-group-open").style.display = "block"}> Create Group
                         </button>
+                        }
                     </div>
                 </div>
                 <div className={"raised-card groups"}>
                     <h1>Groups</h1>
                     <ShowAllGroups setViewGroupId={setViewGroupId}/>
                 </div>
+                <CreateGroupModal/>
+                <DeleteGroupModal/>
+                <EditGroupMembersModal viewGroupId={viewGroupId}/>
+                <RemoveMemberModal/>
                 <GroupSettingsModal viewGroupId={viewGroupId}/>
-
             </ToasterRoot>
 
     )
