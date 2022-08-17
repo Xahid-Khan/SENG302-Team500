@@ -371,10 +371,10 @@ export function EditGroupMembers({viewGroupId}: any) {
         setCurrentGroupUsersSelected([])
     }
 
-    const addToNonGroupIfNeeded = (user: any) => {
+    const addToNonGroupIfNeeded = (user: any, groupId: number) => {
         let userInAnotherGroup = false
         allGroups.forEach((group: any) => {
-            if (group.id !== otherGroupViewing[0].id) {
+            if (group.id !== groupId) {
                 group['users'].forEach((otherUser: any) => {
                     if (otherUser.id === user.id) {
                         userInAnotherGroup = true
@@ -407,7 +407,7 @@ export function EditGroupMembers({viewGroupId}: any) {
                 myGroup.users.forEach((user: any, index: number) => {
                     if (user.id === id) {
                         myGroup.users = myGroup.users.slice(0, index).concat(myGroup.users.slice(index + 1, myGroup.users.length))
-                        addToNonGroupIfNeeded(user)
+                        addToNonGroupIfNeeded(user, myGroup.id)
                         usersToRemoveIds.push(user.id)
                     }
                 })
@@ -440,7 +440,7 @@ export function EditGroupMembers({viewGroupId}: any) {
                 otherGroupViewing[0].users.forEach((user: any, index: number) => {
                     if (user.id === id) {
                         otherGroupViewing[0].users = otherGroupViewing[0].users.slice(0, index).concat(otherGroupViewing[0].users.slice(index + 1, otherGroupViewing[0].users.length))
-                        addToNonGroupIfNeeded(user)
+                        addToNonGroupIfNeeded(user, otherGroupViewing[0].id)
                         usersToRemoveIds.push(user.id)
                     }
                 })
