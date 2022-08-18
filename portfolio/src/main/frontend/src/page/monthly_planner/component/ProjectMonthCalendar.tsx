@@ -99,7 +99,13 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
     iconDataToDictionary(project.milesStones, milestoneDictionary, "_MS");
     iconDataToDictionary(project.events, eventDictionary,"_ES");
     iconDataToDictionary(project.deadlines, deadlineDictionary, "_DL");
+    let sprintDates = new Array();
 
+    /**
+     * This function checks if ID is provided or not, If ID is not provided then it creates an list of events that are not
+     * editable, otherwise events are editable.
+     * @param id userId of teacher/admins
+     */
     function arrayOfEvents(id: string){
         let events: any[]
         if(id){
@@ -141,7 +147,23 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
             allDay: true,
             borderColor: "transparent",
         })})
+
+        project.sprints.forEach(sprint => {sprintDates.push([sprint.startDate.toLocaleDateString(), sprint.endDate.toLocaleDateString()])})
+
         return events
+    }
+
+    /**
+     * This function checks if there is an sprint on a certain day. if there's a sprint that day it will return true, else false.
+     * @param date this is date obtained from calendar.
+     */
+    const checkSprintDate = (date: any) => {
+        sprintDates.forEach((sDates) => {
+            if (date >= sDates[0] && date <= sDates[1]) {
+                return false;
+            }
+        })
+        return true;
     }
 
     const [events, setEvents] = React.useState(arrayOfEvents(null));
@@ -207,7 +229,13 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
                     {
                         eventDictionary.has(eventInfo.event.id)?
                             <>
-                                <div style={{margin:"3px 0 3px 0", width:"fit-content"}} data-tip data-for = {"events" + eventInfo.event.id.toString()}>
+                                {
+                                    checkSprintDate(eventInfo.event.id) ?
+                                        <div style={{marginTop: "65px"}}></div>
+                                        :
+                                        <></>
+                                }
+                                <div style={{margin: "3px 0 3px 0", width:"fit-content"}} data-tip data-for = {"events" + eventInfo.event.id.toString()}>
                                         <span className="material-icons" style={{float: "left"}} >event</span>
                                         <p style={{
                                             float: "left",
