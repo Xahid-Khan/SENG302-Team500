@@ -47,7 +47,7 @@ const CroppingImage = () => {
                 croppie.bind({url: reader.result.toString()});
             };
             reader.onerror = function (error) {
-                console.log("Error: ", error);
+                document.getElementById("image-preview-error").innerHTML = "Error: " + error;
             };
         }
     };
