@@ -1,6 +1,9 @@
 package nz.ac.canterbury.seng302.identityprovider.database;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 import javax.persistence.*;
+import java.sql.Timestamp;
 
 
 /**
@@ -24,6 +27,14 @@ public class PostModel {
 
     @Column(name = "post_content", length = 2047)
     private String postContent;
+
+    // Makes the database automatically create the timestamp when the user is inserted
+    @CreationTimestamp
+    private Timestamp created;
+
+    public Timestamp getCreated() {
+        return created;
+    }
 
     public String getPostContent() {
         return postContent;
