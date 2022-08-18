@@ -4,6 +4,7 @@ import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,7 +43,7 @@ public class UserModel {
 
     // Makes the database automatically create the timestamp when the user is inserted
     @CreationTimestamp
-    private java.sql.Timestamp created;
+    private Timestamp created;
 
     protected UserModel() {
     }
@@ -105,7 +106,7 @@ public class UserModel {
 
     public List<UserRole> getRoles() { return roles; }
 
-    public java.sql.Timestamp getCreated() { return created; }
+    public Timestamp getCreated() { return created; }
 
     /**
      * Adds a role to a user
