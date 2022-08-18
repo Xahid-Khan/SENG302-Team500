@@ -34,8 +34,7 @@ public class UserAccountServiceTest {
             "u1bio",
             "they/them",
             "u1@example.com",
-            List.of(UserRole.STUDENT, UserRole.TEACHER),
-            currentTimestamp());
+            List.of(UserRole.STUDENT, UserRole.TEACHER));
     var user2 =
         new UserModel(
             "u2",
@@ -47,8 +46,7 @@ public class UserAccountServiceTest {
             "u2bio",
             "he/him",
             "u2@example.com",
-            List.of(UserRole.STUDENT, UserRole.COURSE_ADMINISTRATOR),
-            currentTimestamp());
+            List.of(UserRole.STUDENT, UserRole.COURSE_ADMINISTRATOR));
     var user3 =
         new UserModel(
             "u3",
@@ -60,18 +58,8 @@ public class UserAccountServiceTest {
             "u3bio",
             "she/her",
             "u3@example.com",
-            List.of(UserRole.TEACHER),
-            currentTimestamp());
+            List.of(UserRole.TEACHER));
 
     repository.saveAll(Arrays.stream(new UserModel[] {user1, user2, user3}).toList());
-  }
-
-  /**
-   * Helper function to get the current timestamp.
-   *
-   * @return the current timestamp
-   */
-  private static Timestamp currentTimestamp() {
-    return Timestamp.newBuilder().setSeconds(Instant.now().getEpochSecond()).build();
   }
 }
