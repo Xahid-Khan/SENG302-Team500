@@ -199,8 +199,7 @@ public class EditAccountController {
             if (newImage.croppedImage().length() != 0) {
                 int userId = authStateService.getId(principal);
                 String fileType = newImage.croppedImage().substring(5, 14);
-                byte[] imageData = Base64.getDecoder().decode(newImage.croppedImage().substring(22, newImage.croppedImage().length()));
-                System.err.println(imageData.length);
+                byte[] imageData = Base64.getDecoder().decode(newImage.croppedImage().substring(22));
                 if (imageData.length <= 5242800) {
                     registerClientService.uploadUserPhoto(userId, fileType, imageData);
                 } else {
