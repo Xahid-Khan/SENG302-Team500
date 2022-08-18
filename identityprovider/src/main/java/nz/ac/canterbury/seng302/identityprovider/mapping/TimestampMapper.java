@@ -3,7 +3,7 @@ package nz.ac.canterbury.seng302.identityprovider.mapping;
 import org.springframework.stereotype.Component;
 
 /**
- * Provides utility methods for mapping between different representations of Timestamps.
+ * Provides a utility method for mapping between different representations of Timestamps.
  */
 @Component
 public class TimestampMapper {
