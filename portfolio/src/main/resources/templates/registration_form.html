@@ -72,7 +72,7 @@
 
     <div class="form-row">
         <label th:for="bio">Bio</label>
-        <textarea name="bio" th:value="${user.bio}"></textarea>
+        <textarea name="bio" th:text="${user.bio}"></textarea>
         <div th:if="${#fields.hasErrors('bio')}" th:errors="*{bio}" class="form-error">Bio Error</div>
     </div>
 
