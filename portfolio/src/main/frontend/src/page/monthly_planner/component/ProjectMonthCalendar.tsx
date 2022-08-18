@@ -114,7 +114,6 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
                 // This hides the time on the event and must be true for drag and drop resizing to be enabled
                 allDay: true,
                 editable: sprint.id === id,
-
             }))
         } else {
             events = project.sprints.map(sprint => ({
@@ -128,7 +127,6 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
                 // This hides the time on the event and must be true for drag and drop resizing to be enabled
                 allDay: true,
                 editable: false,
-
             }))
         }
 
@@ -201,13 +199,11 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
     function renderEventIcons(eventInfo: any) {
         if (eventInfo.event.title.includes("Sprint")) {
             return (
-                <div>
-                    <p>{eventInfo.event.title}</p>
-                </div>
+                <p style={{zIndex:0}}>{eventInfo.event.title}</p>
             )
         } else {
             return (
-                <div style={{display:"grid"}}>
+                <div style={{display:"grid", zIndex:0}}>
                     {
                         eventDictionary.has(eventInfo.event.id)?
                             <>
@@ -255,7 +251,7 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
                                     </p>
                                 </div>
 
-                                <ReactTooltip id={"deadlines" + eventInfo.event.id.toString()} place="right" effect="float" html={true} multiline={true}
+                                <ReactTooltip id={"deadlines" + eventInfo.event.id.toString()} place="right" effect="float" html={true} multiline={true} className={'ui-front'}
                                               getContent={() => getEventHoverData(eventInfo.event.id, "deadlines")}
                                 >
                                 </ReactTooltip>
