@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.identityprovider.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
@@ -13,6 +14,9 @@ import nz.ac.canterbury.seng302.shared.util.PaginationResponseOptions;
 import nz.ac.canterbury.seng302.shared.util.ValidationError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import static nz.ac.canterbury.seng302.identityprovider.service.AddingBaseGroups.NON_GROUP_SHORT_NAME;
+import static nz.ac.canterbury.seng302.identityprovider.service.AddingBaseGroups.TEACHERS_GROUP_SHORT_NAME;
 
 /**
  * This service handles all requests on the server side to manage groups.
@@ -106,15 +110,17 @@ public class GroupsServerService extends GroupsServiceGrpc.GroupsServiceImplBase
      */
     @Override
     public void deleteGroup(DeleteGroupRequest request, StreamObserver<DeleteGroupResponse> responseObserver) {
+        Optional<GroupModel> group = groupRepository.findById(request.getGroupId());
         //Checks groups existence
-        if (groupRepository.findById(request.getGroupId()).isEmpty()) {
+        if (group.isEmpty()) {
             responseObserver.onNext(DeleteGroupResponse.newBuilder()
                     .setIsSuccess(false)
                     .setMessage(groupDoesntExistMessage)
                     .build());
         } else {
-            // if group id is 6006 or 6005 (teacher or no group) then it can't be deleted. WARNING this is hard coded based off the values in the database
-            if (request.getGroupId() == 6006 || request.getGroupId() == 6005) {
+            //Checks if the group has the same short name as the teaching/non group had when they were created
+            String shortName = group.get().getShortName();
+            if (shortName == TEACHERS_GROUP_SHORT_NAME || shortName == NON_GROUP_SHORT_NAME) {
                 responseObserver.onNext(DeleteGroupResponse.newBuilder()
                         .setIsSuccess(false)
                         .setMessage("Error: Cannot delete default group")
