@@ -40,6 +40,7 @@ public class UserModel {
     @Column(nullable = false)
     private List<UserRole> roles = new ArrayList<>();
 
+    // Makes the database automatically create the timestamp when the user is inserted
     @CreationTimestamp
     private java.sql.Timestamp created;
 
@@ -138,7 +139,7 @@ public class UserModel {
             ", personalPronouns='" + personalPronouns + '\'' +
             ", email='" + email + '\'' +
             ", roles='" + roles.toString() + '\'' +
-            ", created='" + created.toString() + '\'' +
+            ", created='" + created + '\'' +
             '}';
     }
 }
