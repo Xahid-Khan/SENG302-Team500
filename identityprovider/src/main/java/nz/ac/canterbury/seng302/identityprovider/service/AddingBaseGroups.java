@@ -16,6 +16,11 @@ import java.util.List;
 @Component
 public class AddingBaseGroups {
 
+    public static final String TEACHERS_GROUP_SHORT_NAME = "Teachers";
+    public static final String TEACHERS_GROUP_LONG_NAME = "Teaching Team";
+    public static final String NON_GROUP_SHORT_NAME = "Non Group";
+    public static final String NON_GROUP_LONG_NAME = "Users without a group";
+
     @Autowired
     private GroupRepository groupRepository;
 
@@ -37,13 +42,13 @@ public class AddingBaseGroups {
      */
     public void createTeacherAndNonGroup() {
         if (groupRepository.findByShortName("Teachers") == null) {
-            GroupModel teachers = new GroupModel("Teachers", "Teaching Team");
-            GroupModel nonGroup = new GroupModel("Non Group", "Users without a group");
+            GroupModel teachers = new GroupModel(TEACHERS_GROUP_SHORT_NAME, TEACHERS_GROUP_LONG_NAME);
+            GroupModel nonGroup = new GroupModel(NON_GROUP_SHORT_NAME, NON_GROUP_LONG_NAME);
             groupRepository.save(teachers);
             groupRepository.save(nonGroup);
-            GroupMemberModel teacherGroupMembers = new GroupMemberModel(groupRepository.findByShortName("Teachers").getId(), List.of());
+            GroupMemberModel teacherGroupMembers = new GroupMemberModel(groupRepository.findByShortName(TEACHERS_GROUP_SHORT_NAME).getId(), List.of());
             groupMemberRepository.save(teacherGroupMembers);
-            GroupMemberModel nonGroupMembers = new GroupMemberModel(groupRepository.findByShortName("Non Group").getId(), List.of());
+            GroupMemberModel nonGroupMembers = new GroupMemberModel(groupRepository.findByShortName(NON_GROUP_SHORT_NAME).getId(), List.of());
             groupMemberRepository.save(nonGroupMembers);
         }
     }
