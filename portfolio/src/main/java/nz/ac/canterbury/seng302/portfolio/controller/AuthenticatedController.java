@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
  */
 @Controller
 public abstract class AuthenticatedController {
-
   @Autowired private AuthStateService authStateService;
 
   @Autowired private UserAccountService userAccountService;
