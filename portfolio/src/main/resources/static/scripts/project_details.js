@@ -220,7 +220,7 @@ class Application {
     }
 
     console.log("Binding project");
-    this.projects.set(projectData.id, new Project(projectElement, projectData, this.deleteProject.bind(this)));
+    this.projects.set(projectData.id, new Project(projectElement, projectData, this.deleteProject.bind(this), this.openAddProjectForm.bind(this)));
 
     console.log("Project bound");
 
