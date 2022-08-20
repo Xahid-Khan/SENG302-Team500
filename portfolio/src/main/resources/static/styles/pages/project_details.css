@@ -341,10 +341,6 @@ textarea {
     display: none;
 }
 
-.edit-project-cancel-button {
-    display: none;
-}
-
 
 
 @media only screen and (max-width: 1590px) {
