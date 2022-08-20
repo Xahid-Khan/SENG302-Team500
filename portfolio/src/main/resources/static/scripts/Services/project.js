@@ -292,13 +292,26 @@ class Project {
         }
     }
 
+    async createDefaultProject() {
+        let tomorrow = new Date()
+        tomorrow.setDate(tomorrow.getDate() + 1)
+        const defaultProject = {
+            id: '__NEW_PROJECT_FORM',
+            name: `Project ${new Date().getFullYear()}`,
+            description: null,
+            startDate: new Date(),
+            endDate: tomorrow,
+        };
+        await this.createCallback(defaultProject)
+    }
+
     /**
      * Makes a delete request and then creates a new default project
      */
     async deleteAndCreateDefaultProject() {
         try {
             await this.deleteProject()
-            this.createCallback()
+            await this.createDefaultProject()
         } catch(e) {
             throw e
         }

@@ -25,8 +25,6 @@ class Editor {
             window.addEventListener('beforeunload', () => Socket.cancelEdit(this.entityId))
         }
 
-        this.isNewProject = this.title.includes("New project");
-
         this.constructView();
         this.fillDefaults();
         this.wireView();
@@ -77,7 +75,7 @@ class Editor {
           </form>
           <div class="save-buttons">
               <button class="button save" id="edit-save-button-${this.entityId}">Save</button>
-              <button class="button cancel ${this.isNewProject ? 'edit-project-cancel-button' : ''}" id="edit-cancel-button-${this.entityId}">Cancel</button>
+              <button class="button cancel" id="edit-cancel-button-${this.entityId}">Cancel</button>
           </div>
       </div>
     `
