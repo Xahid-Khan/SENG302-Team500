@@ -16,9 +16,6 @@ public class PostModel {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
-    @Column(name = "high_five_count", nullable = false)
-    private int highFiveCount;
-
     @Column(name = "group_id", nullable = false)
     private int groupId;
 
@@ -31,6 +28,18 @@ public class PostModel {
     // Makes the database automatically create the timestamp when the user is inserted
     @CreationTimestamp
     private Timestamp created;
+
+    @ManyToOne
+    @JoinColumn(name = "reaction_model_ID")
+    private ReactionModel reactionModel;
+
+    public ReactionModel getReactionModel() {
+        return reactionModel;
+    }
+
+    public void setReactionModel(ReactionModel reactionModel) {
+        this.reactionModel = reactionModel;
+    }
 
     public Timestamp getCreated() {
         return created;
@@ -50,14 +59,6 @@ public class PostModel {
 
     public int getGroupId() {
         return groupId;
-    }
-
-    public int getHighFiveCount() {
-        return highFiveCount;
-    }
-
-    public void setHighFiveCount(int highFiveCount) {
-        this.highFiveCount = highFiveCount;
     }
 
     public int getId() {
