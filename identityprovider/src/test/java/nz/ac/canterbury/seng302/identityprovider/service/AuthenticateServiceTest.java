@@ -49,8 +49,7 @@ public class AuthenticateServiceTest {
               "",
               "",
               "a@a",
-              roles,
-              null);
+              roles);
       UserModel user2 =
           new UserModel(
               "b",
@@ -62,8 +61,7 @@ public class AuthenticateServiceTest {
               "",
               "",
               "b@b",
-              roles,
-              null);
+              roles);
       repository.save(user1);
       repository.save(user2);
     } catch (Exception e) {

@@ -4,7 +4,6 @@ import nz.ac.canterbury.seng302.identityprovider.database.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.database.UserRepository;
 import nz.ac.canterbury.seng302.shared.identityprovider.ChangePasswordRequest;
 import nz.ac.canterbury.seng302.shared.identityprovider.ChangePasswordResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,8 +36,7 @@ public class ChangePasswordService {
                                 userDetails.getBio(),
                                 userDetails.getPersonalPronouns(),
                                 userDetails.getEmail(),
-                                userDetails.getRoles(),
-                                userDetails.getCreated());
+                                userDetails.getRoles());
                 newUser.setId(request.getUserId());
                 repository.save(newUser);
                 message = "User password updated successfully";
