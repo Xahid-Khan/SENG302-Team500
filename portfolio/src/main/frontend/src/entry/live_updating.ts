@@ -19,7 +19,6 @@ class PingPageStore {
 
     constructor() {
         makeObservable(this, {
-            connectStatus: observable,
             pongArray: observable,
             nextPingValue: observable,
 
@@ -87,7 +86,7 @@ class PingPageStore {
             this.connect(res)
         }).then(() => {
             if (!this.connected) {
-                throw new Error("Connect resolved but we aren't connected yet!")
+                console.log("Not connected yet")
             }
         })
     }
@@ -117,22 +116,28 @@ class PingPageStore {
         runInAction(() => {
             this.pongArray.push(frame.body)
             const message = JSON.parse(frame.body)
-            if (message['username'] !== document.getElementsByClassName("username")[0].textContent) {
-                if (message['action'] === "show") {
-                    if (document.getElementById("event-form-" + message['location'])) {
-                        document.getElementById("event-form-" + message['location']).innerText = message['name'] + " is currently editing"
+            if (document.title !== "Calendar") {
+                if (message['username'] !== document.getElementsByClassName("username")[0].textContent) {
+                    if (message['action'] === "show") {
+                        if (document.getElementById("event-form-" + message['location'])) {
+                            document.getElementById("event-form-" + message['location']).innerText = message['name'] + " is currently editing"
+                        } else {
+                            document.getElementById("editing-form-" + message['location']).innerText = message['name'] + " is currently editing"
+                        }
                     } else {
-                        document.getElementById("editing-form-" + message['location']).innerText = message['name'] + " is currently editing"
+                        if (message['action'] === "save") {
+                            window.location.reload();
+                        }
+                        if (document.getElementById("event-form-" + message['location'])) {
+                            document.getElementById("event-form-" + message['location']).innerText = "";
+                        } else {
+                            document.getElementById("editing-form-" + message['location']).innerText = "";
+                        }
                     }
-                } else {
-                    if (message['action'] === "save") {
-                        window.location.reload();
-                    }
-                    if (document.getElementById("event-form-" + message['location'])) {
-                        document.getElementById("event-form-" + message['location']).innerText = "";
-                    } else {
-                        document.getElementById("editing-form-" + message['location']).innerText = "";
-                    }
+                }
+            } else {
+                if (message['action'] === "save") {
+                    window.location.reload();
                 }
             }
         })
@@ -158,6 +163,10 @@ export class Socket {
 
     static saveEdit(location: string) {
         this.store.saveEdit(location);
+    }
+
+    static isConnected(): boolean {
+        return this.store.connected;
     }
 }
 
