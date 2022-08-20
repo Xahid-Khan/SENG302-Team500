@@ -70,11 +70,10 @@ class SprintView {
         this.sprintMilestones = document.getElementById(`sprint-milestones-${this.sprint.sprintId}`);
         document.getElementById(`sprint-order-text-${this.sprint.sprintId}`).innerText = `Sprint ${this.sprint.orderNumber}`;
         document.getElementById(`sprint-title-text-${this.sprint.sprintId}`).innerText = this.sprint.name;
-        if(this.sprint.description.trim().length !== 0){
+        if(this.sprint.description && this.sprint.description.trim().length !== 0){
             this.descriptionLabel.innerText = "Description:\n";
         }
         this.description.innerText = this.sprint.description;
-
         this.sprintEvents.innerHTML = this.getEvents();
         let found = false;
         this.events.forEach((event) => {
@@ -101,7 +100,6 @@ class SprintView {
         if(!found) {
             this.occurencesLabel.innerText = "No occurences this sprint"
         }
-
         this.colourBlock.style.background = this.sprint.colour;
         document.getElementById(`start-date-${this.sprint.sprintId}`).innerText = DatetimeUtils.localToUserDMY(this.sprint.startDate);
         const displayedDate = new Date(this.sprint.endDate.valueOf());
