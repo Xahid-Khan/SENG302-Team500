@@ -638,7 +638,7 @@ export function EditGroupMembers({viewGroupId}: any) {
                                                                                       style={{fontSize: 14}}>arrow_forward</span>
                             </button>
                             <button className={"edit-group-members-button"}
-                                    disabled={((currentGroupUsersSelected.length === 0 || myGroup.shortName === "Non Group") && (otherUsersSelected.length === 0 || document.getElementById("filter-groups-button").innerText === "All users")) || (!isAdmin && (isEditingSelf()))}
+                                    disabled={((currentGroupUsersSelected.length === 0 || myGroup.shortName === "Non Group") && (otherUsersSelected.length === 0 || document.getElementById("filter-groups-button").innerText === "All users")) || (!isAdmin && myGroup.shortName === "Teachers" && (isEditingSelf()))}
                                     onClick={() => openRemoveModal()}>Remove from group
                             </button>
                         </div>
