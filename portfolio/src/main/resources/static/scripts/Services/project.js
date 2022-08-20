@@ -294,32 +294,6 @@ class Project {
      * Handles project deletion by making DELETE request.
      */
     async deleteProject() {
-        if (this.deleteLoadingStatus === LoadingStatus.Pending) {
-            return;
-        }
-
-        this.deleteLoadingStatus = LoadingStatus.Pending;
-
-        try {
-            const response = await fetch(`api/v1/projects/${this.project.id}`, {
-                method: 'DELETE'
-            })
-
-            if (!response.ok) {
-                await ErrorHandlerUtils.handleNetworkError(response, "delete project");
-            }
-
-            this.deleteLoadingStatus = LoadingStatus.Done;
-            this.deleteCallback(this.project.id);
-        } catch (ex) {
-            this.deleteLoadingStatus = LoadingStatus.Error;
-
-            if (ex instanceof PortfolioNetworkError) {
-                throw ex;
-            }
-
-            ErrorHandlerUtils.handleUnknownNetworkError(ex, "delete project");
-        }
 
     }
 

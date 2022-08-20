@@ -279,10 +279,7 @@ class Application {
    * @param projectId - project do be deleted
    */
   deleteProject(projectId) {
-    const projectElement = document.getElementById(`project-view-${projectId}`)
-    this.containerElement.removeChild(projectElement);
-    this.projects.get(projectId).dispose();
-    this.projects.delete(projectId);
+
   }
 
 }
