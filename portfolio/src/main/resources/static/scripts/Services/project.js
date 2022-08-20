@@ -2,7 +2,7 @@
  * Handles switching between the editor and view screens.
  */
 class Project {
-    constructor(containerElement, data, deleteCallback) {
+    constructor(containerElement, data, deleteCallback, createCallback) {
         this.containerElement = containerElement;
         this.project = data;
 
@@ -13,6 +13,8 @@ class Project {
 
         this.deleteLoadingStatus = LoadingStatus.NotYetAttempted;
         this.deleteCallback = deleteCallback;
+
+        this.createCallback = createCallback;
 
         this.currentlyEditing = false;
     }
@@ -220,7 +222,7 @@ class Project {
      */
     showViewer() {
         this.currentView?.dispose();
-        this.currentView = new ProjectView(this.containerElement, this.project, this.showEditor.bind(this), this.deleteProject.bind(this), this.deleteSprint.bind(this), this.onSprintUpdate.bind(this), this.deleteEvent.bind(this), this.onEventUpdate.bind(this), this.deleteDeadline.bind(this), this.onDeadlineUpdate.bind(this), this.deleteMilestone.bind(this), this.onMilestoneUpdate.bind(this), this.onEventEdit.bind(this), this.onDeadlineEdit.bind(this), this.onMilestoneEdit.bind(this));
+        this.currentView = new ProjectView(this.containerElement, this.project, this.showEditor.bind(this), this.deleteAndCreateDefaultProject.bind(this), this.deleteSprint.bind(this), this.onSprintUpdate.bind(this), this.deleteEvent.bind(this), this.onEventUpdate.bind(this), this.deleteDeadline.bind(this), this.onDeadlineUpdate.bind(this), this.deleteMilestone.bind(this), this.onMilestoneUpdate.bind(this), this.onEventEdit.bind(this), this.onDeadlineEdit.bind(this), this.onMilestoneEdit.bind(this));
         if (this.currentlyEditing) {
             this.currentView.toggleSprints();
             this.currentView.toggleMilestones();
@@ -287,6 +289,31 @@ class Project {
             }
 
             ErrorHandlerUtils.handleUnknownNetworkError(ex, "update project");
+        }
+    }
+
+    async createDefaultProject() {
+        let tomorrow = new Date()
+        tomorrow.setDate(tomorrow.getDate() + 1)
+        const defaultProject = {
+            id: '__NEW_PROJECT_FORM',
+            name: `Project ${new Date().getFullYear()}`,
+            description: null,
+            startDate: new Date(),
+            endDate: tomorrow,
+        };
+        await this.createCallback(defaultProject)
+    }
+
+    /**
+     * Makes a delete request and then creates a new default project
+     */
+    async deleteAndCreateDefaultProject() {
+        try {
+            await this.deleteProject()
+            await this.createDefaultProject()
+        } catch(e) {
+            throw e
         }
     }
 

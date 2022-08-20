@@ -30,6 +30,7 @@ public class ProjectDetailsController {
     List<UserRole> roles = rolesService.getRolesByToken(principal);
 
     model.addAttribute("isStudent", roles.size() == 1 && roles.contains(UserRole.STUDENT));
+    model.addAttribute("isCourseAdmin", roles.contains(UserRole.COURSE_ADMINISTRATOR));
 
     Integer userId = authStateService.getId(principal);
 
