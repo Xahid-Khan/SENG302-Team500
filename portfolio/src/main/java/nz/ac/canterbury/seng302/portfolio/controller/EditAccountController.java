@@ -68,14 +68,10 @@ public class EditAccountController extends AuthenticatedController {
    */
   @PostMapping(value = "/edit_account")
   public String postPage(
-      @ModelAttribute @Validated(EditedUserValidation.class) User submittingUser,
+      @ModelAttribute("submittingUser") @Validated(EditedUserValidation.class) User submittingUser,
       BindingResult bindingResult,
       Model model,
       @AuthenticationPrincipal PortfolioPrincipal principal) {
-
-    System.out.println("???!?!?!?");
-    // Override the model attribute to use the submitted fields instead
-    // model.addAttribute("user", userMapper.userResponseToUserDto(getUser(principal)));
 
     if (bindingResult.hasErrors()) {
       return "edit_account";
