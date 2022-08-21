@@ -99,7 +99,13 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
     iconDataToDictionary(project.milesStones, milestoneDictionary, "_MS");
     iconDataToDictionary(project.events, eventDictionary,"_ES");
     iconDataToDictionary(project.deadlines, deadlineDictionary, "_DL");
+    let sprintDates = new Set();
 
+    /**
+     * This function checks if ID is provided or not, If ID is not provided then it creates an list of events that are not
+     * editable, otherwise events are editable.
+     * @param id userId of teacher/admins
+     */
     function arrayOfEvents(id: string){
         let events: any[]
         if(id){
@@ -114,7 +120,6 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
                 // This hides the time on the event and must be true for drag and drop resizing to be enabled
                 allDay: true,
                 editable: sprint.id === id,
-
             }))
         } else {
             events = project.sprints.map(sprint => ({
@@ -128,7 +133,6 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
                 // This hides the time on the event and must be true for drag and drop resizing to be enabled
                 allDay: true,
                 editable: false,
-
             }))
         }
 
@@ -143,6 +147,16 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
             allDay: true,
             borderColor: "transparent",
         })})
+
+        project.sprints.forEach(sprint => {
+            let startDate = new Date(sprint.startDate);
+            const endDate = new Date(sprint.endDate);
+            while (startDate <= endDate) {
+                sprintDates.add(startDate.toLocaleDateString());
+                startDate.setDate(startDate.getDate() + 1);
+            }
+        })
+
         return events
     }
 
@@ -201,17 +215,15 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
     function renderEventIcons(eventInfo: any) {
         if (eventInfo.event.title.includes("Sprint")) {
             return (
-                <div>
-                    <p>{eventInfo.event.title}</p>
-                </div>
+                <p style={{zIndex:0}}>{eventInfo.event.title}</p>
             )
         } else {
             return (
-                <div style={{display:"grid"}}>
+                <div style={{display:"grid", zIndex:0}}>
                     {
                         eventDictionary.has(eventInfo.event.id)?
                             <>
-                                <div style={{margin:"3px 0 3px 0", width:"fit-content"}} data-tip data-for = {"events" + eventInfo.event.id.toString()}>
+                                <div style={{margin: sprintDates.has(eventInfo.event.id) ? "3px 0 3px 0" : "60px 0 3px 0", width:"fit-content"}} data-tip data-for = {"events" + eventInfo.event.id.toString()}>
                                         <span className="material-icons" style={{float: "left"}} >event</span>
                                         <p style={{
                                             float: "left",
@@ -255,7 +267,7 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
                                     </p>
                                 </div>
 
-                                <ReactTooltip id={"deadlines" + eventInfo.event.id.toString()} place="right" effect="float" html={true} multiline={true}
+                                <ReactTooltip id={"deadlines" + eventInfo.event.id.toString()} place="right" effect="float" html={true} multiline={true} className={'ui-front'}
                                               getContent={() => getEventHoverData(eventInfo.event.id, "deadlines")}
                                 >
                                 </ReactTooltip>
