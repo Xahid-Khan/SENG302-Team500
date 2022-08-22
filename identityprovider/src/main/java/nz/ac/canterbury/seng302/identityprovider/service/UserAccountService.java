@@ -208,7 +208,6 @@ public class UserAccountService extends UserAccountServiceGrpc.UserAccountServic
 
       @Override
       public void onError(Throwable t) {
-        System.out.println(t.getMessage());
       }
 
       @Override

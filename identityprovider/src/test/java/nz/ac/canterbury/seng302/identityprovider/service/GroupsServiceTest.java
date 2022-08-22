@@ -69,7 +69,6 @@ public class GroupsServiceTest {
                                     @Override
                                     public void onError(Throwable t) {
                                         assertTrue(false, "Test failed when trying to delete group");
-                                        System.out.println(t);
                                     }
 
                                     @Override
@@ -82,7 +81,6 @@ public class GroupsServiceTest {
                     @Override
                     public void onError(Throwable t) {
                         assertTrue(false, "Test failed when trying to create group");
-                        System.out.println(t);
                     }
 
                     @Override
