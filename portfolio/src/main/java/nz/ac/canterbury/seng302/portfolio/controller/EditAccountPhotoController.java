@@ -6,7 +6,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import nz.ac.canterbury.seng302.portfolio.DTO.User;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
-import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
 import nz.ac.canterbury.seng302.portfolio.service.PhotoCropService;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.UnsupportedMediaTypeStatusException;
 
+/** This controller handles all editing photo interactions. */
 @Controller
 public class EditAccountPhotoController extends AuthenticatedController {
   // Defines constants used for file uploads
@@ -35,8 +35,6 @@ public class EditAccountPhotoController extends AuthenticatedController {
   @Autowired private PhotoCropService photoCropService;
 
   @Autowired private RegisterClientService registerClientService;
-
-  @Autowired private AuthStateService authStateService;
 
   /**
    * This method removes the left and right trailing white-spaces from the form data.
@@ -59,13 +57,13 @@ public class EditAccountPhotoController extends AuthenticatedController {
   }
 
   /**
-   * Handles editing an image
+   * Handles editing an image.
    *
-   * @param principal
-   * @param croppedImage
-   * @param model
-   * @param file
-   * @return
+   * @param principal the user's token
+   * @param croppedImage the cropped image string
+   * @param model the model
+   * @param file the file
+   * @return the same page if there are any errors, otherwise a redirect to the user's account page
    */
   @PostMapping(value = "/edit_account/editImage")
   public String changeUserProfilePhoto(
@@ -74,7 +72,7 @@ public class EditAccountPhotoController extends AuthenticatedController {
       Model model,
       @RequestParam(value = "image", required = false) MultipartFile file) {
     try {
-      int userId = authStateService.getId(principal);
+      int userId = getUserId(principal);
       if (croppedImage.length() != 0) {
         String fileType = croppedImage.substring(5, 14);
         byte[] imageData = Base64.getDecoder().decode(croppedImage.substring(22));
@@ -167,7 +165,7 @@ public class EditAccountPhotoController extends AuthenticatedController {
   @PostMapping(value = "/edit_account/imageDelete")
   public String deleteUserPhoto(
       @AuthenticationPrincipal PortfolioPrincipal principal, @ModelAttribute User user) {
-    int userId = authStateService.getId(principal);
+    int userId = getUserId(principal);
     registerClientService.deleteUserPhoto(userId);
     return "redirect:/my_account";
   }

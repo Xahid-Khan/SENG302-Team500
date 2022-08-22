@@ -11,7 +11,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
-<body class="fullscreen" th:classappend="${(isStudent) ? 'studentMode' : ''}">
+<body class="fullscreen" th:classappend="${!isTeacher ? 'studentMode' : ''}">
 <div th:replace="fragments/header :: header" class="navbar"></div>
 <div id="update-insert">
 

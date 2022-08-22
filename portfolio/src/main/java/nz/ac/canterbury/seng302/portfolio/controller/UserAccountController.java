@@ -12,7 +12,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import nz.ac.canterbury.seng302.portfolio.mapping.UserMapper;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
-import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -25,8 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  */
 @Controller
 public class UserAccountController extends AuthenticatedController {
-  @Autowired
-  RegisterClientService registerClientService;
+  @Autowired RegisterClientService registerClientService;
 
   @Autowired UserMapper mapper;
 

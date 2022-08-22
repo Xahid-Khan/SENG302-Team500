@@ -7,9 +7,7 @@ import nz.ac.canterbury.seng302.portfolio.model.contract.MilestoneContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseMilestoneContract;
 import nz.ac.canterbury.seng302.portfolio.service.MilestoneService;
 import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
-import nz.ac.canterbury.seng302.portfolio.service.RolesService;
 import nz.ac.canterbury.seng302.portfolio.service.ValidationService;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -24,17 +22,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/** This controller handles all Milestone interactions. */
 @RestController
 @RequestMapping("/api/v1")
-public class MilestoneController {
+public class MilestoneController extends AuthenticatedController {
 
   @Autowired private MilestoneService milestoneService;
 
   @Autowired private ProjectService projectService;
 
   @Autowired private ValidationService validationService;
-
-  @Autowired private RolesService rolesService;
 
   /**
    * This method will be invoked when API receives a GET request with a milestone ID embedded in
@@ -89,8 +86,7 @@ public class MilestoneController {
       @AuthenticationPrincipal PortfolioPrincipal principal,
       @PathVariable String projectId,
       @RequestBody BaseMilestoneContract milestone) {
-    List<UserRole> roles = rolesService.getRolesByToken(principal);
-    if (roles.contains(UserRole.TEACHER) || roles.contains(UserRole.COURSE_ADMINISTRATOR)) {
+    if (isTeacher(principal)) {
       String errorMessage = validationService.checkAddMilestone(projectId, milestone);
       if (!errorMessage.equals("Okay")) {
         if (errorMessage.equals("Project ID does not exist")
@@ -124,8 +120,7 @@ public class MilestoneController {
       @AuthenticationPrincipal PortfolioPrincipal principal,
       @PathVariable String id,
       @RequestBody BaseMilestoneContract milestone) {
-    List<UserRole> roles = rolesService.getRolesByToken(principal);
-    if (roles.contains(UserRole.TEACHER) || roles.contains(UserRole.COURSE_ADMINISTRATOR)) {
+    if (isTeacher(principal)) {
       String errorMessage = validationService.checkUpdateMilestone(id, milestone);
       if (!errorMessage.equals("Okay")) {
         if (errorMessage.equals("Project ID does not exist")
@@ -149,7 +144,7 @@ public class MilestoneController {
 
   /**
    * This method will be invoked when API receives a DELETE request with a Milestone ID embedded in
-   * URL
+   * URL.
    *
    * @param id Milestone ID the user wants to delete
    * @return status_Code 204.
@@ -157,8 +152,7 @@ public class MilestoneController {
   @DeleteMapping(value = "/milestones/{id}")
   public ResponseEntity<Void> deleteMilestone(
       @AuthenticationPrincipal PortfolioPrincipal principal, @PathVariable String id) {
-    List<UserRole> roles = rolesService.getRolesByToken(principal);
-    if (roles.contains(UserRole.TEACHER) || roles.contains(UserRole.COURSE_ADMINISTRATOR)) {
+    if (isTeacher(principal)) {
       try {
         milestoneService.delete(id);
 

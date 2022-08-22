@@ -6,7 +6,6 @@ import nz.ac.canterbury.seng302.portfolio.DTO.User;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.portfolio.mapping.UserMapper;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -27,6 +26,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 @Controller
 public class EditAccountController extends AuthenticatedController {
 
+  @Autowired private UserMapper userMapper;
+  @Autowired private RegisterClientService registerClientService;
+
   /**
    * This method removes the left and right trailing white-spaces from the form data.
    *
@@ -36,10 +38,6 @@ public class EditAccountController extends AuthenticatedController {
   public void initBinder(WebDataBinder binder) {
     binder.registerCustomEditor(String.class, new StringTrimmerEditor(false));
   }
-
-  @Autowired private UserMapper userMapper;
-
-  @Autowired private RegisterClientService registerClientService;
 
   /**
    * Gets the editing account page.
