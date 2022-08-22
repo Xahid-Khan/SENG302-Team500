@@ -20,8 +20,6 @@ public class RegisterServerService {
 
   @Autowired private PasswordService passwordService;
 
-  @Autowired private GroupsServerService groupsServerService;
-
   @Autowired private GroupRepository groupRepository;
 
   @Autowired private GroupMemberRepository groupMemberRepository;

@@ -8,13 +8,11 @@ import nz.ac.canterbury.seng302.portfolio.model.contract.GroupContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.UserContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseGroupContract;
 import nz.ac.canterbury.seng302.portfolio.service.GroupsClientService;
-import nz.ac.canterbury.seng302.portfolio.service.RolesService;
 import nz.ac.canterbury.seng302.shared.identityprovider.CreateGroupResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.DeleteGroupResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.GroupDetailsResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedGroupsResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,10 +28,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 /** Handles the GET request on the /groups endpoint. */
 @Controller
 @RequestMapping("/api/v1")
-public class GroupsController {
+public class GroupsController extends AuthenticatedController {
   @Autowired private GroupsClientService groupsClientService;
-
-  @Autowired private RolesService rolesService;
 
   /**
    * This method will be invoked when API receives a GET request, and will produce a list of all the
@@ -92,8 +88,7 @@ public class GroupsController {
       @AuthenticationPrincipal PortfolioPrincipal principal,
       @PathVariable("groupId") String groupId,
       @RequestBody List<Integer> members) {
-    List<UserRole> roles = rolesService.getRolesByToken(principal);
-    if (roles.contains(UserRole.TEACHER) || roles.contains(UserRole.COURSE_ADMINISTRATOR)) {
+    if (isTeacher(principal)) {
       try {
         groupsClientService.removeGroupMembers(Integer.parseInt(groupId), members);
         return ResponseEntity.ok().build();
@@ -118,8 +113,7 @@ public class GroupsController {
       @PathVariable("groupId") String groupId,
       @RequestBody List<Integer> members) {
 
-    List<UserRole> roles = rolesService.getRolesByToken(principal);
-    if (roles.contains(UserRole.TEACHER) || roles.contains(UserRole.COURSE_ADMINISTRATOR)) {
+    if (isTeacher(principal)) {
       try {
         groupsClientService.addGroupMembers(Integer.parseInt(groupId), members);
         return ResponseEntity.ok().build();
@@ -141,8 +135,7 @@ public class GroupsController {
   public ResponseEntity<?> deleteGroup(
       @AuthenticationPrincipal PortfolioPrincipal principal,
       @PathVariable("groupId") String groupId) {
-    List<UserRole> roles = rolesService.getRolesByToken(principal);
-    if (roles.contains(UserRole.TEACHER) || roles.contains(UserRole.COURSE_ADMINISTRATOR)) {
+    if (isTeacher(principal)) {
       try {
         DeleteGroupResponse response = groupsClientService.deleteGroup(Integer.parseInt(groupId));
         if (response.getIsSuccess()) {
@@ -168,8 +161,7 @@ public class GroupsController {
   public ResponseEntity<?> createGroup(
       @AuthenticationPrincipal PortfolioPrincipal principal,
       @RequestBody BaseGroupContract newGroup) {
-    List<UserRole> roles = rolesService.getRolesByToken(principal);
-    if (roles.contains(UserRole.TEACHER) || roles.contains(UserRole.COURSE_ADMINISTRATOR)) {
+    if (isTeacher(principal)) {
       try {
         CreateGroupResponse response = groupsClientService.createGroup(newGroup);
         if (response.getIsSuccess()) {
