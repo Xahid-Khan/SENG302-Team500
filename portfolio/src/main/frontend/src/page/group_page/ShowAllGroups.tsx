@@ -106,6 +106,9 @@ export function ShowAllGroups({setViewGroupId}: any) {
                         <button className="button edit-group-button" id="edit-group" data-privilege="teacher" onClick={() => {document.getElementById("modal-edit-group-members-open").style.display = "block"; setViewGroupId(group.id)}}> Manage Group Members</button>
                         : ""}
                         <div>
+                            <button className={"button show-group-feed-button"} onClick={() => window.location.href=`group_feed/${group['id']}`}>View Feed</button>
+                        </div>
+                        <div>
                             <span className={"material-icons group-settings"} onClick={() => {
                                 document.getElementById("group-settings-modal-open").style.display='block';
                                 setViewGroupId(group.id)

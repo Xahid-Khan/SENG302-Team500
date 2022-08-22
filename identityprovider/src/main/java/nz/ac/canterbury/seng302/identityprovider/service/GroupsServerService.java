@@ -298,5 +298,22 @@ public class GroupsServerService extends GroupsServiceGrpc.GroupsServiceImplBase
         }
         responseObserver.onCompleted();
     }
+
+    @Override
+    public void  getGroupDetails(GetGroupDetailsRequest request, StreamObserver<GroupDetailsResponse> responseObserver) {
+        Optional<GroupModel> groupModel = groupRepository.findById(request.getGroupId());
+
+        if (groupModel.isEmpty()) {
+            responseObserver.onNext(GroupDetailsResponse.newBuilder()
+                    .setShortName("").build());
+
+        } else {
+            responseObserver.onNext(GroupDetailsResponse.newBuilder()
+                    .setGroupId(groupModel.get().getId())
+                    .setShortName(groupModel.get().getShortName())
+                    .build());
+        }
+        responseObserver.onCompleted();
+    }
 }
 
