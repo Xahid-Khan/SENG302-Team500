@@ -105,6 +105,12 @@ export function ShowAllGroups({setViewGroupId}: any) {
                         {isTeacher ?
                         <button className="button edit-group-button" id="edit-group" data-privilege="teacher" onClick={() => {document.getElementById("modal-edit-group-members-open").style.display = "block"; setViewGroupId(group.id)}}> Manage Group Members</button>
                         : ""}
+                        <div>
+                            <span className={"material-icons group-settings"} onClick={() => {
+                                document.getElementById("group-settings-modal-open").style.display='block';
+                                setViewGroupId(group.id)
+                            }}>settings</span>
+                        </div>
                         <div id={`toggle-group-details-${group['id']}`}>
                             <span className={"material-icons toggle-group-details"} id={`group-toggle-button-${group['id']}`} onClick={() => toggleGroupView(group['id'])}>visibility</span>
                         </div>

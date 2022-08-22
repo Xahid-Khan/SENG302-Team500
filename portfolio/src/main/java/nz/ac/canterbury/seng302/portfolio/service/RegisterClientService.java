@@ -64,10 +64,10 @@ public class RegisterClientService {
    * FileUploadStatusResponse that will provide us with Upload status (Success, Pending, etc.)
    *
    * @param userId Id (integer) of the user who is uploading the photo
-   * @param fileType extetion of the file (JPG, PNG, etc)
+   * @param fileType extension of the file (JPG, PNG, etc)
    * @param uploadImage Raw image data in byte array
    */
-  public void uploadUserPhoto(Integer userId, String fileType, byte[] uploadImage) {
+  public void uploadUserPhoto(int userId, String fileType, byte[] uploadImage) {
     CountDownLatch latch = new CountDownLatch(1);
     ByteString imageBuffer = ByteString.copyFrom(uploadImage);
     var requestStreamObserverContainer =

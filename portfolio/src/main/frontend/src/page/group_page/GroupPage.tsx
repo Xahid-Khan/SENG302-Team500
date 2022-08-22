@@ -6,6 +6,7 @@ import {CreateGroupModal} from "./CreateGroup";
 import {DeleteGroupModal} from "./DeleteGroupModal";
 import {EditGroupMembersModal} from "./EditGroupMembersModal";
 import {RemoveMemberModal} from "./RemoveMemberModal";
+import {GroupSettingsModal} from "./GroupSettingsModal";
 
 /**
  * The root of the GroupPage. This does a few jobs:
@@ -23,11 +24,10 @@ export const GroupPage = () => {
       <ToasterRoot>
         <div className="add-group">
           <div>
-            {isTeacher ?
-                <button className="button add-group-button" id="add-group"
-                        onClick={() => document.getElementById("modal-create-group-open").style.display = "block"}> Create
-                  Group
-                </button> : ""
+            {isTeacher ? <button className="button add-group-button" id="add-group"
+                                 onClick={() => document.getElementById("modal-create-group-open").style.display = "block"}> Create
+              Group
+            </button> : ""
             }
           </div>
         </div>
@@ -39,6 +39,7 @@ export const GroupPage = () => {
         <DeleteGroupModal/>
         <EditGroupMembersModal viewGroupId={viewGroupId}/>
         <RemoveMemberModal/>
+        <GroupSettingsModal viewGroupId={viewGroupId}/>
       </ToasterRoot>
   )
 }

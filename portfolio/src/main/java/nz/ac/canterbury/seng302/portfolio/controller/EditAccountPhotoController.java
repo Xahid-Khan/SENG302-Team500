@@ -1,11 +1,11 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import io.grpc.StatusRuntimeException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import nz.ac.canterbury.seng302.portfolio.DTO.User;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
+import nz.ac.canterbury.seng302.portfolio.model.contract.BaseImageContract;
 import nz.ac.canterbury.seng302.portfolio.service.PhotoCropService;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,12 +14,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.UnsupportedMediaTypeStatusException;
@@ -27,10 +27,9 @@ import org.springframework.web.server.UnsupportedMediaTypeStatusException;
 /** This controller handles all editing photo interactions. */
 @Controller
 public class EditAccountPhotoController extends AuthenticatedController {
-  // Defines constants used for file uploads
   private static final int MIN_PROFILE_PICTURE_SIZE = 5 * 1024;
   private static final int PROFILE_PICTURE_COMPRESSION_THRESHOLD = 5 * 1024 * 1024;
-  private static final int MAX_PROFILE_PICTURE_SIZE = 10 * 1024 * 1024;
+  private static final int MAX_PROFILE_PICTURE_SIZE = 5 * 1024 * 1024;
 
   @Autowired private PhotoCropService photoCropService;
 
@@ -60,60 +59,28 @@ public class EditAccountPhotoController extends AuthenticatedController {
    * Handles editing an image.
    *
    * @param principal the user's token
-   * @param croppedImage the cropped image string
-   * @param model the model
-   * @param file the file
-   * @return the same page if there are any errors, otherwise a redirect to the user's account page
+   * @param newImage a BaseImageContract of the new image
+   * @return a HTTP status with the result
    */
-  @PostMapping(value = "/edit_account/editImage")
-  public String changeUserProfilePhoto(
+  @PostMapping(value = "/edit_Image")
+  public ResponseEntity<?> changeUserProfilePhoto(
       @AuthenticationPrincipal PortfolioPrincipal principal,
-      @RequestParam(value = "croppedUserImage") String croppedImage,
-      Model model,
-      @RequestParam(value = "image", required = false) MultipartFile file) {
+      @RequestBody BaseImageContract newImage) {
     try {
-      int userId = getUserId(principal);
-      if (croppedImage.length() != 0) {
-        String fileType = croppedImage.substring(5, 14);
-        byte[] imageData = Base64.getDecoder().decode(croppedImage.substring(22));
-        registerClientService.uploadUserPhoto(userId, fileType, imageData);
-      } else {
-        try {
-          if (file != null && !file.isEmpty()) {
-            if (MIN_PROFILE_PICTURE_SIZE <= file.getSize()
-                && file.getSize() <= MAX_PROFILE_PICTURE_SIZE) {
-              try {
-                byte[] uploadImage =
-                    photoCropService.processImageFile(
-                        file, file.getSize() > PROFILE_PICTURE_COMPRESSION_THRESHOLD);
-
-                registerClientService.uploadUserPhoto(userId, file.getContentType(), uploadImage);
-              } catch (IOException e) {
-                model.addAttribute(
-                    "imageError",
-                    "Failed to save image. Please try again later or with a different image.");
-                return "edit_user_image";
-              } catch (UnsupportedMediaTypeStatusException e) {
-                model.addAttribute(
-                    "imageError", "Failed to save image. Please use a different image format.");
-                return "edit_user_image";
-              }
-
-            } else {
-              model.addAttribute(
-                  "imageError", "File size must be more than 5KB and less than 5MB.");
-              return "edit_user_image";
-            }
-          }
-        } catch (StatusRuntimeException e) {
-          model.addAttribute("error", "Error connecting to Identity Provider...");
-          return "edit_user_image";
+      if (newImage.croppedImage().length() != 0) {
+        int userId = getUserId(principal);
+        String fileType = newImage.croppedImage().substring(5, 14);
+        byte[] imageData = Base64.getDecoder().decode(newImage.croppedImage().substring(22));
+        if (imageData.length < MAX_PROFILE_PICTURE_SIZE) {
+          registerClientService.uploadUserPhoto(userId, fileType, imageData);
+        } else {
+          return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
       }
-    } catch (StatusRuntimeException ignored) {
-      //
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
-    return "redirect:/my_account";
+    return ResponseEntity.ok().build();
   }
 
   /**

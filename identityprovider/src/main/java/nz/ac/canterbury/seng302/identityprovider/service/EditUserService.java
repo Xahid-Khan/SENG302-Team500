@@ -43,8 +43,7 @@ public class EditUserService {
                             request.getBio(),
                             request.getPersonalPronouns(),
                             request.getEmail(),
-                            existingUser.getRoles(),
-                            existingUser.getCreated());
+                            existingUser.getRoles());
             newUser.setId(request.getUserId());
             repository.save(newUser);
             reply.setIsSuccess(true).setMessage("Updated details for user: " + newUser);
