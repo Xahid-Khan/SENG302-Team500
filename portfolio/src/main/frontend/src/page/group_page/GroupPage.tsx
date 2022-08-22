@@ -34,6 +34,7 @@ export const GroupPage = () => {
                 <div className={"raised-card groups"}>
                     <h1>Groups</h1>
                     <ShowAllGroups setViewGroupId={setViewGroupId}/>
+
                 </div>
                 <CreateGroupModal/>
                 <DeleteGroupModal/>

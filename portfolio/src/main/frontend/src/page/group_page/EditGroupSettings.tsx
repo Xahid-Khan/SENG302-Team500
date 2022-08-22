@@ -31,6 +31,8 @@ export function EditGroupSettings( {viewGroupId}: any ) {
 
     const [longName, setLongName] = React.useState('')
     const [alias, setAlias] = React.useState('')
+    const[repositoryID, setRepositoryID] = React.useState('')
+    const[repositoryName, setRepositoryName] = React.useState('')
     const [longCharCount, setLongCharCount] = React.useState(0)
 
     const handleCancel = () => {
@@ -54,6 +56,7 @@ export function EditGroupSettings( {viewGroupId}: any ) {
             document.getElementById("group-settings-modal-open").style.display = "none"
             window.location.reload()
         }
+
     }
 
 
@@ -72,6 +75,14 @@ export function EditGroupSettings( {viewGroupId}: any ) {
                         <div>
                             <label>Alias:</label>
                             <input type="text" name="alias" className="input-name" id={"alias"} maxLength={64} onChange={(e) => {setAlias(e.target.value)}}/>
+                            </div>
+                        <div>
+                            <label>Repository ID:</label>
+                            <input type="text" name="alias" className="input-name" id={"alias"} maxLength={64} onChange={(e) => {setRepositoryID(e.target.value)}}/>
+                        </div>
+                        <div>
+                            <label>Token:</label>
+                            <input type="text" name="alias" className="input-name" id={"alias"} maxLength={64} onChange={(e) => {setRepositoryName(e.target.value)}}/>
                         </div>
                         <div className="form-error" id="edit-group-error"/>
                         <div className="modal-buttons">
