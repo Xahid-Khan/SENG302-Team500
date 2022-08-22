@@ -1,16 +1,28 @@
 package nz.ac.canterbury.seng302.identityprovider.service;
 
 import com.google.protobuf.ByteString;
-import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
-
 import java.io.ByteArrayOutputStream;
-import java.io.Console;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import net.devh.boot.grpc.server.service.GrpcService;
-import nz.ac.canterbury.seng302.shared.identityprovider.*;
+import nz.ac.canterbury.seng302.shared.identityprovider.ChangePasswordRequest;
+import nz.ac.canterbury.seng302.shared.identityprovider.ChangePasswordResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.DeleteUserProfilePhotoRequest;
+import nz.ac.canterbury.seng302.shared.identityprovider.DeleteUserProfilePhotoResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.EditUserRequest;
+import nz.ac.canterbury.seng302.shared.identityprovider.EditUserResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.GetPaginatedUsersRequest;
+import nz.ac.canterbury.seng302.shared.identityprovider.GetUserByIdRequest;
+import nz.ac.canterbury.seng302.shared.identityprovider.ModifyRoleOfUserRequest;
+import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedUsersResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.UploadUserProfilePhotoRequest;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterRequest;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserRoleChangeResponse;
 import nz.ac.canterbury.seng302.shared.util.FileUploadStatus;
 import nz.ac.canterbury.seng302.shared.util.FileUploadStatusResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -158,9 +170,9 @@ public class UserAccountService extends UserAccountServiceGrpc.UserAccountServic
   public StreamObserver<UploadUserProfilePhotoRequest> uploadUserProfilePhoto(
       StreamObserver<FileUploadStatusResponse> responseObserver) {
     return new StreamObserver<UploadUserProfilePhotoRequest>() {
+      final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
       Integer userId = null;
       String fileType = null;
-      final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
       @Override
       public void onNext(UploadUserProfilePhotoRequest request) {
