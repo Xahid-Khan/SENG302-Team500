@@ -1,4 +1,4 @@
-package nz.ac.canterbury.seng302.identityprovider.database;
+package nz.ac.canterbury.seng302.portfolio.model.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
