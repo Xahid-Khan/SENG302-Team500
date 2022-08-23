@@ -7,7 +7,7 @@ package nz.ac.canterbury.seng302.portfolio.model.contract;
  * @param groupId The id of the group
  */
 public record SubscriptionContract(
-        String userId,
-        String groupId
+        int userId,
+        int groupId
 ) implements Contractable {
 }

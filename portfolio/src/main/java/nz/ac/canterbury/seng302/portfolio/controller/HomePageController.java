@@ -8,10 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -25,9 +22,23 @@ public class HomePageController {
 
     @PostMapping(value = "/home-page/subscribe", produces = "application/json")
     public ResponseEntity<?> subscribe(@AuthenticationPrincipal PortfolioPrincipal principal,
-                                        @PathVariable("groupId") String groupId,
-                                        @RequestBody SubscriptionContract subscription) {
-        homePageService.subscribe(subscription);
+                                       @RequestBody SubscriptionContract subscription) {
+        try{
+            homePageService.subscribe(subscription);
+        } catch (Exception e){
+            return ResponseEntity.internalServerError().build();
+        }
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping(value = "/home-page/subscribe", produces = "application/json")
+    public ResponseEntity<?> unsubscribe(@AuthenticationPrincipal PortfolioPrincipal principal,
+                                       @RequestBody SubscriptionContract subscription) {
+        try{
+            homePageService.unsubscribe(subscription);
+        } catch (Exception e){
+            return ResponseEntity.internalServerError().build();
+        }
         return ResponseEntity.ok().build();
     }
 }
