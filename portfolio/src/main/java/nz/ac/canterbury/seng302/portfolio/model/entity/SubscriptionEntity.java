@@ -26,6 +26,15 @@ public class SubscriptionEntity {
     @Column(name = "time_subscribed")
     private Timestamp timeSubscribed;
 
+    protected SubscriptionEntity() {
+
+    }
+
+    public SubscriptionEntity(int userId, int groupId) {
+        this.userId = userId;
+        this.groupId = groupId;
+    }
+
     public Long getId() {
         return id;
     }
