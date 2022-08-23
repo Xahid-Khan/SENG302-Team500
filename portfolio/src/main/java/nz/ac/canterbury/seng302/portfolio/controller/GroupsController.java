@@ -159,7 +159,7 @@ public class GroupsController {
         if (response.getIsSuccess()) {
           return ResponseEntity.ok().build();
         } else {
-          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Fuck");
+          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Bad request");
         }
       } catch (Exception error) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
