@@ -20,7 +20,7 @@ class Editor {
 
         console.log(this.containerElement)
 
-        if (this.entityId && !this.title.includes("New") && !this.title.includes("sprint")) {
+        if (this.entityId && !this.title.includes("New")) {
             Socket.showEdit(this.entityId)
             window.addEventListener('beforeunload', () => Socket.cancelEdit(this.entityId))
         }
@@ -287,9 +287,7 @@ class Editor {
                     endDate: this.getEndDateInputValue(),
                     colour: this.getColour()
                 })
-                if (!this.title.includes("sprint")) {
-                    Socket.saveEdit(this.entityId);
-                }
+                Socket.saveEdit(this.entityId);
                 window.removeEventListener('beforeunload', () => Socket.cancelEdit(this.entityId))
             } finally {
                 this.saveButton.innerText = "Save";

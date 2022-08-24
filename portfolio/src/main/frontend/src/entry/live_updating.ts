@@ -136,7 +136,7 @@ class PingPageStore {
                     }
                 }
             } else {
-                if (message['action'] === "save") {
+                if (message['action'] !== "show") {
                     window.location.reload();
                 }
             }
