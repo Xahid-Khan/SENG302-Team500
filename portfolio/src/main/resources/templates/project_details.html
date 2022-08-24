@@ -11,7 +11,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
-<body class="fullscreen" th:classappend="${(isStudent) ? 'studentMode' : ''}">
+<body class="fullscreen" th:classappend="${(isStudent) ? 'studentMode' : (isCourseAdmin ? 'courseAdminMode' : '')}">
 <div th:replace="fragments/header :: header" class="navbar"></div>
 <div id="update-insert">
 
@@ -42,7 +42,7 @@
         </div>
         <div class="border-line"></div>
         <div class="modal-body">
-            Are you sure you want to delete?
+            Are you sure you want to delete the project? A new project with default settings will be created.
         </div>
         <div class="modal-buttons">
             <button class="button dangerous-button" id="modal-delete-confirm">Delete</button>
