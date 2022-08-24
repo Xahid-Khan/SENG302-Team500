@@ -19,14 +19,13 @@ import org.springframework.web.bind.annotation.ModelAttribute;
  */
 @Controller
 public abstract class AuthenticatedController {
-  private AuthStateService authStateService;
+  private final AuthStateService authStateService;
 
-  private UserAccountService userAccountService;
+  private final UserAccountService userAccountService;
 
-  @Autowired
-  private RolesService rolesService;
+  @Autowired private RolesService rolesService;
 
-  public AuthenticatedController(
+  protected AuthenticatedController(
       AuthStateService authStateService, UserAccountService userAccountService) {
     this.authStateService = authStateService;
     this.userAccountService = userAccountService;
@@ -74,15 +73,13 @@ public abstract class AuthenticatedController {
   }
 
   /**
-   * This function helps controllers get the user's roles. Note that this goes through the user
-   * service as opposed to using the roles service, since it is technically more secure.
+   * This function helps controllers get the user's roles. Note that this goes through the token.
    *
    * @param principal the user's token
    * @return the user's roles as a list
    */
   private List<UserRole> getRoles(PortfolioPrincipal principal) {
     return rolesService.getRolesByToken(principal);
-    //return getUser(principal).getRolesList();
   }
 
   /**
@@ -96,7 +93,7 @@ public abstract class AuthenticatedController {
    * @param principal the user's token
    * @return the user's highest role
    */
-  public UserRole getHighestRole(PortfolioPrincipal principal) {
+  private UserRole getHighestRole(PortfolioPrincipal principal) {
     return Collections.max(getRoles(principal));
   }
 
