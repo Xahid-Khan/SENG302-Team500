@@ -2,7 +2,9 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import io.grpc.StatusRuntimeException;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
+import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
 import nz.ac.canterbury.seng302.portfolio.service.ChangePasswordClientService;
+import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
 import nz.ac.canterbury.seng302.shared.identityprovider.ChangePasswordResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,6 +19,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class EditPasswordController extends AuthenticatedController {
 
   @Autowired private ChangePasswordClientService changePasswordClientService;
+
+  @Autowired
+  public EditPasswordController(
+      AuthStateService authStateService, UserAccountService userAccountService) {
+    super(authStateService, userAccountService);
+  }
 
   /**
    * Loads the editing password page.

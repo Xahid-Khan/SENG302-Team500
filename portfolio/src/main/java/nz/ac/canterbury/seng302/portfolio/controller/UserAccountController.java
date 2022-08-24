@@ -11,7 +11,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import nz.ac.canterbury.seng302.portfolio.mapping.UserMapper;
+import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
+import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -27,6 +29,12 @@ public class UserAccountController extends AuthenticatedController {
   @Autowired RegisterClientService registerClientService;
 
   @Autowired UserMapper mapper;
+
+  @Autowired
+  public UserAccountController(
+      AuthStateService authStateService, UserAccountService userAccountService) {
+    super(authStateService, userAccountService);
+  }
 
   /**
    * The register client service. Gives the user the edit account page

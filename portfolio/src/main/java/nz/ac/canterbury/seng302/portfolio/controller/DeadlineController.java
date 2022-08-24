@@ -5,8 +5,10 @@ import java.util.NoSuchElementException;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.portfolio.model.contract.DeadlineContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseDeadlineContract;
+import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
 import nz.ac.canterbury.seng302.portfolio.service.DeadlineService;
 import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
+import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
 import nz.ac.canterbury.seng302.portfolio.service.ValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,6 +34,12 @@ public class DeadlineController extends AuthenticatedController {
   @Autowired private ProjectService projectService;
 
   @Autowired private ValidationService validationService;
+
+  @Autowired
+  public DeadlineController(
+      AuthStateService authStateService, UserAccountService userAccountService) {
+    super(authStateService, userAccountService);
+  }
 
   /**
    * This method will be invoked when API receives a GET request with a deadline ID embedded in URL.
