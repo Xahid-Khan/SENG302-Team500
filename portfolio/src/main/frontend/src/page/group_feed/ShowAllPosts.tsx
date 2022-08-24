@@ -35,7 +35,12 @@ export function ShowAllPosts() {
                 "name": "James Potter",
                 "time": "2022-08-20T10:30:00",
                 "content": "Wow you posted before me"
-            }]
+                },
+                {
+                    "name": "Richie Mccaw",
+                    "time": "2022-08-22T18:30:00",
+                    "content": "Welcome to the club."
+                }]
             },
             {
                 "id": 2,
@@ -58,7 +63,13 @@ export function ShowAllPosts() {
 
     const clickHighFive = (id: number) => {
         const button = document.getElementById(`high-five-${id}`)
-        button.style.backgroundSize = button.style.backgroundSize === "100% 100%" ? "0 100%" : "100% 100%";
+        button.style.backgroundSize = button.style.backgroundSize === "100% 100%" ? "0 100%" : "100% 100%"
+    }
+
+    const toggleCommentDisplay = (id: number) => {
+        const commentsContainer = document.getElementById(`comments-container-${id}`)
+        console.log(commentsContainer.style.display)
+        commentsContainer.style.display = commentsContainer.style.display === "block" ? "none" : "block"
     }
 
     return(
@@ -77,11 +88,38 @@ export function ShowAllPosts() {
                     <div className={"post-body"}>{post.content}</div>
                     <div className={"border-line"}/>
                     <div className={"post-footer"}>
-                        <div className={"high-five-overlay"}>
-                            High Five! <span className={"material-icons"}>sign_language</span>
+                        <div className={"high-five-container"}>
+                            <div className={"high-five-overlay"}>
+                                <span className={"high-five-text"}>High Five!</span> <span className={"material-icons"}>sign_language</span>
+                            </div>
+                            <div className={"high-five"} id={`high-five-${post.id}`} onClick={() => clickHighFive(post.id)}>
+                                <span className={"high-five-text"}>High Five!</span> <span className={"material-icons"}>sign_language</span>
+                            </div>
                         </div>
-                        <div className={"high-five"} id={`high-five-${post.id}`} onClick={() => clickHighFive(post.id)}>
-                            High Five! <span className={"material-icons"}>sign_language</span>
+                        <div className={"comments-icon-container"}>
+                            <div className={"comments-select"} onClick={() => toggleCommentDisplay(post.id)}>
+                                <span className={"comments-select-text"}>Comments</span> <span className={"material-icons"}>mode_comment</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div className={"comments-container"} id={`comments-container-${post.id}`}>
+                        <div className={"border-line"}/>
+                        <div className={"post-comments"}>
+                            {post.comments.map((comment) => (
+                                <div className={"post-comment-container"}>
+                                <div className={"comment-name"}>{comment.name}</div>
+                                <div className={"post-comment"}>{comment.content}</div>
+                                </div>
+                                )
+                            )}
+                        </div>
+                        <div className={"make-comment-container"}>
+                            <div className={"input-comment"}>
+                                <input type={"text"} className={"input-comment-text"} placeholder={"Comment on post..."}/>
+                            </div>
+                            <div className={"submit-comment"}>
+                                <button className={"button submit-comment-button"}>Add comment</button>
+                            </div>
                         </div>
                     </div>
                 </div>
