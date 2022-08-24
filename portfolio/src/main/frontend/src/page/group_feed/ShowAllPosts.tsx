@@ -56,6 +56,11 @@ export function ShowAllPosts() {
 
     const isStudent = localStorage.getItem("isStudent") === "true";
 
+    const clickHighFive = (id: number) => {
+        const button = document.getElementById(`high-five-${id}`)
+        button.style.backgroundSize = button.style.backgroundSize === "100% 100%" ? "0 100%" : "100% 100%";
+    }
+
     return(
         <div>
             <div className={"group-feed-name"}>{groupShortName} Feed</div>
@@ -70,6 +75,15 @@ export function ShowAllPosts() {
                         <div className={"post-delete"}><span className={"material-icons"}>clear</span></div> : ""}
                     </div>
                     <div className={"post-body"}>{post.content}</div>
+                    <div className={"border-line"}/>
+                    <div className={"post-footer"}>
+                        <div className={"high-five-overlay"}>
+                            High Five! <span className={"material-icons"}>sign_language</span>
+                        </div>
+                        <div className={"high-five"} id={`high-five-${post.id}`} onClick={() => clickHighFive(post.id)}>
+                            High Five! <span className={"material-icons"}>sign_language</span>
+                        </div>
+                    </div>
                 </div>
             ))
             }
