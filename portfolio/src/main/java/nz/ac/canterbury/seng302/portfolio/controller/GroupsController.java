@@ -6,33 +6,28 @@ import java.util.NoSuchElementException;
 
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.portfolio.model.contract.GroupContract;
+import nz.ac.canterbury.seng302.portfolio.model.contract.SubscriptionContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.UserContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseGroupContract;
-import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
-import nz.ac.canterbury.seng302.portfolio.service.GroupsClientService;
-import nz.ac.canterbury.seng302.portfolio.service.RolesService;
-import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
+import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 /** Handles the GET request on the /groups endpoint. */
 @Controller
 @RequestMapping("/api/v1")
 public class GroupsController {
-  @Autowired
-  private UserAccountService userAccountService;
-
-  @Autowired
-  private AuthStateService authStateService;
 
   @Autowired
   private GroupsClientService groupsClientService;
+
+  @Autowired
+  private SubscriptionService subscriptionService;
 
   @Autowired
   private RolesService rolesService;
@@ -114,6 +109,7 @@ public class GroupsController {
     if (roles.contains(UserRole.TEACHER) || roles.contains(UserRole.COURSE_ADMINISTRATOR)) {
       try {
         groupsClientService.addGroupMembers(Integer.parseInt(groupId), members);
+        members.stream().forEach(member -> subscriptionService.subscribe(new SubscriptionContract(member, Integer.parseInt(groupId))));
         return ResponseEntity.ok().build();
       } catch (Exception error) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
