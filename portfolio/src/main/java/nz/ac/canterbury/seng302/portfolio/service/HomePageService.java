@@ -1,9 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
-import nz.ac.canterbury.seng302.portfolio.mapping.MilestoneMapper;
 import nz.ac.canterbury.seng302.portfolio.mapping.SubscriptionMapper;
 import nz.ac.canterbury.seng302.portfolio.model.contract.SubscriptionContract;
-import nz.ac.canterbury.seng302.portfolio.repository.MilestoneRepository;
 import nz.ac.canterbury.seng302.portfolio.repository.SubscriptionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
