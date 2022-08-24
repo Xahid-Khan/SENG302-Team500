@@ -1,10 +1,10 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import static java.util.Collections.max;
-
+import java.util.Collections;
 import java.util.List;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
+import nz.ac.canterbury.seng302.portfolio.service.RolesService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
@@ -19,9 +19,17 @@ import org.springframework.web.bind.annotation.ModelAttribute;
  */
 @Controller
 public abstract class AuthenticatedController {
-  @Autowired private AuthStateService authStateService;
+  private final AuthStateService authStateService;
 
-  @Autowired private UserAccountService userAccountService;
+  private final UserAccountService userAccountService;
+
+  @Autowired private RolesService rolesService;
+
+  protected AuthenticatedController(
+      AuthStateService authStateService, UserAccountService userAccountService) {
+    this.authStateService = authStateService;
+    this.userAccountService = userAccountService;
+  }
 
   /**
    * Loads the user model into the view based on their token.
@@ -60,18 +68,18 @@ public abstract class AuthenticatedController {
    * @return the user's username
    */
   @ModelAttribute("username")
-  public String getUserName(@AuthenticationPrincipal PortfolioPrincipal principal) {
+  private String getUserName(@AuthenticationPrincipal PortfolioPrincipal principal) {
     return getUser(principal).getUsername();
   }
 
   /**
-   * This function helps controllers get the user's roles.
+   * This function helps controllers get the user's roles. Note that this goes through the token.
    *
    * @param principal the user's token
    * @return the user's roles as a list
    */
-  private List<UserRole> getRoles(@AuthenticationPrincipal PortfolioPrincipal principal) {
-    return getUser(principal).getRolesList();
+  private List<UserRole> getRoles(PortfolioPrincipal principal) {
+    return rolesService.getRolesByToken(principal);
   }
 
   /**
@@ -85,8 +93,8 @@ public abstract class AuthenticatedController {
    * @param principal the user's token
    * @return the user's highest role
    */
-  private  UserRole getHighestRole(@AuthenticationPrincipal PortfolioPrincipal principal) {
-    return max(getRoles(principal));
+  private UserRole getHighestRole(PortfolioPrincipal principal) {
+    return Collections.max(getRoles(principal));
   }
 
   /**

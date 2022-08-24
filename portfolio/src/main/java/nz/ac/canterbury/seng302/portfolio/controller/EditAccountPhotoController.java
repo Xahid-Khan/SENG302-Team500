@@ -6,8 +6,10 @@ import java.util.Base64;
 import nz.ac.canterbury.seng302.portfolio.DTO.User;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.portfolio.model.contract.BaseImageContract;
+import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
 import nz.ac.canterbury.seng302.portfolio.service.PhotoCropService;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
+import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.http.HttpStatus;
@@ -34,6 +36,12 @@ public class EditAccountPhotoController extends AuthenticatedController {
   @Autowired private PhotoCropService photoCropService;
 
   @Autowired private RegisterClientService registerClientService;
+
+  @Autowired
+  public EditAccountPhotoController(
+      AuthStateService authStateService, UserAccountService userAccountService) {
+    super(authStateService, userAccountService);
+  }
 
   /**
    * This method removes the left and right trailing white-spaces from the form data.

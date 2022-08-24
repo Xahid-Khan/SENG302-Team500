@@ -7,7 +7,9 @@ import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.portfolio.model.contract.GroupContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.UserContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseGroupContract;
+import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
 import nz.ac.canterbury.seng302.portfolio.service.GroupsClientService;
+import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
 import nz.ac.canterbury.seng302.shared.identityprovider.CreateGroupResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.DeleteGroupResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.GroupDetailsResponse;
@@ -30,6 +32,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/api/v1")
 public class GroupsController extends AuthenticatedController {
   @Autowired private GroupsClientService groupsClientService;
+
+  @Autowired
+  public GroupsController(
+      AuthStateService authStateService, UserAccountService userAccountService) {
+    super(authStateService, userAccountService);
+  }
 
   /**
    * This method will be invoked when API receives a GET request, and will produce a list of all the

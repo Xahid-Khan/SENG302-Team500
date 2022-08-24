@@ -3,12 +3,17 @@ package nz.ac.canterbury.seng302.portfolio.service;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import nz.ac.canterbury.seng302.portfolio.mapping.UserMapper;
 import nz.ac.canterbury.seng302.portfolio.model.GetPaginatedUsersOrderingElement;
-import nz.ac.canterbury.seng302.shared.identityprovider.*;
+import nz.ac.canterbury.seng302.shared.identityprovider.GetPaginatedUsersRequest;
+import nz.ac.canterbury.seng302.shared.identityprovider.GetUserByIdRequest;
+import nz.ac.canterbury.seng302.shared.identityprovider.ModifyRoleOfUserRequest;
+import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedUsersResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserRoleChangeResponse;
 import nz.ac.canterbury.seng302.shared.util.PaginationRequestOptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-;
 
 /**
  * A service that manages CRUD operations for View Account Controller.

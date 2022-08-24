@@ -43,6 +43,12 @@ public class UserListController extends AuthenticatedController {
   @Autowired
   private GroupsClientService groupsClientService;
 
+  @Autowired
+  public UserListController(
+      AuthStateService authStateService, UserAccountService userAccountService) {
+    super(authStateService, userAccountService);
+  }
+
 
   /**
    * Loads the users when loading the user list page.
