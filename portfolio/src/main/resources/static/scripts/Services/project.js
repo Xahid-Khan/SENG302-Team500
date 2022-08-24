@@ -294,7 +294,7 @@ class Project {
 
     async createDefaultProject() {
         let tomorrow = new Date()
-        tomorrow.setDate(tomorrow.getDate() + 1)
+        tomorrow.setDate(tomorrow.getMonth() + 8)
         const defaultProject = {
             id: '__NEW_PROJECT_FORM',
             name: `Project ${new Date().getFullYear()}`,
