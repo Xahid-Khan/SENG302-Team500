@@ -31,6 +31,7 @@ export function ShowAllPosts() {
             "time": "2022-08-20T10:00:00",
             "content": "This is my first post",
             "highFives": 5,
+            "users": ["User1", "User2", "User3", "User4", "User5"],
             "comments": [{
                 "name": "James Potter",
                 "time": "2022-08-20T10:30:00",
@@ -42,7 +43,8 @@ export function ShowAllPosts() {
                 "name": "James Potter",
                 "time": "2022-08-20T12:00:00",
                 "content": "What a wonderful day it is",
-                "highFives": 5,
+                "highFives": 3,
+                "users": ["User1", "User2", "User3"],
                 "comments": [{
                     "name": "John Snow",
                     "time": "2022-08-20T11:30:00",
@@ -66,7 +68,7 @@ export function ShowAllPosts() {
                             <div>{post.name}</div>
                             <div className={"post-time"}>{post.time}</div>
                         </div>
-                        {isStudent ?
+                        {!isStudent ?
                         <div className={"post-delete"}><span className={"material-icons"}>clear</span></div> : ""}
                     </div>
                     <div className={"post-body"}>{post.content}</div>
