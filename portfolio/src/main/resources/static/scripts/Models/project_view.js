@@ -25,7 +25,6 @@ class ProjectView {
     addMilestoneLoadingStatus = LoadingStatus.NotYetAttempted;
 
     constructor(containerElement, project, editCallback, deleteCallback, sprintDeleteCallback, sprintUpdateCallback, eventDeleteCallback, eventUpdateCallback, deadlineDeleteCallback, deadlineUpdateCallback, milestoneDeleteCallback, milestoneUpdateCallback, eventEditCallback, deadlineEditCallback, milestoneEditCallback) {
-        console.log("project", project)
         this.containerElement = containerElement;
         this.project = project;
         this.sprintContainer = null;
