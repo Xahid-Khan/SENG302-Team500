@@ -24,6 +24,12 @@ public abstract class AuthenticatedController {
 
   @Autowired private RolesClientService rolesClientService;
 
+  /**
+   * This is similar to autowiring, but apparently recommended more than field injection.
+   *
+   * @param authStateService an AuthStateService
+   * @param userAccountService a UserAccountService
+   */
   protected AuthenticatedController(
       AuthStateService authStateService, UserAccountService userAccountService) {
     this.authStateService = authStateService;

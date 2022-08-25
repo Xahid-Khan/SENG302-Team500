@@ -13,13 +13,12 @@ class PingPageStore {
     stomp: any = null
 
     connectStatus: LoadingStatus = new LoadingNotYetAttempted()
-
+    path = window.localStorage.getItem("relativePath") + "/socket"
     pongArray: string[] = observable.array()
     nextPingValue: string = ""
 
     constructor() {
         makeObservable(this, {
-            connectStatus: observable,
             pongArray: observable,
             nextPingValue: observable,
 
@@ -29,9 +28,8 @@ class PingPageStore {
             showEdit: action,
             start: action
         })
-
         this.stomp = new StompClient({
-            webSocketFactory: () => new SockJS("/socket"),
+            webSocketFactory: () => new SockJS(this.path),
             connectionTimeout: 10000,
             debug: (msg) => console.log(new Date(), msg)
         })
@@ -88,7 +86,7 @@ class PingPageStore {
             this.connect(res)
         }).then(() => {
             if (!this.connected) {
-                throw new Error("Connect resolved but we aren't connected yet!")
+                console.log("Not connected yet")
             }
         })
     }
@@ -100,7 +98,7 @@ class PingPageStore {
             return
         }
         let store = this;
-        let socket = new SockJS("socket")
+        let socket = new SockJS(this.path)
         store.stomp = Stomp.over(socket);
 
         store.stomp.connect({}, () => {
@@ -118,22 +116,28 @@ class PingPageStore {
         runInAction(() => {
             this.pongArray.push(frame.body)
             const message = JSON.parse(frame.body)
-            if (message['username'] !== document.getElementsByClassName("username")[0].textContent) {
-                if (message['action'] === "show") {
-                    if (document.getElementById("event-form-" + message['location'])) {
-                        document.getElementById("event-form-" + message['location']).innerText = message['name'] + " is currently editing"
+            if (document.title !== "Calendar") {
+                if (message['username'] !== document.getElementsByClassName("username")[0].textContent) {
+                    if (message['action'] === "show") {
+                        if (document.getElementById("event-form-" + message['location'])) {
+                            document.getElementById("event-form-" + message['location']).innerText = message['name'] + " is currently editing"
+                        } else {
+                            document.getElementById("editing-form-" + message['location']).innerText = message['name'] + " is currently editing"
+                        }
                     } else {
-                        document.getElementById("editing-form-" + message['location']).innerText = message['name'] + " is currently editing"
+                        if (message['action'] === "save") {
+                            window.location.reload();
+                        }
+                        if (document.getElementById("event-form-" + message['location'])) {
+                            document.getElementById("event-form-" + message['location']).innerText = "";
+                        } else {
+                            document.getElementById("editing-form-" + message['location']).innerText = "";
+                        }
                     }
-                } else {
-                    if (message['action'] === "save") {
-                        window.location.reload();
-                    }
-                    if (document.getElementById("event-form-" + message['location'])) {
-                        document.getElementById("event-form-" + message['location']).innerText = "";
-                    } else {
-                        document.getElementById("editing-form-" + message['location']).innerText = "";
-                    }
+                }
+            } else {
+                if (message['action'] !== "show") {
+                    window.location.reload();
                 }
             }
         })
@@ -159,6 +163,10 @@ export class Socket {
 
     static saveEdit(location: string) {
         this.store.saveEdit(location);
+    }
+
+    static isConnected(): boolean {
+        return this.store.connected;
     }
 }
 
