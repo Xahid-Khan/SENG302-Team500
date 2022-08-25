@@ -4,6 +4,7 @@ export function ShowHomeFeed() {
     const groupPosts = {
         "posts": [{
             "id": 1,
+            "post_userId": 4,
             "name": "Exam Announcement",
             "groupName": "A New Group",
             "time": "2022-08-20T10:00:00",
@@ -17,6 +18,7 @@ export function ShowHomeFeed() {
         },
             {
                 "id": 2,
+                "post_userId": 3,
                 "name": "Deadline Reminder",
                 "groupName": "An Old Group",
                 "time": "2022-08-20T12:00:00",
@@ -37,10 +39,10 @@ export function ShowHomeFeed() {
                 groupPosts.posts.map((post) => (
                     <div className={"raised-card home-feed-post"} key={post.id}>
                         <div className={"post-user-image"}>
-                            <img src={window.localStorage.getItem("imagePath") + "4"}
+                            <img src={"//" + window.localStorage.getItem("imagePath") + post.post_userId.toString()}
                                  onError={({currentTarget}) => {currentTarget.onerror = null;
                                             currentTarget.src="https://humanimals.co.nz/wp-content/uploads/2019/11/blank-profile-picture-973460_640.png"}}
-                                 alt="Placeholder Profile Photo" height={50} width={50}/>
+                                 alt="Profile Photo" height={50} width={50}/>
                         </div>
                         <div className={"post"}>
                             <div className={"post-header"}>

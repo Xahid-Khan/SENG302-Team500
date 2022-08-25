@@ -8,16 +8,6 @@ export function HomeFeedPage() {
 
     return (
         <ToasterRoot>
-            {/*<div className="create-post">*/}
-            {/*    <div>*/}
-            {/*        {isStudent ? "" :*/}
-            {/*            <button className="button add-group-button" id="add-group"*/}
-            {/*                    onClick={() => document.getElementById("modal-create-group-open").style.display = "block"}> Create*/}
-            {/*                Post*/}
-            {/*            </button>*/}
-            {/*        }*/}
-            {/*    </div>*/}
-            {/*</div>*/}
             <div className={"raised-card groups-feed"}>
                 <ShowHomeFeed/>
             </div>
