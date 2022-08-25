@@ -21,7 +21,7 @@ import {Socket} from "../../../entry/live_updating";
 export const ProjectMonthCalendar: React.FC = observer(() => {
     const project = useProjectStore()
     const toaster = useToasterStore()
-    if(window.localStorage.getItem("canEdit") === "true") {
+    if(window.localStorage.getItem("canEdit") === "true" && !Socket.isConnected()) {
         Socket.start()
     }
 
