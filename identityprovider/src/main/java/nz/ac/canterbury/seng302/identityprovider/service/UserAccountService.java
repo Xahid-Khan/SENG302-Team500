@@ -37,7 +37,7 @@ public class UserAccountService extends UserAccountServiceGrpc.UserAccountServic
 
   @Autowired private GetUserService getUserService;
 
-  @Autowired private RoleService roleService;
+  @Autowired private RolesServerService rolesServerService;
 
   @Autowired private EditUserService editUserService;
 
@@ -137,7 +137,7 @@ public class UserAccountService extends UserAccountServiceGrpc.UserAccountServic
       ModifyRoleOfUserRequest modificationRequest,
       StreamObserver<UserRoleChangeResponse> responseObserver) {
 
-    var response = roleService.addRoleToUser(modificationRequest);
+    var response = rolesServerService.addRoleToUser(modificationRequest);
 
     responseObserver.onNext(response);
     responseObserver.onCompleted();
@@ -153,7 +153,7 @@ public class UserAccountService extends UserAccountServiceGrpc.UserAccountServic
   public void removeRoleFromUser(
       ModifyRoleOfUserRequest modificationRequest,
       StreamObserver<UserRoleChangeResponse> responseObserver) {
-    var response = roleService.removeRoleFromUser(modificationRequest);
+    var response = rolesServerService.removeRoleFromUser(modificationRequest);
 
     responseObserver.onNext(response);
     responseObserver.onCompleted();

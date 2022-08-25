@@ -8,6 +8,7 @@ import nz.ac.canterbury.seng302.portfolio.model.GetPaginatedUsersOrderingElement
 import nz.ac.canterbury.seng302.portfolio.model.entity.SortingParameterEntity;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
 import nz.ac.canterbury.seng302.portfolio.service.GroupsClientService;
+import nz.ac.canterbury.seng302.portfolio.service.RolesClientService;
 import nz.ac.canterbury.seng302.portfolio.service.SortingParametersService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
 import nz.ac.canterbury.seng302.shared.identityprovider.GroupDetailsResponse;
@@ -33,6 +34,9 @@ public class UserListController extends AuthenticatedController {
 
   @Autowired
   private UserAccountService userAccountService;
+
+  @Autowired
+  private RolesClientService rolesClientService;
 
   @Autowired
   private AuthStateService authStateService;
@@ -143,8 +147,8 @@ public class UserListController extends AuthenticatedController {
     if (isTeacher(principal)) {
       if (userId != id) {
         UserRoleChangeResponse response = adding
-            ? userAccountService.addRole(id, UserRole.forNumber(roleNumber))
-            : userAccountService.removeRole(id, UserRole.forNumber(roleNumber));
+            ? rolesClientService.addRole(id, UserRole.forNumber(roleNumber))
+            : rolesClientService.removeRole(id, UserRole.forNumber(roleNumber));
         if (!response.getIsSuccess()) {
           model.addAttribute("roleMessage", response.getMessage());
         }
