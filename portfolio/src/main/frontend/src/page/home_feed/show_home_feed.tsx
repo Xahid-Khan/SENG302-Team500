@@ -1,7 +1,34 @@
-import React from "react";
+import React, {useEffect} from "react";
 
 export function ShowHomeFeed() {
-    const groupPosts = {
+
+    // const getHomeFeedPosts = async () => {
+    //     const homeFeedPosts = await fetch("api/v1/home_feed")
+    //     return homeFeedPosts;
+    // }
+    //
+    // const [homeFeed, setHomeFeed] = React.useState({"posts" : [{
+    //         "id": 11,
+    //         "post_userId": -1,
+    //         "name": "",
+    //         "groupName": "",
+    //         "time": "",
+    //         "content": "",
+    //         "highFives": -1,
+    //         "comments": [{
+    //             "name": "",
+    //             "time": "",
+    //             "content": "",
+    //         }]
+    //     }]})
+    //
+    // useEffect(() => {
+    //     getHomeFeedPosts().then((response) => {
+    //         setHomeFeed(response);
+    //     })
+    // }, [])
+
+    const homeFeed = {
         "posts": [{
             "id": 1,
             "post_userId": 4,
@@ -36,7 +63,7 @@ export function ShowHomeFeed() {
     return(
         <div>
             {
-                groupPosts.posts.map((post) => (
+                homeFeed.posts.map((post) => (
                     <div className={"raised-card home-feed-post"} key={post.id}>
                         <div className={"post-user-image"}>
                             <img src={"//" + window.localStorage.getItem("imagePath") + post.post_userId.toString()}
