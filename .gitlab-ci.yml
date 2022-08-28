@@ -47,7 +47,7 @@ junit-porfolio:
   stage: test
   script:
     - cd portfolio
-    - ./gradlew test
+    - ./gradlew test -i
   except:
     - vm-testing
 
@@ -55,7 +55,7 @@ junit-identityprovider:
   stage: test
   script:
     - cd identityprovider
-    - ./gradlew test
+    - ./gradlew test -i
   except:
     - vm-testing
 
