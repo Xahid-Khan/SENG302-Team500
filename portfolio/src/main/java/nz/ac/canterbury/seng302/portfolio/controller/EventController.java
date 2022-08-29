@@ -5,11 +5,11 @@ import java.util.NoSuchElementException;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.portfolio.model.contract.EventContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseEventContract;
+import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
 import nz.ac.canterbury.seng302.portfolio.service.EventService;
 import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
-import nz.ac.canterbury.seng302.portfolio.service.RolesService;
+import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
 import nz.ac.canterbury.seng302.portfolio.service.ValidationService;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -24,9 +24,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/** This controller handles all Event interactions. */
 @RestController
 @RequestMapping("/api/v1")
-public class EventController {
+public class EventController extends AuthenticatedController {
 
   @Autowired private EventService eventService;
 
@@ -34,13 +35,16 @@ public class EventController {
 
   @Autowired private ValidationService validationService;
 
-  @Autowired private RolesService rolesService;
+  @Autowired
+  public EventController(AuthStateService authStateService, UserAccountService userAccountService) {
+    super(authStateService, userAccountService);
+  }
 
   /**
-   * This method will be invoked when API receives a GET request with a event ID embedded in URL.
+   * This method will be invoked when API receives a GET request with an event ID embedded in URL.
    *
    * @param eventId event-ID the user wants to retrieve
-   * @return a event contract (JSON) type of the event.
+   * @return an event contract (JSON) type of the event.
    */
   @GetMapping(value = "/events/{eventId}", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<EventContract> getEvent(@PathVariable String eventId) {
@@ -83,8 +87,7 @@ public class EventController {
       @AuthenticationPrincipal PortfolioPrincipal principal,
       @PathVariable String projectId,
       @RequestBody BaseEventContract event) {
-    List<UserRole> roles = rolesService.getRolesByToken(principal);
-    if (roles.contains(UserRole.TEACHER) || roles.contains(UserRole.COURSE_ADMINISTRATOR)) {
+    if (isTeacher(principal)) {
       String errorMessage = validationService.checkAddEvent(projectId, event);
       if (!errorMessage.equals("Okay")) {
         if (errorMessage.equals("Project ID does not exist")
@@ -118,8 +121,7 @@ public class EventController {
       @AuthenticationPrincipal PortfolioPrincipal principal,
       @PathVariable String id,
       @RequestBody BaseEventContract event) {
-    List<UserRole> roles = rolesService.getRolesByToken(principal);
-    if (roles.contains(UserRole.TEACHER) || roles.contains(UserRole.COURSE_ADMINISTRATOR)) {
+    if (isTeacher(principal)) {
       String errorMessage = validationService.checkUpdateEvent(id, event);
       if (!errorMessage.equals("Okay")) {
         if (errorMessage.equals("Project ID does not exist")
@@ -142,7 +144,8 @@ public class EventController {
   }
 
   /**
-   * This method will be invoked when API receives a DELETE request with a Event ID embedded in URL
+   * This method will be invoked when API receives a DELETE request with an Event ID embedded in
+   * URL.
    *
    * @param id Event ID the user wants to delete
    * @return status_Code 204.
@@ -150,8 +153,7 @@ public class EventController {
   @DeleteMapping(value = "/events/{id}")
   public ResponseEntity<Void> deleteEvent(
       @AuthenticationPrincipal PortfolioPrincipal principal, @PathVariable String id) {
-    List<UserRole> roles = rolesService.getRolesByToken(principal);
-    if (roles.contains(UserRole.TEACHER) || roles.contains(UserRole.COURSE_ADMINISTRATOR)) {
+    if (isTeacher(principal)) {
       try {
         eventService.delete(id);
 
