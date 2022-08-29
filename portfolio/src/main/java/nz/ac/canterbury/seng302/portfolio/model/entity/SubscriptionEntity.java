@@ -2,7 +2,9 @@ package nz.ac.canterbury.seng302.portfolio.model.entity;
 
 import org.hibernate.annotations.CreationTimestamp;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.sql.Timestamp;
 
 /**
@@ -10,11 +12,7 @@ import java.sql.Timestamp;
  */
 @Entity
 @Table(name = "subscription")
-public class SubscriptionEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id", nullable = false)
-    private Long id;
+public class SubscriptionEntity extends PortfolioEntity {
 
     @Column(name = "user_id", nullable = false)
     private int userId;
@@ -33,14 +31,6 @@ public class SubscriptionEntity {
     public SubscriptionEntity(int userId, int groupId) {
         this.userId = userId;
         this.groupId = groupId;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public int getUserId() {
