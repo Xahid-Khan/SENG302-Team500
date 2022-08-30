@@ -69,21 +69,19 @@ public class UserListController extends AuthenticatedController {
       @RequestParam("asc") Optional<String> ascendingMaybe,
       Model model
   ) {
-    System.out.println(pageMaybe);
-    System.out.println(sortAttributeMaybe);
-    System.out.println(ascendingMaybe);
-    Optional<?>[] maybeVariables = {pageMaybe, sortAttributeMaybe, ascendingMaybe};
-    // Standard for loop for mutability
-    for (int i = 0; i < maybeVariables.length; i++) {
-      if (maybeVariables[i].isPresent() && maybeVariables[i].get().toString().equals("undefined")) {
-        maybeVariables[i] = Optional.empty();
-      }
+
+    if(pageMaybe.isPresent() && pageMaybe.get().equals("undefined")){
+      System.out.println("pagemaybe set to optional.empty");
+      pageMaybe = Optional.empty();
     }
-    if(sortAttributeMaybe.isPresent() && sortAttributeMaybe.get().toString().equals("undefined")){
+
+    if(sortAttributeMaybe.isPresent() && sortAttributeMaybe.get().equals("undefined")){
+      System.out.println("sortAttributeMaybe set to optional.empty");
       sortAttributeMaybe = Optional.empty();
     }
 
-    if(ascendingMaybe.isPresent() && ascendingMaybe.get().toString().equals("undefined")){
+    if(ascendingMaybe.isPresent() && ascendingMaybe.get().equals("undefined")){
+      System.out.println("ascendingMaybe set to optional.empty");
       ascendingMaybe = Optional.empty();
     }
 
