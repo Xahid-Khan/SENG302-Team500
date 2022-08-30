@@ -13,7 +13,6 @@ import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import nz.ac.canterbury.seng302.shared.util.PaginationResponseOptions;
 import nz.ac.canterbury.seng302.shared.util.ValidationError;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import static nz.ac.canterbury.seng302.identityprovider.service.AddingBaseGroups.NON_GROUP_SHORT_NAME;
 import static nz.ac.canterbury.seng302.identityprovider.service.AddingBaseGroups.TEACHERS_GROUP_SHORT_NAME;
@@ -39,7 +38,7 @@ public class GroupsServerService extends GroupsServiceGrpc.GroupsServiceImplBase
     private GroupMapper groupMapper;
 
     @Autowired
-    private RoleService roleService;
+    private RolesServerService rolesServerService;
 
     @Autowired
     private GetUserService getUserService;
@@ -171,7 +170,7 @@ public class GroupsServerService extends GroupsServiceGrpc.GroupsServiceImplBase
 
                 for (Integer userId : request.getUserIdsList()) {
                     if (groupRepository.findById(request.getGroupId()).get().getShortName().equals("Teachers")) {
-                        roleService.addRoleToUser(ModifyRoleOfUserRequest.newBuilder()
+                        rolesServerService.addRoleToUser(ModifyRoleOfUserRequest.newBuilder()
                                 .setUserId(userId)
                                 .setRole(UserRole.TEACHER)
                                 .build());
@@ -248,7 +247,7 @@ public class GroupsServerService extends GroupsServiceGrpc.GroupsServiceImplBase
                                 .setId(userId)
                                 .build());
                         if (user.getRolesList().contains(UserRole.TEACHER)) {
-                            roleService.removeRoleFromUser(ModifyRoleOfUserRequest.newBuilder()
+                            rolesServerService.removeRoleFromUser(ModifyRoleOfUserRequest.newBuilder()
                                     .setUserId(userId)
                                     .setRole(UserRole.TEACHER)
                                     .build());

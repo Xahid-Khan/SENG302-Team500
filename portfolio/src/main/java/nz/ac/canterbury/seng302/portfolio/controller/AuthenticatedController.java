@@ -1,10 +1,9 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import java.util.Collections;
 import java.util.List;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
-import nz.ac.canterbury.seng302.portfolio.service.RolesService;
+import nz.ac.canterbury.seng302.portfolio.service.RolesClientService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
@@ -23,8 +22,14 @@ public abstract class AuthenticatedController {
 
   private final UserAccountService userAccountService;
 
-  @Autowired private RolesService rolesService;
+  @Autowired private RolesClientService rolesClientService;
 
+  /**
+   * This is similar to autowiring, but apparently recommended more than field injection.
+   *
+   * @param authStateService an AuthStateService
+   * @param userAccountService a UserAccountService
+   */
   protected AuthenticatedController(
       AuthStateService authStateService, UserAccountService userAccountService) {
     this.authStateService = authStateService;
@@ -73,13 +78,15 @@ public abstract class AuthenticatedController {
   }
 
   /**
-   * This function helps controllers get the user's roles. Note that this goes through the token.
+   * This function helps controllers get the user's roles. If there is a mismatch in roles between
+   * the database and the token, then the token will be updated here such that the user's roles are
+   * up-to-date.
    *
    * @param principal the user's token
    * @return the user's roles as a list
    */
   private List<UserRole> getRoles(PortfolioPrincipal principal) {
-    return rolesService.getRolesByToken(principal);
+    return rolesClientService.getRolesByToken(principal);
   }
 
   /**
@@ -94,7 +101,14 @@ public abstract class AuthenticatedController {
    * @return the user's highest role
    */
   private UserRole getHighestRole(PortfolioPrincipal principal) {
-    return Collections.max(getRoles(principal));
+    UserRole currentHighestRole = UserRole.STUDENT;
+    List<UserRole> roles = getRoles(principal);
+    for (UserRole role : roles) {
+      if (role.compareTo(currentHighestRole) > 0) {
+        currentHighestRole = role;
+      }
+    }
+    return currentHighestRole;
   }
 
   /**
