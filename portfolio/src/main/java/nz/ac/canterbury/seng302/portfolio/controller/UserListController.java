@@ -69,6 +69,9 @@ public class UserListController extends AuthenticatedController {
       @RequestParam("asc") Optional<String> ascendingMaybe,
       Model model
   ) {
+    System.out.println(pageMaybe);
+    System.out.println(sortAttributeMaybe);
+    System.out.println(ascendingMaybe);
     Optional<?>[] maybeVariables = {pageMaybe, sortAttributeMaybe, ascendingMaybe};
     // Standard for loop for mutability
     for (int i = 0; i < maybeVariables.length; i++) {
