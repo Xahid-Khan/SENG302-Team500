@@ -91,4 +91,16 @@ public class GroupsClientService {
                     .setPaginationRequestOptions(paginationRequestOptions.build())
                     .build());
   }
+
+  /**
+   * This function will get a single group with the given group id.
+   * @param groupId A group ID of type Integer.
+   * @return GroupDetailsResponse
+   */
+  public GroupDetailsResponse getGroupById(Integer groupId) {
+    GetGroupDetailsRequest groupRequest = GetGroupDetailsRequest.newBuilder()
+            .setGroupId(groupId).build();
+
+    return groupBlockingStub.getGroupDetails(groupRequest);
+  }
 }

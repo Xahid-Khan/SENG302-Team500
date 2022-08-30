@@ -33,6 +33,14 @@ public class PostModel {
     @JoinColumn(name = "reaction_model_ID")
     private ReactionModel reactionModel;
 
+    protected PostModel() {};
+
+    public PostModel(int groupId, int userId, String postContent){
+        this.groupId = groupId;
+        this.userId = userId;
+        this.postContent = postContent;
+    }
+
     public ReactionModel getReactionModel() {
         return reactionModel;
     }
