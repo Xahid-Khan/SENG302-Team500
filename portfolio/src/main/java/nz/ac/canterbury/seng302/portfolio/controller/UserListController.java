@@ -79,6 +79,13 @@ public class UserListController extends AuthenticatedController {
         maybeVariables[i] = Optional.empty();
       }
     }
+    if(sortAttributeMaybe.isPresent() && sortAttributeMaybe.get().toString().equals("undefined")){
+      sortAttributeMaybe = Optional.empty();
+    }
+
+    if(ascendingMaybe.isPresent() && ascendingMaybe.get().toString().equals("undefined")){
+      ascendingMaybe = Optional.empty();
+    }
 
     int userId = getUserId(principal);
 
