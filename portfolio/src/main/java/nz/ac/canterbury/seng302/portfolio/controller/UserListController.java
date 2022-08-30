@@ -39,9 +39,6 @@ public class UserListController extends AuthenticatedController {
   private RolesClientService rolesClientService;
 
   @Autowired
-  private AuthStateService authStateService;
-
-  @Autowired
   private SortingParametersService sortingParametersService;
 
   @Autowired
@@ -69,14 +66,27 @@ public class UserListController extends AuthenticatedController {
       @AuthenticationPrincipal PortfolioPrincipal principal,
       @RequestParam("page") Optional<Integer> pageMaybe,
       @RequestParam("sortBy") Optional<String> sortAttributeMaybe,
-      @RequestParam("asc") Optional<Boolean> ascendingMaybe,
+      @RequestParam("asc") Optional<String> ascendingMaybe,
       Model model
   ) {
+    Optional<?>[] maybeVariables = {pageMaybe, sortAttributeMaybe, ascendingMaybe};
+    // Standard for loop for mutability
+    for (int i = 0; i < maybeVariables.length; i++) {
+      if (maybeVariables[i].isPresent() && maybeVariables[i].get().toString().equals("undefined")) {
+        maybeVariables[i] = Optional.empty();
+      }
+    }
 
-    int userId = authStateService.getId(principal);
+    int userId = getUserId(principal);
 
     String sortAttributeString;
-    boolean ascending = ascendingMaybe.orElse(true);
+    // Ascending is true by default
+    boolean ascending = true;
+    // Since URL Params are always Strings, this check ensures that it's like a boolean.
+    // If the value is false, the boolean is false, for any other value it will be true.
+    if (ascendingMaybe.isPresent()) {
+      ascending = ascendingMaybe.get().equals("true");
+    }
 
     if (sortingParametersService.checkExistance(userId) && sortAttributeMaybe.isEmpty()) {
       SortingParameterEntity sortingParams = sortingParametersService.getSortingParams(userId);
@@ -141,7 +151,7 @@ public class UserListController extends AuthenticatedController {
    */
   private void modifyRole(PortfolioPrincipal principal, Model model, int id, Integer roleNumber,
       boolean adding) {
-    int userId = authStateService.getId(principal);
+    int userId = getUserId(principal);
     model.addAttribute("roleMessageTarget", id);
 
     if (isTeacher(principal)) {
