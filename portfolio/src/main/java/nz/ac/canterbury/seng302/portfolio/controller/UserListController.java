@@ -71,17 +71,14 @@ public class UserListController extends AuthenticatedController {
   ) {
 
     if(pageMaybe.isPresent() && pageMaybe.get().equals("undefined")){
-      System.out.println("pagemaybe set to optional.empty");
       pageMaybe = Optional.empty();
     }
 
     if(sortAttributeMaybe.isPresent() && sortAttributeMaybe.get().equals("undefined")){
-      System.out.println("sortAttributeMaybe set to optional.empty");
       sortAttributeMaybe = Optional.empty();
     }
 
     if(ascendingMaybe.isPresent() && ascendingMaybe.get().equals("undefined")){
-      System.out.println("ascendingMaybe set to optional.empty");
       ascendingMaybe = Optional.empty();
     }
 
@@ -106,7 +103,7 @@ public class UserListController extends AuthenticatedController {
 
       sortingParametersService.saveSortingParams(userId, sortAttributeString, ascending);
     } else {
-      sortAttributeString = "name";
+      sortAttributeString = "username";
     }
 
     // Supply defaults
