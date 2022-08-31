@@ -39,13 +39,18 @@ public class GroupFeedController extends AuthenticatedController {
 
     @PostMapping(value = "/group_feed/new_post", produces = "application/json")
     public ResponseEntity<?> addNewPost(@AuthenticationPrincipal PortfolioPrincipal principal, @RequestBody BasePostContract newPost){
-        int userId = getUserId(principal);
-        postService.createPost(newPost, userId);
-        return ResponseEntity.ok().build();
+        try {
+            int userId = getUserId(principal);
+            postService.createPost(newPost, userId);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @DeleteMapping(value = "/delete_feed/{postId}", produces = "application/json")
-    public ResponseEntity deletePost(@AuthenticationPrincipal PortfolioPrincipal principal, @PathVariable int postId) {
+    public ResponseEntity<?> deletePost(@AuthenticationPrincipal PortfolioPrincipal principal, @PathVariable int postId) {
         try {
             int userId = getUserId(principal);
             PostModel post = postService.getPostById(postId);
@@ -62,7 +67,7 @@ public class GroupFeedController extends AuthenticatedController {
     }
 
     @PutMapping(value = "/update_feed/{postId}", produces = "application/json")
-    public ResponseEntity updatePost(@AuthenticationPrincipal PortfolioPrincipal principal,
+    public ResponseEntity<?> updatePost(@AuthenticationPrincipal PortfolioPrincipal principal,
                                      @PathVariable int postId,
                                      @RequestBody BasePostContract updatedPost) {
         try{

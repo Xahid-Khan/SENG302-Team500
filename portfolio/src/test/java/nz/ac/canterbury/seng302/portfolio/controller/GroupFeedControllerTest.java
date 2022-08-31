@@ -1,8 +1,11 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BasePostContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.PostModel;
 import nz.ac.canterbury.seng302.portfolio.service.PostService;
+import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -21,12 +24,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc(addFilters = false)
 @AutoConfigureWebTestClient
 class GroupFeedControllerTest {
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private GroupFeedController controller;
 
     @InjectMocks
     private GroupFeedController groupFeedController;
@@ -36,7 +42,10 @@ class GroupFeedControllerTest {
 
     private BasePostContract post;
 
-
+    @Test
+    void contextLoads() throws Exception {
+        Assertions.assertThat(controller).isNotNull();
+    }
 //    @Test
 //    void createNewPostWithValidFields() throws Exception {
 //        post = new BasePostContract(
@@ -46,9 +55,9 @@ class GroupFeedControllerTest {
 //
 //        PostModel model = new PostModel(1, 1, "This a test dummy post.");
 //
+//        Mockito.when(postService.createPost(post, 1)).thenReturn(true);
 //
-//        Mockito.when(postService.createPost(post, 1)).thenReturn(model);
-//        var result = this.mockMvc.perform(post("/group_feed/new_post")
+//        var result = mockMvc.perform(post("/group_feed/new_post")
 //                        .contentType(MediaType.APPLICATION_JSON)
 //                        .content(String.valueOf(post))
 //                        .accept(MediaType.APPLICATION_JSON))
