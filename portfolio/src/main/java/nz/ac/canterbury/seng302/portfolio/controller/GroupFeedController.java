@@ -20,8 +20,6 @@ public class GroupFeedController extends AuthenticatedController {
 
     private PostService postService;
 
-
-
     private GroupsClientService groupsClientService;
 
 

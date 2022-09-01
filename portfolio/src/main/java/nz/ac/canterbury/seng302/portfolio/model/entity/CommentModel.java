@@ -28,6 +28,12 @@ public class CommentModel {
     @CreationTimestamp
     private Timestamp created;
 
+    public CommentModel (int postId, int userId, String comment) {
+        this.postId = postId;
+        this.userId = userId;
+        this.commentContent = comment;
+    }
+
     public int getUserId() {
         return userId;
     }
