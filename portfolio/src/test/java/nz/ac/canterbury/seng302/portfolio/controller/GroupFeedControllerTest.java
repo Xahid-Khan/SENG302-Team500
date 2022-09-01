@@ -20,7 +20,6 @@ import java.util.List;
 
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
-@WebServiceClientTest
 class GroupFeedControllerTest {
     @Autowired
     private MockMvc mockMvc;
