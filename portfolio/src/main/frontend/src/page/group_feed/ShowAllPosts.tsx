@@ -1,79 +1,64 @@
 import React, {useEffect} from "react";
-import {DatetimeUtils} from "../../util/DatetimeUtils";
 
 export function ShowAllPosts() {
 
-    // const getCurrentGroup = async ()  => {
-    //     // const currentGroupResponse = await fetch(`api/v1/groups/posts/${viewGroupId}`)
-    //     return currentGroupResponse.json()
-    // // }
-    //
-    // const [group, setGroup] = React.useState({
-    //     "id": -1,
-    //     "longName": "",
-    //     "shortName": "",
-    //     "users": [],
-    //     "posts":
-    // })
-    //
-    // useEffect(() => {
-    //     getCurrentGroup().then((result) => {
-    //         setGroup(result)
-    //     })
-    // }, [])
+    const urlData = document.URL.split("/");
+    const viewGroupId = urlData[urlData.length-1];
 
-    const groupPosts = {
-        "groupId": 1,
-        "shortName": "A new Group",
-        "posts": [{
-            "id": 1,
-            "name": "John Snow",
-            "time": "2022-08-20T10:00:00",
-            "content": "This is my first post",
-            "highFives": 5,
-            "users": ["User1", "User2", "User3", "User4", "User5"],
-            "comments": [{
-                "name": "James Potter",
-                "time": "2022-08-20T10:30:00",
-                "content": "Wow you posted before me"
-            }]
-            },
-            {
-                "id": 2,
-                "name": "James Potter",
-                "time": "2022-08-20T12:00:00",
-                "content": "What a wonderful day it is",
-                "highFives": 3,
-                "users": ["User1", "User2", "User3"],
-                "comments": [{
-                    "name": "John Snow",
-                    "time": "2022-08-20T11:30:00",
-                    "content": "Cool post"
-                }]
-            }
-        ]
+    const getCurrentGroup = async ()  => {
+        const currentGroupResponse = await fetch(`/feed_content/${viewGroupId}`)
+        return currentGroupResponse.json()
     }
 
-    const groupShortName = document.getElementById("group-feed-title").innerText;
+    const [groupPosts, setGroupPosts] = React.useState({
+        "groupId": -1,
+        "shortName": "",
+        "posts": [{
+            "id": -1,
+            "name": "",
+            "time": "",
+            "content": "",
+            "highFives": -1,
+            "users": [],
+            "comments": [{
+                "commentId": -1,
+                "name": "",
+                "time": "",
+                "content": ""
+            }]
+        }]
+    })
 
+    useEffect(() => {
+        getCurrentGroup().then((result) => {
+            setGroupPosts(result)
+        })
+    }, [])
+
+    const groupShortName = document.getElementById("group-feed-title").innerText;
     const isStudent = localStorage.getItem("isStudent") === "true";
 
     return(
         <div>
             <div className={"group-feed-name"}>{groupShortName} Feed</div>
-            {groupPosts.posts.map((post) => (
-                <div className={"raised-card group-post"} key={post.id}>
-                    <div className={"post-header"}>
-                        <div className={"post-info"}>
-                            <div>{post.name}</div>
-                            <div className={"post-time"}>{post.time}</div>
+            {groupPosts.posts.length > 0 ?
+                groupPosts.posts.map((post) => (
+                    <div className={"raised-card group-post"} key={post.id}>
+                        <div className={"post-header"}>
+                            <div className={"post-info"}>
+                                <div>{post.name}</div>
+                                <div className={"post-time"}>{post.time}</div>
+                            </div>
+                            {!isStudent ?
+                            <div className={"post-delete"}><span className={"material-icons"}>clear</span></div> : ""}
                         </div>
-                        {!isStudent ?
-                        <div className={"post-delete"}><span className={"material-icons"}>clear</span></div> : ""}
+                        <div className={"post-body"}>{post.content}</div>
                     </div>
-                    <div className={"post-body"}>{post.content}</div>
+                ))
+                :
+                <div className={"raised-card group-post"} key={"-1"}>
+                    <h3>There are no Posts</h3>
                 </div>
-            ))
             }
         </div>
     )
