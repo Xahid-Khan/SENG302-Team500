@@ -25,6 +25,9 @@ class GroupFeedServiceTest {
     @Mock
     private PostModelRepository mockPostModelRepository;
 
+    @Mock
+    private CommentService commentService;
+
     private PostModel newPost;
     private PostModel newPost1;
     private PostModel newPost2;
@@ -91,6 +94,7 @@ class GroupFeedServiceTest {
     @Test
     void deleteAPostWithAValidPostIdExpectPass () throws Exception {
         Mockito.when(mockPostModelRepository.findById(newPost1.getId())).thenReturn(Optional.ofNullable(newPost1));
+        Mockito.when(commentService.deleteAllCommentByPostId(newPost1.getId())).thenReturn(true);
         var result = postService.deletePost(newPost1.getId());
         Assertions.assertTrue(result);
     }
