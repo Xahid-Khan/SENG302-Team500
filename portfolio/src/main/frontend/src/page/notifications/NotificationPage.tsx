@@ -2,7 +2,7 @@ import React from "react";
 import {ToasterRoot} from "../../component/toast/ToasterRoot";
 import {PageLayout} from "../../component/layout/PageLayout";
 import styles from "../monthly_planner/MonthlyPlannerPage.module.css";
-import {NotificationList} from "../monthly_planner/component/NotificationList";
+import {NotificationList} from "./NotificationList";
 
 /**
  * The root of the MonthlyPlannerPage. This does a few jobs:

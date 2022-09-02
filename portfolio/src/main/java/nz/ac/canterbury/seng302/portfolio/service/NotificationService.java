@@ -6,9 +6,11 @@ import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseNotifi
 import nz.ac.canterbury.seng302.portfolio.model.entity.NotificationEntity;
 import nz.ac.canterbury.seng302.portfolio.repository.NotificationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 
+@Service
 public class NotificationService {
 
     @Autowired
