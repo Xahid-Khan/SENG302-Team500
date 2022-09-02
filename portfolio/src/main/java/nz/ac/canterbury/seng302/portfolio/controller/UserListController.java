@@ -106,6 +106,7 @@ public class UserListController extends AuthenticatedController {
     } else if (sortAttributeMaybe.isPresent()) {
       sortAttributeString = sortAttributeMaybe.get();
 
+      System.out.println(userId);
       sortingParametersService.saveSortingParams(userId, sortAttributeString, ascending);
     } else {
       sortAttributeString = "name";
