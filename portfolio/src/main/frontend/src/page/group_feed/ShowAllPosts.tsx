@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React from "react";
 import {DatetimeUtils} from "../../util/DatetimeUtils";
 
 export function ShowAllPosts() {
@@ -61,6 +61,8 @@ export function ShowAllPosts() {
 
     const isStudent = localStorage.getItem("isStudent") === "true";
 
+    const username = "Cody Larsen"
+
     const clickHighFive = (id: number) => {
         const button = document.getElementById(`high-five-${id}`)
         button.style.backgroundSize = button.style.backgroundSize === "100% 100%" ? "0 100%" : "100% 100%"
@@ -70,6 +72,18 @@ export function ShowAllPosts() {
         const commentsContainer = document.getElementById(`comments-container-${id}`)
         console.log(commentsContainer.style.display)
         commentsContainer.style.display = commentsContainer.style.display === "block" ? "none" : "block"
+    }
+
+    const makeComment = (id: number) => {
+        const comment = document.getElementById(`comment-content-${id}`).getAttribute('value')
+        groupPosts['posts'].forEach((post) => {
+            if (post.id === id) {
+                post.comments.push({"name": username,
+                "time": DatetimeUtils.localToDMYWithTime(new Date(Date.now())),
+                "content": comment})
+            }
+        })
+        document.getElementById(`comments-container-${id}`).style.display = "block"
     }
 
     return(
@@ -113,14 +127,14 @@ export function ShowAllPosts() {
                                 )
                             )}
                         </div>
-                        <div className={"make-comment-container"}>
+                        <form className={"make-comment-container"} onSubmit={(e) => {e.preventDefault(); makeComment(post.id)}}>
                             <div className={"input-comment"}>
-                                <input type={"text"} className={"input-comment-text"} placeholder={"Comment on post..."}/>
+                                <input type={"text"} className={"input-comment-text"} id={`comment-content-${post.id}`} onChange={(e) => document.getElementById(`comment-content-${post.id}`).setAttribute('value', e.target.value)} placeholder={"Comment on post..."}/>
                             </div>
                             <div className={"submit-comment"}>
-                                <button className={"button submit-comment-button"}>Add comment</button>
+                                <button className={"button submit-comment-button"} type={"submit"}>Add comment</button>
                             </div>
-                        </div>
+                        </form>
                     </div>
                 </div>
             ))
