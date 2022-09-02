@@ -31,11 +31,10 @@ public class NotificationEntity extends PortfolioEntity {
 
     }
 
-    public NotificationEntity(int userId, String from, String description, boolean seen) {
+    public NotificationEntity(int userId, String from, String description) {
         this.userId = userId;
         this.notificationFrom = from;
         this.description = description;
-        this.seen = seen;
     }
 
     public boolean getSeen() {
