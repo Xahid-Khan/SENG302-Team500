@@ -70,22 +70,22 @@ public class UserListController extends AuthenticatedController {
       Model model
   ) {
     System.out.println(pageMaybe + ", " + sortAttributeMaybe + ", " + ascendingMaybe);
-//    Optional<?>[] maybeVariables = {pageMaybe, sortAttributeMaybe, ascendingMaybe};
-//    // Standard for loop for mutability
-//    for (int i = 0; i < maybeVariables.length; i++) {
-//      if (maybeVariables[i].isPresent() && maybeVariables[i].get().toString().equals("undefined")) {
-//        maybeVariables[i] = Optional.empty();
-//      }
+    Optional<?>[] maybeVariables = {pageMaybe, sortAttributeMaybe, ascendingMaybe};
+    // Standard for loop for mutability
+    for (int i = 0; i < maybeVariables.length; i++) {
+      if (maybeVariables[i].isPresent() && maybeVariables[i].get().toString().equals("undefined")) {
+        maybeVariables[i] = Optional.empty();
+      }
+    }
+//    if (pageMaybe.isPresent() && pageMaybe.get().toString().equals("undefined")) {
+//      pageMaybe = Optional.empty();
 //    }
-    if (pageMaybe.isPresent() && pageMaybe.get().toString().equals("undefined")) {
-      pageMaybe = Optional.empty();
-    }
-    if (sortAttributeMaybe.isPresent() && sortAttributeMaybe.get().equals("undefined")) {
-      sortAttributeMaybe = Optional.empty();
-    }
-    if (ascendingMaybe.isPresent() && ascendingMaybe.get().equals("undefined")) {
-      ascendingMaybe = Optional.empty();
-    }
+//    if (sortAttributeMaybe.isPresent() && sortAttributeMaybe.get().equals("undefined")) {
+//      sortAttributeMaybe = Optional.empty();
+//    }
+//    if (ascendingMaybe.isPresent() && ascendingMaybe.get().equals("undefined")) {
+//      ascendingMaybe = Optional.empty();
+//    }
 
     int userId = getUserId(principal);
 
