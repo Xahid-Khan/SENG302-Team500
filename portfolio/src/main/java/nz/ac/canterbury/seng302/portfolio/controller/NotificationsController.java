@@ -42,7 +42,6 @@ public class NotificationsController extends AuthenticatedController {
      */
     @GetMapping(value = "/notifications/{id}", produces = "application/json")
     public ResponseEntity<?> getAll(@PathVariable String id) {
-        System.out.println("getAll Controller");
         try {
             ArrayList<NotificationContract> contracts = service.getAll(Integer.parseInt(id));
             return ResponseEntity.ok(contracts);

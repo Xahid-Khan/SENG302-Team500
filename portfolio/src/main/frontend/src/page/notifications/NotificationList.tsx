@@ -9,7 +9,6 @@ export const NotificationList: React.FC = observer(() => {
     const userId = parseInt(window.localStorage.getItem("userId"))
 
     const getNotifications = async (id: number)  => {
-        console.log("getNotifications " + id)
         const notifications = await fetch(`api/v1/notifications/${id}`, {
                 method: 'GET'
             }
@@ -28,8 +27,7 @@ export const NotificationList: React.FC = observer(() => {
                 <div>{contract.description}</div>
         )
 
-    console.log(notifications)
-    if (notifications) {
+    if (notifications && notifications != []) {
         return (
             <div>{notifications_items()}</div>
         )
