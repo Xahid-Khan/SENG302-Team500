@@ -65,6 +65,11 @@ public class GroupsController extends AuthenticatedController {
     }
   }
 
+  /**
+   * Helper method to convert a list of UserResponse objects into a list of UserContract objects.
+   * @param userList
+   * @return
+   */
   private ArrayList<UserContract> getUsers(List<UserResponse> userList) {
     ArrayList<UserContract> users = new ArrayList<>();
     for (UserResponse user : userList) {
