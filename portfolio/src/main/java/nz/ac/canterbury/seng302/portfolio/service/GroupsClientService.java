@@ -94,9 +94,10 @@ public class GroupsClientService {
 
 
     /**
-     * A function to get a single group by id
+     * This function gets a single group by id and returns it to the controller
+     * @param groupId Integer type
+     * @return group detail response
      */
-
     public GroupDetailsResponse getGroupById(Integer groupId) {
         GetGroupDetailsRequest groupRequest = GetGroupDetailsRequest.newBuilder()
                 .setGroupId(groupId).build();
