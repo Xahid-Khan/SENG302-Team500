@@ -106,6 +106,10 @@
     overflow-y: auto;
     max-height: 20vh;
 }
+.groups-page-repository{
+    overflow-y: auto;
+    max-height: 40vh;
+}
 
 .toggle-group-details {
     float: right;
