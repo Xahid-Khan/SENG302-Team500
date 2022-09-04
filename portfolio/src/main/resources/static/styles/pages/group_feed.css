@@ -1,0 +1,49 @@
+.groups-feed {
+    padding: 20px;
+    margin: 10px 30px;
+}
+
+.group-post {
+    padding: 15px;
+    margin: 20px;
+}
+
+.post-time {
+    font-size: 10px;
+}
+
+.post-delete {
+    float: right;
+    cursor: pointer;
+}
+
+.group-feed-title {
+    padding-left: 50px;
+}
+
+.post-body {
+    padding: 15px 0 10px 0;
+}
+
+.post-info {
+    width: 100%;
+}
+
+.post-header {
+    display: flex;
+}
+
+.create-post {
+    justify-content: right;
+    display: flex;
+    padding-right: 50px;
+}
+
+.group-feed-title {
+    font-size: 30px;
+}
+
+.group-feed-name {
+    font-size: 30px;
+    font-weight: bold;
+}

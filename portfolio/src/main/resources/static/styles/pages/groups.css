@@ -250,3 +250,8 @@
 .edit-group-form {
     padding: 15px 15px 45px;
 }
+
+.show-group-feed-button {
+    float: right;
+    padding-right: 15px;
+}
