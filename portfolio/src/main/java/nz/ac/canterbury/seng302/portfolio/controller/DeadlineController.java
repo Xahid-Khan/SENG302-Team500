@@ -1,26 +1,33 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import java.util.List;
+import java.util.NoSuchElementException;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
-import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseDeadlineContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.DeadlineContract;
+import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseDeadlineContract;
+import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
 import nz.ac.canterbury.seng302.portfolio.service.DeadlineService;
 import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
-import nz.ac.canterbury.seng302.portfolio.service.RolesService;
+import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
 import nz.ac.canterbury.seng302.portfolio.service.ValidationService;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-import java.util.NoSuchElementException;
-
+/** This controller handles all Deadline interactions. */
 @RestController
 @RequestMapping("/api/v1")
-public class DeadlineController {
+public class DeadlineController extends AuthenticatedController {
 
   @Autowired private DeadlineService deadlineService;
 
@@ -28,7 +35,11 @@ public class DeadlineController {
 
   @Autowired private ValidationService validationService;
 
-  @Autowired private RolesService rolesService;
+  @Autowired
+  public DeadlineController(
+      AuthStateService authStateService, UserAccountService userAccountService) {
+    super(authStateService, userAccountService);
+  }
 
   /**
    * This method will be invoked when API receives a GET request with a deadline ID embedded in URL.
@@ -82,8 +93,7 @@ public class DeadlineController {
       @AuthenticationPrincipal PortfolioPrincipal principal,
       @PathVariable String projectId,
       @RequestBody BaseDeadlineContract deadline) {
-    List<UserRole> roles = rolesService.getRolesByToken(principal);
-    if (roles.contains(UserRole.TEACHER) || roles.contains(UserRole.COURSE_ADMINISTRATOR)) {
+    if (isTeacher(principal)) {
       String errorMessage = validationService.checkAddDeadline(projectId, deadline);
       if (!errorMessage.equals("Okay")) {
         if (errorMessage.equals("Project ID does not exist")
@@ -117,8 +127,7 @@ public class DeadlineController {
       @AuthenticationPrincipal PortfolioPrincipal principal,
       @PathVariable String id,
       @RequestBody BaseDeadlineContract deadline) {
-    List<UserRole> roles = rolesService.getRolesByToken(principal);
-    if (roles.contains(UserRole.TEACHER) || roles.contains(UserRole.COURSE_ADMINISTRATOR)) {
+    if (isTeacher(principal)) {
       String errorMessage = validationService.checkUpdateDeadline(id, deadline);
       if (!errorMessage.equals("Okay")) {
         if (errorMessage.equals("Project ID does not exist")
@@ -142,7 +151,7 @@ public class DeadlineController {
 
   /**
    * This method will be invoked when API receives a DELETE request with a deadline ID embedded in
-   * URL
+   * URL.
    *
    * @param id Deadline ID the user wants to delete
    * @return status_Code 204.
@@ -150,8 +159,7 @@ public class DeadlineController {
   @DeleteMapping(value = "/deadlines/{id}")
   public ResponseEntity<Void> deleteDeadline(
       @AuthenticationPrincipal PortfolioPrincipal principal, @PathVariable String id) {
-    List<UserRole> roles = rolesService.getRolesByToken(principal);
-    if (roles.contains(UserRole.TEACHER) || roles.contains(UserRole.COURSE_ADMINISTRATOR)) {
+    if (isTeacher(principal)) {
       try {
         deadlineService.delete(id);
 

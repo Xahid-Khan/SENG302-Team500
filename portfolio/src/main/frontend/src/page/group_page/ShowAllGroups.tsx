@@ -71,7 +71,7 @@ export function ShowAllGroups({setViewGroupId}: any) {
         })
     }, [])
 
-    const isStudent = localStorage.getItem("isStudent") === "true"
+    const isTeacher = localStorage.getItem("isTeacher") === "true"
 
     const formatRoles = (roles: any) => {
         let toReturn: string = ""
@@ -98,11 +98,11 @@ export function ShowAllGroups({setViewGroupId}: any) {
             {groups.map((group: any) => (
                 <div className={'raised-card group'} id={`group-${group['id']}`} key={group['id']}>
                     <div className={"group-header"}>
-                        {group['shortName'] !== 'Teachers' && group['shortName'] !== 'Non Group' && !isStudent ? <div className={"delete-group"}>
+                        {group['shortName'] !== 'Teachers' && group['shortName'] !== 'Non Group' && isTeacher ? <div className={"delete-group"}>
                             <span className={"material-icons"} onClick={() => wireModal(group['id'], groups)}>clear</span>
                         </div>
                         : "" }
-                        {!isStudent ?
+                        {isTeacher ?
                         <button className="button edit-group-button" id="edit-group" data-privilege="teacher" onClick={() => {document.getElementById("modal-edit-group-members-open").style.display = "block"; setViewGroupId(group.id)}}> Manage Group Members</button>
                         : ""}
                         <div>
