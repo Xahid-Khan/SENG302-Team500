@@ -4,6 +4,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.Table;
 import java.sql.Timestamp;
 
@@ -14,14 +15,14 @@ import java.sql.Timestamp;
 @Table(name = "repository")
 public class GroupRepositoryEntity extends PortfolioEntity {
 
-    @Column(name = "group_id", nullable = false)
-    private int groupId;
+    @Id
+    private int id = -1;
 
     @Column(name = "repository_id")
-    private int repositoryId;
+    private int repositoryId= -1;
 
     @Column(name = "token")
-    private String token;
+    private String token="No token";
 
     protected GroupRepositoryEntity() {
 
@@ -32,7 +33,7 @@ public class GroupRepositoryEntity extends PortfolioEntity {
      * @param groupId The ID of the group associated
      */
     public GroupRepositoryEntity(int groupId) {
-        this.groupId = groupId;
+        this.id = groupId;
     }
 
     /**
@@ -42,24 +43,16 @@ public class GroupRepositoryEntity extends PortfolioEntity {
      * @param token The token used to access the repository
      */
     public GroupRepositoryEntity(int groupId, int repositoryId, String token) {
-        this.groupId = groupId;
+        this.id = groupId;
         this.repositoryId = repositoryId;
         this.token = token;
     }
 
-    public int getGroupId() {
-        return groupId;
-    }
-
-    public void setGroupId(int groupId) {
-        this.groupId = groupId;
-    }
-
-    public int getRepositoryId() {
+    public int getRepositoryID() {
         return repositoryId;
     }
 
-    public void setRepositoryId(int repositoryId) {
+    public void setRepositoryID(int repositoryId) {
         this.repositoryId = repositoryId;
     }
 
@@ -70,4 +63,6 @@ public class GroupRepositoryEntity extends PortfolioEntity {
     public void setToken(String token) {
         this.token = token;
     }
+
+
 }

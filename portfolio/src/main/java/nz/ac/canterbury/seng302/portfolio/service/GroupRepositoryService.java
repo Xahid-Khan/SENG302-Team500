@@ -1,0 +1,88 @@
+package nz.ac.canterbury.seng302.portfolio.service;
+
+import nz.ac.canterbury.seng302.portfolio.mapping.DeadlineMapper;
+import nz.ac.canterbury.seng302.portfolio.mapping.SprintMapper;
+import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseDeadlineContract;
+import nz.ac.canterbury.seng302.portfolio.model.contract.DeadlineContract;
+import nz.ac.canterbury.seng302.portfolio.model.entity.DeadlineEntity;
+import nz.ac.canterbury.seng302.portfolio.model.entity.GroupRepositoryEntity;
+import nz.ac.canterbury.seng302.portfolio.repository.DeadlineRepository;
+import nz.ac.canterbury.seng302.portfolio.repository.GroupRepositoryRepository;
+import nz.ac.canterbury.seng302.portfolio.repository.ProjectRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import java.util.List;
+import java.util.NoSuchElementException;
+
+@Service
+/**
+ * A service that manages CRUD operations for group repository settings.
+ */
+public class GroupRepositoryService {
+    @Autowired
+    private GroupRepositoryRepository groupRepositoryRepository;
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    /**
+     * Retrieve the group repository with the given ID.
+     *
+     * @param id of the contract to get
+     * @throws NoSuchElementException if the id is invalid
+     * @return GroupRepository with the given ID
+     */
+    public GroupRepositoryEntity get(String id) {
+        var groupRepository = groupRepositoryRepository.findById(id).orElseThrow();
+        return groupRepository;
+    }
+
+    /**
+     * Retrieve all group repositories.
+     * @return List of all group repositories
+     */
+    public List<GroupRepositoryEntity> getAll() {
+        return (List<GroupRepositoryEntity>) groupRepositoryRepository.findAll();
+    }
+
+    /**
+     * Adds a group repository to the database with the given ID.
+     * @param id to associate with the group repository (this should be done on group creation)
+     */
+    public void add(int id) {
+        //checks if the group repository already exists
+        if (groupRepositoryRepository.existsById(Integer.toString(id))) {
+            throw new IllegalArgumentException("Group repository already exists");
+        }
+        var groupRepository = new GroupRepositoryEntity(id);
+        groupRepositoryRepository.save(groupRepository);
+    }
+
+    /**
+     * Deletes a group repository from the database with the given ID.
+     */
+    public void delete(int id) {
+        //checks if the group repository exists
+        if (!groupRepositoryRepository.existsById(Integer.toString(id))) {
+            throw new IllegalArgumentException("Group repository does not exist");
+        }
+        groupRepositoryRepository.deleteById(Integer.toString(id));
+    }
+
+    /**
+     * Updates a group repository in the database with the given ID. Sets the repositoryID and token
+     */
+    public void update(int id, int repositoryID, String token){
+        //checks if the group repository exists
+        if (!groupRepositoryRepository.existsById(Integer.toString(id))) {
+            throw new IllegalArgumentException("Group repository does not exist");
+        }
+        var groupRepository = groupRepositoryRepository.findById(Integer.toString(id)).orElseThrow();
+        groupRepository.setRepositoryID(repositoryID);
+        groupRepository.setToken(token);
+        groupRepositoryRepository.save(groupRepository);
+    }
+}
