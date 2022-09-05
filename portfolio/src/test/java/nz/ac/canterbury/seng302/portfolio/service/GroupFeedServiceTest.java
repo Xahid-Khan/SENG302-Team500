@@ -53,6 +53,10 @@ class GroupFeedServiceTest {
         });
     }
 
+    /**
+     * This tests that service can retrieve all the posts in the database.
+     * @throws Exception
+     */
     @Test
     void getAllPostsExpectPass () throws Exception {
         Mockito.when(mockPostModelRepository.findAll()).thenReturn(postList);
@@ -64,6 +68,11 @@ class GroupFeedServiceTest {
         }
     }
 
+    /**
+     * This tests that A user should be able to see the posts made by a specific group. it retrieves all the posts made
+     * by a group and returns them as a list.
+     * @throws Exception
+     */
     @Test
     void getAllPostsForGivenGroupId() throws Exception {
         int groupId = 1;
@@ -82,6 +91,10 @@ class GroupFeedServiceTest {
         };
     }
 
+    /**
+     * If there is no post with the given ID, the function will rerun null.
+     * @throws Exception
+     */
     @Test
     void getAPostWithPostIdThatDoesNotExistExpectFail () throws Exception {
         int postId = 100;
@@ -91,6 +104,10 @@ class GroupFeedServiceTest {
 
     }
 
+    /**
+     * Delete a post with a given ID, if it passes it will return true and false otherwise.
+     * @throws Exception
+     */
     @Test
     void deleteAPostWithAValidPostIdExpectPass () throws Exception {
         Mockito.when(mockPostModelRepository.findById(newPost1.getId())).thenReturn(Optional.ofNullable(newPost1));
@@ -99,11 +116,19 @@ class GroupFeedServiceTest {
         Assertions.assertTrue(result);
     }
 
+    /**
+     * Delete a post with the given ID that doesn't exist, method will return false.
+     * @throws Exception
+     */
     @Test
     void deleteAPostThatDoesNotExistExpectFail () throws Exception {
         Assertions.assertFalse(postService.deletePost(1000));
     }
 
+    /**
+     * create a new post with all the vaild data for the fields, and it passes the test as expected.
+     * @throws Exception
+     */
     @Test
     void createANewPostWithValidParamsExpectPass () throws Exception {
         Mockito.when(mockPostModelRepository.save(newPost)).thenReturn(newPost);
@@ -113,6 +138,10 @@ class GroupFeedServiceTest {
         Assertions.assertTrue(result);
     }
 
+    /**
+     * create a post where the post content is empty, it should fail because post content is mandatory.
+     * @throws Exception
+     */
     @Test
     void createANewPostWithInvalidParamsExpectFail () throws Exception {
         BasePostContract postContract = new BasePostContract(newPost.getGroupId(), "");
@@ -120,6 +149,11 @@ class GroupFeedServiceTest {
         Assertions.assertFalse(result);
     }
 
+    /**
+     * Update a post content, it's the same user who made the post so he can update it successfully, hence it passes as
+     * expected.
+     * @throws Exception
+     */
     @Test
     void updateAPostExpectPass () throws Exception {
         Mockito.when(mockPostModelRepository.findById(newPost.getId())).thenReturn(Optional.ofNullable(newPost));

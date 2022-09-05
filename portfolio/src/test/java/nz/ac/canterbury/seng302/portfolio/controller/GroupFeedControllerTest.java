@@ -107,11 +107,19 @@ class GroupFeedControllerTest {
         allComments.add(comment4);
     }
 
+    /**
+     * This test makes sure that controller is loaded and running.
+     * @throws Exception
+     */
     @Test
     void contextLoads() throws Exception {
         Assertions.assertNotNull(controller);
     }
 
+    /**
+     * This test makes checks the all the posts can be retrieved
+     * @throws Exception
+     */
     @Test
     void getPostsByGroupIdExpectPassAndExpectPass () throws Exception {
         var expectedPots = allPosts.stream().filter(postModel -> postModel.getGroupId() == post1.getGroupId()).collect(Collectors.toList());
@@ -137,6 +145,10 @@ class GroupFeedControllerTest {
         }
     }
 
+    /**
+     * This test creates a new post will all the valid values and expects a success code
+     * @throws Exception
+     */
     @Test
     void createNewPostWithValidFieldsAndExpectPass () throws Exception {
         Mockito.when(groupsClientService.isMemberOfTheGroup(any(int.class), any(int.class))).thenReturn(true);
@@ -155,6 +167,11 @@ class GroupFeedControllerTest {
                 .andReturn();
     }
 
+    /**
+     * This test checks if the User how is not member of the group can post on that group feed page or not, and it fails
+     * as expected.
+     * @throws Exception
+     */
     @Test
     void createNewPostUserNotMemberOfGroupExpectFail () throws Exception {
         Mockito.when(groupsClientService.isMemberOfTheGroup(any(int.class), any(int.class))).thenReturn(false);
@@ -171,6 +188,10 @@ class GroupFeedControllerTest {
                 .andExpect(status().is4xxClientError());
     }
 
+    /**
+     * This tests deletion of a post, the user who made the post is deleting the post, so it is expected to pass.
+     * @throws Exception
+     */
     @Test
     void deleteAPostWhereUserIsWhoMadeThePostExpectPass () throws Exception {
         Mockito.when(groupsClientService.isMemberOfTheGroup(any(int.class), any(int.class))).thenReturn(true);
@@ -181,6 +202,11 @@ class GroupFeedControllerTest {
                 .andExpect(status().isOk());
     }
 
+    /**
+     * this tests deleteion of a post made by a different user, and it fails as expected as a user cannot delete posts made
+     * by other users.
+     * @throws Exception
+     */
     @Test
     void deleteAPostWhereUserIsNotWhoMadeThePostExpectFail () throws Exception {
         Mockito.when(groupsClientService.isMemberOfTheGroup(any(int.class), any(int.class))).thenReturn(true);
@@ -190,8 +216,12 @@ class GroupFeedControllerTest {
                 .andExpect(status().is4xxClientError());
     }
 
+    /**
+     * A user cannot delete a post, once he/she is no longer part of that group.
+     * @throws Exception
+     */
     @Test
-    void deleteAPostWhereUserIsNotWhoMadeThePostButNotMemberAnyMoreExpectFail () throws Exception {
+    void deleteAPostWhereUserIsWhoMadeThePostButNotMemberAnyMoreExpectFail () throws Exception {
         Mockito.when(groupsClientService.isMemberOfTheGroup(any(int.class), any(int.class))).thenReturn(false);
         Mockito.when(postService.getPostById(any(int.class))).thenReturn(post1);
         mockMvc.perform(delete("/delete_feed/3")
@@ -200,6 +230,10 @@ class GroupFeedControllerTest {
     }
 
 
+    /**
+     * A Teacher can delete any post made by any member in any group.
+     * @throws Exception
+     */
     @Test
     void deleteAPostWhereUserIsATeacherExpectPass () throws Exception {
         AuthorisationParamsHelper.setParams("role", UserRole.TEACHER);
@@ -210,6 +244,10 @@ class GroupFeedControllerTest {
                 .andExpect(status().isOk());
     }
 
+    /**
+     * An Admin can delete any post made by any member in any group.
+     * @throws Exception
+     */
     @Test
     void deleteAPostWhereUserIsAAdminExpectPass () throws Exception {
         AuthorisationParamsHelper.setParams("role", UserRole.COURSE_ADMINISTRATOR);
@@ -220,6 +258,10 @@ class GroupFeedControllerTest {
                 .andExpect(status().isOk());
     }
 
+    /**
+     * A user who made the post can update the content of the post any time.
+     * @throws Exception
+     */
     @Test
     void updateAPostWhereUserIsWhoMadeOriginalPostExpectPass () throws Exception {
         Mockito.when(groupsClientService.isMemberOfTheGroup(any(int.class), any(int.class))).thenReturn(true);
@@ -239,6 +281,10 @@ class GroupFeedControllerTest {
                 .andReturn();
     }
 
+    /**
+     * A post cannot be updated by any user other than the user who made the post, Event Teachers/Admins cannot edit a post.
+     * @throws Exception
+     */
     @Test
     void updateAPostWhereUserIsNotWhoMadeOriginalPostExpectFail () throws Exception {
         Mockito.when(groupsClientService.isMemberOfTheGroup(any(int.class), any(int.class))).thenReturn(true);

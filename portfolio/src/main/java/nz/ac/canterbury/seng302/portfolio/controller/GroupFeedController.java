@@ -3,14 +3,23 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BasePostContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.PostModel;
-import nz.ac.canterbury.seng302.portfolio.service.*;
+import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
+import nz.ac.canterbury.seng302.portfolio.service.PostService;
+import nz.ac.canterbury.seng302.portfolio.service.GroupsClientService;
+import nz.ac.canterbury.seng302.portfolio.service.CommentService;
+import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
 import nz.ac.canterbury.seng302.shared.identityprovider.GroupDetailsResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.*;
 
@@ -54,7 +63,7 @@ public class GroupFeedController extends AuthenticatedController {
     }
 
     @PostMapping(value = "/group_feed/new_post", produces = "application/json")
-    public ResponseEntity<?> addNewPost(@AuthenticationPrincipal PortfolioPrincipal principal, @RequestBody BasePostContract newPost){
+    public ResponseEntity<?> addNewPost(@AuthenticationPrincipal PortfolioPrincipal principal, @RequestBody BasePostContract newPost) {
         try {
             int userId = getUserId(principal);
             if (groupsClientService.isMemberOfTheGroup(userId, newPost.groupId())) {
@@ -85,10 +94,8 @@ public class GroupFeedController extends AuthenticatedController {
     }
 
     @PutMapping(value = "/update_feed/{postId}", produces = "application/json")
-    public ResponseEntity<?> updatePost(@AuthenticationPrincipal PortfolioPrincipal principal,
-                                     @PathVariable int postId,
-                                     @RequestBody BasePostContract updatedPost) {
-        try{
+    public ResponseEntity<?> updatePost(@AuthenticationPrincipal PortfolioPrincipal principal, @PathVariable int postId, @RequestBody BasePostContract updatedPost) {
+        try {
             int userId = getUserId(principal);
             PostModel post = postService.getPostById(postId);
             if (groupsClientService.isMemberOfTheGroup(userId, post.getGroupId()) && userId == post.getUserId()) {
@@ -104,8 +111,9 @@ public class GroupFeedController extends AuthenticatedController {
     }
 
     /**
-     * This function creates a Hash Map from posts to send it to the front end as JSON object.
-     * @param posts All the posts from a group as a List
+     * This function creates a Map from posts to send it to the front end as JSON object.
+     *
+     * @param posts                All the posts from a group as a List
      * @param groupDetailsResponse The details of a Group
      * @return A Hash Map where first element is string and second is an object.
      */
@@ -133,6 +141,7 @@ public class GroupFeedController extends AuthenticatedController {
 
     /**
      * A helper function that will retrieve all the comments for a given post and return them as a list of Hash Map
+     *
      * @param postId A post ID of type Integer
      * @return A list containing all the comments for the post as HashMap objects.
      */

@@ -50,7 +50,10 @@ class CommentServiceTest {
         });
     }
 
-
+    /**
+     * This test gets all the comments from the database.
+     * @throws Exception
+     */
     @Test
     void getAllCommentsExpectPass () throws Exception {
         Mockito.when(mockCommentRepository.findAll()).thenReturn(commentList);
@@ -63,6 +66,10 @@ class CommentServiceTest {
         }
     }
 
+    /**
+     * This test gets all the comment for a given post.
+     * @throws Exception
+     */
     @Test
     void getAllCommentsByPostIdExpectPass () throws Exception  {
         var postId = 1;
@@ -79,6 +86,10 @@ class CommentServiceTest {
         }
     }
 
+    /**
+     * This test adds a new comment to a post, with all the valid fields hence it passes.
+     * @throws Exception
+     */
     @Test
     void AddNewCommentToAPostExpectPass () throws Exception  {
         Mockito.when(mockCommentRepository.save(commentList.get(0))).thenReturn(null);
@@ -89,6 +100,10 @@ class CommentServiceTest {
         Assertions.assertEquals(commentList.get(0).getCommentContent(), result.getCommentContent());
     }
 
+    /**
+     * This test, updates a comment made by a user
+     * @throws Exception
+     */
     @Test
     void UpdateACommentExpectPass () throws Exception  {
         Mockito.when(mockCommentRepository.findById(commentList.get(0).getId())).thenReturn(Optional.ofNullable(commentList.get(0)));
@@ -104,6 +119,10 @@ class CommentServiceTest {
         Assertions.assertEquals(updatedComment.getCommentContent(), result.getCommentContent());
     }
 
+    /**
+     * This test deletes a comment made by a user
+     * @throws Exception
+     */
     @Test
     void deleteCommentsByCommentIdExpectPass () throws Exception {
         List<CommentModel> filteredList = commentList.stream().filter(comment -> {
@@ -124,6 +143,10 @@ class CommentServiceTest {
         }
     }
 
+    /**
+     * This test tries to delete the comment made by different user and it fails.
+     * @throws Exception
+     */
     @Test
     void deleteCommentsByInvalidCommentIdExpectFail () throws Exception {
         int commentId = 1000000;
@@ -145,6 +168,10 @@ class CommentServiceTest {
         }
     }
 
+    /**
+     * This method deletes all the comments for a post, it will only happen once a post is deleted.
+     * @throws Exception
+     */
     @Test
     void deleteAllCommentsByPostIdExpectPass () throws Exception {
         Mockito.when(mockCommentRepository.deleteCommentsByPostId(commentList.get(0).getPostId())).thenReturn(true);
@@ -157,6 +184,10 @@ class CommentServiceTest {
         Assertions.assertEquals(new ArrayList<>(), result);
     }
 
+    /**
+     * this tests fails as the post ID is not valid, hence you cannot delete a post or comments that doesn't exist.
+     * @throws Exception
+     */
     @Test
     void deleteAllCommentsByInvalidPostIdExpectFail () throws Exception {
         int postId = 10000;

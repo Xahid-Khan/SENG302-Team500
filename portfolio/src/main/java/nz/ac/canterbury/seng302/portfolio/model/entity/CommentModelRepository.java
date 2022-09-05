@@ -1,8 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.model.entity;
 
 import org.springframework.data.repository.CrudRepository;
-
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * CRUD Repository for a comment on a post
@@ -10,7 +9,7 @@ import java.util.ArrayList;
 public interface CommentModelRepository extends CrudRepository<CommentModel, Integer> {
     boolean deleteById (int commentId);
 
-    ArrayList<CommentModel> findAllCommentByPostId(int postId);
+    List<CommentModel> findAllCommentByPostId(int postId);
 
     boolean deleteCommentsByPostId(int postId);
 }

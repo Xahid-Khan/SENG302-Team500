@@ -20,7 +20,7 @@ public class PostService {
 
     public List<PostModel> getAllPosts () {
         try {
-            return (ArrayList<PostModel>) postRepository.findAll();
+            return (List<PostModel>) postRepository.findAll();
         } catch (NoSuchElementException e) {
             e.printStackTrace();
             return new ArrayList<>();
@@ -37,10 +37,10 @@ public class PostService {
      * @return True if successful false otherwise.
      */
     public boolean createPost(BasePostContract newPost, int userId) {
+        if (newPost.postContent().length() == 0) {
+            return false;
+        }
         try {
-            if (newPost.postContent().length() == 0) {
-                return false;
-            }
             PostModel postModel = new PostModel(newPost.groupId(), userId, newPost.postContent());
             postRepository.save(postModel);
             return true;

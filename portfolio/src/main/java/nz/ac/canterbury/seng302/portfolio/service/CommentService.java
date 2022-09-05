@@ -35,7 +35,7 @@ public class CommentService {
      */
     public List<CommentModel> getCommentsForGivenPost (int postId) {
         try {
-            ArrayList<CommentModel> result = commentRepository.findAllCommentByPostId(postId);
+            List<CommentModel> result = commentRepository.findAllCommentByPostId(postId);
             if (!result.isEmpty()) {
                 return result;
             } else {

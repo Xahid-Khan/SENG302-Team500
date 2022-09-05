@@ -6,27 +6,14 @@ export function ShowAllPosts() {
     const viewGroupId = urlData[urlData.length-1];
 
     const getCurrentGroup = async ()  => {
-        const currentGroupResponse = await fetch(`/feed_content/${viewGroupId}`)
+        const currentGroupResponse = await fetch(`/feed_content/${encodeURIComponent(viewGroupId)}`, {})
         return currentGroupResponse.json()
     }
 
     const [groupPosts, setGroupPosts] = React.useState({
         "groupId": -1,
         "shortName": "",
-        "posts": [{
-            "id": -1,
-            "name": "",
-            "time": "",
-            "content": "",
-            "highFives": -1,
-            "users": [],
-            "comments": [{
-                "commentId": -1,
-                "name": "",
-                "time": "",
-                "content": ""
-            }]
-        }]
+        "posts": []
     })
 
     useEffect(() => {
