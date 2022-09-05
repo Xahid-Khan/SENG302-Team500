@@ -1,25 +1,37 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import nz.ac.canterbury.seng302.portfolio.AuthorisationParamsHelper;
+import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
+import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BasePostContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.CommentModel;
 import nz.ac.canterbury.seng302.portfolio.model.entity.PostModel;
-import nz.ac.canterbury.seng302.portfolio.service.CommentService;
-import nz.ac.canterbury.seng302.portfolio.service.PostService;
-import org.assertj.core.api.Assertions;
+import nz.ac.canterbury.seng302.portfolio.service.*;
+import nz.ac.canterbury.seng302.shared.identityprovider.GroupDetailsResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.webservices.client.WebServiceClientTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import static org.mockito.ArgumentMatchers.any;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
+@AutoConfigureWebTestClient
 class GroupFeedControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -27,12 +39,22 @@ class GroupFeedControllerTest {
     @Autowired
     private GroupFeedController controller;
 
-    @Mock
-    private PostService postService = Mockito.mock(PostService.class);
+    @MockBean
+    private PostService postService;
 
-    @Mock
-    private CommentService commentService = Mockito.mock(CommentService.class);
+    @MockBean
+    private CommentService commentService;
 
+    @MockBean
+    private UserAccountService userAccountService;
+
+    @MockBean
+    private GroupsClientService groupsClientService;
+
+    @MockBean
+    private AuthStateService authStateService;
+
+    private final int validUserId = 3;
     private PostModel post1;
     private PostModel post2;
     private PostModel post3;
@@ -48,8 +70,22 @@ class GroupFeedControllerTest {
 
     @BeforeEach
     void setupBeforeEach () {
-        post1 = new PostModel(1, 3, "This a new Post From Teachers");
-        post2 = new PostModel(2, 3, "This a Test Post From Other Group");
+        Mockito.when(groupsClientService.getGroupById(any(int.class))).thenReturn(GroupDetailsResponse.newBuilder()
+                .setGroupId(1)
+                .setShortName("Mock Group")
+                .setLongName("This is a new test Group").build());
+
+        Mockito.when(userAccountService.getUserById(any(int.class))).thenReturn(
+                UserResponse.newBuilder()
+                        .setId(validUserId)
+                        .setUsername("testing")
+                        .build()
+        );
+        Mockito.when(authStateService.getId(any(PortfolioPrincipal.class))).thenReturn(3);
+        AuthorisationParamsHelper.setParams("role", UserRole.STUDENT);
+
+        post1 = new PostModel(1, validUserId, "This a new Post From Teachers");
+        post2 = new PostModel(2, validUserId, "This a Test Post From Other Group");
         post3 = new PostModel(3, 4, "This a Test Post From Group 3");
         post4 = new PostModel(1, 2, "This another post from teachers.");
 
@@ -60,9 +96,9 @@ class GroupFeedControllerTest {
         allPosts.add(post4);
 
         comment1 = new CommentModel(post1.getId(), 4, "This a reply to teachers' post");
-        comment2 = new CommentModel(post2.getId(), 4, "This message to group 2 post");
+        comment2 = new CommentModel(post2.getId(), validUserId, "This message to group 2 post");
         comment3 = new CommentModel(post1.getId(), 4, "This a reply to the post from teachers");
-        comment4 = new CommentModel(post3.getId(), 4, "This a reply to group 3");
+        comment4 = new CommentModel(post3.getId(), validUserId, "This a reply to group 3");
 
         allComments = new ArrayList<>();
         allComments.add(comment1);
@@ -73,42 +109,152 @@ class GroupFeedControllerTest {
 
     @Test
     void contextLoads() throws Exception {
-        Assertions.assertThat(controller).isNotNull();
+        Assertions.assertNotNull(controller);
     }
 
-//    @Test
-//    void getPostsByGroupIdExpectPass () throws Exception {
-//        Mockito.when(postService.getAllPostsForAGroup(post1.getGroupId()))
-//                .thenReturn(allPosts.stream().filter(postModel -> {return postModel.getGroupId() == post1.getGroupId();}).collect(Collectors.toList()));
-//
-//
-//        Mockito.when(commentService.getCommentsForGivenPost(post1.getId()))
-//                .thenReturn(allComments.stream().filter(commentModel -> {return commentModel.getPostId() == post1.getId();}).collect(Collectors.toList()));
-//        var result = mockMvc.perform(get("/feed_content/1"))
-//                .andExpect(status().isOk());
-//    }
+    @Test
+    void getPostsByGroupIdExpectPassAndExpectPass () throws Exception {
+        var expectedPots = allPosts.stream().filter(postModel -> postModel.getGroupId() == post1.getGroupId()).collect(Collectors.toList());
+        Mockito.when(postService.getAllPostsForAGroup(post1.getGroupId())).thenReturn(expectedPots);
 
-//    @Test
-//    void createNewPostWithValidFields() throws Exception {
-//        post = new BasePostContract(
-//                1,
-//                "This a test dummy post"
-//        );
-//
-//        PostModel model = new PostModel(1, 1, "This a test dummy post.");
-//
-//        Mockito.when(postService.createPost(post, 1)).thenReturn(true);
-//
-//        var result = mockMvc.perform(post("/group_feed/new_post")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(String.valueOf(post))
-//                        .accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().is2xxSuccessful())
-//                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-//                .andReturn();
-//
-//        System.err.println(result);
-//    }
+        Mockito.when(commentService.getCommentsForGivenPost(post1.getId()))
+                .thenReturn(allComments.stream().filter(commentModel -> commentModel.getPostId() == post1.getId()).collect(Collectors.toList()));
+
+        var result = mockMvc.perform(get("/feed_content/1"))
+                .andExpect(status().isOk())
+                .andReturn();
+        var response = (new JSONObject(result.getResponse().getContentAsString()));
+
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals(post1.getGroupId(), response.get("groupId"));
+
+        Assertions.assertNotNull(response.get("posts"));
+        var posts =(JSONArray) response.get("posts");
+        for (int i=0; i < posts.length(); i++) {
+            var post = (JSONObject) posts.get(i);
+            Assertions.assertEquals(expectedPots.get(i).getPostContent(), post.get("content"));
+            Assertions.assertEquals(expectedPots.get(i).getUserId(), post.get("userId"));
+        }
+    }
+
+    @Test
+    void createNewPostWithValidFieldsAndExpectPass () throws Exception {
+        Mockito.when(groupsClientService.isMemberOfTheGroup(any(int.class), any(int.class))).thenReturn(true);
+        Mockito.when(postService.createPost(any(BasePostContract.class), any(int.class))).thenReturn(true);
+
+        mockMvc.perform(post("/group_feed/new_post")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "groupId" : "1",
+                                    "postContent" : "This a test dummy post"
+                                }
+                                """)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn();
+    }
+
+    @Test
+    void createNewPostUserNotMemberOfGroupExpectFail () throws Exception {
+        Mockito.when(groupsClientService.isMemberOfTheGroup(any(int.class), any(int.class))).thenReturn(false);
+        Mockito.when(postService.createPost(new BasePostContract(1,"This a test dummy post"), 1)).thenReturn(true);
+        mockMvc.perform(post("/group_feed/new_post")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "groupId" : "1",
+                                    "postContent" : "This a test dummy post"
+                                }
+                                """)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    void deleteAPostWhereUserIsWhoMadeThePostExpectPass () throws Exception {
+        Mockito.when(groupsClientService.isMemberOfTheGroup(any(int.class), any(int.class))).thenReturn(true);
+        Mockito.when(postService.getPostById(any(int.class))).thenReturn(post1);
+
+        mockMvc.perform(delete("/delete_feed/1"))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void deleteAPostWhereUserIsNotWhoMadeThePostExpectFail () throws Exception {
+        Mockito.when(groupsClientService.isMemberOfTheGroup(any(int.class), any(int.class))).thenReturn(true);
+        Mockito.when(postService.getPostById(any(int.class))).thenReturn(post3);
+        mockMvc.perform(delete("/delete_feed/3")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    void deleteAPostWhereUserIsNotWhoMadeThePostButNotMemberAnyMoreExpectFail () throws Exception {
+        Mockito.when(groupsClientService.isMemberOfTheGroup(any(int.class), any(int.class))).thenReturn(false);
+        Mockito.when(postService.getPostById(any(int.class))).thenReturn(post1);
+        mockMvc.perform(delete("/delete_feed/3")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError());
+    }
 
 
+    @Test
+    void deleteAPostWhereUserIsATeacherExpectPass () throws Exception {
+        AuthorisationParamsHelper.setParams("role", UserRole.TEACHER);
+        Mockito.when(groupsClientService.isMemberOfTheGroup(any(int.class), any(int.class))).thenReturn(false);
+        Mockito.when(postService.getPostById(any(int.class))).thenReturn(post3);
+        mockMvc.perform(delete("/delete_feed/3")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void deleteAPostWhereUserIsAAdminExpectPass () throws Exception {
+        AuthorisationParamsHelper.setParams("role", UserRole.COURSE_ADMINISTRATOR);
+        Mockito.when(groupsClientService.isMemberOfTheGroup(any(int.class), any(int.class))).thenReturn(false);
+        Mockito.when(postService.getPostById(any(int.class))).thenReturn(post3);
+        mockMvc.perform(delete("/delete_feed/3")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void updateAPostWhereUserIsWhoMadeOriginalPostExpectPass () throws Exception {
+        Mockito.when(groupsClientService.isMemberOfTheGroup(any(int.class), any(int.class))).thenReturn(true);
+        Mockito.when(postService.getPostById(any(int.class))).thenReturn(post1);
+        Mockito.when(postService.updatePost(any(BasePostContract.class), any(int.class))).thenReturn(true);
+
+        mockMvc.perform(put("/update_feed/" + post1.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "groupId" : "1",
+                                    "postContent" : "This a test dummy post Changed From Teachers"
+                                }
+                                """)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().is2xxSuccessful())
+                .andReturn();
+    }
+
+    @Test
+    void updateAPostWhereUserIsNotWhoMadeOriginalPostExpectFail () throws Exception {
+        Mockito.when(groupsClientService.isMemberOfTheGroup(any(int.class), any(int.class))).thenReturn(true);
+        Mockito.when(postService.getPostById(any(int.class))).thenReturn(post4);
+        Mockito.when(postService.updatePost(any(BasePostContract.class), any(int.class))).thenReturn(true);
+
+        mockMvc.perform(put("/update_feed/" + post4.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "groupId" : "1",
+                                    "postContent" : "This a test dummy post Changed From Teachers"
+                                }
+                                """)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andReturn();
+    }
 }

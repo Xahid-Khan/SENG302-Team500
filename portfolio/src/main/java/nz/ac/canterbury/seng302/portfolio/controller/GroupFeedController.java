@@ -1,7 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
-import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseCommentContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BasePostContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.PostModel;
 import nz.ac.canterbury.seng302.portfolio.service.*;
@@ -44,7 +43,6 @@ public class GroupFeedController extends AuthenticatedController {
 
     @GetMapping(value = "/feed_content/{groupId}", produces = "application/json")
     public ResponseEntity<?> getFeedContent(@PathVariable Integer groupId) {
-        getDummyTestData(); //This function would be needed to delete later
         try {
             GroupDetailsResponse groupDetailsResponse = groupsClientService.getGroupById(groupId);
             List<PostModel> allPosts = postService.getAllPostsForAGroup(groupDetailsResponse.getGroupId());
@@ -59,10 +57,13 @@ public class GroupFeedController extends AuthenticatedController {
     public ResponseEntity<?> addNewPost(@AuthenticationPrincipal PortfolioPrincipal principal, @RequestBody BasePostContract newPost){
         try {
             int userId = getUserId(principal);
-            postService.createPost(newPost, userId);
-            return ResponseEntity.ok().build();
+            if (groupsClientService.isMemberOfTheGroup(userId, newPost.groupId())) {
+                postService.createPost(newPost, userId);
+                return ResponseEntity.status(HttpStatus.CREATED).build();
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -72,14 +73,13 @@ public class GroupFeedController extends AuthenticatedController {
         try {
             int userId = getUserId(principal);
             PostModel post = postService.getPostById(postId);
-            if (userId == post.getUserId() || isTeacher(principal)) {
+            if (isTeacher(principal) || (groupsClientService.isMemberOfTheGroup(userId, post.getGroupId()) && userId == post.getUserId())) {
                 postService.deletePost(postId);
                 return ResponseEntity.ok().build();
             } else {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -91,7 +91,7 @@ public class GroupFeedController extends AuthenticatedController {
         try{
             int userId = getUserId(principal);
             PostModel post = postService.getPostById(postId);
-            if (userId == post.getUserId() || isTeacher(principal)) {
+            if (groupsClientService.isMemberOfTheGroup(userId, post.getGroupId()) && userId == post.getUserId()) {
                 postService.updatePost(updatedPost, postId);
                 return ResponseEntity.ok().build();
             } else {
@@ -103,6 +103,12 @@ public class GroupFeedController extends AuthenticatedController {
         }
     }
 
+    /**
+     * This function creates a Hash Map from posts to send it to the front end as JSON object.
+     * @param posts All the posts from a group as a List
+     * @param groupDetailsResponse The details of a Group
+     * @return A Hash Map where first element is string and second is an object.
+     */
     private Map<String, Object> combineAndPrepareForFrontEnd(List<PostModel> posts, GroupDetailsResponse groupDetailsResponse) {
         Map<String, Object> postWithComments = new HashMap<>();
         postWithComments.put("groupId", groupDetailsResponse.getGroupId());
@@ -113,6 +119,7 @@ public class GroupFeedController extends AuthenticatedController {
         posts.forEach(post -> {
             Map<String, Object> filteredPosts = new HashMap<>();
             filteredPosts.put("postId", post.getId());
+            filteredPosts.put("userId", post.getUserId());
             filteredPosts.put("name", userAccountService.getUserById(post.getUserId()).getUsername());
             filteredPosts.put("time", post.getCreated());
             filteredPosts.put("content", post.getPostContent());
@@ -124,11 +131,17 @@ public class GroupFeedController extends AuthenticatedController {
         return postWithComments;
     }
 
+    /**
+     * A helper function that will retrieve all the comments for a given post and return them as a list of Hash Map
+     * @param postId A post ID of type Integer
+     * @return A list containing all the comments for the post as HashMap objects.
+     */
     private List<Map<String, Object>> getCommentsForThePost(int postId) {
         List<Map<String, Object>> comments = new ArrayList<>();
         commentService.getCommentsForGivenPost(postId).forEach(comment -> {
             Map<String, Object> commentObject = new HashMap<>();
             commentObject.put("commentId", comment.getId());
+            commentObject.put("userId", comment.getUserId());
             commentObject.put("name", userAccountService.getUserById(comment.getUserId()).getUsername());
             commentObject.put("time", comment.getCreated());
             commentObject.put("content", comment.getCommentContent());
@@ -136,13 +149,6 @@ public class GroupFeedController extends AuthenticatedController {
         });
 
         return comments;
-    }
-
-
-    public void getDummyTestData() {
-        postService.createPost(new BasePostContract(1, "This is a test Posts"), 3);
-        List<PostModel> postModel = postService.getAllPostsForAGroup(1);
-        commentService.addNewCommentsToAPost(new BaseCommentContract(3, postModel.get(0).getId(), "This a comment to a post"));
     }
 
 }
