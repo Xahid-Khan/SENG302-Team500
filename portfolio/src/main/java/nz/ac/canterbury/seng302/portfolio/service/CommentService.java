@@ -1,8 +1,8 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
-import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseCommentContract;
+import nz.ac.canterbury.seng302.portfolio.model.contract.CommentContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.CommentModel;
-import nz.ac.canterbury.seng302.portfolio.model.entity.CommentModelRepository;
+import nz.ac.canterbury.seng302.portfolio.repository.CommentModelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -49,10 +49,10 @@ public class CommentService {
 
     /**
      * This function will add a new comment made to a post into the database.
-     * @param newComment BaseCommentContract containing postId, UserId and Comment content.
+     * @param newComment CommentContract containing postId, UserId and Comment content.
      * @return CommentModel
      */
-    public CommentModel addNewCommentsToAPost(BaseCommentContract newComment) {
+    public CommentModel addNewCommentsToAPost(CommentContract newComment) {
         try {
             CommentModel comment = new CommentModel(newComment.postId(), newComment.userId(), newComment.comment());
             commentRepository.save(comment);
@@ -66,10 +66,10 @@ public class CommentService {
     /**
      * This function will update the edited comment and save it into the database.
      * @param commentId Integer Comment Id
-     * @param updatedComment BaseCommentContract containing postId, UserId, and Comment content
+     * @param updatedComment CommentContract containing postId, UserId, and Comment content
      * @return updated CommentModel
      */
-    public CommentModel updateAComment (int commentId, BaseCommentContract updatedComment) {
+    public CommentModel updateAComment (int commentId, CommentContract updatedComment) {
         try {
             Optional<CommentModel> getComment = commentRepository.findById(commentId);
             if (getComment.isPresent()) {

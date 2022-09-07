@@ -17,9 +17,11 @@ export function ShowAllPosts() {
     })
 
     useEffect(() => {
-        getCurrentGroup().then((result) => {
-            setGroupPosts(result)
-        })
+        if (!isNaN(+viewGroupId)) {
+            getCurrentGroup().then((result) => {
+                setGroupPosts(result)
+            })
+        }
     }, [])
 
     const groupShortName = document.getElementById("group-feed-title").innerText;

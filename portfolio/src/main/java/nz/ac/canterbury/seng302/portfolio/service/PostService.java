@@ -1,8 +1,8 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
-import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BasePostContract;
+import nz.ac.canterbury.seng302.portfolio.model.contract.PostContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.PostModel;
-import nz.ac.canterbury.seng302.portfolio.model.entity.PostModelRepository;
+import nz.ac.canterbury.seng302.portfolio.repository.PostModelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,11 +32,11 @@ public class PostService {
 
     /**
      * This funciton will create new instance of the post and save it in the database.
-     * @param newPost A Base post contract containing groupId and contents of the post.
+     * @param newPost A post contract containing groupId and contents of the post.
      * @param userId Integer (Id of the user who made the post)
      * @return True if successful false otherwise.
      */
-    public boolean createPost(BasePostContract newPost, int userId) {
+    public boolean createPost(PostContract newPost, int userId) {
         if (newPost.postContent().length() == 0) {
             return false;
         }
@@ -73,11 +73,11 @@ public class PostService {
 
     /**
      * This function will update the changes made to the post.
-     * @param updatedPost A BasePostContract
+     * @param updatedPost A PostContract
      * @param postId Integer ID of the Post
      * @return True if update is successful False otherwise.
      */
-    public boolean updatePost(BasePostContract updatedPost, int postId) {
+    public boolean updatePost(PostContract updatedPost, int postId) {
         try {
             var post = postRepository.findById(postId).orElseThrow();
             post.setPostContent(updatedPost.postContent());

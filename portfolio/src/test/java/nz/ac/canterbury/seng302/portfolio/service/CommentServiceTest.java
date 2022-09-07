@@ -1,15 +1,14 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
-import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseCommentContract;
+import nz.ac.canterbury.seng302.portfolio.model.contract.CommentContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.CommentModel;
-import nz.ac.canterbury.seng302.portfolio.model.entity.CommentModelRepository;
+import nz.ac.canterbury.seng302.portfolio.repository.CommentModelRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.stubbing.Answer;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
@@ -25,20 +24,20 @@ class CommentServiceTest {
     @Mock
     private CommentModelRepository mockCommentRepository;
 
-    private BaseCommentContract comment1;
-    private BaseCommentContract comment2;
-    private BaseCommentContract comment3;
-    private BaseCommentContract comment4;
+    private CommentContract comment1;
+    private CommentContract comment2;
+    private CommentContract comment3;
+    private CommentContract comment4;
 
     private List<CommentModel> commentList;
 
     @BeforeEach
     void setup () {
         mockCommentRepository.deleteAll();
-        comment1 = new BaseCommentContract(1, 1, "This is a cool post");
-        comment2 = new BaseCommentContract(4, 3, "This is a comment to a comment");
-        comment3 = new BaseCommentContract(2, 2, "This is new Comment to a post");
-        comment4 = new BaseCommentContract(100, 10000, "A Comment to 10000th post of the group");
+        comment1 = new CommentContract(1, 1, "This is a cool post");
+        comment2 = new CommentContract(4, 3, "This is a comment to a comment");
+        comment3 = new CommentContract(2, 2, "This is new Comment to a post");
+        comment4 = new CommentContract(100, 10000, "A Comment to 10000th post of the group");
         commentList = new ArrayList<>();
         commentList.add(new CommentModel(comment1.postId(), comment1.userId(), comment1.comment()));
         commentList.add(new CommentModel(comment2.postId(), comment1.userId(), comment1.comment()));
@@ -111,7 +110,7 @@ class CommentServiceTest {
         updatedComment.setCommentContent("This comment has been edited");
         Mockito.when(mockCommentRepository.save(updatedComment)).thenReturn(updatedComment);
 
-        BaseCommentContract newContract = new BaseCommentContract(comment1.userId(), comment1.postId(), "This comment has been edited");
+        CommentContract newContract = new CommentContract(comment1.userId(), comment1.postId(), "This comment has been edited");
 
         var result = commentService.updateAComment(commentList.get(0).getId(), newContract);
 

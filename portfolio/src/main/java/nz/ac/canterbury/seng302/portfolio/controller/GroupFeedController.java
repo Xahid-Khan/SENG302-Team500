@@ -1,7 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
-import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BasePostContract;
+import nz.ac.canterbury.seng302.portfolio.model.contract.PostContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.PostModel;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
 import nz.ac.canterbury.seng302.portfolio.service.PostService;
@@ -63,7 +63,7 @@ public class GroupFeedController extends AuthenticatedController {
     }
 
     @PostMapping(value = "/group_feed/new_post", produces = "application/json")
-    public ResponseEntity<?> addNewPost(@AuthenticationPrincipal PortfolioPrincipal principal, @RequestBody BasePostContract newPost) {
+    public ResponseEntity<?> addNewPost(@AuthenticationPrincipal PortfolioPrincipal principal, @RequestBody PostContract newPost) {
         try {
             int userId = getUserId(principal);
             if (groupsClientService.isMemberOfTheGroup(userId, newPost.groupId())) {
@@ -94,7 +94,7 @@ public class GroupFeedController extends AuthenticatedController {
     }
 
     @PutMapping(value = "/update_feed/{postId}", produces = "application/json")
-    public ResponseEntity<?> updatePost(@AuthenticationPrincipal PortfolioPrincipal principal, @PathVariable int postId, @RequestBody BasePostContract updatedPost) {
+    public ResponseEntity<?> updatePost(@AuthenticationPrincipal PortfolioPrincipal principal, @PathVariable int postId, @RequestBody PostContract updatedPost) {
         try {
             int userId = getUserId(principal);
             PostModel post = postService.getPostById(postId);

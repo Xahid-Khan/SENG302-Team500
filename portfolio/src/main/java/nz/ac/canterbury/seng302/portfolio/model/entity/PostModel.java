@@ -4,6 +4,9 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 /**
@@ -22,7 +25,7 @@ public class PostModel {
     @Column(name = "user_id", nullable = false)
     private int userId;
 
-    @Column(name = "post_content", length = 2047)
+    @Column(name = "post_content", length = 4096)
     private String postContent;
 
     // Makes the database automatically create the timestamp when the user is inserted
@@ -39,6 +42,9 @@ public class PostModel {
         this.groupId = groupId;
         this.userId = userId;
         this.postContent = postContent;
+
+        Date date = new Date();
+        this.created = new Timestamp(date.getTime());
     }
 
     public ReactionModel getReactionModel() {
@@ -59,6 +65,8 @@ public class PostModel {
 
     public void setPostContent(String postContent) {
         this.postContent = postContent;
+        Date date = new Date();
+        this.created = new Timestamp(date.getTime());
     }
 
     public int getUserId() {

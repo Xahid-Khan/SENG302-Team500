@@ -21,7 +21,7 @@ public class CommentModel {
     @Column(name = "user_id", nullable = false)
     private int userId;
 
-    @Column(name = "comment_content", length = 1023)
+    @Column(name = "comment_content", length = 4096)
     private String commentContent;
 
     // Makes the database automatically create the timestamp when the user is inserted
@@ -33,6 +33,8 @@ public class CommentModel {
         this.userId = userId;
         this.commentContent = comment;
     }
+
+    protected CommentModel() {}
 
     public int getUserId() {
         return userId;

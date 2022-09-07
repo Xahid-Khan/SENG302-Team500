@@ -1,8 +1,8 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
-import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BasePostContract;
+import nz.ac.canterbury.seng302.portfolio.model.contract.PostContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.PostModel;
-import nz.ac.canterbury.seng302.portfolio.model.entity.PostModelRepository;
+import nz.ac.canterbury.seng302.portfolio.repository.PostModelRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,7 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
+import static org.mockito.ArgumentMatchers.any;
 
 @SpringBootTest
 class GroupFeedServiceTest {
@@ -126,13 +129,13 @@ class GroupFeedServiceTest {
     }
 
     /**
-     * create a new post with all the vaild data for the fields, and it passes the test as expected.
+     * create a new post with all the valid data for the fields, and it passes the test as expected.
      * @throws Exception
      */
     @Test
     void createANewPostWithValidParamsExpectPass () throws Exception {
         Mockito.when(mockPostModelRepository.save(newPost)).thenReturn(newPost);
-        BasePostContract postContract = new BasePostContract(newPost.getGroupId(), newPost.getPostContent());
+        PostContract postContract = new PostContract(newPost.getGroupId(), newPost.getPostContent());
 
         var result = postService.createPost(postContract, newPost.getUserId());
         Assertions.assertTrue(result);
@@ -144,7 +147,7 @@ class GroupFeedServiceTest {
      */
     @Test
     void createANewPostWithInvalidParamsExpectFail () throws Exception {
-        BasePostContract postContract = new BasePostContract(newPost.getGroupId(), "");
+        PostContract postContract = new PostContract(newPost.getGroupId(), "");
         var result = postService.createPost(postContract, 1);
         Assertions.assertFalse(result);
     }
@@ -157,9 +160,22 @@ class GroupFeedServiceTest {
     @Test
     void updateAPostExpectPass () throws Exception {
         Mockito.when(mockPostModelRepository.findById(newPost.getId())).thenReturn(Optional.ofNullable(newPost));
-        BasePostContract postUpdate = new BasePostContract(1, "This is An UPDATED post");
+        PostContract postUpdate = new PostContract(1, "This is An UPDATED post");
         newPost.setPostContent(postUpdate.postContent());
         Mockito.when(mockPostModelRepository.save(newPost)).thenReturn(newPost);
         Assertions.assertTrue(postService.updatePost(postUpdate, newPost.getId()));
+    }
+
+    @Test
+    void checkTimeStampOnUpdatedPosts () throws Exception {
+        PostContract testPost1 = new PostContract(1, "this is a post");
+        PostModel post1Model = new PostModel(testPost1.groupId(), 3, testPost1.postContent());
+        var timeBeforeChange = post1Model.getCreated();
+        TimeUnit.SECONDS.sleep(1);
+        post1Model.setPostContent("This is an updated post...");
+        var timeAfterChange = post1Model.getCreated();
+        Assertions.assertNotNull(timeBeforeChange);
+        Assertions.assertNotNull(timeAfterChange);
+        Assertions.assertNotEquals(timeBeforeChange, timeAfterChange);
     }
 }

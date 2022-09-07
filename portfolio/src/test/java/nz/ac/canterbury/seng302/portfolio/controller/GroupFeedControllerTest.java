@@ -2,7 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.AuthorisationParamsHelper;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
-import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BasePostContract;
+import nz.ac.canterbury.seng302.portfolio.model.contract.PostContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.CommentModel;
 import nz.ac.canterbury.seng302.portfolio.model.entity.PostModel;
 import nz.ac.canterbury.seng302.portfolio.service.*;
@@ -152,7 +152,7 @@ class GroupFeedControllerTest {
     @Test
     void createNewPostWithValidFieldsAndExpectPass () throws Exception {
         Mockito.when(groupsClientService.isMemberOfTheGroup(any(int.class), any(int.class))).thenReturn(true);
-        Mockito.when(postService.createPost(any(BasePostContract.class), any(int.class))).thenReturn(true);
+        Mockito.when(postService.createPost(any(PostContract.class), any(int.class))).thenReturn(true);
 
         mockMvc.perform(post("/group_feed/new_post")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -175,7 +175,7 @@ class GroupFeedControllerTest {
     @Test
     void createNewPostUserNotMemberOfGroupExpectFail () throws Exception {
         Mockito.when(groupsClientService.isMemberOfTheGroup(any(int.class), any(int.class))).thenReturn(false);
-        Mockito.when(postService.createPost(new BasePostContract(1,"This a test dummy post"), 1)).thenReturn(true);
+        Mockito.when(postService.createPost(new PostContract(1,"This a test dummy post"), 1)).thenReturn(true);
         mockMvc.perform(post("/group_feed/new_post")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -266,7 +266,7 @@ class GroupFeedControllerTest {
     void updateAPostWhereUserIsWhoMadeOriginalPostExpectPass () throws Exception {
         Mockito.when(groupsClientService.isMemberOfTheGroup(any(int.class), any(int.class))).thenReturn(true);
         Mockito.when(postService.getPostById(any(int.class))).thenReturn(post1);
-        Mockito.when(postService.updatePost(any(BasePostContract.class), any(int.class))).thenReturn(true);
+        Mockito.when(postService.updatePost(any(PostContract.class), any(int.class))).thenReturn(true);
 
         mockMvc.perform(put("/update_feed/" + post1.getId())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -289,7 +289,7 @@ class GroupFeedControllerTest {
     void updateAPostWhereUserIsNotWhoMadeOriginalPostExpectFail () throws Exception {
         Mockito.when(groupsClientService.isMemberOfTheGroup(any(int.class), any(int.class))).thenReturn(true);
         Mockito.when(postService.getPostById(any(int.class))).thenReturn(post4);
-        Mockito.when(postService.updatePost(any(BasePostContract.class), any(int.class))).thenReturn(true);
+        Mockito.when(postService.updatePost(any(PostContract.class), any(int.class))).thenReturn(true);
 
         mockMvc.perform(put("/update_feed/" + post4.getId())
                         .contentType(MediaType.APPLICATION_JSON)
