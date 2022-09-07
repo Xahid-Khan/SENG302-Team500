@@ -25,7 +25,7 @@ export function ShowAllPosts() {
     }, [])
 
     const groupShortName = document.getElementById("group-feed-title").innerText;
-    const isStudent = localStorage.getItem("isStudent") === "true";
+    const isTeacher = localStorage.getItem("isTeacher") === "true";
 
     return(
         <div>
@@ -38,7 +38,7 @@ export function ShowAllPosts() {
                                 <div>{post.name}</div>
                                 <div className={"post-time"}>{post.time}</div>
                             </div>
-                            {!isStudent ?
+                            {isTeacher ?
                             <div className={"post-delete"}><span className={"material-icons"}>clear</span></div> : ""}
                         </div>
                         <div className={"post-body"}>{post.content}</div>
