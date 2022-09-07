@@ -1,4 +1,4 @@
-package nz.ac.canterbury.seng302.portfolio.repository;
+package nz.ac.canterbury.seng302.portfolio.model.entity;
 
 import nz.ac.canterbury.seng302.portfolio.model.entity.GroupRepositoryEntity;
 import nz.ac.canterbury.seng302.portfolio.model.entity.SubscriptionEntity;
