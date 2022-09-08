@@ -4,6 +4,9 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 /**
@@ -22,16 +25,30 @@ public class PostModel {
     @Column(name = "user_id", nullable = false)
     private int userId;
 
-    @Column(name = "post_content", length = 2047)
+    @Column(name = "post_content", length = 4096)
     private String postContent;
 
     // Makes the database automatically create the timestamp when the user is inserted
     @CreationTimestamp
     private Timestamp created;
 
+    @CreationTimestamp
+    private Timestamp updated;
+
     @ManyToOne
     @JoinColumn(name = "reaction_model_ID")
     private ReactionModel reactionModel;
+
+    protected PostModel() {};
+
+    public PostModel(int groupId, int userId, String postContent){
+        this.groupId = groupId;
+        this.userId = userId;
+        this.postContent = postContent;
+
+        Date date = new Date();
+        this.created = new Timestamp(date.getTime());
+    }
 
     public ReactionModel getReactionModel() {
         return reactionModel;
@@ -42,7 +59,11 @@ public class PostModel {
     }
 
     public Timestamp getCreated() {
-        return created;
+        return this.created;
+    }
+
+    public Timestamp getUpdated () {
+        return this.updated;
     }
 
     public String getPostContent() {
@@ -51,6 +72,12 @@ public class PostModel {
 
     public void setPostContent(String postContent) {
         this.postContent = postContent;
+        Date date = new Date();
+        this.updated = new Timestamp(date.getTime());
+    }
+
+    public boolean isPostUpdated() {
+        return this.updated == null ? false : true;
     }
 
     public int getUserId() {
