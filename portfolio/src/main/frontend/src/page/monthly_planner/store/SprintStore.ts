@@ -13,7 +13,7 @@ import {
     LoadingPending,
     LoadingStatus
 } from "../../../util/network/loading_status";
-import {BaseSprintContract} from "../../../contract/BaseSprintContract";
+import {BaseSprintContract} from "../../../contract/base_contracts/BaseSprintContract";
 import {handleErrorResponse} from "../../../util/network/network_error_handler";
 
 

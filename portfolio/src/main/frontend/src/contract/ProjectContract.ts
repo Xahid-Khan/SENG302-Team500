@@ -1,4 +1,4 @@
-import {BaseProjectContract} from "./BaseProjectContract";
+import {BaseProjectContract} from "./base_contracts/BaseProjectContract";
 import {SprintContract} from "./SprintContract";
 import {EventContract} from "./EventContract";
 import {MilestoneContract} from "./MilestoneContract";

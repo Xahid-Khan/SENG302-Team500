@@ -1,5 +1,5 @@
 import React from "react";
-import {CroppingImage} from "./componenet/CroppingImage";
+import {CroppingImage} from "./component/CroppingImage";
 
 
 export const CroppingUserImage: React.FC = () => {

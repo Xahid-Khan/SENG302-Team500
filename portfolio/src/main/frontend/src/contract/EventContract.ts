@@ -1,4 +1,4 @@
-import {BaseEventContract} from "./BaseEventContract";
+import {BaseEventContract} from "./base_contracts/BaseEventContract";
 
 export interface EventContract extends BaseEventContract {
     projectId: string

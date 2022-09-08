@@ -3,7 +3,7 @@
  */
 import React from "react"
 import ReactDOM from "react-dom"
-import {CroppingUserImage} from "../page/CroppingImage/CroppingUserImage";
+import {CroppingUserImage} from "../page/cropping_image/CroppingUserImage";
 import "./monthly_planner.css"
 
 ReactDOM.render(

@@ -1,4 +1,4 @@
-import {BaseSprintContract} from "./BaseSprintContract";
+import {BaseSprintContract} from "./base_contracts/BaseSprintContract";
 
 export interface SprintContract extends BaseSprintContract {
     projectId: string

@@ -5,7 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import nz.ac.canterbury.seng302.portfolio.DTO.User;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
-import nz.ac.canterbury.seng302.portfolio.model.contract.BaseImageContract;
+import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseImageContract;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
 import nz.ac.canterbury.seng302.portfolio.service.PhotoCropService;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
