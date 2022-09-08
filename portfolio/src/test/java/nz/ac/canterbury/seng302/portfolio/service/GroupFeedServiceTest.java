@@ -15,10 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-
-import static org.mockito.ArgumentMatchers.any;
 
 @SpringBootTest
 class GroupFeedServiceTest {
@@ -170,12 +167,19 @@ class GroupFeedServiceTest {
     void checkTimeStampOnUpdatedPosts () throws Exception {
         PostContract testPost1 = new PostContract(1, "this is a post");
         PostModel post1Model = new PostModel(testPost1.groupId(), 3, testPost1.postContent());
+
+        Assertions.assertNull(post1Model.getUpdated());
+        Assertions.assertFalse(post1Model.isPostUpdated());
+
         var timeBeforeChange = post1Model.getCreated();
-        TimeUnit.SECONDS.sleep(1);
         post1Model.setPostContent("This is an updated post...");
         var timeAfterChange = post1Model.getCreated();
+
         Assertions.assertNotNull(timeBeforeChange);
         Assertions.assertNotNull(timeAfterChange);
-        Assertions.assertNotEquals(timeBeforeChange, timeAfterChange);
+        Assertions.assertEquals(timeBeforeChange, timeAfterChange);
+
+        Assertions.assertNotNull(post1Model.getUpdated());
+        Assertions.assertTrue(post1Model.isPostUpdated());
     }
 }

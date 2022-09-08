@@ -3,7 +3,7 @@ package nz.ac.canterbury.seng302.portfolio.model.contract;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
-public record PostContract(
+public record PostContract (
         @NotBlank(message = "Must provide a valid Group ID")
         int groupId,
 

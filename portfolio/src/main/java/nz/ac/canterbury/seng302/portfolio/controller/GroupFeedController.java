@@ -159,5 +159,4 @@ public class GroupFeedController extends AuthenticatedController {
 
         return comments;
     }
-
 }

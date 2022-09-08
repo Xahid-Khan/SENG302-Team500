@@ -32,6 +32,9 @@ public class PostModel {
     @CreationTimestamp
     private Timestamp created;
 
+    @CreationTimestamp
+    private Timestamp updated;
+
     @ManyToOne
     @JoinColumn(name = "reaction_model_ID")
     private ReactionModel reactionModel;
@@ -56,7 +59,11 @@ public class PostModel {
     }
 
     public Timestamp getCreated() {
-        return created;
+        return this.created;
+    }
+
+    public Timestamp getUpdated () {
+        return this.updated;
     }
 
     public String getPostContent() {
@@ -66,7 +73,11 @@ public class PostModel {
     public void setPostContent(String postContent) {
         this.postContent = postContent;
         Date date = new Date();
-        this.created = new Timestamp(date.getTime());
+        this.updated = new Timestamp(date.getTime());
+    }
+
+    public boolean isPostUpdated() {
+        return this.updated == null ? false : true;
     }
 
     public int getUserId() {
