@@ -1,12 +1,17 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
+import nz.ac.canterbury.seng302.portfolio.mapping.GroupRepositoryMapper;
+import nz.ac.canterbury.seng302.portfolio.model.contract.GroupRepositoryContract;
+import nz.ac.canterbury.seng302.portfolio.model.contract.ProjectContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.GroupRepositoryEntity;
 import nz.ac.canterbury.seng302.portfolio.model.entity.GroupRepositoryRepository;
+import nz.ac.canterbury.seng302.portfolio.model.entity.ProjectEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -17,6 +22,9 @@ import java.util.NoSuchElementException;
 public class GroupRepositoryService {
     @Autowired
     private GroupRepositoryRepository groupRepositoryRepository;
+
+    @Autowired
+    private GroupRepositoryMapper groupRepositoryMapper;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -37,8 +45,16 @@ public class GroupRepositoryService {
      * Retrieve all group repositories.
      * @return List of all group repositories
      */
-    public List<GroupRepositoryEntity> getAll() {
-        return (List<GroupRepositoryEntity>) groupRepositoryRepository.findAll();
+    public List<GroupRepositoryContract> getAll() {
+        Iterable<GroupRepositoryEntity> result = groupRepositoryRepository.findAll();
+
+        ArrayList<GroupRepositoryContract> allRepos = new ArrayList<GroupRepositoryContract>();
+
+        for(GroupRepositoryEntity repo : result) {
+            allRepos.add(groupRepositoryMapper.toContract(repo));
+        }
+
+        return allRepos;
     }
 
     /**
