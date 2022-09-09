@@ -1,12 +1,15 @@
 package nz.ac.canterbury.seng302.portfolio.model.entity;
 
-import org.hibernate.annotations.CreationTimestamp;
-
-import javax.persistence.*;
 import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import org.hibernate.annotations.CreationTimestamp;
 
 
 /**
@@ -14,81 +17,85 @@ import java.util.Date;
  */
 @Entity
 public class PostModel {
-    @Id
-    @Column(name = "id", nullable = false)
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
 
-    @Column(name = "group_id", nullable = false)
-    private int groupId;
+  @Id
+  @Column(name = "id", nullable = false)
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private int id;
 
-    @Column(name = "user_id", nullable = false)
-    private int userId;
+  @Column(name = "group_id", nullable = false)
+  private int groupId;
 
-    @Column(name = "post_content", length = 4096)
-    private String postContent;
+  @Column(name = "user_id", nullable = false)
+  private int userId;
 
-    // Makes the database automatically create the timestamp when the user is inserted
-    @CreationTimestamp
-    private Timestamp created;
+  @Column(name = "post_content", length = 4096)
+  private String postContent;
 
-    @CreationTimestamp
-    private Timestamp updated;
+  // Makes the database automatically create the timestamp when the user is inserted
+  @CreationTimestamp
+  private Timestamp created;
 
-    @ManyToOne
-    @JoinColumn(name = "reaction_model_ID")
-    private ReactionModel reactionModel;
+  @CreationTimestamp
+  private Timestamp updated;
 
-    protected PostModel() {};
+  @ManyToOne
+  @JoinColumn(name = "reaction_model_ID")
+  private ReactionModel reactionModel;
 
-    public PostModel(int groupId, int userId, String postContent){
-        this.groupId = groupId;
-        this.userId = userId;
-        this.postContent = postContent;
+  protected PostModel() {
+  }
 
-        Date date = new Date();
-        this.created = new Timestamp(date.getTime());
-    }
+  ;
 
-    public ReactionModel getReactionModel() {
-        return reactionModel;
-    }
+  public PostModel(int groupId, int userId, String postContent) {
+    this.groupId = groupId;
+    this.userId = userId;
+    this.postContent = postContent;
 
-    public void setReactionModel(ReactionModel reactionModel) {
-        this.reactionModel = reactionModel;
-    }
+    Date date = new Date();
+    this.created = new Timestamp(date.getTime());
+  }
 
-    public Timestamp getCreated() {
-        return this.created;
-    }
+  public ReactionModel getReactionModel() {
+    return reactionModel;
+  }
 
-    public Timestamp getUpdated () {
-        return this.updated;
-    }
+  public void setReactionModel(ReactionModel reactionModel) {
+    this.reactionModel = reactionModel;
+  }
 
-    public String getPostContent() {
-        return postContent;
-    }
+  public Timestamp getCreated() {
+    return this.created;
+  }
 
-    public void setPostContent(String postContent) {
-        this.postContent = postContent;
-        Date date = new Date();
-        this.updated = new Timestamp(date.getTime());
-    }
+  public Timestamp getUpdated() {
+    return this.updated;
+  }
 
-    public boolean isPostUpdated() {
-        return this.updated == null ? false : true;
-    }
+  public String getPostContent() {
+    return postContent;
+  }
 
-    public int getUserId() {
-        return userId;
-    }
+  public void setPostContent(String postContent) {
+    this.postContent = postContent;
+    Date date = new Date();
+    this.updated = new Timestamp(date.getTime());
+  }
 
-    public int getGroupId() {
-        return groupId;
-    }
+  public boolean isPostUpdated() {
+    return this.updated == null ? false : true;
+  }
 
-    public int getId() {
-        return id;
-    }
+  public int getUserId() {
+    return userId;
+  }
+
+  public int getGroupId() {
+    return groupId;
+  }
+
+  public int getId() {
+    return id;
+  }
 }
