@@ -36,10 +36,28 @@ public class GroupRepositoryService {
      * @throws NoSuchElementException if the id is invalid
      * @return GroupRepository with the given ID
      */
-    public GroupRepositoryEntity get(String id) {
+    public GroupRepositoryContract get(String id) {
+        if (groupRepositoryRepository.existsById(id)) {
+            return null;
+        }
+        var groupRepository = groupRepositoryRepository.findById(id).orElseThrow();
+        return groupRepositoryMapper.toContract(groupRepository);
+    }
+    /**
+     * Retrieve the group repository with the given ID.
+     *
+     * @param id of the contract to get
+     * @throws NoSuchElementException if the id is invalid
+     * @return GroupRepository with the given ID
+     */
+    public GroupRepositoryEntity get1(String id) {
+        if (groupRepositoryRepository.existsById(id)) {
+            return null;
+        }
         var groupRepository = groupRepositoryRepository.findById(id).orElseThrow();
         return groupRepository;
     }
+
 
     /**
      * Retrieve all group repositories.
@@ -61,7 +79,7 @@ public class GroupRepositoryService {
      * Adds a group repository to the database with the given ID.
      * @param id to associate with the group repository (this should be done on group creation)
      */
-    public GroupRepositoryEntity add(int id) {
+    public GroupRepositoryContract add(int id) {
         //checks if the group repository already exists
         if (groupRepositoryRepository.existsById(Integer.toString(id))) {
             return null;
@@ -69,7 +87,7 @@ public class GroupRepositoryService {
         var groupRepository = new GroupRepositoryEntity(id);
         var result = groupRepositoryRepository.save(groupRepository);
 
-        return result;
+        return groupRepositoryMapper.toContract(result);
     }
 
     /**
@@ -87,14 +105,16 @@ public class GroupRepositoryService {
     /**
      * Updates a group repository in the database with the given ID. Sets the repositoryID and token
      */
-    public void update(int id, int repositoryID, String token){
+    public boolean update(int id, int repositoryID, String token){
         //checks if the group repository exists
         if (!groupRepositoryRepository.existsById(Integer.toString(id))) {
-            throw new IllegalArgumentException("Group repository does not exist");
+            return false;
         }
         var groupRepository = groupRepositoryRepository.findById(Integer.toString(id)).orElseThrow();
         groupRepository.setRepositoryID(repositoryID);
         groupRepository.setToken(token);
         groupRepositoryRepository.save(groupRepository);
+
+        return true;
     }
 }

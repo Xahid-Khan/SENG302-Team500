@@ -18,6 +18,7 @@ import static org.mockito.Mockito.doReturn;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Class to test the GroupRepositoryService class using mocking
@@ -102,15 +103,12 @@ public class GroupRepositoryServiceTest {
 
     @Test
     void add() {
-//        Mockito.when(groupRepositoryRepository.save(emptyRepoEntity1.getId())).thenReturn(emptyRepoEntity1);
         Mockito.when(groupRepositoryRepository.existsById(emptyRepoEntity1.getId())).thenReturn(false);
         doReturn(emptyRepoEntity1).when(groupRepositoryRepository).save(any());
 
         //checks that the entity is being added to the database
         var result = groupRepositoryService.add(emptyRepoContract1.groupId());
-//        assertEquals(emptyRepoEntity1, result);
-        //assert sizr of database is 1
-        assertEquals(emptyRepoEntity1.getId(), result.getId());
+        assertEquals(emptyRepoEntity1.getId(), result.groupId());
     }
 
     /**
@@ -118,17 +116,14 @@ public class GroupRepositoryServiceTest {
      */
     @Test
     void addTwice() {
-        Mockito.when(groupRepositoryRepository.save(repoEntity1)).thenReturn(repoEntity1);
-//        doReturn(repoEntity1).when(groupRepositoryRepository).save(any());
+        String id = emptyRepoEntity1.getId();
+        Mockito.when(groupRepositoryRepository.existsById(id)).thenReturn(false).thenReturn(true);
+        doReturn(emptyRepoEntity1).when(groupRepositoryRepository).save(any());
 
         //checks that the entity is being added to the database
-        var result = groupRepositoryService.add(repoContract1.groupId());
-        assertEquals(repoEntity1, result);
-
-        //checks that the entity is being added to the database
-        var result2 = groupRepositoryService.add(1);
-        assertEquals(repoEntity1, result2);
-        //check that IllegalArgumentException is thrown
+        groupRepositoryService.add(emptyRepoContract1.groupId());
+        var result = groupRepositoryService.add(emptyRepoContract1.groupId());
+        assertNull(result);
 
     }
 
@@ -164,4 +159,46 @@ public class GroupRepositoryServiceTest {
 //    void update() {
 //    }
     }
+
+    @Test
+    /**
+     * Tests updating a repository that doesn't exist
+     */
+    void updateARepoThatDoesNotExistExpectFail() {
+        Mockito.when(groupRepositoryRepository.existsById("5")).thenReturn(false);
+        assertFalse(groupRepositoryService.update(5, 11, "ABCTOKEN"));
+    }
+
+    @Test
+    /**
+     * Tests updating a repository that does exist
+     */
+    void updateARepoThatDoesExistExpectPass() {
+        Mockito.when(groupRepositoryRepository.existsById("5")).thenReturn(true);
+        assertTrue(groupRepositoryService.update(5, 11, "ABCTOKEN"));
+    }
+
+    @Test
+    /**
+     * Tests getting a repository that does exist
+     */
+    void getARepoThatDoesExistExpectPass() {
+        Mockito.when(groupRepositoryRepository.existsById("5")).thenReturn(true);
+        Mockito.when(groupRepositoryRepository.findById(any())).thenReturn(Optional.of(repoEntity1));
+        Mockito.when(groupRepositoryMapper.toContract(any())).thenReturn(repoContract1);
+
+        var result = groupRepositoryService.get("5");
+        assertEquals(repoContract1.groupId(), result.groupId());
+        assertEquals(repoContract1.repositoryId(), result.repositoryId());
+        assertEquals(repoContract1.token(), result.token());
+    }
+
+    @Test
+    /**
+     * Tests getting a repository that doesn't exist
+     */
+    void getARepoThatDoesNotExistExpectFail() {
+        Mockito.when(groupRepositoryRepository.existsById("5")).thenReturn(false);
+        assertNull(groupRepositoryService.get(String.valueOf(5)));
+        }
 }
