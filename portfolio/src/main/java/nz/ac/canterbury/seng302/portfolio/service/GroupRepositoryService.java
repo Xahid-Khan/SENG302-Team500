@@ -61,24 +61,27 @@ public class GroupRepositoryService {
      * Adds a group repository to the database with the given ID.
      * @param id to associate with the group repository (this should be done on group creation)
      */
-    public void add(int id) {
+    public GroupRepositoryEntity add(int id) {
         //checks if the group repository already exists
         if (groupRepositoryRepository.existsById(Integer.toString(id))) {
-            throw new IllegalArgumentException("Group repository already exists");
+            return null;
         }
         var groupRepository = new GroupRepositoryEntity(id);
-        groupRepositoryRepository.save(groupRepository);
+        var result = groupRepositoryRepository.save(groupRepository);
+
+        return result;
     }
 
     /**
      * Deletes a group repository from the database with the given ID.
      */
-    public void delete(int id) {
+    public boolean delete(int id) {
         //checks if the group repository exists
         if (!groupRepositoryRepository.existsById(Integer.toString(id))) {
-            throw new IllegalArgumentException("Group repository does not exist");
+            return false;
         }
         groupRepositoryRepository.deleteById(Integer.toString(id));
+        return true;
     }
 
     /**
