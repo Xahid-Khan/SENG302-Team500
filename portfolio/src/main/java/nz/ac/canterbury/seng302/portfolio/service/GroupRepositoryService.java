@@ -2,10 +2,8 @@ package nz.ac.canterbury.seng302.portfolio.service;
 
 import nz.ac.canterbury.seng302.portfolio.mapping.GroupRepositoryMapper;
 import nz.ac.canterbury.seng302.portfolio.model.contract.GroupRepositoryContract;
-import nz.ac.canterbury.seng302.portfolio.model.contract.ProjectContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.GroupRepositoryEntity;
 import nz.ac.canterbury.seng302.portfolio.model.entity.GroupRepositoryRepository;
-import nz.ac.canterbury.seng302.portfolio.model.entity.ProjectEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,22 +38,8 @@ public class GroupRepositoryService {
         if (groupRepositoryRepository.existsById(id)) {
             return null;
         }
-        var groupRepository = groupRepositoryRepository.findById(id).orElseThrow();
+        var groupRepository = groupRepositoryRepository.findById(id).get();
         return groupRepositoryMapper.toContract(groupRepository);
-    }
-    /**
-     * Retrieve the group repository with the given ID.
-     *
-     * @param id of the contract to get
-     * @throws NoSuchElementException if the id is invalid
-     * @return GroupRepository with the given ID
-     */
-    public GroupRepositoryEntity get1(String id) {
-        if (groupRepositoryRepository.existsById(id)) {
-            return null;
-        }
-        var groupRepository = groupRepositoryRepository.findById(id).orElseThrow();
-        return groupRepository;
     }
 
 
@@ -66,7 +50,7 @@ public class GroupRepositoryService {
     public List<GroupRepositoryContract> getAll() {
         Iterable<GroupRepositoryEntity> result = groupRepositoryRepository.findAll();
 
-        ArrayList<GroupRepositoryContract> allRepos = new ArrayList<GroupRepositoryContract>();
+        ArrayList<GroupRepositoryContract> allRepos = new ArrayList<>();
 
         for(GroupRepositoryEntity repo : result) {
             allRepos.add(groupRepositoryMapper.toContract(repo));

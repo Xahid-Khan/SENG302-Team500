@@ -34,7 +34,7 @@ public class GroupRepositoryController extends AuthenticatedController {
      * @return List of groups converted into project contract (JSON) type.
      */
     @GetMapping(value = "/groups/all_repository/", produces = "application/json")
-    public ResponseEntity<?> getAll() {
+    public ResponseEntity<ArrayList<GroupRepositoryContract>> getAll() {
         try {
             var groupRepos = new ArrayList<GroupRepositoryContract>();
             var groupsRepositoryResponse = groupRepositoryService.getAll();
@@ -54,7 +54,7 @@ public class GroupRepositoryController extends AuthenticatedController {
      * @return List of groups converted into project contract (JSON) type.
      */
     @GetMapping(value = "/groups/repository/{id}/", produces = "application/json")
-    public ResponseEntity<?> get(@PathVariable String id) {
+    public ResponseEntity<GroupRepositoryContract> get(@PathVariable String id) {
         try {
             var result = groupRepositoryService.get(id);
 
@@ -73,7 +73,7 @@ public class GroupRepositoryController extends AuthenticatedController {
      */
     @PostMapping
     @RequestMapping(value = "/groups/add_repository/", produces = "application/json")
-    public ResponseEntity<?> create(@RequestBody BaseGroupRepositoryContract groupRepositoryContract) {
+    public ResponseEntity<GroupRepositoryContract> create(@RequestBody BaseGroupRepositoryContract groupRepositoryContract) {
         try {
             var result = groupRepositoryService.add(groupRepositoryContract.groupId());
 
@@ -92,12 +92,12 @@ public class GroupRepositoryController extends AuthenticatedController {
      */
     @DeleteMapping
     @RequestMapping(value = "/groups/delete_repository/{id}/", produces = "application/json")
-    public ResponseEntity<?> delete(@PathVariable Integer id) {
+    public ResponseEntity<Boolean> delete(@PathVariable Integer id) {
         try {
             var result = groupRepositoryService.delete(id);
 
             //if null return 404 else return ok
-            return result == false ? ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build() : ResponseEntity.ok(result);
+            return result ? ResponseEntity.ok(result):ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 
         } catch (NoSuchElementException error) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -111,12 +111,12 @@ public class GroupRepositoryController extends AuthenticatedController {
      */
     @PutMapping
     @RequestMapping(value = "/groups/update_repository/", produces = "application/json")
-    public ResponseEntity<?> update(@RequestBody GroupRepositoryContract groupRepositoryContract) {
+    public ResponseEntity<Boolean> update(@RequestBody GroupRepositoryContract groupRepositoryContract) {
         try {
             var result = groupRepositoryService.update(groupRepositoryContract.groupId(), groupRepositoryContract.repositoryId(), groupRepositoryContract.token());
 
             //if null return 404 else return ok
-            return result == false ? ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build() : ResponseEntity.ok(result);
+            return result ? ResponseEntity.ok(result):ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 
         } catch (NoSuchElementException error) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
