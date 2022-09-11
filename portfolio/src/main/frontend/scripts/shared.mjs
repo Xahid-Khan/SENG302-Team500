@@ -6,5 +6,6 @@ export const entryPointPaths = [
     "./src/entry/groups.tsx",
     "./src/entry/live_updating.ts",
     "./src/entry/cropping_image.tsx",
-    "./src/entry/home_feed.tsx"
+    "./src/entry/home_feed.tsx",
+    "./src/entry/group_feed.tsx"
 ]

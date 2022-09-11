@@ -1,17 +1,33 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
+import java.util.List;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseGroupContract;
-import nz.ac.canterbury.seng302.shared.identityprovider.*;
+import nz.ac.canterbury.seng302.shared.identityprovider.AddGroupMembersRequest;
+import nz.ac.canterbury.seng302.shared.identityprovider.AddGroupMembersResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.CreateGroupRequest;
+import nz.ac.canterbury.seng302.shared.identityprovider.CreateGroupResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.DeleteGroupRequest;
+import nz.ac.canterbury.seng302.shared.identityprovider.DeleteGroupResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.GetGroupDetailsRequest;
+import nz.ac.canterbury.seng302.shared.identityprovider.GetPaginatedGroupsRequest;
+import nz.ac.canterbury.seng302.shared.identityprovider.GroupDetailsResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.GroupsServiceGrpc;
+import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedGroupsResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.RemoveGroupMembersRequest;
+import nz.ac.canterbury.seng302.shared.identityprovider.RemoveGroupMembersResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import nz.ac.canterbury.seng302.shared.util.PaginationRequestOptions;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 /**
- * Handles all services of groups on the client side. This includes: - Creating a group - Deleting a
- * group - Getting a group's details - Modifying a group's details - Adding group members - Removing
- * group members as specified in the gRPC.
+ * Handles all services of groups on the client side. This includes:
+ *  - Creating a group
+ *  - Deleting a group
+ *  - Getting a group's details
+ *  - Modifying a group's details
+ *  - Adding group members
+ *  - Removing group members as specified in the gRPC.
  */
 @Service
 public class GroupsClientService {
@@ -44,51 +60,80 @@ public class GroupsClientService {
         DeleteGroupRequest.newBuilder().setGroupId(groupId).build());
   }
 
-    /**
-     * Handles adding a group's members when given a group id. Sends the request to the identityprovider service to handle the adding.
-     * @param groupId the ID of the group to add to
-     * @param userIds the user ids of the updated group
-     * @return a AddGroupMembersResponse with either a success or errors(s)
-     */
-    public AddGroupMembersResponse addGroupMembers(int groupId, List<Integer> userIds) {
-        return groupBlockingStub.addGroupMembers(
-                AddGroupMembersRequest.newBuilder()
-                        .setGroupId(groupId)
-                        .addAllUserIds(userIds)
-                        .build());
-    }
-
   /**
-   * Handles deleting a group's members when given a group id. Sends the request to the identityprovider service to handle the deletion.
+   * Handles adding a group's members when given a group id. Sends the request to the
+   * identityprovider service to handle the adding.
+   *
    * @param groupId the ID of the group to add to
    * @param userIds the user ids of the updated group
    * @return a AddGroupMembersResponse with either a success or errors(s)
    */
-    public RemoveGroupMembersResponse removeGroupMembers(int groupId, List<Integer> userIds) {
-      return groupBlockingStub.removeGroupMembers(
-              RemoveGroupMembersRequest.newBuilder()
-                      .setGroupId(groupId)
-                      .addAllUserIds(userIds)
-                      .build());
-    }
-
+  public AddGroupMembersResponse addGroupMembers(int groupId, List<Integer> userIds) {
+    return groupBlockingStub.addGroupMembers(
+        AddGroupMembersRequest.newBuilder().setGroupId(groupId).addAllUserIds(userIds).build());
+  }
 
   /**
-   * Sends a request to the server to get all the information for every group. Sends the request to the identityprovider service to handle.
+   * Handles deleting a group's members when given a group id. Sends the request to the
+   * identityprovider service to handle the deletion.
+   *
+   * @param groupId the ID of the group to add to
+   * @param userIds the user ids of the updated group
+   * @return a AddGroupMembersResponse with either a success or errors(s)
+   */
+  public RemoveGroupMembersResponse removeGroupMembers(int groupId, List<Integer> userIds) {
+    return groupBlockingStub.removeGroupMembers(
+        RemoveGroupMembersRequest.newBuilder().setGroupId(groupId).addAllUserIds(userIds).build());
+  }
+
+  /**
+   * Sends a request to the server to get all the information for every group. Sends the request to
+   * the identityprovider service to handle.
+   *
    * @return a GetGroupDetailsResponse which has all the groups details
    */
   public PaginatedGroupsResponse getAllGroupDetails() {
-    //Pagination request for all groups in order of id
+    // Pagination request for all groups in order of id
     PaginationRequestOptions.Builder paginationRequestOptions =
-            PaginationRequestOptions.newBuilder()
-                    .setOffset(0)//skip none
-                    .setLimit(1000)//get all the groups (a high number)
-                    .setOrderBy("id")
-                    .setIsAscendingOrder(true);
+        PaginationRequestOptions.newBuilder()
+            .setOffset(0) // skip none
+            .setLimit(1000) // get all the groups (a high number)
+            .setOrderBy("id")
+            .setIsAscendingOrder(true);
 
     return groupBlockingStub.getPaginatedGroups(
-            GetPaginatedGroupsRequest.newBuilder()
-                    .setPaginationRequestOptions(paginationRequestOptions.build())
-                    .build());
+        GetPaginatedGroupsRequest.newBuilder()
+            .setPaginationRequestOptions(paginationRequestOptions.build())
+            .build());
+  }
+
+  /**
+   * This function will get a single group with the given group id.
+   *
+   * @param groupId A group ID of type Integer.
+   * @return GroupDetailsResponse
+   */
+  public GroupDetailsResponse getGroupById(Integer groupId) {
+    GetGroupDetailsRequest groupRequest =
+        GetGroupDetailsRequest.newBuilder().setGroupId(groupId).build();
+
+    return groupBlockingStub.getGroupDetails(groupRequest);
+  }
+
+  /**
+   * This function will return true if the user ID provided is in a particular group. if the user is
+   * not member of the group then it will return false
+   *
+   * @param userId A user ID of type integer.
+   * @param groupId A group ID of type integer.
+   * @return True if the ID exists in the group False otherwise.
+   */
+  public boolean isMemberOfTheGroup(Integer userId, Integer groupId) {
+    GroupDetailsResponse group = getGroupById(groupId);
+    List<UserResponse> members = group.getMembersList();
+    for (UserResponse member : members) {
+      if (member.getId() == userId) return true;
+    }
+    return false;
   }
 }

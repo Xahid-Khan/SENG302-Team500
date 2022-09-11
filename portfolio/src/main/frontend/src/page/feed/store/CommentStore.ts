@@ -1,7 +1,16 @@
+import {CommentContract} from "../../../contract/CommentContract";
+import {makeObservable, observable} from "mobx";
 
 
 export class CommentStore {
-  readonly userName: string
-  readonly commentTimestamp: string
-  readonly commentContent: string
+  readonly created: Date
+  comment: string
+
+  constructor(comment: CommentContract) {
+    makeObservable(this, {
+      comment: observable,
+    })
+    this.created = comment.created;
+    this.comment = comment.comment;
+  }
 }

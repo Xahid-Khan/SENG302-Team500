@@ -1,8 +1,5 @@
 package nz.ac.canterbury.seng302.portfolio.model.contract;
 
-import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
-
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -14,8 +11,8 @@ import java.util.List;
  * @param users       the UID of all users currently belonging to that group
  */
 public record GroupContract(
-    Integer id,
+    int id,
     String shortName,
     String longName,
-    ArrayList<UserContract> users
+    List<UserContract> users
 ) implements Contractable {}

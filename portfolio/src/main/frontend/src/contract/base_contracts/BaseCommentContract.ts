@@ -1,3 +1,4 @@
 export interface BaseCommentContract {
-  commentContent: string
+  userId: number
+  comment: string
 }
