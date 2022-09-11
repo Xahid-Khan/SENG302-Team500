@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.sql.Timestamp;
 
+/** Entity class for notifications. */
 @Entity
 @Table(name = "notification")
 public class NotificationEntity extends PortfolioEntity {
