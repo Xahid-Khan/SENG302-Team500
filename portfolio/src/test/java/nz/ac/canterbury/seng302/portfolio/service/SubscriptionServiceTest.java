@@ -1,9 +1,14 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
+import nz.ac.canterbury.seng302.portfolio.mapping.SubscriptionMapper;
 import nz.ac.canterbury.seng302.portfolio.model.contract.SubscriptionContract;
+import nz.ac.canterbury.seng302.portfolio.model.entity.SubscriptionEntity;
 import nz.ac.canterbury.seng302.portfolio.repository.SubscriptionRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,10 +26,19 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 @AutoConfigureMockMvc(addFilters = false)
 public class SubscriptionServiceTest {
 
-    @Autowired
+    @Mock
     private SubscriptionRepository subscriptionRepository;
 
-    @Autowired private SubscriptionService subscriptionService;
+    @InjectMocks
+    private SubscriptionService subscriptionService;
+
+    @Mock
+    private SubscriptionMapper subscriptionMapper;
+
+    private final int USER_ID = 1;
+    private final int GROUP_ID = 1;
+    private final SubscriptionContract contract = new SubscriptionContract(USER_ID, GROUP_ID);
+    private final SubscriptionEntity entity = new SubscriptionEntity(USER_ID, GROUP_ID);
 
     @BeforeEach
     public void beforeEach() {
@@ -36,66 +50,19 @@ public class SubscriptionServiceTest {
      */
     @Test
     public void subscribe() {
-        final int USER_ID = 1;
-        final int GROUP_ID = 1;
-        subscriptionService.subscribe(
-                new SubscriptionContract(1, 1)
-        );
-        assertNotNull(subscriptionRepository.findByUserIdAndGroupId(USER_ID, GROUP_ID));
+        Mockito.when(subscriptionMapper.toEntity(contract)).thenReturn(entity);
+        subscriptionService.subscribe(contract);
+        Mockito.verify(subscriptionRepository, Mockito.times(1)).save(entity);
     }
-
-
-    /**
-     * Tests that you cannot overwrite a subscription to a group, you are already subscribed to
-     */
-    @Test
-    public void subscribeToAlreadySubscribed() {
-        final int USER_ID = 1;
-        final int GROUP_ID = 1;
-        subscriptionService.subscribe(
-                new SubscriptionContract(USER_ID, GROUP_ID)
-        );
-
-        //The time that the first subscription was made
-        Timestamp originalSubscriptionTime = subscriptionRepository.findByUserIdAndGroupId(USER_ID, GROUP_ID).getTimeSubscribed();
-
-        subscriptionService.subscribe(
-                new SubscriptionContract(USER_ID, GROUP_ID)
-        );
-
-        //The timestamp of the subscription after a second insertion was attempted
-        System.out.println(subscriptionRepository.findByUserIdAndGroupId(USER_ID, GROUP_ID).getTimeSubscribed());
-        Timestamp newSubscriptionTime = subscriptionRepository.findByUserIdAndGroupId(USER_ID, GROUP_ID).getTimeSubscribed();
-        assertEquals(originalSubscriptionTime, newSubscriptionTime);
-    }
-
 
     /**
      * Tests that you can successfully unsubscribe from a group, you are already subscribed to
      */
     @Test
     public void unsubscribe() {
-        final int USER_ID = 1;
-        final int GROUP_ID = 1;
-        subscriptionService.subscribe(
-                new SubscriptionContract(USER_ID, GROUP_ID)
-        );
-        subscriptionService.unsubscribe(
-                new SubscriptionContract(USER_ID, GROUP_ID)
-        );
-        assertNull(subscriptionRepository.findByUserIdAndGroupId(USER_ID, GROUP_ID));
-    }
-
-    /**
-     * Tests that you cannot unsubscribe from a group, you are not subscribed to
-     */
-    @Test
-    public void unsubscribeFromNotSubscribed() {
-        final int USER_ID = 1;
-        final int GROUP_ID = 1;
-        subscriptionService.unsubscribe(
-                new SubscriptionContract(USER_ID, GROUP_ID)
-        );
-        assertNull(subscriptionRepository.findByUserIdAndGroupId(USER_ID, GROUP_ID));
+        Mockito.when(subscriptionMapper.toEntity(contract)).thenReturn(entity);
+        subscriptionService.subscribe(contract);
+        subscriptionService.unsubscribe(contract);
+        Mockito.verify(subscriptionRepository, Mockito.times(1)).delete(entity);
     }
 }
