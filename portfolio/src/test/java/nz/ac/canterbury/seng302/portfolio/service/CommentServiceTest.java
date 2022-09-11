@@ -92,7 +92,7 @@ class CommentServiceTest {
     @Test
     void AddNewCommentToAPostExpectPass () throws Exception  {
         Mockito.when(mockCommentRepository.save(commentList.get(0))).thenReturn(null);
-        var result = commentService.addNewCommentsToAPost(comment1);
+        var result = commentService.addNewCommentsToPost(comment1);
         Assertions.assertNotNull(result);
         Assertions.assertEquals(commentList.get(0).getPostId(), result.getPostId());
         Assertions.assertEquals(commentList.get(0).getUserId(), result.getUserId());
@@ -112,7 +112,7 @@ class CommentServiceTest {
 
         CommentContract newContract = new CommentContract(comment1.userId(), comment1.postId(), "This comment has been edited");
 
-        var result = commentService.updateAComment(commentList.get(0).getId(), newContract);
+        var result = commentService.updateComment(commentList.get(0).getId(), newContract);
 
         Assertions.assertNotNull(result);
         Assertions.assertEquals(updatedComment.getCommentContent(), result.getCommentContent());
