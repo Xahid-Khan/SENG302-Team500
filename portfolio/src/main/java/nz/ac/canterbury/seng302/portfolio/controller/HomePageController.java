@@ -9,7 +9,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-/** Handles the GET request on the /home-page endpoint. */
+/** Handles the post and delete requests on the /subscribe endpoint. */
 @Controller
 @RequestMapping("/api/v1")
 public class HomePageController {
@@ -17,7 +17,8 @@ public class HomePageController {
     @Autowired
     private SubscriptionService subscriptionService;
 
-    @PostMapping(value = "/home-page/subscribe", produces = "application/json")
+    /** Handles post requests on the /subscribe endpoint to subscribe a user to a group. */
+    @PostMapping(value = "/subscribe", produces = "application/json")
     public ResponseEntity<?> subscribe(@AuthenticationPrincipal PortfolioPrincipal principal,
                                        @RequestBody SubscriptionContract subscription) {
         try{
@@ -28,7 +29,8 @@ public class HomePageController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping(value = "/home-page/subscribe", produces = "application/json")
+    /** Handles delete requests on the /subscribe endpoint to unsubscribe a user from a group. */
+    @DeleteMapping(value = "/subscribe", produces = "application/json")
     public ResponseEntity<?> unsubscribe(@AuthenticationPrincipal PortfolioPrincipal principal,
                                        @RequestBody SubscriptionContract subscription) {
         try{
