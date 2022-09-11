@@ -8,7 +8,6 @@ import {NotificationsPage} from "../page/notifications/NotificationPage";
 
 ReactDOM.render(
     <React.StrictMode>
-
         <NotificationsPage/>
     </React.StrictMode>,
     document.getElementById("react-root")
