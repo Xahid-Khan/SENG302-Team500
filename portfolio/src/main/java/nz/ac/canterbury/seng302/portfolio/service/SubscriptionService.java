@@ -6,6 +6,9 @@ import nz.ac.canterbury.seng302.portfolio.repository.SubscriptionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+/**
+ * Handles subscribing and unsubscribing people to and from groups
+ */
 @Service
 public class SubscriptionService {
 
