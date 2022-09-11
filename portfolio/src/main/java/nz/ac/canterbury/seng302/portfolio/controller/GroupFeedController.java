@@ -143,7 +143,7 @@ public class GroupFeedController extends AuthenticatedController {
       filteredPosts.put("name", userAccountService.getUserById(post.getUserId()).getUsername());
       filteredPosts.put("time", post.getCreated());
       filteredPosts.put("content", post.getPostContent());
-      filteredPosts.put("comments", getCommentsForThePost(post.getId()));
+      filteredPosts.put("comments", commentService.getCommentsForThePostAsJson(post.getId()));
 
       allPosts.add(filteredPosts);
     });
@@ -151,25 +151,4 @@ public class GroupFeedController extends AuthenticatedController {
     return postWithComments;
   }
 
-  /**
-   * A helper function that will retrieve all the comments for a given post and return them as a
-   * list of Hash Map
-   *
-   * @param postId A post ID of type Integer
-   * @return A list containing all the comments for the post as HashMap objects.
-   */
-  private List<Map<String, Object>> getCommentsForThePost(int postId) {
-    List<Map<String, Object>> comments = new ArrayList<>();
-    commentService.getCommentsForGivenPost(postId).forEach(comment -> {
-      Map<String, Object> commentObject = new HashMap<>();
-      commentObject.put("commentId", comment.getId());
-      commentObject.put("userId", comment.getUserId());
-      commentObject.put("name", userAccountService.getUserById(comment.getUserId()).getUsername());
-      commentObject.put("time", comment.getCreated());
-      commentObject.put("content", comment.getCommentContent());
-      comments.add(commentObject);
-    });
-
-    return comments;
-  }
 }

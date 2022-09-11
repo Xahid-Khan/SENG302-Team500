@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import nz.ac.canterbury.seng302.portfolio.model.contract.CommentReactionContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.PostReactionContract;
@@ -16,6 +17,9 @@ public class ReactionService {
 
   @Autowired
   private ReactionModelRepository reactionRepository;
+
+  @Autowired
+  private UserAccountService userAccountService;
 
   /**
    * get all the reactions for a specific user, using the user id.
@@ -139,5 +143,35 @@ public class ReactionService {
     } catch (Exception e) {
       return false;
     }
+  }
+
+  /**
+   * This method will get all the usernames of the users who has reacted to the post, and return
+   * them as a list.
+   *
+   * @param postId ID for the post.
+   * @return A list of all the usernames.
+   */
+  public List<String> getUsernamesOfUsersWhoReactedToPost(int postId) {
+    List<ReactionModel> reactions = getReactionByPostId(postId);
+    List<String> userNames = new ArrayList<>();
+    reactions.forEach(reaction -> userNames.add(
+        userAccountService.getUserById(reaction.getUserId()).getUsername()));
+    return userNames;
+  }
+
+  /**
+   * This method will get all the usernames of the users who has reacted to the comment, and return
+   * them as a list.
+   *
+   * @param commentId ID for the comment.
+   * @return A list of all the usernames.
+   */
+  public List<String> getUsernamesOfUsersWhoReactedToComment(int commentId) {
+    List<ReactionModel> reactions = getReactionByCommentId(commentId);
+    List<String> userNames = new ArrayList<>();
+    reactions.forEach(reaction -> userNames.add(
+        userAccountService.getUserById(reaction.getUserId()).getUsername()));
+    return userNames;
   }
 }

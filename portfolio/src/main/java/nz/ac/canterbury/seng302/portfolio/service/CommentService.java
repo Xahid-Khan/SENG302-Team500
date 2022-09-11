@@ -1,7 +1,9 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import nz.ac.canterbury.seng302.portfolio.model.contract.CommentContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.CommentModel;
@@ -9,11 +11,17 @@ import nz.ac.canterbury.seng302.portfolio.repository.CommentModelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+/**
+ * This is a service to the Comments End-Point to help with CRUD.
+ */
 @Service
 public class CommentService {
 
   @Autowired
   private CommentModelRepository commentRepository;
+
+  @Autowired
+  private UserAccountService userAccountService;
 
   /**
    * This funciton will gather all the comments in the database and return it.
@@ -56,7 +64,7 @@ public class CommentService {
    * @param newComment CommentContract containing postId, UserId and Comment content.
    * @return CommentModel
    */
-  public CommentModel addNewCommentsToAPost(CommentContract newComment) {
+  public CommentModel addNewCommentsToPost(CommentContract newComment) {
     try {
       CommentModel comment = new CommentModel(newComment.postId(), newComment.userId(),
           newComment.comment());
@@ -75,7 +83,7 @@ public class CommentService {
    * @param updatedComment CommentContract containing postId, UserId, and Comment content
    * @return updated CommentModel
    */
-  public CommentModel updateAComment(int commentId, CommentContract updatedComment) {
+  public CommentModel updateComment(int commentId, CommentContract updatedComment) {
     try {
       Optional<CommentModel> getComment = commentRepository.findById(commentId);
       if (getComment.isPresent()) {
@@ -122,7 +130,35 @@ public class CommentService {
     }
   }
 
+  /**
+   * This method returns an optional comment entity if found in the database.
+   *
+   * @param commentId An integer.
+   * @return An optional CommentModel.
+   */
   public Optional<CommentModel> getCommentById(int commentId) {
     return commentRepository.findById(commentId);
+  }
+
+  /**
+   * A helper function that will retrieve all the comments for a given post and return them as a
+   * list of Hash Map
+   *
+   * @param postId A post ID of type Integer
+   * @return A list containing all the comments for the post as HashMap objects.
+   */
+  public List<Map<String, Object>> getCommentsForThePostAsJson(int postId) {
+    List<Map<String, Object>> comments = new ArrayList<>();
+    this.getCommentsForGivenPost(postId).forEach(comment -> {
+      Map<String, Object> commentObject = new HashMap<>();
+      commentObject.put("commentId", comment.getId());
+      commentObject.put("userId", comment.getUserId());
+      commentObject.put("name", userAccountService.getUserById(comment.getUserId()).getUsername());
+      commentObject.put("time", comment.getCreated());
+      commentObject.put("content", comment.getCommentContent());
+      comments.add(commentObject);
+    });
+
+    return comments;
   }
 }
