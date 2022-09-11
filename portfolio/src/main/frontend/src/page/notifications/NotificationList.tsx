@@ -26,6 +26,9 @@ export const NotificationList: React.FC = observer(() => {
     const notificationHeading = (contract: NotificationContract) => {
         const today = new Date();
         const timestamp = contract.timeNotified;
+        if (!timestamp){
+            return contract.notifiedFrom
+        }
         let formattedTime = "";
         if(timestamp.getDate() == today.getDate() && timestamp.getMonth() == today.getMonth() && timestamp.getFullYear() == today.getFullYear()){
             formattedTime = timestamp.getTime() + "";
