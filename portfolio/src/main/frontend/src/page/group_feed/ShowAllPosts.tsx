@@ -5,6 +5,8 @@ export function ShowAllPosts() {
   const urlData = document.URL.split("?")[0].split("/");
   const viewGroupId = urlData[urlData.length - 1];
 
+  const [newComment, setNewComment] = React.useState("");
+
   const getCurrentGroup = async () => {
     const currentGroupResponse = await fetch(`/feed_content/${encodeURIComponent(viewGroupId)}`, {})
     return currentGroupResponse.json()
@@ -54,9 +56,9 @@ export function ShowAllPosts() {
   }
 
   const makeComment = async (id: number) => {
-    const comment = document.getElementById(`comment-content-${id}`).getAttribute('value');
+    setNewComment(document.getElementById(`comment-content-${id}`).getAttribute('value'));
 
-    if (comment.length != 0) {
+    if (newComment.length != 0) {
       await fetch(`/group_feed/add_comment`, {
         method: 'POST',
         headers: {
@@ -65,16 +67,13 @@ export function ShowAllPosts() {
         body: JSON.stringify({
           "userId": localStorage.getItem("userId"),
           "postId": id,
-          "comment": comment
+          "comment": newComment
         })
-      }).then(() => {
-        document.getElementById(`comment-content-${id}`).setAttribute('value', "");
       });
+      setNewComment("");
       await getCurrentGroup().then((result) => {
         setGroupPosts(result)
       })
-    } else {
-      document.getElementById(`comment-submit-${id}`).setAttribute('disabled', "true");
     }
   }
 
@@ -136,7 +135,8 @@ export function ShowAllPosts() {
                       <div className={"input-comment"}>
                         <input type={"text"} className={"input-comment-text"}
                                id={`comment-content-${post.postId}`}
-                               onChange={(e) => document.getElementById(`comment-content-${post.postId}`).setAttribute('value', e.target.value)}
+                               value={newComment}
+                               onChange={(e) => setNewComment(e.target.value)}
                                placeholder={"Comment on post..."}/>
                       </div>
                       <div className={"submit-comment"}>
