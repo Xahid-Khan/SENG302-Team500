@@ -48,10 +48,10 @@ public class GroupFeedPageController extends AuthenticatedController {
   @GetMapping(value = "/group_feed/{groupId}", produces = "application/json")
   public String getGroupFeed(@PathVariable Integer groupId, Model model,
       @AuthenticationPrincipal PortfolioPrincipal principal) {
+    addMockDataForTesting(getUserId(principal));
     model.addAttribute("isMember",
         groupsClientService.isMemberOfTheGroup(getUserId(principal), groupId));
     model.addAttribute("relativePath", urlPathPrefix);
-    addMockDataForTesting(getUserId(principal));
     return "group_feed";
   }
 

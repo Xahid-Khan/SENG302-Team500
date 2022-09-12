@@ -56,8 +56,10 @@ public class GroupFeedController extends AuthenticatedController {
   }
 
   @GetMapping(value = "/feed_content/{groupId}", produces = "application/json")
-  public ResponseEntity<?> getFeedContent(@PathVariable Integer groupId) {
+  public ResponseEntity<?> getFeedContent(@AuthenticationPrincipal PortfolioPrincipal principal, @PathVariable Integer groupId) {
     try {
+      System.err.println("This is checking the user ID");
+      System.err.println(getUserId(principal));
       GroupDetailsResponse groupDetailsResponse = groupsClientService.getGroupById(groupId);
       List<PostModel> allPosts = postService.getAllPostsForAGroup(
           groupDetailsResponse.getGroupId());
