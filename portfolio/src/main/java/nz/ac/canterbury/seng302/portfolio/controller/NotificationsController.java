@@ -47,6 +47,10 @@ public class NotificationsController extends AuthenticatedController {
             return ResponseEntity.ok(contracts);
         } catch (NoSuchElementException error) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (NumberFormatException error) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (Exception error) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
