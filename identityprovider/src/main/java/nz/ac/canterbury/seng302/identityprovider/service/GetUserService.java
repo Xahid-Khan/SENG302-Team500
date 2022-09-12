@@ -94,16 +94,12 @@ public class GetUserService {
           throw new RuntimeException("GetUserService running with unknown database vendor. Cannot determine group_concat - equivalent function for this vendor.");
         }
 
-        System.out.printf("Picked groupConcatFunctionName = %s\n", groupConcatFunctionName);
-
         // Strictly hard-coded values are used, so this isn't a SQL injection vector.
         var queryString = String.format(
           "SELECT u.id FROM UserModel u JOIN u.roles r GROUP BY u.id ORDER BY %s ((case when r = ?1 then 'student' else (case when r=?2 then 'teacher' else 'course_administrator' end) end), ',') %s",
           groupConcatFunctionName,
           (ascending) ? "ASC" : "DESC"
         );
-
-        System.out.println(queryString);
 
         var query = session.createQuery(queryString, Integer.class)
             .setParameter(1, UserRole.STUDENT)
