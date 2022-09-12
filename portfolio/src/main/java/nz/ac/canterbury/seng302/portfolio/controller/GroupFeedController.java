@@ -61,6 +61,9 @@ public class GroupFeedController extends AuthenticatedController {
       GroupDetailsResponse groupDetailsResponse = groupsClientService.getGroupById(groupId);
       List<PostModel> allPosts = postService.getAllPostsForAGroup(
           groupDetailsResponse.getGroupId());
+      if (allPosts.size() == 0) {
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+      }
       Map<String, Object> data = combineAndPrepareForFrontEnd(allPosts, groupDetailsResponse);
       return ResponseEntity.ok(data);
     } catch (NoSuchElementException e) {
@@ -140,6 +143,8 @@ public class GroupFeedController extends AuthenticatedController {
       Map<String, Object> filteredPosts = new HashMap<>();
       filteredPosts.put("postId", post.getId());
       filteredPosts.put("userId", post.getUserId());
+      System.err.println("IM HERE MATEY...");
+      System.err.println(post.getUserId());
       filteredPosts.put("username", userAccountService.getUserById(post.getUserId()).getUsername());
       filteredPosts.put("time", post.getCreated());
       filteredPosts.put("content", post.getPostContent());
