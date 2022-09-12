@@ -9,12 +9,8 @@ export function ShowAllPosts() {
 
   const getCurrentGroup = async () => {
     console.log("url called");
-    const currentGroupResponse = await fetch(`feed_content/${viewGroupId}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
+    console.log(document.URL);
+    const currentGroupResponse = await fetch(`feed_content/${viewGroupId}`);
     console.log(currentGroupResponse.json());
     return currentGroupResponse.json()
   }
