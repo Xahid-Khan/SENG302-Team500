@@ -7,13 +7,14 @@ import {CreatePostModal} from "./CreatePostModal";
 export function GroupFeedPage() {
 
     const [viewGroupId, setViewGroupId] = React.useState(-1)
-    const isStudent = localStorage.getItem("isStudent") === "true"
+    const isMember = localStorage.getItem("isMember") === "true"
+
 
     return (
         <ToasterRoot>
             <div className="create-post">
                 <div>
-                    {isStudent ? "" :
+                    {!isMember ? "" :
                         <button className="button add-group-button" id="add-group"
                                 onClick={() => document.getElementById("create-post-modal-open").style.display='block'}> Create
                             Post

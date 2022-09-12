@@ -19,12 +19,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+
+import javax.sound.sampled.Port;
 
 /**
  * This is an end point controller for group posts.
@@ -51,13 +54,15 @@ public class GroupFeedController extends AuthenticatedController {
   }
 
   @GetMapping(value = "/group_feed/{groupId}", produces = "application/json")
-  public String getGroupFeed(@PathVariable Integer groupId) {
+  public String getGroupFeed(@PathVariable Integer groupId, Model model, @AuthenticationPrincipal PortfolioPrincipal principal) {
+    model.addAttribute("isMember", groupsClientService.isMemberOfTheGroup(getUserId(principal), groupId));
     return "group_feed";
   }
 
   @GetMapping(value = "/feed_content/{groupId}", produces = "application/json")
   public ResponseEntity<?> getFeedContent(@PathVariable Integer groupId) {
     try {
+
       GroupDetailsResponse groupDetailsResponse = groupsClientService.getGroupById(groupId);
       List<PostModel> allPosts = postService.getAllPostsForAGroup(
           groupDetailsResponse.getGroupId());
