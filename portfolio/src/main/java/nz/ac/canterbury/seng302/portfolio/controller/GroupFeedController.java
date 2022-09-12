@@ -66,7 +66,7 @@ public class GroupFeedController extends AuthenticatedController {
     return "group_feed";
   }
 
-  @GetMapping(value = "/feed_content/{groupId}", produces = "application/json")
+  @GetMapping(value = "/group_feed/feed_content/{groupId}", produces = "application/json")
   public ResponseEntity<?> getFeedContent(@PathVariable Integer groupId) {
     try {
       GroupDetailsResponse groupDetailsResponse = groupsClientService.getGroupById(groupId);
