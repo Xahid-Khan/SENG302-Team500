@@ -19,9 +19,10 @@ public class CommentService {
 
   @Autowired
   private CommentModelRepository commentRepository;
-
   @Autowired
   private UserAccountService userAccountService;
+  @Autowired
+  private ReactionService reactionService;
 
   /**
    * This funciton will gather all the comments in the database and return it.
@@ -142,9 +143,9 @@ public class CommentService {
 
   /**
    * A helper function that will retrieve all the comments for a given post and return them as a
-   * list of Hash Map
+   * list of Hash Map.
    *
-   * @param postId A post ID of type Integer
+   * @param postId A post ID of type Integer.
    * @return A list containing all the comments for the post as HashMap objects.
    */
   public List<Map<String, Object>> getCommentsForThePostAsJson(int postId) {
@@ -156,6 +157,8 @@ public class CommentService {
       commentObject.put("name", userAccountService.getUserById(comment.getUserId()).getUsername());
       commentObject.put("time", comment.getCreated());
       commentObject.put("content", comment.getCommentContent());
+      commentObject.put("reactions",
+          reactionService.getUsernamesOfUsersWhoReactedToComment(comment.getId()));
       comments.add(commentObject);
     });
 

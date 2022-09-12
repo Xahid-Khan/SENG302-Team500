@@ -12,6 +12,7 @@ import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
 import nz.ac.canterbury.seng302.portfolio.service.CommentService;
 import nz.ac.canterbury.seng302.portfolio.service.GroupsClientService;
 import nz.ac.canterbury.seng302.portfolio.service.PostService;
+import nz.ac.canterbury.seng302.portfolio.service.ReactionService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
 import nz.ac.canterbury.seng302.shared.identityprovider.GroupDetailsResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +44,9 @@ public class GroupFeedController extends AuthenticatedController {
 
   @Autowired
   private UserAccountService userAccountService;
+
+  @Autowired
+  private ReactionService reactionService;
 
 
   public GroupFeedController(AuthStateService authStateService,
@@ -143,6 +147,8 @@ public class GroupFeedController extends AuthenticatedController {
       filteredPosts.put("name", userAccountService.getUserById(post.getUserId()).getUsername());
       filteredPosts.put("time", post.getCreated());
       filteredPosts.put("content", post.getPostContent());
+      filteredPosts.put("reactions", reactionService.getUsernamesOfUsersWhoReactedToPost(
+          post.getId()));
       filteredPosts.put("comments", commentService.getCommentsForThePostAsJson(post.getId()));
 
       allPosts.add(filteredPosts);
