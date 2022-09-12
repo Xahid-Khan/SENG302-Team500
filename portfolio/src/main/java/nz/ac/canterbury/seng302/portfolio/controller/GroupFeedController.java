@@ -6,8 +6,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
+import nz.ac.canterbury.seng302.portfolio.model.contract.CommentContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.PostContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.PostModel;
+import nz.ac.canterbury.seng302.portfolio.repository.PostModelRepository;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
 import nz.ac.canterbury.seng302.portfolio.service.CommentService;
 import nz.ac.canterbury.seng302.portfolio.service.GroupsClientService;
@@ -50,6 +52,9 @@ public class GroupFeedController extends AuthenticatedController {
   @Autowired
   private ReactionService reactionService;
 
+  @Autowired
+  private PostModelRepository postModelRepository;
+
   public GroupFeedController(AuthStateService authStateService,
       UserAccountService userAccountService) {
     super(authStateService, userAccountService);
@@ -60,6 +65,8 @@ public class GroupFeedController extends AuthenticatedController {
     try {
       System.err.println("This is checking the user ID");
       System.err.println(getUserId(principal));
+      int userId = getUserId(principal);
+      addMockDataForTesting(userId);
       GroupDetailsResponse groupDetailsResponse = groupsClientService.getGroupById(groupId);
       List<PostModel> allPosts = postService.getAllPostsForAGroup(
           groupDetailsResponse.getGroupId());
@@ -70,6 +77,26 @@ public class GroupFeedController extends AuthenticatedController {
       return ResponseEntity.ok(data);
     } catch (NoSuchElementException e) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+  }
+
+  private void addMockDataForTesting(int userId) {
+    if (postService.getAllPosts().size() == 0) {
+      postModelRepository.deleteAll();
+      System.err.println("IM HERE Matey....");
+      System.err.println(userId);
+      postService.createPost(new PostContract(1, "This is a test 1 post"), userId);
+      postService.createPost(new PostContract(1, "This is a test 2 post"), userId);
+      postService.createPost(new PostContract(1, "This is a test 3 post"), userId);
+      commentService.addNewCommentsToPost(
+          new CommentContract(userId, postService.getAllPosts().get(0).getId(),
+              "This is a comment to the post for test1."));
+      commentService.addNewCommentsToPost(
+          new CommentContract(userId, postService.getAllPosts().get(1).getId(),
+              "This is a comment to the post for test2."));
+      commentService.addNewCommentsToPost(
+          new CommentContract(userId, postService.getAllPosts().get(0).getId(),
+              "This is a comment to the post for test3."));
     }
   }
 
