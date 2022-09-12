@@ -66,7 +66,6 @@ public class GroupFeedController extends AuthenticatedController {
       System.err.println("This is checking the user ID");
       System.err.println(getUserId(principal));
       int userId = getUserId(principal);
-      addMockDataForTesting(userId);
       GroupDetailsResponse groupDetailsResponse = groupsClientService.getGroupById(groupId);
       List<PostModel> allPosts = postService.getAllPostsForAGroup(
           groupDetailsResponse.getGroupId());
@@ -77,26 +76,6 @@ public class GroupFeedController extends AuthenticatedController {
       return ResponseEntity.ok(data);
     } catch (NoSuchElementException e) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-    }
-  }
-
-  private void addMockDataForTesting(int userId) {
-    if (postService.getAllPosts().size() == 0) {
-      postModelRepository.deleteAll();
-      System.err.println("IM HERE Matey....");
-      System.err.println(userId);
-      postService.createPost(new PostContract(1, "This is a test 1 post"), userId);
-      postService.createPost(new PostContract(1, "This is a test 2 post"), userId);
-      postService.createPost(new PostContract(1, "This is a test 3 post"), userId);
-      commentService.addNewCommentsToPost(
-          new CommentContract(userId, postService.getAllPosts().get(0).getId(),
-              "This is a comment to the post for test1."));
-      commentService.addNewCommentsToPost(
-          new CommentContract(userId, postService.getAllPosts().get(1).getId(),
-              "This is a comment to the post for test2."));
-      commentService.addNewCommentsToPost(
-          new CommentContract(userId, postService.getAllPosts().get(0).getId(),
-              "This is a comment to the post for test3."));
     }
   }
 
@@ -161,7 +140,25 @@ public class GroupFeedController extends AuthenticatedController {
    * @return A Hash Map where first element is string and second is an object.
    */
   private Map<String, Object> combineAndPrepareForFrontEnd(List<PostModel> posts,
-      GroupDetailsResponse groupDetailsResponse) {
+    GroupDetailsResponse groupDetailsResponse) {
+
+    postModelRepository.deleteAll();
+    System.err.println("IM HERE Matey....");
+    System.err.println(11001);
+    postService.createPost(new PostContract(1, "This is a test 1 post"), 11001);
+    postService.createPost(new PostContract(1, "This is a test 2 post"), 11001);
+    postService.createPost(new PostContract(1, "This is a test 3 post"), 11001);
+    commentService.addNewCommentsToPost(
+        new CommentContract(11001, postService.getAllPosts().get(0).getId(),
+            "This is a comment to the post for test1."));
+    commentService.addNewCommentsToPost(
+        new CommentContract(11001, postService.getAllPosts().get(1).getId(),
+            "This is a comment to the post for test2."));
+    commentService.addNewCommentsToPost(
+        new CommentContract(11001, postService.getAllPosts().get(0).getId(),
+            "This is a comment to the post for test3."));
+
+
     Map<String, Object> postWithComments = new HashMap<>();
     postWithComments.put("groupId", groupDetailsResponse.getGroupId());
     postWithComments.put("shortName", groupDetailsResponse.getShortName());
