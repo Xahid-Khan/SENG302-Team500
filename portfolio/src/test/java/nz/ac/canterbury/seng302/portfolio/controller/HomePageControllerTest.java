@@ -20,8 +20,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -78,35 +81,80 @@ public class HomePageControllerTest {
         Assertions.assertNotNull(controller);
     }
 
+    /**
+     * Helper method for submitting REST requests to /subscribe
+     * @param body json body to submit
+     * @throws Exception
+     */
+    private ResultActions mockPerformWithJSON(MockHttpServletRequestBuilder requestBuilder, String body) throws Exception {
+        return mockMvc.perform(requestBuilder
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(body)
+                .accept(MediaType.APPLICATION_JSON));
+    }
+
+    /**
+     * Tests to ensure that a valid subscription can be posted successfully
+     * @throws Exception
+     */
     @Test
-    void subscribeTest() throws Exception {
-        var body = """
+    void subscribeValidTest() throws Exception {
+        mockPerformWithJSON(post("/api/v1/subscribe"),"""
                 {
                     "userId": 1,
                     "groupId": 1
                 }
-                """;
-        mockMvc.perform(post("/api/v1/subscribe")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(body)
-                        .accept(MediaType.APPLICATION_JSON))
+                """)
                 .andExpect(status().isOk());
         Mockito.verify(service).subscribe(contract);
     }
 
+    /**
+     * Tests to ensure that an invalid subscription cannot be posted
+     * @throws Exception
+     */
     @Test
-    void subscribeTestInvalid() throws Exception {
-        var body = """
+    void subscribeInvalidParamTypeTest() throws Exception {
+        mockPerformWithJSON(post("/api/v1/subscribe"),"""
                 {
-                    "userId": 1
+                    "userId": "one",
+                    "groupId": 1
                 }
-                """;
-        mockMvc.perform(post("/api/v1/notifications")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(body)
-                        .accept(MediaType.APPLICATION_JSON))
+                """)
+                .andExpect(status().isBadRequest());
+        Mockito.verify(service, Mockito.never()).subscribe(contract);
+    }
+
+    /**
+     * Tests to ensure that a valid unsubscription can be posted successfully
+     * @throws Exception
+     */
+    @Test
+    void unsubscribeValidTest() throws Exception {
+        mockPerformWithJSON(delete("/api/v1/subscribe"),"""
+                {
+                    "userId": 1,
+                    "groupId": 1
+                }
+                """)
                 .andExpect(status().isOk());
-        Mockito.verify(service).subscribe(contract);
+        Mockito.verify(service).unsubscribe(contract);
+    }
+
+    /**
+     * Tests to ensure that an invalid unsubscription cannot be posted
+     * @throws Exception
+     */
+    @Test
+    void unsubscribeInvalidParamTypeTest() throws Exception {
+        mockPerformWithJSON(delete("/api/v1/subscribe"),"""
+                {
+                    "userId": "one",
+                    "groupId": 1
+                }
+                """)
+                .andExpect(status().isBadRequest());
+        Mockito.verify(service, Mockito.never()).unsubscribe(contract);
     }
 
 

@@ -5,6 +5,7 @@ import nz.ac.canterbury.seng302.portfolio.model.contract.SubscriptionContract;
 import nz.ac.canterbury.seng302.portfolio.service.SubscriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +24,8 @@ public class HomePageController {
                                        @RequestBody SubscriptionContract subscription) {
         try{
             subscriptionService.subscribe(subscription);
+        } catch (HttpMessageNotReadableException e){
+            return ResponseEntity.badRequest().build();
         } catch (Exception e){
             return ResponseEntity.internalServerError().build();
         }
