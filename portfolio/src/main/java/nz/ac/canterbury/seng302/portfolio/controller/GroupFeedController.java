@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * This is an end point controller for group posts.
  */
-@RestController
+@Controller
 public class GroupFeedController extends AuthenticatedController {
 
   @Autowired
@@ -67,7 +67,7 @@ public class GroupFeedController extends AuthenticatedController {
     return "group_feed";
   }
 
-  @GetMapping(value = "/group_feed/feed_content/{groupId}", produces = "application/json")
+  @GetMapping(value = "/feed_content/{groupId}", produces = "application/json")
   public ResponseEntity<?> getFeedContent(@PathVariable Integer groupId) {
     try {
       GroupDetailsResponse groupDetailsResponse = groupsClientService.getGroupById(groupId);
