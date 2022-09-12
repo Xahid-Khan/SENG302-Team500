@@ -154,7 +154,7 @@ public class CommentService {
       Map<String, Object> commentObject = new HashMap<>();
       commentObject.put("commentId", comment.getId());
       commentObject.put("userId", comment.getUserId());
-      commentObject.put("name", userAccountService.getUserById(comment.getUserId()).getUsername());
+      commentObject.put("username", userAccountService.getUserById(comment.getUserId()).getUsername());
       commentObject.put("time", comment.getCreated());
       commentObject.put("content", comment.getCommentContent());
       commentObject.put("reactions",
