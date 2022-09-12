@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
  * user_accounts.proto file.
  */
 @Service
-public class RoleService {
+public class RolesServerService {
 
   @Autowired private UserRepository repository;
 

@@ -8,12 +8,16 @@ import nz.ac.canterbury.seng302.portfolio.model.entity.MilestoneEntity;
 import nz.ac.canterbury.seng302.portfolio.model.entity.ProjectEntity;
 import nz.ac.canterbury.seng302.portfolio.repository.MilestoneRepository;
 import nz.ac.canterbury.seng302.portfolio.repository.ProjectRepository;
+import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -22,6 +26,7 @@ import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -45,6 +50,9 @@ public class MilestoneControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @MockBean
+    private UserAccountService userAccountService;
+
     /**
      * Clear both repositories and set the role of the user to teacher, so they can use crud functionality
      * without permission issues. Clean slate on repositories allows for no unintended bugs with old
@@ -54,6 +62,13 @@ public class MilestoneControllerTest {
     public void beforeEach() {
         milestoneRepository.deleteAll();
         projectRepository.deleteAll();
+
+        Mockito.when(userAccountService.getUserById(any(int.class))).thenReturn(
+            UserResponse.newBuilder()
+                .setId(-100)
+                .setUsername("testing")
+                .build()
+        );
 
         AuthorisationParamsHelper.setParams("role", UserRole.TEACHER);
     }

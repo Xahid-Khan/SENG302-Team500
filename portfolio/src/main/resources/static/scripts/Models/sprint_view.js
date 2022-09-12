@@ -32,6 +32,7 @@ class SprintView {
     
         <div class="card-content">
             <div class="sprints" id="sprints-container-${this.sprint.sprintId}"></div>
+            <div class="editing-live-update" id="event-form-${this.sprint.sprintId}"></div>
             <div class="events-title">
                 <span id="sprint-order-text-${this.sprint.sprintId}"></span>: <span id="sprint-title-text-${this.sprint.sprintId}" style="font-style: italic;"></span> | <span id="start-date-${this.sprint.sprintId}"></span> - <span id="end-date-${this.sprint.sprintId}"></span>
         
@@ -143,6 +144,7 @@ class SprintView {
         this.modalDeleteX.removeEventListener("click",()=>this.cancelDeleteModal())
         this.modalDeleteCancel.removeEventListener("click",()=>this.cancelDeleteModal())
         this.modalDeleteConfirm.removeEventListener("click",()=>this.confirmDeleteModal())
+        Socket.saveEdit(this.sprint.sprintId)
         this.deleteCallback()
     }
 

@@ -2,14 +2,20 @@ package nz.ac.canterbury.seng302.portfolio.service;
 
 import com.google.protobuf.ByteString;
 import io.grpc.stub.StreamObserver;
+import java.util.concurrent.CountDownLatch;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import nz.ac.canterbury.seng302.portfolio.DTO.User;
-import nz.ac.canterbury.seng302.shared.identityprovider.*;
+import nz.ac.canterbury.seng302.shared.identityprovider.DeleteUserProfilePhotoRequest;
+import nz.ac.canterbury.seng302.shared.identityprovider.EditUserRequest;
+import nz.ac.canterbury.seng302.shared.identityprovider.EditUserResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.ProfilePhotoUploadMetadata;
+import nz.ac.canterbury.seng302.shared.identityprovider.UploadUserProfilePhotoRequest;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterRequest;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
 import nz.ac.canterbury.seng302.shared.util.FileUploadStatus;
 import nz.ac.canterbury.seng302.shared.util.FileUploadStatusResponse;
 import org.springframework.stereotype.Service;
-
-import java.util.concurrent.CountDownLatch;
 
 /** Registers a new client by passing off the details to the RegisterServerService. */
 @Service
@@ -63,11 +69,11 @@ public class RegisterClientService {
    * the status response back. We Override gRPCs' UploadUserProfilePhotoRequest and pass it
    * FileUploadStatusResponse that will provide us with Upload status (Success, Pending, etc.)
    *
-   * @param userId Id (integer) of the user who is uploading the photo
-   * @param fileType extetion of the file (JPG, PNG, etc)
+   * @param userId id (integer) of the user who is uploading the photo
+   * @param fileType extension of the file (JPG, PNG, etc)
    * @param uploadImage Raw image data in byte array
    */
-  public void uploadUserPhoto(Integer userId, String fileType, byte[] uploadImage) {
+  public void uploadUserPhoto(int userId, String fileType, byte[] uploadImage) {
     CountDownLatch latch = new CountDownLatch(1);
     ByteString imageBuffer = ByteString.copyFrom(uploadImage);
     var requestStreamObserverContainer =
