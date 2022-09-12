@@ -48,23 +48,23 @@ public class GroupFeedPageController extends AuthenticatedController {
     model.addAttribute("isMember",
         groupsClientService.isMemberOfTheGroup(getUserId(principal), groupId));
     model.addAttribute("relativePath", urlPathPrefix);
-    addMockDataForTesting();
+    addMockDataForTesting(getUserId(principal));
     return "group_feed";
   }
 
-  private void addMockDataForTesting() {
+  private void addMockDataForTesting(int userId) {
     if (postService.getAllPosts().size() == 0) {
-      postService.createPost(new PostContract(1, "This is a test 1 post"), 3);
-      postService.createPost(new PostContract(1, "This is a test 2 post"), 3);
-      postService.createPost(new PostContract(1, "This is a test 3 post"), 3);
+      postService.createPost(new PostContract(1, "This is a test 1 post"), userId);
+      postService.createPost(new PostContract(1, "This is a test 2 post"), userId);
+      postService.createPost(new PostContract(1, "This is a test 3 post"), userId);
       commentService.addNewCommentsToPost(
-          new CommentContract(3, postService.getAllPosts().get(0).getId(),
+          new CommentContract(userId, postService.getAllPosts().get(0).getId(),
               "This is a comment to the post for test1."));
       commentService.addNewCommentsToPost(
-          new CommentContract(3, postService.getAllPosts().get(1).getId(),
+          new CommentContract(userId, postService.getAllPosts().get(1).getId(),
               "This is a comment to the post for test2."));
       commentService.addNewCommentsToPost(
-          new CommentContract(3, postService.getAllPosts().get(0).getId(),
+          new CommentContract(userId, postService.getAllPosts().get(0).getId(),
               "This is a comment to the post for test3."));
     }
   }
