@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.portfolio.model.contract.CommentContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.PostContract;
+import nz.ac.canterbury.seng302.portfolio.repository.PostModelRepository;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
 import nz.ac.canterbury.seng302.portfolio.service.CommentService;
 import nz.ac.canterbury.seng302.portfolio.service.GroupsClientService;
@@ -29,6 +30,8 @@ public class GroupFeedPageController extends AuthenticatedController {
   private PostService postService;
   @Autowired
   private CommentService commentService;
+  @Autowired
+  private PostModelRepository postModelRepository;
 
   /**
    * This is similar to autowiring, but apparently recommended more than field injection.
@@ -54,6 +57,9 @@ public class GroupFeedPageController extends AuthenticatedController {
 
   private void addMockDataForTesting(int userId) {
     if (postService.getAllPosts().size() == 0) {
+      postModelRepository.deleteAll();
+      System.err.println("IM HERE Matey....");
+      System.err.println(userId);
       postService.createPost(new PostContract(1, "This is a test 1 post"), userId);
       postService.createPost(new PostContract(1, "This is a test 2 post"), userId);
       postService.createPost(new PostContract(1, "This is a test 3 post"), userId);
