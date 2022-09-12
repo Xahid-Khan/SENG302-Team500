@@ -8,7 +8,7 @@ export function ShowAllPosts() {
   const [newComment, setNewComment] = React.useState("");
 
   const getCurrentGroup = async () => {
-    const currentGroupResponse = await fetch(`/feed_content/${encodeURIComponent(viewGroupId)}`, {})
+    const currentGroupResponse = await fetch(`feed_content/${viewGroupId}`);
     return currentGroupResponse.json()
   }
 
@@ -41,7 +41,7 @@ export function ShowAllPosts() {
         setGroupPosts(result)
       })
     }
-  }, [])
+  }, [groupPosts.groupId])
 
   const isTeacher = localStorage.getItem("isTeacher") === "true";
 
@@ -59,7 +59,7 @@ export function ShowAllPosts() {
     setNewComment(document.getElementById(`comment-content-${id}`).getAttribute('value'));
 
     if (newComment.length != 0) {
-      await fetch(`/group_feed/add_comment`, {
+      await fetch(`add_comment`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

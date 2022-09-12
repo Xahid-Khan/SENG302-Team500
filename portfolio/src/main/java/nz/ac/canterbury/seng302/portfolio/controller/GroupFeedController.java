@@ -9,6 +9,7 @@ import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.portfolio.model.contract.CommentContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.PostContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.PostModel;
+import nz.ac.canterbury.seng302.portfolio.repository.PostModelRepository;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
 import nz.ac.canterbury.seng302.portfolio.service.CommentService;
 import nz.ac.canterbury.seng302.portfolio.service.GroupsClientService;
@@ -20,18 +21,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * This is an end point controller for group posts.
  */
-@Controller
+@RestController
+@RequestMapping("/group_feed")
 public class GroupFeedController extends AuthenticatedController {
 
   @Autowired
@@ -49,15 +52,12 @@ public class GroupFeedController extends AuthenticatedController {
   @Autowired
   private ReactionService reactionService;
 
+  @Autowired
+  private PostModelRepository postModelRepository;
 
   public GroupFeedController(AuthStateService authStateService,
       UserAccountService userAccountService) {
     super(authStateService, userAccountService);
-  }
-
-  @GetMapping(value = "/group_feed/{groupId}", produces = "application/json")
-  public String getGroupFeed(@PathVariable Integer groupId) {
-    return "group_feed";
   }
 
   @GetMapping(value = "/feed_content/{groupId}", produces = "application/json")
@@ -66,6 +66,9 @@ public class GroupFeedController extends AuthenticatedController {
       GroupDetailsResponse groupDetailsResponse = groupsClientService.getGroupById(groupId);
       List<PostModel> allPosts = postService.getAllPostsForAGroup(
           groupDetailsResponse.getGroupId());
+      if (allPosts.size() == 0) {
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+      }
       Map<String, Object> data = combineAndPrepareForFrontEnd(allPosts, groupDetailsResponse);
       return ResponseEntity.ok(data);
     } catch (NoSuchElementException e) {
@@ -73,7 +76,7 @@ public class GroupFeedController extends AuthenticatedController {
     }
   }
 
-  @PostMapping(value = "/group_feed/new_post", produces = "application/json")
+  @PostMapping(value = "/new_post", produces = "application/json")
   public ResponseEntity<?> addNewPost(@AuthenticationPrincipal PortfolioPrincipal principal,
       @RequestBody PostContract newPost) {
     try {
@@ -157,5 +160,4 @@ public class GroupFeedController extends AuthenticatedController {
     postWithComments.put("posts", allPosts);
     return postWithComments;
   }
-
 }
