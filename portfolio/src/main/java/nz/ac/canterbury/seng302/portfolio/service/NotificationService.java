@@ -35,7 +35,7 @@ public class NotificationService {
      * @return An arraylist of the users notifications
      */
     public ArrayList<NotificationContract> getAll(int userId) {
-        Iterable<NotificationEntity> entities = repository.findAllByUserId(userId);
+        Iterable<NotificationEntity> entities = repository.findAllByUserIdOrderByTimeNotifiedDesc(userId);
 
         ArrayList<NotificationContract> contracts = new ArrayList<>();
         for(NotificationEntity entity : entities){
