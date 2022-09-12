@@ -132,3 +132,7 @@
 .post-title{
     width: 50%;
 }
+.title-length {
+    white-space: nowrap;
+    padding-left: 3px;
+}
