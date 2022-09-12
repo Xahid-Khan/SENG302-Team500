@@ -29,11 +29,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * This is an end point controller for group posts.
  */
-@Controller
+@RestController
 public class GroupFeedController extends AuthenticatedController {
 
   @Autowired
