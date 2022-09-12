@@ -10,6 +10,12 @@
     <link rel="stylesheet" th:href="@{../styles/navbar.css}"/>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        window.localStorage.setItem("globalImagePath", [[${globalImagePath}]] + "")
+        window.localStorage.setItem("globalUrlPathPrefix", [[${globalUrlPathPrefix}]] + "")
+        /*]]>*/
+    </script>
     <script type="text/javascript" th:src="@{../frontend/navbar.js}" defer></script>
     <script type="text/javascript" th:src="@{../frontend/notifications.js}" defer></script>
 </head>

@@ -12,7 +12,7 @@ export const NotificationItem: React.FC<INotificationItemProps> = observer((prop
     return (
     <Box sx={{display: "flex", flexDirection: "column"}}>
         <Box sx={{display: "flex", justifyContent: "space-between"}}>
-            <Box sx={{flexGrow: 1}}><Typography>{props.time}</Typography></Box>
+            <Box sx={{flexGrow: 1}}><Typography>{props.time?props.time:"wadwa"}</Typography></Box>
             <Box sx={{flexGrow: 0}}><Typography>{props.from}</Typography></Box>
         </Box>
         <Typography noWrap>{props.description}</Typography>
