@@ -57,16 +57,18 @@ public class GroupFeedController extends AuthenticatedController {
 
   @GetMapping(value = "/group_feed/{groupId}", produces = "application/json")
   public String getGroupFeed(@PathVariable Integer groupId) {
+    addMockDataForTesting();
     return "group_feed";
   }
 
   @GetMapping(value = "/feed_content/{groupId}", produces = "application/json")
   public ResponseEntity<?> getFeedContent(@PathVariable Integer groupId) {
     try {
-      addMockDataForTesting();
+      System.err.println("IM IN");
       GroupDetailsResponse groupDetailsResponse = groupsClientService.getGroupById(groupId);
       List<PostModel> allPosts = postService.getAllPostsForAGroup(
           groupDetailsResponse.getGroupId());
+      System.err.println("getting Data");
       Map<String, Object> data = combineAndPrepareForFrontEnd(allPosts, groupDetailsResponse);
       return ResponseEntity.ok(data);
     } catch (NoSuchElementException e) {
