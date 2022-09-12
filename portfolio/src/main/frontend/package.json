@@ -18,9 +18,12 @@
     "typescript-plugin-css-modules": "^3.4.0"
   },
   "dependencies": {
+    "@emotion/react": "^11.10.4",
+    "@emotion/styled": "^11.10.4",
     "@fullcalendar/daygrid": "^5.10.1",
     "@fullcalendar/interaction": "^5.10.1",
     "@fullcalendar/react": "^5.10.1",
+    "@mui/material": "^5.10.3",
     "@stomp/stompjs": "^6.1.2",
     "@types/croppie": "^2.6.1",
     "croppie": "^2.6.5",
