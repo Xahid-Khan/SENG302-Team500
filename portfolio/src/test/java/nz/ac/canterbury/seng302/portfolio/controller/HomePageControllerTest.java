@@ -23,9 +23,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
+import java.util.ArrayList;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -155,6 +158,18 @@ public class HomePageControllerTest {
                 """)
                 .andExpect(status().isBadRequest());
         Mockito.verify(service, Mockito.never()).unsubscribe(contract);
+    }
+
+    /**
+     * Tests that you can get All the groups a user is subscribed to
+     * @throws Exception
+     */
+    @Test
+    void getAllSubscriptionsValid() throws Exception {
+        Mockito.when(service.getAll(5)).thenReturn(new ArrayList<Integer>());
+        mockMvc.perform(get("/api/v1/subscribe/5"))
+                .andExpect(status().isOk());
+        Mockito.verify(service).getAll(5);
     }
 
 

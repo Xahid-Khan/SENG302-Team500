@@ -35,12 +35,24 @@ public class HomePageController {
     /** Handles delete requests on the /subscribe endpoint to unsubscribe a user from a group. */
     @DeleteMapping(value = "/subscribe", produces = "application/json")
     public ResponseEntity<?> unsubscribe(@AuthenticationPrincipal PortfolioPrincipal principal,
-                                       @RequestBody SubscriptionContract subscription) {
+                                         @RequestBody SubscriptionContract subscription) {
         try{
             subscriptionService.unsubscribe(subscription);
         } catch (Exception e){
             return ResponseEntity.internalServerError().build();
         }
         return ResponseEntity.ok().build();
+    }
+
+    /** Handles delete requests on the /subscribe endpoint to unsubscribe a user from a group. */
+    @GetMapping(value = "/subscribe/{userId}", produces = "application/json")
+    public ResponseEntity<?> getAll(@AuthenticationPrincipal PortfolioPrincipal principal,
+                                         @PathVariable int userId) {
+        try{
+            var subscriptions = subscriptionService.getAll(userId);
+            return ResponseEntity.ok(subscriptions);
+        } catch (Exception e){
+            return ResponseEntity.internalServerError().build();
+        }
     }
 }

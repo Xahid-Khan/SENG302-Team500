@@ -12,6 +12,12 @@ import org.mockito.Mockito;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 /**
  * Tests the functionality of SubscriptionService
  */
@@ -57,5 +63,24 @@ public class SubscriptionServiceTest {
         subscriptionService.subscribe(contract);
         subscriptionService.unsubscribe(contract);
         Mockito.verify(subscriptionRepository, Mockito.times(1)).delete(entity);
+    }
+
+    /**
+     * Tests that you can successfully retrieve all groups you are subscribed to
+     */
+    @Test
+    public void getAllSubscriptions() {
+        Mockito.when(subscriptionRepository.findByUserId(USER_ID)).thenReturn(
+                new ArrayList<>(Arrays.asList(
+                        new SubscriptionEntity(USER_ID, 1),
+                        new SubscriptionEntity(USER_ID, 2),
+                        new SubscriptionEntity(USER_ID, 3)
+                ))
+        );
+        List<Integer> groupIds = subscriptionService.getAll(USER_ID);
+        Mockito.verify(subscriptionRepository).findByUserId(USER_ID);
+        for (int i = 0; i < 3; i++) {
+            assertEquals( i + 1, groupIds.get(i));
+        }
     }
 }
