@@ -8,10 +8,7 @@ export function ShowAllPosts() {
   const [newComment, setNewComment] = React.useState("");
 
   const getCurrentGroup = async () => {
-    console.log("url called");
-    console.log(document.URL);
     const currentGroupResponse = await fetch(`feed_content/${viewGroupId}`);
-    console.log(currentGroupResponse.json());
     return currentGroupResponse.json()
   }
 
@@ -41,12 +38,10 @@ export function ShowAllPosts() {
   useEffect(() => {
     if (!isNaN(Number(viewGroupId))) {
       getCurrentGroup().then((result) => {
-        console.log("UseEffect Worked");
-        console.log(result.toString());
         setGroupPosts(result)
       })
     }
-  }, [])
+  }, [groupPosts.groupId])
 
   const isTeacher = localStorage.getItem("isTeacher") === "true";
 
@@ -64,7 +59,7 @@ export function ShowAllPosts() {
     setNewComment(document.getElementById(`comment-content-${id}`).getAttribute('value'));
 
     if (newComment.length != 0) {
-      await fetch(`group_feed/add_comment`, {
+      await fetch(`add_comment`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
