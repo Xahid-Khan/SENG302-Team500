@@ -164,6 +164,9 @@ public class GroupFeedController extends AuthenticatedController {
     postWithComments.put("shortName", groupDetailsResponse.getShortName());
 
     List<Map<String, Object>> allPosts = new ArrayList<>();
+    posts.forEach(post -> {
+      System.err.println(post.getUserId());
+    });
 
     posts.forEach(post -> {
       Map<String, Object> filteredPosts = new HashMap<>();
