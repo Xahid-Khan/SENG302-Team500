@@ -7,7 +7,6 @@ import nz.ac.canterbury.seng302.portfolio.model.entity.GroupRepositoryRepository
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,8 +23,6 @@ public class GroupRepositoryService {
     @Autowired
     private GroupRepositoryMapper groupRepositoryMapper;
 
-    @PersistenceContext
-    private EntityManager entityManager;
 
     /**
      * Retrieve the group repository with the given ID.
