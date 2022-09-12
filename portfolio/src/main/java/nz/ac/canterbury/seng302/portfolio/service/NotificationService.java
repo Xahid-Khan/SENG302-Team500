@@ -25,7 +25,7 @@ public class NotificationService {
      * @return
      */
     public NotificationContract create(BaseNotificationContract baseContract) {
-        NotificationEntity entity = repository.save(mapper.toEntity(baseContract));
+        NotificationEntity entity = repository.save(mapper.toEntity(baseContract ));
         return mapper.toContract(entity);
     }
 
