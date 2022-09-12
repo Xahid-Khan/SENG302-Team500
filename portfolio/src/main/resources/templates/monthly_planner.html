@@ -19,13 +19,16 @@
         window.localStorage.setItem("canEdit", [[${canEdit}]] + "")
         window.relativePath = /*[[${relativePath}]]*/ 'default';
         window.localStorage.setItem("relativePath", [[${relativePath}]] + "")
+        window.localStorage.setItem("globalImagePath", [[${globalImagePath}]] + "")
+        window.localStorage.setItem("globalUrlPathPrefix", [[${globalUrlPathPrefix}]] + "")
 
         /*]]>*/
     </script>
+    <script type="text/javascript" th:src="@{../frontend/navbar.js}" defer></script>
     <script type="text/javascript" th:src="@{../frontend/monthly_planner.js}" defer></script>
 </head>
 <body>
-    <div th:replace="fragments/header :: header" class="navbar"></div>
+    <div id="navbar-react-root"></div>
     <div id="react-root"></div>
 </body>
 

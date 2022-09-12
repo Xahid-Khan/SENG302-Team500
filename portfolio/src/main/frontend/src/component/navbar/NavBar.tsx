@@ -67,81 +67,84 @@ export const NavBar: React.FC = observer(() => {
     }
 
     return (
-        <AppBar sx={{ bgcolor: "#788" }}>
-            <Toolbar>
-                <Box>
-                    <Typography
-                        variant="h5">SENG302</Typography>
-                </Box>
+        <React.Fragment>
+            <AppBar position="fixed" sx={{ bgcolor: "#788" }}>
+                <Toolbar>
+                    <Box>
+                        <Typography
+                            variant="h5">SENG302</Typography>
+                    </Box>
 
-                <Box sx={{pl: 2, flexGrow: 1}}>
-                    <Button color='inherit' onClick={() => navigateTo("project-details")}>
-                        <Typography textAlign="center">Project</Typography>
-                    </Button>
-                    <Button color='inherit' onClick={() => navigateTo("user-list")}>
-                        <Typography textAlign="center">Users</Typography>
-                    </Button>
-                    <Button color='inherit' onClick={() => navigateTo("groups")}>
-                        <Typography textAlign="center">Groups</Typography>
-                    </Button>
-                </Box>
+                    <Box sx={{pl: 2, flexGrow: 1}}>
+                        <Button color='inherit' onClick={() => navigateTo("project-details")}>
+                            <Typography textAlign="center">Project</Typography>
+                        </Button>
+                        <Button color='inherit' onClick={() => navigateTo("user-list")}>
+                            <Typography textAlign="center">Users</Typography>
+                        </Button>
+                        <Button color='inherit' onClick={() => navigateTo("groups")}>
+                            <Typography textAlign="center">Groups</Typography>
+                        </Button>
+                    </Box>
 
-                <Box sx={{display: 'flex', alignItems: 'center', textAlign: 'center'}}>
-                    <IconButton
-                        id={'notification-button'}
-                        onClick={handleClick}
-                        size="small"
-                        sx={{ml: 2}}
-                        aria-controls={open ? 'account-menu' : undefined}
-                        aria-haspopup="true"
-                        aria-expanded={open ? 'true' : undefined}
+                    <Box sx={{display: 'flex', alignItems: 'center', textAlign: 'center'}}>
+                        <IconButton
+                            id={'notification-button'}
+                            onClick={handleClick}
+                            size="small"
+                            sx={{ml: 2}}
+                            aria-controls={open ? 'account-menu' : undefined}
+                            aria-haspopup="true"
+                            aria-expanded={open ? 'true' : undefined}
+                        >
+                            <NotificationsIcon sx={{width: 32, height: 32}}></NotificationsIcon>
+                        </IconButton>
+                    </Box>
+                    <Menu
+                        anchorEl={anchorEl}
+                        id="notification-menu"
+                        open={open}
+                        onClose={handleClose}
+                        onClick={handleClose}
+                        PaperProps={{sx: {maxHeight: 0.5}}}
+                        transformOrigin={{horizontal: 'right', vertical: 'top'}}
+                        anchorOrigin={{horizontal: 'right', vertical: 'bottom'}}
                     >
-                        <NotificationsIcon sx={{width: 32, height: 32}}></NotificationsIcon>
-                    </IconButton>
-                </Box>
-                <Menu
-                    anchorEl={anchorEl}
-                    id="notification-menu"
-                    open={open}
-                    onClose={handleClose}
-                    onClick={handleClose}
-                    PaperProps={{sx: {maxHeight: 0.5}}}
-                    transformOrigin={{horizontal: 'right', vertical: 'top'}}
-                    anchorOrigin={{horizontal: 'right', vertical: 'bottom'}}
-                >
-                    {notifications_items()}
-                </Menu>
+                        {notifications_items()}
+                    </Menu>
 
-                <Box sx={{flexGrow: 0}}>
-                    <IconButton
-                        id='account-button'
-                        onClick={handleClick}
-                        size="medium"
-                        sx={{ml: 2}}
-                        aria-controls={open ? 'account-menu' : undefined}
-                        aria-haspopup="true"
-                        aria-expanded={open ? 'true' : undefined}>
-                        <Avatar src={"//" + globalImagePath + userId}/>
-                    </IconButton>
-                </Box>
-                <Menu
-                    anchorEl={anchorEl}
-                    id="account-menu"
-                    open={open2}
-                    onClose={handleClose}
-                    onClick={handleClose}
-                    PaperProps={{sx: {maxHeight: 0.5}}}
-                    transformOrigin={{horizontal: 'right', vertical: 'top'}}
-                    anchorOrigin={{horizontal: 'right', vertical: 'bottom'}}
-                >
-                    <MenuItem onClick={() => navigateTo("my_account")}>
-                        Account
-                    </MenuItem>
-                    <MenuItem onClick={() => navigateTo("logout")}>
-                        Log out
-                    </MenuItem>
-                </Menu>
-            </Toolbar>
-        </AppBar>
+                    <Box sx={{flexGrow: 0}}>
+                        <IconButton
+                            id='account-button'
+                            onClick={handleClick}
+                            size="medium"
+                            sx={{ml: 2}}
+                            aria-controls={open ? 'account-menu' : undefined}
+                            aria-haspopup="true"
+                            aria-expanded={open ? 'true' : undefined}>
+                            <Avatar src={"//" + globalImagePath + userId}/>
+                        </IconButton>
+                    </Box>
+                    <Menu
+                        anchorEl={anchorEl}
+                        id="account-menu"
+                        open={open2}
+                        onClose={handleClose}
+                        onClick={handleClose}
+                        PaperProps={{sx: {maxHeight: 0.5}}}
+                        transformOrigin={{horizontal: 'right', vertical: 'top'}}
+                        anchorOrigin={{horizontal: 'right', vertical: 'bottom'}}
+                    >
+                        <MenuItem onClick={() => navigateTo("my_account")}>
+                            Account
+                        </MenuItem>
+                        <MenuItem onClick={() => navigateTo("logout")}>
+                            Log out
+                        </MenuItem>
+                    </Menu>
+                </Toolbar>
+            </AppBar>
+            <Toolbar sx={{mb:3}}/>
+        </React.Fragment>
     )
 })

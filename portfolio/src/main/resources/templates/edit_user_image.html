@@ -10,10 +10,17 @@
     <link rel="stylesheet" th:href="@{styles/pages/edit_account.css}" />
     <link rel="stylesheet" th:href="@{styles/croppie.min.css}"/>
 
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        window.localStorage.setItem("globalImagePath", [[${globalImagePath}]] + "")
+        window.localStorage.setItem("globalUrlPathPrefix", [[${globalUrlPathPrefix}]] + "")
+        /*]]>*/
+    </script>
+    <script type="text/javascript" th:src="@{../frontend/navbar.js}" defer></script>
     <script type="text/javascript" th:src="@{frontend/cropping_image.js}" defer></script>
 </head>
 <body>
-<div th:replace="fragments/header :: header" class="navbar"></div>
+<div id="navbar-react-root"></div>
 
 <div class="raised-card card-padding" style="display: grid; justify-content: center;">
     <div id="headingAndButton">
