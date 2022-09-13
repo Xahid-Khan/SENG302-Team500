@@ -28,8 +28,8 @@ public class GroupRepositoryService {
      * Retrieve the group repository with the given ID.
      *
      * @param id of the contract to get
-     * @throws NoSuchElementException if the id is invalid
      * @return GroupRepository with the given ID
+     * @throws NoSuchElementException if the id is invalid
      */
     public GroupRepositoryContract get(String id) {
         if (groupRepositoryRepository.existsById(id)) {
@@ -42,6 +42,7 @@ public class GroupRepositoryService {
 
     /**
      * Retrieve all group repositories.
+     *
      * @return List of all group repositories
      */
     public List<GroupRepositoryContract> getAll() {
@@ -49,7 +50,7 @@ public class GroupRepositoryService {
 
         ArrayList<GroupRepositoryContract> allRepos = new ArrayList<>();
 
-        for(GroupRepositoryEntity repo : result) {
+        for (GroupRepositoryEntity repo : result) {
             allRepos.add(groupRepositoryMapper.toContract(repo));
         }
 
@@ -58,6 +59,7 @@ public class GroupRepositoryService {
 
     /**
      * Adds a group repository to the database with the given ID.
+     *
      * @param id to associate with the group repository (this should be done on group creation)
      */
     public GroupRepositoryContract add(int id) {
@@ -86,16 +88,21 @@ public class GroupRepositoryService {
     /**
      * Updates a group repository in the database with the given ID. Sets the repositoryID and token
      */
-    public boolean update(int id, int repositoryID, String token){
+    public boolean update(int id, int repositoryID, String token) {
         //checks if the group repository exists
-        if (!groupRepositoryRepository.existsById(Integer.toString(id))) {
-            return false;
+        if (groupRepositoryRepository.findGroupRepositoryEntityByGroupId(id).size() == 0) {
+            var newGroupRepository = new GroupRepositoryEntity(id, -1, "No token");
+            groupRepositoryRepository.save(newGroupRepository);
         }
-        var groupRepository = groupRepositoryRepository.findById(Integer.toString(id)).orElseThrow();
-        groupRepository.setRepositoryID(repositoryID);
-        groupRepository.setToken(token);
-        groupRepositoryRepository.save(groupRepository);
+        var groupRepository = groupRepositoryRepository.findGroupRepositoryEntityByGroupId(id).get(0);
+        if (groupRepositoryRepository.findGroupRepositoryEntityByGroupId(id).size() > 0) {
+            groupRepository.setRepositoryID(repositoryID);
+            groupRepository.setToken(token);
+            groupRepositoryRepository.save(groupRepository);
 
-        return true;
+            return true;
+        }
+
+        return false;
     }
 }

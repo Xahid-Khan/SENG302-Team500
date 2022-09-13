@@ -1,28 +1,25 @@
 package nz.ac.canterbury.seng302.portfolio.model.entity;
 
-import org.hibernate.annotations.CreationTimestamp;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.Table;
-import java.sql.Timestamp;
 
 /**
  * Represents group repositories in the database
  */
 @Entity
-@Table(name = "repository")
+@Table(name = "group_repository")
 public class GroupRepositoryEntity extends PortfolioEntity {
 
-    @Id
-    private int id = -1;
+
+    @Column(name = "group_id")
+    private int groupId;
 
     @Column(name = "repository_id")
-    private int repositoryId= -1;
+    private int repositoryId;
 
     @Column(name = "token")
-    private String token="No token";
+    private String token;
 
     protected GroupRepositoryEntity() {
 
@@ -33,7 +30,7 @@ public class GroupRepositoryEntity extends PortfolioEntity {
      * @param groupId The ID of the group associated
      */
     public GroupRepositoryEntity(int groupId) {
-        this.id = groupId;
+        this.groupId = groupId;
     }
 
     /**
@@ -43,9 +40,13 @@ public class GroupRepositoryEntity extends PortfolioEntity {
      * @param token The token used to access the repository
      */
     public GroupRepositoryEntity(int groupId, int repositoryId, String token) {
-        this.id = groupId;
+        this.groupId = groupId;
         this.repositoryId = repositoryId;
         this.token = token;
+    }
+
+    public int getGroupId() {
+        return groupId;
     }
 
     public int getRepositoryID() {

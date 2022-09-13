@@ -115,6 +115,8 @@ public class GroupRepositoryController extends AuthenticatedController {
         try {
             var result = groupRepositoryService.update(groupRepositoryContract.groupId(), groupRepositoryContract.repositoryId(), groupRepositoryContract.token());
 
+            System.out.println("1");
+            System.out.println(result);
             //if null return 404 else return ok
             return result ? ResponseEntity.ok(result):ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 
