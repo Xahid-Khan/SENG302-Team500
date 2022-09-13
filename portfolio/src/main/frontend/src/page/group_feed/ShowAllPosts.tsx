@@ -61,7 +61,6 @@ export function ShowAllPosts() {
         "postId": id
       })
     });
-    console.log(res)
     await getCurrentGroup().then((result) => {
       setGroupPosts(result)
     })
@@ -148,7 +147,7 @@ export function ShowAllPosts() {
                     <div className={"border-line"}/>
                     <div className={"post-comments"} id={`post-comments-${post.postId}`}>
                       {post.comments.map((comment: any) => (
-                              <div className={"post-comment-container"}>
+                              <div className={"post-comment-container"} key={comment.commentId}>
                                 <div
                                     className={"comment-name"}>{comment.username} ({DatetimeUtils.timeStringToTimeSince(comment.time)})
                                 </div>

@@ -164,6 +164,7 @@ public class GroupFeedController extends AuthenticatedController {
   }
 
   private void addMockDataForTesting() {
+    // This is added for the merge review so it can be tested I will remove on approval
     if (postService.getAllPosts().size() == 0) {
       postService.createPost(new PostContract(1, "This is a test 1 post"), 3);
       postService.createPost(new PostContract(1, "This is a test 2 post"), 3);

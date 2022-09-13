@@ -91,8 +91,12 @@ public class ReactionController extends AuthenticatedController {
       int userId = getUserId(principal);
       PostReactionContract postReactionContract = new PostReactionContract(
           reactionContract.postId(), userId);
-      reactionService.processPostHighFive(postReactionContract);
-      return ResponseEntity.status(HttpStatus.CREATED).build();
+      boolean response = reactionService.processPostHighFive(postReactionContract);
+      if (response) {
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+      } else {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+      }
     } catch (Exception e) {
       e.printStackTrace();
       return ResponseEntity.internalServerError().build();
