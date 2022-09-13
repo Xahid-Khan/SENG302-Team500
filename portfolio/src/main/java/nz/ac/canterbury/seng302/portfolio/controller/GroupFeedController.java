@@ -26,13 +26,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-
-import javax.sound.sampled.Port;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * This is an end point controller for group posts.
  */
-@Controller
+@RestController
+@RequestMapping("/group_feed")
 public class GroupFeedController extends AuthenticatedController {
 
   @Autowired
@@ -53,12 +54,6 @@ public class GroupFeedController extends AuthenticatedController {
     super(authStateService, userAccountService);
   }
 
-  @GetMapping(value = "/group_feed/{groupId}", produces = "application/json")
-  public String getGroupFeed(@PathVariable Integer groupId, Model model, @AuthenticationPrincipal PortfolioPrincipal principal) {
-    model.addAttribute("isMember", groupsClientService.isMemberOfTheGroup(getUserId(principal), groupId));
-    return "group_feed";
-  }
-
   @GetMapping(value = "/feed_content/{groupId}", produces = "application/json")
   public ResponseEntity<?> getFeedContent(@PathVariable Integer groupId) {
     try {
@@ -73,7 +68,7 @@ public class GroupFeedController extends AuthenticatedController {
     }
   }
 
-  @PostMapping(value = "/group_feed/new_post", produces = "application/json")
+  @PostMapping(value = "/new_post", produces = "application/json")
   public ResponseEntity<?> addNewPost(@AuthenticationPrincipal PortfolioPrincipal principal,
       @RequestBody PostContract newPost) {
     try {
