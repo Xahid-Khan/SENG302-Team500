@@ -122,8 +122,8 @@ class GroupFeedControllerTest {
      */
     @Test
     void getPostsByGroupIdExpectPassAndExpectPass () throws Exception {
-        var expectedPots = allPosts.stream().filter(postModel -> postModel.getGroupId() == post1.getGroupId()).collect(Collectors.toList());
-        Mockito.when(postService.getAllPostsForAGroup(post1.getGroupId())).thenReturn(expectedPots);
+        var expectedPosts = allPosts.stream().filter(postModel -> postModel.getGroupId() == post1.getGroupId()).collect(Collectors.toList());
+        Mockito.when(postService.getAllPostsForAGroup(post1.getGroupId())).thenReturn(expectedPosts);
 
         Mockito.when(commentService.getCommentsForGivenPost(post1.getId()))
                 .thenReturn(allComments.stream().filter(commentModel -> commentModel.getPostId() == post1.getId()).collect(Collectors.toList()));
@@ -140,8 +140,8 @@ class GroupFeedControllerTest {
         var posts =(JSONArray) response.get("posts");
         for (int i=0; i < posts.length(); i++) {
             var post = (JSONObject) posts.get(i);
-            Assertions.assertEquals(expectedPots.get(i).getPostContent(), post.get("content"));
-            Assertions.assertEquals(expectedPots.get(i).getUserId(), post.get("userId"));
+            Assertions.assertEquals(expectedPosts.get(i).getPostContent(), post.get("content"));
+            Assertions.assertEquals(expectedPosts.get(i).getUserId(), post.get("userId"));
         }
     }
 
