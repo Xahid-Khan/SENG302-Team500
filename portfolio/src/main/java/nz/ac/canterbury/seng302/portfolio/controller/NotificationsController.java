@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 
-/** Handles loading the notifications page. */
+/** Handles the notifications api calls. */
 @RestController
 @RequestMapping("/api/v1")
 public class NotificationsController extends AuthenticatedController {
@@ -47,6 +47,10 @@ public class NotificationsController extends AuthenticatedController {
             return ResponseEntity.ok(contracts);
         } catch (NoSuchElementException error) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (NumberFormatException error) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (Exception error) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -63,6 +67,22 @@ public class NotificationsController extends AuthenticatedController {
         try {
             var contract = service.create(baseContract);
             return ResponseEntity.ok(contract);
+        } catch (Exception error) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    /**
+     * This method will be invoked when API receives a POST request with the users' id as a path variable
+     *
+     * @return a notification contract (JSON) type of the newly created notification.
+     */
+    @PostMapping(value = "/notifications/seen/{userId}", produces = "application/json")
+    public ResponseEntity<?> markAsSeen(
+            @PathVariable int userId) {
+        try {
+            service.setNotificationsSeen(userId);
+            return ResponseEntity.ok().build();
         } catch (Exception error) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }

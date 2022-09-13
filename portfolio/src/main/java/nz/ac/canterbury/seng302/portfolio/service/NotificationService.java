@@ -8,6 +8,7 @@ import nz.ac.canterbury.seng302.portfolio.repository.NotificationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 
 @Service
@@ -43,4 +44,19 @@ public class NotificationService {
         }
         return contracts;
     }
+
+    public void createForAllUsers(ArrayList<Integer> userIds, String fromLocation, String description) {
+        for (Integer userId: userIds) {
+            create(new BaseNotificationContract(userId, fromLocation, description));
+        }
+    }
+
+    public void setNotificationsSeen(Integer userId) {
+        Iterable<NotificationEntity> notifications = repository.findAllByUserIdOrderByTimeNotifiedDesc(userId);
+        for (NotificationEntity notification: notifications) {
+            notification.setSeen(true);
+            repository.save(notification);
+        }
+    }
+
 }

@@ -23,6 +23,7 @@
     "@fullcalendar/daygrid": "^5.10.1",
     "@fullcalendar/interaction": "^5.10.1",
     "@fullcalendar/react": "^5.10.1",
+    "@mui/icons-material": "^5.10.3",
     "@mui/material": "^5.10.3",
     "@stomp/stompjs": "^6.1.2",
     "@types/croppie": "^2.6.1",
