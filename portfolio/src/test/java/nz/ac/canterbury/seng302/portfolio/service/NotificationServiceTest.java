@@ -60,7 +60,7 @@ public class NotificationServiceTest {
     public void retrieveAllNotificationsForUserTest(){
         Mockito.when(notificationMapper.toContract(entity)).thenReturn(null);
         service.getAll(1);
-        Mockito.verify(repository).findAllByUserId(1);
+        Mockito.verify(repository).findAllByUserIdOrderByTimeNotifiedDesc(1);
     }
 
     /**
@@ -85,7 +85,7 @@ public class NotificationServiceTest {
         ArrayList<NotificationEntity> entities = new ArrayList<>();
         entities.add(entity);
         entities.add(entity);
-        Mockito.when(repository.findAllByUserId(1)).thenReturn(entities);
+        Mockito.when(repository.findAllByUserIdOrderByTimeNotifiedDesc(1)).thenReturn(entities);
         service.setNotificationsSeen(1);
         Mockito.verify(repository, Mockito.times(2)).save(entity);
     }
