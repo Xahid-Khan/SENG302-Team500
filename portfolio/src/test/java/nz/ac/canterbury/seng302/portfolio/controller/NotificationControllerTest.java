@@ -142,4 +142,28 @@ public class NotificationControllerTest {
         Mockito.verify(service, Mockito.never()).create(Mockito.any());
     }
 
+    /**
+     * verifies that when a valid post is made to mark all notifications as seen,
+     * it is received and passed to the service layer
+     * @throws Exception
+     */
+    @Test
+    void markAsSeenTest() throws Exception {
+        mockMvc.perform(post("/api/v1/notifications/seen/3"))
+                .andExpect(status().isOk());
+        Mockito.verify(service).setNotificationsSeen(3);
+    }
+
+    /**
+     * verifies that when an invalid post is made to mark all notifications as seen,
+     * it returns a bad request is not passed to the service layer
+     * @throws Exception
+     */
+    @Test
+    void markAsSeenInvalidTest() throws Exception {
+        mockMvc.perform(post("/api/v1/notifications/seen/abc"))
+                .andExpect(status().isBadRequest());
+        Mockito.verify(service, Mockito.never()).setNotificationsSeen(any());
+    }
+
 }
