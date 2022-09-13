@@ -1,22 +1,36 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
 import nz.ac.canterbury.seng302.portfolio.model.contract.PostContract;
+import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseNotificationContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.PostModel;
 import nz.ac.canterbury.seng302.portfolio.repository.PostModelRepository;
+import nz.ac.canterbury.seng302.shared.identityprovider.GroupDetailsResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 public class PostService {
 
     @Autowired
     private PostModelRepository postRepository;
+
+    @Autowired
+    private GroupsClientService groupsClientService;
     @Autowired
     private CommentService commentService;
+
+    @Autowired
+    private NotificationService notificationService;
+
+    @Autowired
+    private UserAccountService userAccountService;
+
 
     public List<PostModel> getAllPosts () {
         try {
@@ -43,6 +57,20 @@ public class PostService {
         try {
             PostModel postModel = new PostModel(newPost.groupId(), userId, newPost.postContent());
             postRepository.save(postModel);
+
+            //Gets details for notification
+            GroupDetailsResponse groupDetails = groupsClientService.getGroupById(newPost.groupId());
+            List<UserResponse> members = groupDetails.getMembersList();
+            String posterUsername= userAccountService.getUserById(userId).getUsername();
+            String groupName = groupDetails.getShortName();
+
+            // Send notification to all members of the group
+            for (UserResponse member : members) {
+                if (member.getId() != userId) {
+                    notificationService.create(new BaseNotificationContract(member.getId(), "Your Subscriptions", posterUsername + " created a post in "+groupName+"!"));
+                }
+            }
+
             return true;
         } catch (Exception e) {
             e.printStackTrace();
