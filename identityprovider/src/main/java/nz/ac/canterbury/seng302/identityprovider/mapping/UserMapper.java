@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.identityprovider.mapping;
 
 import nz.ac.canterbury.seng302.identityprovider.database.UserModel;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -9,6 +10,9 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class UserMapper {
+
+  @Autowired
+  private TimestampMapper timestampMapper;
 
   /**
    * Map a UserModel from the database to a UserResponse for sending to clients;
@@ -27,7 +31,7 @@ public class UserMapper {
         .setBio(user.getBio())
         .setPersonalPronouns(user.getPersonalPronouns())
         .setEmail(user.getEmail())
-        .setCreated(user.getCreated())
+        .setCreated(timestampMapper.toProtobufTimestamp(user.getCreated()))
         .addAllRoles(user.getRoles())
         .build();
   }

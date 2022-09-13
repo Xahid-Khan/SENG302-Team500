@@ -21,7 +21,7 @@ public class RoleServiceTest {
 
   @Autowired private UserAccountService userAccountService;
 
-  @Autowired private RoleService roleService;
+  @Autowired private RolesServerService rolesServerService;
 
   @BeforeEach
   void addUser() {
@@ -38,15 +38,14 @@ public class RoleServiceTest {
             "Bio",
             "Pronouns",
             "Email@Email.Email",
-            List.of(UserRole.STUDENT),
-            null));
+            List.of(UserRole.STUDENT)));
   }
 
   /** Adds a teacher role to a user. */
   @Test
   void addRolesToUser() {
     var response =
-        roleService.addRoleToUser(
+        rolesServerService.addRoleToUser(
             ModifyRoleOfUserRequest.newBuilder()
                 .setUserId(userRepository.findAll().iterator().next().getId())
                 .setRole(UserRole.TEACHER)
@@ -65,13 +64,13 @@ public class RoleServiceTest {
   /** Adds a teacher role to a user, then removes it. */
   @Test
   void removeRolesFromUser() {
-    roleService.addRoleToUser(
+    rolesServerService.addRoleToUser(
         ModifyRoleOfUserRequest.newBuilder()
             .setUserId(userRepository.findAll().iterator().next().getId())
             .setRole(UserRole.TEACHER)
             .build());
     var response =
-        roleService.removeRoleFromUser(
+        rolesServerService.removeRoleFromUser(
             ModifyRoleOfUserRequest.newBuilder()
                 .setUserId(userRepository.findAll().iterator().next().getId())
                 .setRole(UserRole.TEACHER)
@@ -89,7 +88,7 @@ public class RoleServiceTest {
   @Test
   void ensureNoDuplicateRoles() {
     var response =
-        roleService.addRoleToUser(
+        rolesServerService.addRoleToUser(
             ModifyRoleOfUserRequest.newBuilder()
                 .setUserId(userRepository.findAll().iterator().next().getId())
                 .setRole(UserRole.STUDENT)
@@ -107,7 +106,7 @@ public class RoleServiceTest {
   @Test
   void ensureNoEmptyRoles() {
     var response =
-        roleService.removeRoleFromUser(
+        rolesServerService.removeRoleFromUser(
             ModifyRoleOfUserRequest.newBuilder()
                 .setUserId(userRepository.findAll().iterator().next().getId())
                 .setRole(UserRole.STUDENT)
@@ -127,7 +126,7 @@ public class RoleServiceTest {
   @Test
   void modifyRolesOfNonExistentUser() {
     var response =
-        roleService.addRoleToUser(
+        rolesServerService.addRoleToUser(
             ModifyRoleOfUserRequest.newBuilder().setUserId(-1).setRole(UserRole.TEACHER).build());
     assertFalse(response.getIsSuccess());
     assertEquals("Error: User does not exist.", response.getMessage());
