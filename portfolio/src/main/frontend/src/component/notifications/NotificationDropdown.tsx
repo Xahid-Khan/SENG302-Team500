@@ -37,13 +37,15 @@ export const NotificationDropdown: React.FC = observer(() => {
                 method: 'POST'
             }
         )
+        getNotifications().then((result) => {
+            setNotifications(result)
+        })
     }
 
     useEffect(() => {
         getNotifications().then((result) => {
             setNotifications(result)
         })
-        console.log("getting not")
     }, [])
 
     useEffect(() => {
@@ -52,7 +54,6 @@ export const NotificationDropdown: React.FC = observer(() => {
         } else {
             setNumUnseen(notifications.filter((contract: NotificationContract) => !contract.seen).length)
         }
-        console.log("resseting bubble")
     }, [notifications])
 
     const notifications_items = () =>
