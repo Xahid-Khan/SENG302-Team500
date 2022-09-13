@@ -107,11 +107,11 @@ export function ShowAllPosts() {
                           className={"material-icons"}>sign_language</span>
                       </div>
                         <div className={"high-five-list"}>
-                            <div className={"high-five-count"}><span className={"material-icons"} style={{fontSize: 15}}>sign_language</span>{post['highFives'].length}</div>
-                            <div className={"border-line high-five-separator"}/>
-                            {post.reactions.map((highFiveName: string) => (
-                                <div className={"high-five-names"}>{highFiveName}</div>
-                            ))}
+                            {/*<div className={"high-five-count"}><span className={"material-icons"} style={{fontSize: 15}}>sign_language</span>{post['reactions'].length}</div>*/}
+                            {/*<div className={"border-line high-five-separator"}/>*/}
+                            {/*{post.reactions.map((highFiveName: string) => (*/}
+                            {/*    <div className={"high-five-names"}>{highFiveName}</div>*/}
+                            {/*))}*/}
                         </div>
                     </div>
                     <div className={"comments-icon-container"}>
