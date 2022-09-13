@@ -7,7 +7,7 @@ export function ShowAllPosts() {
 
   const [newComment, setNewComment] = React.useState("");
 
-  const userId = localStorage.getItem("userId")
+  const username = document.getElementsByClassName('username')[0].textContent
 
   const getCurrentGroup = async () => {
     const currentGroupResponse = await fetch(`feed_content/${viewGroupId}`);
@@ -47,15 +47,24 @@ export function ShowAllPosts() {
 
   const isTeacher = localStorage.getItem("isTeacher") === "true";
 
-  const clickHighFive = (id: number) => {
+  const clickHighFive = async (id: number) => {
     const button = document.getElementById(`high-five-${id}`)
     button.style.backgroundSize = button.style.backgroundSize === "100% 100%" ? "0 100%" : "100% 100%"
 
-    groupPosts.posts.forEach((post) => {
-      if (post.postId === id) {
-        post.reactions.push(parseInt(userId))
-      }
+    const res = await fetch('post_high_five', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        "postId": id
+      })
+    });
+    console.log(res)
+    await getCurrentGroup().then((result) => {
+      setGroupPosts(result)
     })
+
   }
 
   const toggleCommentDisplay = (id: number) => {
@@ -110,7 +119,7 @@ export function ShowAllPosts() {
                         <span className={"high-five-text"}>High Five!</span> <span
                           className={"material-icons"}>sign_language</span>
                       </div>
-                      <div className={"high-five"} id={`high-five-${post.postId}`}
+                      <div className={"high-five"} id={`high-five-${post.postId}`} style={{backgroundSize: post.reactions.includes(username) ? "100% 100%" : "0% 100%"}}
                            onClick={() => clickHighFive(post.postId)}>
                         <span className={"high-five-text"}>High Five!</span> <span
                           className={"material-icons"}>sign_language</span>
@@ -119,7 +128,7 @@ export function ShowAllPosts() {
                           <div className={"high-five-count"}><span className={"material-icons"} style={{fontSize: 15}}>sign_language</span>{post.reactions.length}</div>
                           <div className={"border-line high-five-separator"}/>
                           {post.reactions.map((highFiveName: string) => (
-                              <div className={"high-five-names"}>{highFiveName}</div>
+                              <div className={"high-five-names"} key={highFiveName}>{highFiveName}</div>
                           ))}
                         </div>
                       </div>
