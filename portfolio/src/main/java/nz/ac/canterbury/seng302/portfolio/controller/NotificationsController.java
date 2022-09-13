@@ -41,7 +41,7 @@ public class NotificationsController extends AuthenticatedController {
      * @return List of notifications converted into notification contract (JSON) type.
      */
     @GetMapping(value = "/notifications/{id}", produces = "application/json")
-    public ResponseEntity<?> getAll(@PathVariable String id) {
+    public ResponseEntity<?> getAllNotifications(@PathVariable String id) {
         try {
             ArrayList<NotificationContract> contracts = service.getAll(Integer.parseInt(id));
             return ResponseEntity.ok(contracts);
@@ -62,7 +62,7 @@ public class NotificationsController extends AuthenticatedController {
      * @return a notification contract (JSON) type of the newly created notification.
      */
     @PostMapping(value = "/notifications", produces = "application/json")
-    public ResponseEntity<?> add(
+    public ResponseEntity<?> addNotification(
             @RequestBody BaseNotificationContract baseContract) {
         try {
             var contract = service.create(baseContract);
@@ -78,7 +78,7 @@ public class NotificationsController extends AuthenticatedController {
      * @return a notification contract (JSON) type of the newly created notification.
      */
     @PostMapping(value = "/notifications/seen/{userId}", produces = "application/json")
-    public ResponseEntity<?> markAsSeen(
+    public ResponseEntity<?> markAllNotificationsAsSeen(
             @PathVariable int userId) {
         try {
             service.setNotificationsSeen(userId);
