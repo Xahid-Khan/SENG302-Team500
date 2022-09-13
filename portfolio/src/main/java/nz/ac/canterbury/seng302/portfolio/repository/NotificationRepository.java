@@ -3,8 +3,10 @@ package nz.ac.canterbury.seng302.portfolio.repository;
 import nz.ac.canterbury.seng302.portfolio.model.entity.NotificationEntity;
 import org.springframework.data.repository.CrudRepository;
 
-import java.util.ArrayList;
 
+/**
+ * this interface extends the CRUD repository and makes use of the function/methods provided by the library.
+ */
 public interface NotificationRepository extends CrudRepository<NotificationEntity, String> {
-    ArrayList<NotificationEntity> findAllByUserId(int userId);
+    Iterable<NotificationEntity> findAllByUserIdOrderByTimeNotifiedDesc(int userId);
 }
