@@ -65,6 +65,14 @@ export const NotificationDropdown: React.FC = observer(() => {
             />
         )
 
+    const no_notifications_item = () => {
+        return (
+            <MenuItem sx={{pt: 10, pb: 10}}>
+                <Typography variant="body1">Looks like you have no notifications.</Typography>
+            </MenuItem>
+        )
+    }
+
     return (
         <React.Fragment>
             <Box sx={{display: 'flex', alignItems: 'center', textAlign: 'center'}}>
@@ -99,7 +107,7 @@ export const NotificationDropdown: React.FC = observer(() => {
                     <Typography>Notifications</Typography>
                 </MenuItem>
                 <Divider/>
-                {notifications_items()}
+                {notifications.length === 0 ? no_notifications_item() : notifications_items()}
             </Menu>
         </React.Fragment>
     )
