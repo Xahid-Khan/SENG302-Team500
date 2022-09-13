@@ -145,7 +145,6 @@ class PingPageStore {
 
   protected onReceiveEditAlert(frame: StompMessage) {
     runInAction(() => {
-      console.log(frame.body);
       this.pongArray.push(frame.body)
       const message = JSON.parse(frame.body)
       if (document.title !== "Calendar") {
