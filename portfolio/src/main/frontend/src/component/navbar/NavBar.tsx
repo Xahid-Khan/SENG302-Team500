@@ -2,7 +2,7 @@ import React, {useEffect} from "react";
 import {observer} from "mobx-react-lite";
 import {
     AppBar,
-    Avatar,
+    Avatar, Badge,
     Box,
     Button,
     IconButton,
@@ -62,6 +62,10 @@ export const NavBar: React.FC = observer(() => {
             </MenuItem>
         )
 
+    const numUnseen = () => {
+        return notifications.filter((contract: NotificationContract) => !contract.seen).length
+    }
+
     const navigateTo = (page: string) => {
         window.location.href=page
     }
@@ -97,8 +101,11 @@ export const NavBar: React.FC = observer(() => {
                             aria-haspopup="true"
                             aria-expanded={open ? 'true' : undefined}
                         >
-                            <NotificationsIcon sx={{width: 32, height: 32}}></NotificationsIcon>
+                            <Badge badgeContent={numUnseen()} color="primary">
+                                <NotificationsIcon sx={{width: 32, height: 32}}></NotificationsIcon>
+                            </Badge>
                         </IconButton>
+
                     </Box>
                     <Menu
                         anchorEl={anchorEl}
