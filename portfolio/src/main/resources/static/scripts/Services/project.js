@@ -303,6 +303,7 @@ class Project {
             endDate: tomorrow,
         };
         await this.createCallback(defaultProject)
+        window.location.reload()
     }
 
     /**

@@ -1,12 +1,19 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
+import nz.ac.canterbury.seng302.portfolio.service.RolesClientService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+
+import java.util.List;
 
 /** Handles loading the project details page. */
 @Controller
@@ -14,6 +21,15 @@ public class ProjectDetailsController extends AuthenticatedController {
 
   @Value("${nz.ac.canterbury.seng302.portfolio.urlPathPrefix}")
   private String urlPathPrefix;
+
+  @Autowired
+  private RolesClientService rolesService;
+
+  @Autowired
+  private AuthStateService authStateService;
+
+  @Autowired
+  private UserAccountService userAccountService;
 
   @Autowired
   public ProjectDetailsController(
