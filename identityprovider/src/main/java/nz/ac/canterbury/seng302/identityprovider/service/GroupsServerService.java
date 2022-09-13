@@ -297,5 +297,29 @@ public class GroupsServerService extends GroupsServiceGrpc.GroupsServiceImplBase
         }
         responseObserver.onCompleted();
     }
+
+
+    /**
+     * This function handles the getGroupDetails functionality on serverside. If the database doesn't have the group with
+     * the provided ID, the shortname is response will be empty.
+     * @param request A GetGroupDetailsRequest
+     * @param responseObserver A StreamObserver of type GroupDetailsResponse
+     */
+    @Override
+    public void  getGroupDetails(GetGroupDetailsRequest request, StreamObserver<GroupDetailsResponse> responseObserver) {
+        Optional<GroupModel> groupModel = groupRepository.findById(request.getGroupId());
+
+        if (groupModel.isEmpty()) {
+            responseObserver.onNext(GroupDetailsResponse.newBuilder()
+                    .setShortName("").build());
+
+        } else {
+            responseObserver.onNext(GroupDetailsResponse.newBuilder()
+                    .setGroupId(groupModel.get().getId())
+                    .setShortName(groupModel.get().getShortName())
+                    .build());
+        }
+        responseObserver.onCompleted();
+    }
 }
 

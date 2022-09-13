@@ -91,4 +91,32 @@ public class GroupsClientService {
                     .setPaginationRequestOptions(paginationRequestOptions.build())
                     .build());
   }
+
+  /**
+   * This function will get a single group with the given group id.
+   * @param groupId A group ID of type Integer.
+   * @return GroupDetailsResponse
+   */
+  public GroupDetailsResponse getGroupById(Integer groupId) {
+    GetGroupDetailsRequest groupRequest = GetGroupDetailsRequest.newBuilder()
+            .setGroupId(groupId).build();
+
+    return groupBlockingStub.getGroupDetails(groupRequest);
+  }
+
+  /**
+   * This function will return true if the user ID provided is in a particular group. if the user is not member of the group
+   * then it will return false
+   * @param userId A user ID of type integer.
+   * @param groupId A group ID of type integer.
+   * @return True if the ID exists in the group False otherwise.
+   */
+  public boolean isMemberOfTheGroup(Integer userId, Integer groupId) {
+    GroupDetailsResponse group = getGroupById(groupId);
+    List<UserResponse> members =  group.getMembersList();
+    for (UserResponse member: members) {
+      if (member.getId() == userId) return true;
+    }
+    return false;
+  }
 }

@@ -34,6 +34,8 @@ export function EditGroupSettings( {viewGroupId}: any ) {
 
     const [longName, setLongName] = React.useState('')
     const [alias, setAlias] = React.useState('')
+    const[repositoryID, setRepositoryID] = React.useState('')
+    const[repositoryName, setRepositoryName] = React.useState('')
     const [longCharCount, setLongCharCount] = React.useState(0)
 
     const handleCancel = () => {
@@ -78,10 +80,19 @@ export function EditGroupSettings( {viewGroupId}: any ) {
                             {canEdit ? <span className="input-length" id="long-name-length">{longCharCount} / 64</span> : ""}
                         </div>
                         <h3>Repo Settings</h3>
+                        <label className={"settings-title"}>Alias:</label>
+                        {canEdit ? <input type="text" name="alias" className="input-name" id={"alias"} maxLength={64} onChange={(e) => {setAlias(e.target.value)}}/>
+                            : <label> Default alias</label>}
                         <div>
-                            <label className={"settings-title"}>Alias:</label>
-                            {canEdit ? <input type="text" name="alias" className="input-name" id={"alias"} maxLength={64} onChange={(e) => {setAlias(e.target.value)}}/>
+                            <label>Repository ID:</label>
+                            {canEdit ? <input type="text" name="alias" className="input-name" id={"alias"} maxLength={64} onChange={(e) => {setRepositoryID(e.target.value)}}/>
                                 : <label> Default alias</label>}
+                        </div>
+                        <div>
+                            <label>Token:</label>
+                            {canEdit ? <input type="text" name="alias" className="input-name" id={"alias"} maxLength={64} onChange={(e) => {setRepositoryName(e.target.value)}}/>
+                            : <label> Default alias</label>}
+
                         </div>
                         <div className="form-error" id="edit-group-error"/>
                         { canEdit ?
