@@ -11,6 +11,7 @@ import {NotificationDropdown} from "../notifications/NotificationDropdown";
 import {AccountDropdown} from "./AccountDropdown";
 
 export const NavBar: React.FC = observer(() => {
+    const userId = parseInt(window.localStorage.getItem("userId"))
     const navigateTo = (page: string) => {
         window.location.href=page
     }
@@ -25,6 +26,9 @@ export const NavBar: React.FC = observer(() => {
                     </Box>
 
                     <Box sx={{pl: 2, flexGrow: 1}}>
+                        <Button color='inherit' onClick={() => navigateTo("home_page")}>
+                            <Typography textAlign="center">Home</Typography>
+                        </Button>
                         <Button color='inherit' onClick={() => navigateTo("project-details")}>
                             <Typography textAlign="center">Project</Typography>
                         </Button>
@@ -33,6 +37,9 @@ export const NavBar: React.FC = observer(() => {
                         </Button>
                         <Button color='inherit' onClick={() => navigateTo("groups")}>
                             <Typography textAlign="center">Groups</Typography>
+                        </Button>
+                        <Button color='inherit' onClick={() => navigateTo("group_feed/" + userId)}>
+                            <Typography textAlign="center">Group feed</Typography>
                         </Button>
                     </Box>
 
