@@ -1,6 +1,8 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import io.grpc.StatusRuntimeException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import nz.ac.canterbury.seng302.portfolio.DTO.RegisteredUserValidation;
 import nz.ac.canterbury.seng302.portfolio.DTO.User;
 import nz.ac.canterbury.seng302.portfolio.authentication.CookieUtil;
@@ -20,9 +22,6 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 /** Handles the /register endpoint for either GET requests or POST requests. */
 @Controller

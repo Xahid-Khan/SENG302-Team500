@@ -5,11 +5,11 @@ import java.util.NoSuchElementException;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.portfolio.model.contract.SprintContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseSprintContract;
+import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
 import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
-import nz.ac.canterbury.seng302.portfolio.service.RolesService;
 import nz.ac.canterbury.seng302.portfolio.service.SprintService;
+import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
 import nz.ac.canterbury.seng302.portfolio.service.ValidationService;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -30,14 +30,18 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api/v1")
-public class SprintController {
+public class SprintController extends AuthenticatedController {
   @Autowired private SprintService sprintService;
 
   @Autowired private ProjectService projectService;
 
   @Autowired private ValidationService validationService;
 
-  @Autowired private RolesService rolesService;
+  @Autowired
+  public SprintController(
+      AuthStateService authStateService, UserAccountService userAccountService) {
+    super(authStateService, userAccountService);
+  }
 
   /**
    * This method will be invoked when API receives a GET request with a sprint ID embedded in URL.
@@ -86,9 +90,7 @@ public class SprintController {
       @AuthenticationPrincipal PortfolioPrincipal principal,
       @PathVariable String projectId,
       @RequestBody BaseSprintContract sprint) {
-    List<UserRole> roles = rolesService.getRolesByToken(principal);
-
-    if (roles.contains(UserRole.TEACHER) || roles.contains(UserRole.COURSE_ADMINISTRATOR)) {
+    if (isTeacher(principal)) {
       String errorMessage = validationService.checkAddSprint(projectId, sprint);
       if (!errorMessage.equals("Okay")) {
         if (errorMessage.equals("Project ID does not exist")
@@ -122,8 +124,7 @@ public class SprintController {
       @AuthenticationPrincipal PortfolioPrincipal principal,
       @PathVariable String id,
       @RequestBody BaseSprintContract sprint) {
-    List<UserRole> roles = rolesService.getRolesByToken(principal);
-    if (roles.contains(UserRole.TEACHER) || roles.contains(UserRole.COURSE_ADMINISTRATOR)) {
+    if (isTeacher(principal)) {
       String errorMessage = validationService.checkUpdateSprint(id, sprint);
       if (!errorMessage.equals("Okay")) {
         if (errorMessage.equals("Project ID does not exist")
@@ -146,7 +147,8 @@ public class SprintController {
   }
 
   /**
-   * This method will be invoked when API receives a DELETE request with a Sprint ID embedded in URL
+   * This method will be invoked when API receives a DELETE request with a Sprint ID embedded in
+   * URL.
    *
    * @param id Sprint ID the user wants to delete
    * @return status_Code 204.
@@ -154,8 +156,7 @@ public class SprintController {
   @DeleteMapping(value = "/sprints/{id}")
   public ResponseEntity<Void> deleteSprint(
       @AuthenticationPrincipal PortfolioPrincipal principal, @PathVariable String id) {
-    List<UserRole> roles = rolesService.getRolesByToken(principal);
-    if (roles.contains(UserRole.TEACHER) || roles.contains(UserRole.COURSE_ADMINISTRATOR)) {
+    if (isTeacher(principal)) {
       try {
         sprintService.delete(id);
 

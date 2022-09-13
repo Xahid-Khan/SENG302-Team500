@@ -1,101 +1,167 @@
 import React, {useEffect} from "react";
-import {DatetimeUtils} from "../../util/DatetimeUtils";
 
 export function ShowAllPosts() {
 
-    // const getCurrentGroup = async ()  => {
-    //     // const currentGroupResponse = await fetch(`api/v1/groups/posts/${viewGroupId}`)
-    //     return currentGroupResponse.json()
-    // // }
-    //
-    // const [group, setGroup] = React.useState({
-    //     "id": -1,
-    //     "longName": "",
-    //     "shortName": "",
-    //     "users": [],
-    //     "posts":
-    // })
-    //
-    // useEffect(() => {
-    //     getCurrentGroup().then((result) => {
-    //         setGroup(result)
-    //     })
-    // }, [])
+  const urlData = document.URL.split("?")[0].split("/");
+  const viewGroupId = urlData[urlData.length - 1];
 
-    const groupPosts = {
-        "groupId": 1,
-        "shortName": "A new Group",
+  const [newComment, setNewComment] = React.useState("");
+
+  const getCurrentGroup = async () => {
+    const currentGroupResponse = await fetch(`feed_content/${viewGroupId}`);
+    return currentGroupResponse.json()
+  }
+
+  const [groupPosts, setGroupPosts] = React.useState({
+        "groupId": -1,
+        "shortName": "",
         "posts": [{
-            "id": 1,
-            "name": "John Snow",
-            "time": "2022-08-20T10:00:00",
-            "content": "This is my first post",
-            "highFives": ["James Potter", "Thomas Jefferson", "Lewis Capaldi"],
-            "comments": [{
-                "name": "James Potter",
-                "time": "2022-08-20T10:30:00",
-                "content": "Wow you posted before me"
-            }]
-            },
-            {
-                "id": 2,
-                "name": "James Potter",
-                "time": "2022-08-20T12:00:00",
-                "content": "What a wonderful day it is",
-                "highFives": ["James Potter", "Jim Bean", "Jeff Winger", "Troy Savant"],
-                "comments": [{
-                    "name": "John Snow",
-                    "time": "2022-08-20T11:30:00",
-                    "content": "Cool post"
-                }]
-            }
-        ]
+          "postId": -1,
+          "userId": -1,
+          "username": "",
+          "time": "",
+          "content": "",
+          "reactions": [],
+          "comments": [{
+            "commentId": -1,
+            "userId": -1,
+            "username": "",
+            "name": "",
+            "time": "",
+            "content": "",
+            "reactions": []
+          }]
+        }]
+      }
+  )
+
+  useEffect(() => {
+    if (!isNaN(Number(viewGroupId))) {
+      getCurrentGroup().then((result) => {
+        setGroupPosts(result)
+      })
     }
+  }, [groupPosts.groupId])
 
-    const groupShortName = document.getElementById("group-feed-title").innerText;
+  const isTeacher = localStorage.getItem("isTeacher") === "true";
 
-    const isStudent = localStorage.getItem("isStudent") === "true";
+  const clickHighFive = (id: number) => {
+    const button = document.getElementById(`high-five-${id}`)
+    button.style.backgroundSize = button.style.backgroundSize === "100% 100%" ? "0 100%" : "100% 100%"
+  }
 
-    const clickHighFive = (id: number) => {
-        const button = document.getElementById(`high-five-${id}`)
-        button.style.backgroundSize = button.style.backgroundSize === "100% 100%" ? "0 100%" : "100% 100%";
+  const toggleCommentDisplay = (id: number) => {
+    const commentsContainer = document.getElementById(`comments-container-${id}`)
+    commentsContainer.style.display = commentsContainer.style.display === "block" ? "none" : "block"
+  }
+
+  const makeComment = async (id: number) => {
+    setNewComment(document.getElementById(`comment-content-${id}`).getAttribute('value'));
+
+    if (newComment.length != 0) {
+      await fetch(`add_comment`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          "userId": localStorage.getItem("userId"),
+          "postId": id,
+          "comment": newComment
+        })
+      });
+      setNewComment("");
+      await getCurrentGroup().then((result) => {
+        setGroupPosts(result)
+      })
     }
+  }
 
-    return(
-        <div>
-            <div className={"group-feed-name"}>{groupShortName} Feed</div>
-            {groupPosts.posts.map((post) => (
-                <div className={"raised-card group-post"} key={post.id}>
-                    <div className={"post-header"}>
-                        <div className={"post-info"}>
-                            <div>{post.name}</div>
-                            <div className={"post-time"}>{post.time}</div>
-                        </div>
-                        {isStudent ?
-                        <div className={"post-delete"}><span className={"material-icons"}>clear</span></div> : ""}
+
+  return (
+      <div>
+        <div className={"group-feed-name"}>{groupPosts.shortName} Feed</div>
+        {groupPosts.groupId != -1 ?
+            groupPosts.posts.map((post: any) => (
+                <div className={"raised-card group-post"} key={post.postId}>
+                  <div className={"post-header"} key={"postHeader" + post.postId}>
+                    <div className={"post-info"} key={"postInfo" + post.postId}>
+                      <div>{post.username}</div>
+                      <div className={"post-time"}>{post.time}</div>
                     </div>
-                    <div className={"post-body"}>{post.content}</div>
+                    {isTeacher ?
+                        <div className={"post-delete"}><span
+                            className={"material-icons"}>clear</span></div> : ""}
+                  </div>
+                  <div className={"post-body"} key={"postBody" + post.postId}>{post.content}</div>
+                  <div className={"border-line"}/>
+                  <div className={"post-footer"}>
+                    <div className={"high-five-container"}>
+                      <div className={"high-five-overlay"}>
+                        <span className={"high-five-text"}>High Five!</span> <span
+                          className={"material-icons"}>sign_language</span>
+                      </div>
+                      <div className={"high-five"} id={`high-five-${post.postId}`}
+                           onClick={() => clickHighFive(post.postId)}>
+                        <span className={"high-five-text"}>High Five!</span> <span
+                          className={"material-icons"}>sign_language</span>
+                      </div>
+                        <div className={"high-five-list"}>
+                            <div className={"high-five-count"}><span className={"material-icons"} style={{fontSize: 15}}>sign_language</span>{post['highFives'].length}</div>
+                            <div className={"border-line high-five-separator"}/>
+                            {post.reactions.map((highFiveName: string) => (
+                                <div className={"high-five-names"}>{highFiveName}</div>
+                            ))}
+                        </div>
+                    </div>
+                    <div className={"comments-icon-container"}>
+                      <div className={"comments-select"}
+                           onClick={() => toggleCommentDisplay(post.postId)}>
+                        <span className={"comments-select-text"}>Comments</span> <span
+                          className={"material-icons"}>mode_comment</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className={"comments-container"} id={`comments-container-${post.postId}`}>
                     <div className={"border-line"}/>
-                    <div className={"post-footer"}>
-                        <div className={"high-fives"}>
-                            <div className={"high-five-overlay"}>
-                                High Five! <span className={"material-icons"}>sign_language</span>
-                            </div>
-                            <div className={"high-five"} id={`high-five-${post.id}`} onClick={() => clickHighFive(post.id)}>
-                                High Five! <span className={"material-icons"}>sign_language</span>
-                            </div>
-                            <div className={"high-five-list"}>
-                                <div className={"high-five-count"}><span className={"material-icons"} style={{fontSize: 15}}>sign_language</span>{post['highFives'].length}</div>
-                                <div className={"border-line high-five-separator"}/>
-                                {post['highFives'].map((highFiveName) => (
-                                    <div className={"high-five-names"}>{highFiveName}</div>
-                                ))}
-                            </div>
-                        </div>
+                    <div className={"post-comments"}>
+                      {post.comments.map((comment: any) => (
+                              <div className={"post-comment-container"}>
+                                <div className={"comment-name"}>{comment.username} ({comment.time})
+                                </div>
+                                <div className={"post-comment"}>{comment.content}</div>
+
+                              </div>
+                          )
+                      )}
                     </div>
+                    <form className={"make-comment-container"} onSubmit={(e) => {
+                      e.preventDefault();
+                      makeComment(post.postId)
+                    }}>
+                      <div className={"input-comment"}>
+                        <input type={"text"} className={"input-comment-text"}
+                               id={`comment-content-${post.postId}`}
+                               value={newComment}
+                               onChange={(e) => setNewComment(e.target.value)}
+                               placeholder={"Comment on post..."}/>
+                      </div>
+                      <div className={"submit-comment"}>
+                        <button className={"button submit-comment-button"} type={"submit"}
+                                id={`comment-submit-${post.postId}`}>
+                          Add comment
+                        </button>
+                      </div>
+                    </form>
+                  </div>
                 </div>
+
             ))
-            }
-        </div>
-    )
+            :
+            <div className={"raised-card group-post"} key={"-1"}>
+              <h3>There are no posts</h3>
+            </div>
+        }
+      </div>
+  )
 }
