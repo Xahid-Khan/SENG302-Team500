@@ -4,10 +4,10 @@ import {
     AppBar,
     Avatar, Badge,
     Box,
-    Button,
+    Button, Divider,
     IconButton,
     Menu,
-    MenuItem,
+    MenuItem, MenuList,
     Toolbar,
     Typography
 } from "@mui/material";
@@ -21,6 +21,7 @@ export const NavBar: React.FC = observer(() => {
     const globalImagePath = localStorage.getItem("globalImagePath");
 
     const [notifications, setNotifications] = React.useState([])
+    const [numUnseen, setNumUnseen] = React.useState(0)
     const userId = parseInt(window.localStorage.getItem("userId"))
 
     //the element that was last clicked on
@@ -36,35 +37,41 @@ export const NavBar: React.FC = observer(() => {
     const open = anchorEl?.id === 'notification-button';
     const open2 = anchorEl?.id === 'account-button';
 
-    const getNotifications = async (id: number)  => {
-        const notifications = await fetch(`api/v1/notifications/${id}`, {
+    const getNotifications = async () => {
+        const notifications = await fetch(`api/v1/notifications/${userId}`, {
                 method: 'GET'
             }
         )
         return notifications.json()
     }
 
+    const markAllAsSeen = async () => {
+        await fetch(`api/v1/notifications/seen/${userId}`, {
+                method: 'POST'
+            }
+        )
+    }
+
     useEffect(() => {
-        getNotifications(userId).then((result) => {
+        getNotifications().then((result) => {
             setNotifications(result)
         })
-    }, [])
+        if(open){
+            setNumUnseen(0)
+        } else {
+            setNumUnseen(notifications.filter((contract: NotificationContract) => !contract.seen).length)
+        }
+    }, [markAllAsSeen])
 
     const notifications_items = () =>
         notifications.map((contract: NotificationContract) =>
-            <MenuItem>
-                <NotificationItem
-                    key={contract.id}
-                    description={contract.description}
-                    from={contract.notifiedFrom}
-                    time={contract.timeNotified}
-                />
-            </MenuItem>
+            <NotificationItem
+                key={contract.id}
+                description={contract.description}
+                from={contract.notifiedFrom}
+                time={contract.timeNotified}
+            />
         )
-
-    const numUnseen = () => {
-        return notifications.filter((contract: NotificationContract) => !contract.seen).length
-    }
 
     const navigateTo = (page: string) => {
         window.location.href=page
@@ -94,14 +101,14 @@ export const NavBar: React.FC = observer(() => {
                     <Box sx={{display: 'flex', alignItems: 'center', textAlign: 'center'}}>
                         <IconButton
                             id={'notification-button'}
-                            onClick={handleClick}
+                            onClick={(x)=>{handleClick(x);markAllAsSeen()}}
                             size="small"
                             sx={{ml: 2}}
-                            aria-controls={open ? 'account-menu' : undefined}
+                            aria-controls={open ? 'notification-menu' : undefined}
                             aria-haspopup="true"
                             aria-expanded={open ? 'true' : undefined}
                         >
-                            <Badge badgeContent={numUnseen()} color="primary">
+                            <Badge badgeContent={numUnseen} color="primary">
                                 <NotificationsIcon sx={{width: 32, height: 32}}></NotificationsIcon>
                             </Badge>
                         </IconButton>
@@ -112,11 +119,14 @@ export const NavBar: React.FC = observer(() => {
                         id="notification-menu"
                         open={open}
                         onClose={handleClose}
-                        onClick={handleClose}
-                        PaperProps={{sx: {maxHeight: 0.5}}}
+                        PaperProps={{sx: {maxHeight: 0.7, maxWidth: 0.3, minWidth: '300px'}}}
                         transformOrigin={{horizontal: 'right', vertical: 'top'}}
                         anchorOrigin={{horizontal: 'right', vertical: 'bottom'}}
                     >
+                        <MenuItem>
+                            <Typography>Notifications</Typography>
+                        </MenuItem>
+                        <Divider/>
                         {notifications_items()}
                     </Menu>
 
