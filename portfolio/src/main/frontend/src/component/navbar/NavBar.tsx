@@ -38,9 +38,6 @@ export const NavBar: React.FC = observer(() => {
                         <Button color='inherit' onClick={() => navigateTo("groups")}>
                             <Typography textAlign="center">Groups</Typography>
                         </Button>
-                        <Button color='inherit' onClick={() => navigateTo("group_feed/" + userId)}>
-                            <Typography textAlign="center">Group feed</Typography>
-                        </Button>
                     </Box>
 
                     <NotificationDropdown></NotificationDropdown>
