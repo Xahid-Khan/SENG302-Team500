@@ -7,6 +7,8 @@ export function ShowAllPosts() {
 
   const [newComment, setNewComment] = React.useState("");
 
+  const userId = localStorage.getItem("userId")
+
   const getCurrentGroup = async () => {
     const currentGroupResponse = await fetch(`feed_content/${viewGroupId}`);
     return currentGroupResponse.json()
@@ -48,6 +50,12 @@ export function ShowAllPosts() {
   const clickHighFive = (id: number) => {
     const button = document.getElementById(`high-five-${id}`)
     button.style.backgroundSize = button.style.backgroundSize === "100% 100%" ? "0 100%" : "100% 100%"
+
+    groupPosts.posts.forEach((post) => {
+      if (post.postId === id) {
+        post.reactions.push(parseInt(userId))
+      }
+    })
   }
 
   const toggleCommentDisplay = (id: number) => {
@@ -97,6 +105,7 @@ export function ShowAllPosts() {
                   <div className={"border-line"}/>
                   <div className={"post-footer"}>
                     <div className={"high-five-container"}>
+                      <div className={"high-fives"}>
                       <div className={"high-five-overlay"}>
                         <span className={"high-five-text"}>High Five!</span> <span
                           className={"material-icons"}>sign_language</span>
@@ -107,12 +116,13 @@ export function ShowAllPosts() {
                           className={"material-icons"}>sign_language</span>
                       </div>
                         <div className={"high-five-list"}>
-                            {/*<div className={"high-five-count"}><span className={"material-icons"} style={{fontSize: 15}}>sign_language</span>{post['reactions'].length}</div>*/}
-                            {/*<div className={"border-line high-five-separator"}/>*/}
-                            {/*{post.reactions.map((highFiveName: string) => (*/}
-                            {/*    <div className={"high-five-names"}>{highFiveName}</div>*/}
-                            {/*))}*/}
+                          <div className={"high-five-count"}><span className={"material-icons"} style={{fontSize: 15}}>sign_language</span>{post.reactions.length}</div>
+                          <div className={"border-line high-five-separator"}/>
+                          {post.reactions.map((highFiveName: string) => (
+                              <div className={"high-five-names"}>{highFiveName}</div>
+                          ))}
                         </div>
+                      </div>
                     </div>
                     <div className={"comments-icon-container"}>
                       <div className={"comments-select"}
@@ -126,7 +136,7 @@ export function ShowAllPosts() {
                     <div className={"border-line"}/>
                     <div className={"post-comments"}>
                       {post.comments.map((comment: any) => (
-                              <div className={"post-comment-container"}>
+                              <div className={"post-comment-container"} key={comment.commentId}>
                                 <div className={"comment-name"}>{comment.username} ({comment.time})
                                 </div>
                                 <div className={"post-comment"}>{comment.content}</div>

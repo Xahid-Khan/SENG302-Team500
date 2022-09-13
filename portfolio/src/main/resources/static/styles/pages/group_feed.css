@@ -51,7 +51,7 @@
 }
 
 .high-five {
-    display: inline-block;
+    display: flex;
     cursor: pointer;
     background-position: 50% 50%;
     background-repeat: no-repeat;
@@ -106,11 +106,13 @@
     cursor: default;
     border: solid grey 1px;
     margin: 30px 15px;
-    display: none;
+    visibility: hidden;
 }
 
 .high-fives:hover .high-five-list {
-    display: block;
+    visibility: visible;
+    transition-delay: 0.8s;
+    transition-property: visibility;
 }
 
 .high-five-count {

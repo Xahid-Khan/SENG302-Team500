@@ -8,6 +8,7 @@ import java.util.NoSuchElementException;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.portfolio.model.contract.CommentContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.PostContract;
+import nz.ac.canterbury.seng302.portfolio.model.contract.PostReactionContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.PostModel;
 import nz.ac.canterbury.seng302.portfolio.repository.PostModelRepository;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
@@ -167,6 +168,7 @@ public class GroupFeedController extends AuthenticatedController {
       postService.createPost(new PostContract(1, "This is a test 1 post"), 3);
       postService.createPost(new PostContract(1, "This is a test 2 post"), 3);
       postService.createPost(new PostContract(1, "This is a test 3 post"), 3);
+      reactionService.addHighFiveToPost(new PostReactionContract(1, 3));
       commentService.addNewCommentsToPost(new CommentContract(3, postService.getAllPosts().get(0).getId(), "This is a comment to the post for test1."));
       commentService.addNewCommentsToPost(new CommentContract(3, postService.getAllPosts().get(1).getId(), "This is a comment to the post for test2."));
       commentService.addNewCommentsToPost(new CommentContract(3, postService.getAllPosts().get(0).getId(), "This is a comment to the post for test3."));
