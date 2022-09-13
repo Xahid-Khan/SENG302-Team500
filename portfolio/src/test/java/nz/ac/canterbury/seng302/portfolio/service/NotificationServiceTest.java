@@ -1,14 +1,19 @@
 package nz.ac.canterbury.seng302.portfolio.service;
+import nz.ac.canterbury.seng302.portfolio.mapping.NotificationMapper;
 import nz.ac.canterbury.seng302.portfolio.model.contract.NotificationContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseNotificationContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.NotificationEntity;
 import nz.ac.canterbury.seng302.portfolio.repository.NotificationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -18,56 +23,71 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @SpringBootTest
 public class NotificationServiceTest {
 
-    @Autowired
+    @InjectMocks
     private NotificationService service;
 
-    @Autowired
+    @Mock
     private NotificationRepository repository;
+
+    @Mock
+    private NotificationMapper notificationMapper;
 
     @BeforeEach
     private void clear() {
         repository.deleteAll();
     }
 
+    final int USER_ID = 1;
+    final String NOTIFIED_FROM = "Shaylin";
+    final String DESCRIPTION = "Shaylin high-fived your last post!";
+    BaseNotificationContract contract = new BaseNotificationContract(USER_ID, NOTIFIED_FROM, DESCRIPTION);
+    NotificationEntity entity = new NotificationEntity(USER_ID, NOTIFIED_FROM, DESCRIPTION);
+
     /**
-     * Tests that a notification can be created and stored in the database, with all the correct information
+     * Tests that a notification can be created and stored in the database
      */
     @Test
-    public void createNotificationTest(){
-        final int USER_ID = 1;
-        final String NOTIFIED_FROM = "Shaylin";
-        final String DESCRIPTION = "Shaylin high-fived your last post!";
-        BaseNotificationContract contract = new BaseNotificationContract(USER_ID, NOTIFIED_FROM, DESCRIPTION);
-
+    public void createNotificationTest() {
+        Mockito.when(notificationMapper.toEntity(contract)).thenReturn(entity);
         service.create(contract);
-
-        assertEquals(1, repository.findAllByUserId(1).size());
-        assertEquals(USER_ID, repository.findAllByUserId(1).get(0).getUserId());
-        assertEquals(NOTIFIED_FROM, repository.findAllByUserId(1).get(0).getNotificationFrom());
-        assertEquals(DESCRIPTION, repository.findAllByUserId(1).get(0).getDescription());
+        Mockito.verify(repository).save(entity);
     }
 
     /**
-     * Tests that all notifications are retrieved for a user and that they all belong to that user
+     * Tests that all notifications are retrieved
      */
     @Test
     public void retrieveAllNotificationsForUserTest(){
-        final int USER_ID = 1;
-        final String NOTIFIED_FROM = "Shaylin";
-        final String DESCRIPTION = "Shaylin high-fived your last post!";
+        Mockito.when(notificationMapper.toContract(entity)).thenReturn(null);
+        service.getAll(1);
+        Mockito.verify(repository).findAllByUserId(1);
+    }
 
-        for(int i = 0; i < 5; i++){
-            service.create(new BaseNotificationContract(USER_ID, NOTIFIED_FROM, DESCRIPTION + '#' + i));
-        }
-        for(int i = 0; i < 10; i++){
-            service.create(new BaseNotificationContract(2, "Cody", "This notification is not for you" + '#' + i));
-        }
+    /**
+     * Tests that when a list of notifications is created, they are added to the repository for all users
+     */
+    @Test
+    public void createNotificationsForAllUsersTest() {
+        Mockito.when(notificationMapper.toEntity(contract)).thenReturn(entity);
+        Mockito.when(notificationMapper.toEntity(new BaseNotificationContract(USER_ID+1, NOTIFIED_FROM, DESCRIPTION))).thenReturn(new NotificationEntity(USER_ID+1, NOTIFIED_FROM, DESCRIPTION));
+        ArrayList<Integer> userIds = new ArrayList<>();
+        userIds.add(1);
+        userIds.add(2);
+        service.createForAllUsers(userIds, NOTIFIED_FROM, DESCRIPTION);
+        Mockito.verify(repository, Mockito.times(2)).save(Mockito.any());
+    }
 
-        ArrayList<NotificationEntity> notifications = repository.findAllByUserId(1);
-        assertEquals(5, notifications.size());
-        for(NotificationEntity notification : notifications) {
-            assertEquals(USER_ID, notification.getUserId());
-        }
+    /**
+     * Tests that when a user views notifications, all are marked as seen
+     */
+    @Test
+    public void viewAllNotificationsSetsAsSeenTest() {
+        ArrayList<NotificationEntity> entities = new ArrayList<>();
+        entities.add(entity);
+        entities.add(entity);
+        Mockito.when(repository.findAllByUserId(1)).thenReturn(entities);
+        service.setNotificationsSeen(1);
+        Mockito.verify(repository, Mockito.times(2)).save(entity);
     }
 
 }
