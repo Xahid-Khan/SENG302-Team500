@@ -10,6 +10,7 @@
 
   <script th:inline="javascript">
     /*<![CDATA[*/
+    window.localStorage.setItem("userId", [[${userId}]] + "")
     window.localStorage.setItem("globalImagePath", [[${globalImagePath}]] + "")
     window.localStorage.setItem("globalUrlPathPrefix", [[${globalUrlPathPrefix}]] + "")
     /*]]>*/

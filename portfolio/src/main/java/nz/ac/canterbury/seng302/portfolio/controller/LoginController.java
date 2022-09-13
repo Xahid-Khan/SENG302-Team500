@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 import nz.ac.canterbury.seng302.portfolio.DTO.Login;
 import nz.ac.canterbury.seng302.portfolio.authentication.CookieUtil;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
+import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
 import nz.ac.canterbury.seng302.portfolio.service.AuthenticateClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticateResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,6 +94,7 @@ public class LoginController {
           domain.startsWith("localhost") ? null : domain);
       // Redirect user if login succeeds
       redirectAttributes.addFlashAttribute("message", "Successfully logged in.");
+      model.addAttribute("userId", loginReply.getUserId());
       return "redirect:my_account";
     }
 

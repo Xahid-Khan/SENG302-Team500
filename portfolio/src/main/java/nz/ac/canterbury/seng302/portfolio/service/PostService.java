@@ -22,6 +22,10 @@ public class PostService {
 
     @Autowired
     private GroupsClientService groupsClientService;
+
+    @Autowired
+    private SubscriptionService subscriptionService;
+
     @Autowired
     private CommentService commentService;
 
@@ -60,14 +64,15 @@ public class PostService {
 
             //Gets details for notification
             GroupDetailsResponse groupDetails = groupsClientService.getGroupById(newPost.groupId());
-            List<UserResponse> members = groupDetails.getMembersList();
+
+            List<Integer> userIds = subscriptionService.getAllByGroupId(newPost.groupId());
             String posterUsername= userAccountService.getUserById(userId).getUsername();
             String groupName = groupDetails.getShortName();
 
             // Send notification to all members of the group
-            for (UserResponse member : members) {
-                if (member.getId() != userId) {
-                    notificationService.create(new BaseNotificationContract(member.getId(), "Your Subscriptions", posterUsername + " created a post in "+groupName+"!"));
+            for (Integer otherUserId : userIds) {
+                if (otherUserId != userId) {
+                    notificationService.create(new BaseNotificationContract(otherUserId, "Your Subscriptions", posterUsername + " created a post in "+groupName+"!"));
                 }
             }
 

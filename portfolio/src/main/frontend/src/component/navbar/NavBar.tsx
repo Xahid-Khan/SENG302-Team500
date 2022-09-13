@@ -155,7 +155,7 @@ export const NavBar: React.FC = observer(() => {
                         <MenuItem onClick={() => navigateTo("my_account")}>
                             Account
                         </MenuItem>
-                        <MenuItem onClick={() => navigateTo("logout")}>
+                        <MenuItem onClick={() => {navigateTo("logout"); window.localStorage.clear()}}>
                             Log out
                         </MenuItem>
                     </Menu>

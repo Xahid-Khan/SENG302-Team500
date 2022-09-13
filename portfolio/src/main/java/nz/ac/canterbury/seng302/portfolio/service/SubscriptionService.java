@@ -41,7 +41,11 @@ public class SubscriptionService {
      * Retrieves a list of groupIds of the groups the user is subscribed to
      * @return a list of groupIds of the groups the user is subscribed to
      */
-    public List<Integer> getAll(int userId) {
+    public List<Integer> getAllByUserId(int userId) {
         return subscriptionRepository.findByUserId(userId).stream().map(SubscriptionEntity::getGroupId).toList();
+    }
+
+    public List<Integer> getAllByGroupId(int groupId) {
+        return subscriptionRepository.findByGroupId(groupId).stream().map(SubscriptionEntity::getUserId).toList();
     }
 }
