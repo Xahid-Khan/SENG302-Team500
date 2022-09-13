@@ -13,7 +13,14 @@
   <link rel="stylesheet" th:href="@{styles/pages/user_list.css}"/>
   <link rel="stylesheet" th:href="@{styles/dropdown.css}"/>
 
+  <script th:inline="javascript">
+    /*<![CDATA[*/
+    window.localStorage.setItem("globalImagePath", [[${globalImagePath}]] + "")
+    window.localStorage.setItem("globalUrlPathPrefix", [[${globalUrlPathPrefix}]] + "")
+    /*]]>*/
+  </script>
   <script type="text/javascript" th:src="@{scripts/user_list.js}"></script>
+  <script type="text/javascript" th:src="@{../frontend/navbar.js}" defer></script>
 </head>
 <body>
 <div style="display: none">
@@ -32,7 +39,7 @@
   </th:block>
 </div>
 
-<div th:replace="fragments/header :: header" class="navbar"></div>
+<div id="navbar-react-root"></div>
 
 <div class="raised-card card-padding">
   <h1>Users</h1>
