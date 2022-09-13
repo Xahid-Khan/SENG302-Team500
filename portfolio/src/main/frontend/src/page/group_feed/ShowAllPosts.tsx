@@ -1,4 +1,5 @@
 import React, {useEffect} from "react";
+import {DatetimeUtils} from "../../util/DatetimeUtils";
 
 export function ShowAllPosts() {
 
@@ -74,6 +75,7 @@ export function ShowAllPosts() {
       await getCurrentGroup().then((result) => {
         setGroupPosts(result)
       })
+      document.getElementById(`post-comments-${id}`).scrollTop = document.getElementById(`post-comments-${id}`).scrollHeight;
     }
   }
 
@@ -87,7 +89,8 @@ export function ShowAllPosts() {
                   <div className={"post-header"} key={"postHeader" + post.postId}>
                     <div className={"post-info"} key={"postInfo" + post.postId}>
                       <div>{post.username}</div>
-                      <div className={"post-time"}>{post.time}</div>
+                      <div
+                          className={"post-time"}>{DatetimeUtils.timeStringToTimeSince(post.time)}</div>
                     </div>
                     {isTeacher ?
                         <div className={"post-delete"}><span
@@ -117,10 +120,11 @@ export function ShowAllPosts() {
                   </div>
                   <div className={"comments-container"} id={`comments-container-${post.postId}`}>
                     <div className={"border-line"}/>
-                    <div className={"post-comments"}>
+                    <div className={"post-comments"} id={`post-comments-${post.postId}`}>
                       {post.comments.map((comment: any) => (
                               <div className={"post-comment-container"}>
-                                <div className={"comment-name"}>{comment.username} ({comment.time})
+                                <div
+                                    className={"comment-name"}>{comment.username} ({DatetimeUtils.timeStringToTimeSince(comment.time)})
                                 </div>
                                 <div className={"post-comment"}>{comment.content}</div>
 
