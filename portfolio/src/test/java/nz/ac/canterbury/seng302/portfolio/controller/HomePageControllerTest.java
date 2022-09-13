@@ -166,10 +166,10 @@ public class HomePageControllerTest {
      */
     @Test
     void getAllSubscriptionsValid() throws Exception {
-        Mockito.when(service.getAll(5)).thenReturn(new ArrayList<Integer>());
+        Mockito.when(service.getAllByUserId(5)).thenReturn(new ArrayList<Integer>());
         mockMvc.perform(get("/api/v1/subscribe/5"))
                 .andExpect(status().isOk());
-        Mockito.verify(service).getAll(5);
+        Mockito.verify(service).getAllByUserId(5);
     }
 
 

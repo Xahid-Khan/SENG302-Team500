@@ -3,6 +3,8 @@ package nz.ac.canterbury.seng302.portfolio.service;
 import nz.ac.canterbury.seng302.portfolio.model.contract.PostContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.PostModel;
 import nz.ac.canterbury.seng302.portfolio.repository.PostModelRepository;
+import nz.ac.canterbury.seng302.shared.identityprovider.GroupDetailsResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +19,9 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+
 @SpringBootTest
 class GroupFeedServiceTest {
 
@@ -24,6 +29,18 @@ class GroupFeedServiceTest {
     private PostService postService;
     @Mock
     private PostModelRepository mockPostModelRepository;
+
+    @Mock
+    NotificationService notificationService;
+
+    @Mock
+    SubscriptionService subscriptionService;
+
+    @Mock
+    UserAccountService userAccountService;
+
+    @Mock
+    GroupsClientService groupsClientService;
 
     @Mock
     private CommentService commentService;
@@ -134,8 +151,70 @@ class GroupFeedServiceTest {
         Mockito.when(mockPostModelRepository.save(newPost)).thenReturn(newPost);
         PostContract postContract = new PostContract(newPost.getGroupId(), newPost.getPostContent());
 
-        var result = postService.createPost(postContract, newPost.getUserId());
+        //build a new GroupDetailsResponse
+        GroupDetailsResponse groupDetailsResponse = GroupDetailsResponse.newBuilder()
+                .setGroupId(newPost.getGroupId())
+                .setShortName("Test")
+                .setLongName("Test")
+                .build();
+
+        UserResponse userResponse = UserResponse.newBuilder()
+                .setUsername("Test")
+                .build();
+
+        List<Integer> userIds = new ArrayList<>();
+        userIds.add(1);
+        userIds.add(2);
+        userIds.add(3);
+
+        Mockito.when(groupsClientService.getGroupById(newPost.getGroupId())).thenReturn(groupDetailsResponse);
+        Mockito.when(subscriptionService.getAllByGroupId(anyInt())).thenReturn(List.of(7,8,9));
+        Mockito.when(userAccountService.getUserById(newPost.getUserId())).thenReturn(userResponse);
+
+
+
+
+        Boolean result = postService.createPost(postContract, newPost.getUserId());
+
+        Mockito.verify(notificationService, Mockito.times(3)).create(any());
         Assertions.assertTrue(result);
+    }
+
+    /**
+     * Verify the notification service is called when a new post is created.
+     * @throws Exception
+     */
+    @Test
+    void createANewPostWithValidParamsExpectNotificationCall () throws Exception {
+        Mockito.when(mockPostModelRepository.save(newPost)).thenReturn(newPost);
+        PostContract postContract = new PostContract(newPost.getGroupId(), newPost.getPostContent());
+
+        //build a new GroupDetailsResponse
+        GroupDetailsResponse groupDetailsResponse = GroupDetailsResponse.newBuilder()
+                .setGroupId(newPost.getGroupId())
+                .setShortName("Test")
+                .setLongName("Test")
+                .build();
+
+        UserResponse userResponse = UserResponse.newBuilder()
+                .setUsername("Test")
+                .build();
+
+        List<Integer> userIds = new ArrayList<>();
+        userIds.add(1);
+        userIds.add(2);
+        userIds.add(3);
+
+        Mockito.when(groupsClientService.getGroupById(newPost.getGroupId())).thenReturn(groupDetailsResponse);
+        Mockito.when(subscriptionService.getAllByGroupId(anyInt())).thenReturn(List.of(7,8,9));
+        Mockito.when(userAccountService.getUserById(newPost.getUserId())).thenReturn(userResponse);
+
+
+
+
+        Boolean result = postService.createPost(postContract, newPost.getUserId());
+
+        Mockito.verify(notificationService, Mockito.times(3)).create(any());
     }
 
     /**
