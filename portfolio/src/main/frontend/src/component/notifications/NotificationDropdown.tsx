@@ -67,7 +67,7 @@ export const NotificationDropdown: React.FC = observer(() => {
 
     const no_notifications_item = () => {
         return (
-            <MenuItem sx={{pt: 10, pb: 10}}>
+            <MenuItem disabled style={{whiteSpace: 'normal', opacity: 1}} sx={{pt: 10, pb: 10}}>
                 <Typography variant="body1">Looks like you have no notifications.</Typography>
             </MenuItem>
         )
@@ -103,7 +103,7 @@ export const NotificationDropdown: React.FC = observer(() => {
                 transformOrigin={{horizontal: 'right', vertical: 'top'}}
                 anchorOrigin={{horizontal: 'right', vertical: 'bottom'}}
             >
-                <MenuItem>
+                <MenuItem disabled style={{opacity: 1}}>
                     <Typography>Notifications</Typography>
                 </MenuItem>
                 <Divider/>
