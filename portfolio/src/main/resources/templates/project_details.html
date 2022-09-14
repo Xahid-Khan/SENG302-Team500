@@ -12,16 +12,19 @@
 
         window.relativePath = /*[[${relativePath}]]*/ 'default';
         window.localStorage.setItem("relativePath", [[${relativePath}]] + "")
+        window.localStorage.setItem("globalImagePath", [[${globalImagePath}]] + "")
+        window.localStorage.setItem("globalUrlPathPrefix", [[${globalUrlPathPrefix}]] + "")
 
         /*]]>*/
     </script>
+    <script type="text/javascript" th:src="@{frontend/navbar.js}" defer></script>
 
   <title>SENG302 Homepage</title>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body class="fullscreen" th:classappend="${(isStudent) ? 'studentMode' : (isCourseAdmin ? 'courseAdminMode' : '')}">
-<div th:replace="fragments/header :: header" class="navbar"></div>
+<div id="navbar-react-root"></div>
 <div id="update-insert">
 
 </div>

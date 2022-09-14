@@ -57,6 +57,7 @@ public class ProjectDetailsController extends AuthenticatedController {
     model.addAttribute("userId", userId);
     model.addAttribute("username", userDetails.getUsername());
 
+    model.addAttribute("relativePath", urlPathPrefix);
     return "project_details";
   }
 }

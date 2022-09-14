@@ -25,7 +25,7 @@ export const NotificationDropdown: React.FC = observer(() => {
     const open = anchorEl?.id === 'notification-button';
 
     const getNotifications = async () => {
-        const notifications = await fetch(`api/v1/notifications/${userId}`, {
+        const notifications = await fetch(`../api/v1/notifications/${userId}`, {
                 method: 'GET'
             }
         )
@@ -33,17 +33,19 @@ export const NotificationDropdown: React.FC = observer(() => {
     }
 
     const markAllAsSeen = async () => {
-        await fetch(`api/v1/notifications/seen/${userId}`, {
+        await fetch(`../api/v1/notifications/seen/${userId}`, {
                 method: 'POST'
             }
         )
+        getNotifications().then((result) => {
+            setNotifications(result)
+        })
     }
 
     useEffect(() => {
         getNotifications().then((result) => {
             setNotifications(result)
         })
-        console.log("getting not")
     }, [])
 
     useEffect(() => {
@@ -52,7 +54,6 @@ export const NotificationDropdown: React.FC = observer(() => {
         } else {
             setNumUnseen(notifications.filter((contract: NotificationContract) => !contract.seen).length)
         }
-        console.log("resseting bubble")
     }, [notifications])
 
     const notifications_items = () =>

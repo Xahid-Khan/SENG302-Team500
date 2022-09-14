@@ -15,12 +15,12 @@
     <script th:inline="javascript">
         /*<![CDATA[*/
         window.localStorage.setItem("userId", [[${userId}]] + "")
-        window.localStorage.setItem("isTeacher", [[${isTeacher}]] + "")
+        window.localStorage.setItem("isStudent", [[${isStudent}]] + "")
         window.localStorage.setItem("globalImagePath", [[${globalImagePath}]] + "")
         window.localStorage.setItem("globalUrlPathPrefix", [[${globalUrlPathPrefix}]] + "")
         /*]]>*/
     </script>
-    <script type="text/javascript" th:src="@{frontend/navbar.js}" defer></script>
+    <script type="text/javascript" th:src="@{../frontend/navbar.js}" defer></script>
     <script type="text/javascript" th:src="@{../frontend/group_feed.js}" defer></script>
 </head>
 <body>
