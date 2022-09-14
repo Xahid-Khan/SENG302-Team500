@@ -1,8 +1,13 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
+import nz.ac.canterbury.seng302.portfolio.model.contract.CommentContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.PostContract;
+import nz.ac.canterbury.seng302.portfolio.model.contract.PostReactionContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.PostModel;
+import nz.ac.canterbury.seng302.portfolio.repository.CommentModelRepository;
 import nz.ac.canterbury.seng302.portfolio.repository.PostModelRepository;
+import nz.ac.canterbury.seng302.portfolio.repository.ReactionModelRepository;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,16 +22,37 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static org.mockito.ArgumentMatchers.any;
+
 @SpringBootTest
 class GroupFeedServiceTest {
 
     @InjectMocks
     private PostService postService;
+
+    @InjectMocks
+    private ReactionService reactionService;
+
+    @Mock
+    private CommentModelRepository commentModelRepository;
+
+    @Mock
+    private ReactionModelRepository reactionModelRepository;
+
     @Mock
     private PostModelRepository mockPostModelRepository;
 
     @Mock
+    private UserAccountService userAccountService;
+
+    @Mock
+    private NotificationService notificationService;
+
+    @Mock
     private CommentService commentService;
+
+    @InjectMocks
+    private CommentService commentServiceMock;
 
     private PostModel newPost;
     private PostModel newPost1;
@@ -161,6 +187,34 @@ class GroupFeedServiceTest {
         newPost.setPostContent(postUpdate.postContent());
         Mockito.when(mockPostModelRepository.save(newPost)).thenReturn(newPost);
         Assertions.assertTrue(postService.updatePost(postUpdate, newPost.getId()));
+    }
+
+    /**
+     * High five a post and notifications should be sent out as expected
+     */
+    @Test
+    void highFivePostAndSendNotifications() {
+        PostReactionContract postReactionContract = new PostReactionContract(newPost.getId(), newPost.getUserId());
+        Mockito.when(mockPostModelRepository.findById(newPost.getId())).thenReturn(Optional.ofNullable(newPost));
+        Mockito.when(userAccountService.getUserById(newPost.getUserId())).thenReturn(UserResponse.newBuilder().setId(newPost.getUserId()).build());
+
+        reactionService.addHighFiveToPost(postReactionContract);
+
+        Mockito.verify(notificationService, Mockito.times(1)).create(any());
+    }
+
+    /**
+     * Comment on a post and notifications should be sent out as expected
+     */
+    @Test
+    void commentOnPostAndSendNotifications() {
+        CommentContract commentContract = new CommentContract(newPost.getUserId(), newPost.getId(), "test");
+        Mockito.when(mockPostModelRepository.findById(newPost.getId())).thenReturn(Optional.ofNullable(newPost));
+        Mockito.when(userAccountService.getUserById(newPost.getUserId())).thenReturn(UserResponse.newBuilder().setId(newPost.getUserId()).build());
+
+        commentServiceMock.addNewCommentsToPost(commentContract);
+
+        Mockito.verify(notificationService, Mockito.times(1)).create(any());
     }
 
     @Test
