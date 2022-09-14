@@ -13,7 +13,6 @@ import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import nz.ac.canterbury.seng302.shared.util.PaginationResponseOptions;
 import nz.ac.canterbury.seng302.shared.util.ValidationError;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import static nz.ac.canterbury.seng302.identityprovider.service.AddingBaseGroups.NON_GROUP_SHORT_NAME;
 import static nz.ac.canterbury.seng302.identityprovider.service.AddingBaseGroups.TEACHERS_GROUP_SHORT_NAME;
@@ -39,7 +38,7 @@ public class GroupsServerService extends GroupsServiceGrpc.GroupsServiceImplBase
     private GroupMapper groupMapper;
 
     @Autowired
-    private RoleService roleService;
+    private RolesServerService rolesServerService;
 
     @Autowired
     private GetUserService getUserService;
@@ -171,7 +170,7 @@ public class GroupsServerService extends GroupsServiceGrpc.GroupsServiceImplBase
 
                 for (Integer userId : request.getUserIdsList()) {
                     if (groupRepository.findById(request.getGroupId()).get().getShortName().equals("Teachers")) {
-                        roleService.addRoleToUser(ModifyRoleOfUserRequest.newBuilder()
+                        rolesServerService.addRoleToUser(ModifyRoleOfUserRequest.newBuilder()
                                 .setUserId(userId)
                                 .setRole(UserRole.TEACHER)
                                 .build());
@@ -248,7 +247,7 @@ public class GroupsServerService extends GroupsServiceGrpc.GroupsServiceImplBase
                                 .setId(userId)
                                 .build());
                         if (user.getRolesList().contains(UserRole.TEACHER)) {
-                            roleService.removeRoleFromUser(ModifyRoleOfUserRequest.newBuilder()
+                            rolesServerService.removeRoleFromUser(ModifyRoleOfUserRequest.newBuilder()
                                     .setUserId(userId)
                                     .setRole(UserRole.TEACHER)
                                     .build());
@@ -294,6 +293,30 @@ public class GroupsServerService extends GroupsServiceGrpc.GroupsServiceImplBase
                     .setPaginationResponseOptions(PaginationResponseOptions.newBuilder()
                             .setResultSetSize(allGroups.size()).build())
                     .addAllGroups(allGroups)
+                    .build());
+        }
+        responseObserver.onCompleted();
+    }
+
+
+    /**
+     * This function handles the getGroupDetails functionality on serverside. If the database doesn't have the group with
+     * the provided ID, the shortname is response will be empty.
+     * @param request A GetGroupDetailsRequest
+     * @param responseObserver A StreamObserver of type GroupDetailsResponse
+     */
+    @Override
+    public void  getGroupDetails(GetGroupDetailsRequest request, StreamObserver<GroupDetailsResponse> responseObserver) {
+        Optional<GroupModel> groupModel = groupRepository.findById(request.getGroupId());
+
+        if (groupModel.isEmpty()) {
+            responseObserver.onNext(GroupDetailsResponse.newBuilder()
+                    .setShortName("").build());
+
+        } else {
+            responseObserver.onNext(GroupDetailsResponse.newBuilder()
+                    .setGroupId(groupModel.get().getId())
+                    .setShortName(groupModel.get().getShortName())
                     .build());
         }
         responseObserver.onCompleted();

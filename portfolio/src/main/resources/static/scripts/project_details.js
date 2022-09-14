@@ -59,7 +59,6 @@ const displayCharactersRemaining = (field, maxCharacters) => {
  * Manage the projects (creation and deletion and loading)
  */
 class Application {
-  addProjectButton = document.getElementById("add-project");
 
   addProjectForm = null;
   addProjectLoadingStatus = LoadingStatus.NotYetAttempted;
@@ -73,7 +72,6 @@ class Application {
   }
 
   wireView() {
-    this.addProjectButton.addEventListener("click", this.openAddProjectForm.bind(this));
   }
 
   /**
@@ -122,44 +120,12 @@ class Application {
    * Closes the add project form and refreshes the view.
    */
   closeAddProjectForm() {
-    if (this.addProjectForm === null) {
-      return;
-    }
-
-    this.addProjectForm.controller.dispose();
-    this.containerElement.removeChild(this.addProjectForm.container);
-    this.addProjectForm = null;
   }
 
   /**
    * Opens the add project form, creating a new formContainer and a default project.
    */
   openAddProjectForm() {
-    if (this.addProjectForm !== null) {
-      return;
-    }
-
-    const formContainerElement = document.createElement("div");
-    formContainerElement.classList.add("project-view", "raised-card");
-    formContainerElement.id = 'create-project-form-container';
-    this.containerElement.insertBefore(formContainerElement, this.containerElement.firstChild);
-    const defaultProject = {
-      id: '__NEW_PROJECT_FORM',
-      name: `Project ${new Date().getFullYear()}`,
-      description: null,
-      startDate: null,
-      endDate: null
-    };
-    this.addProjectForm = {
-      container: formContainerElement,
-      controller: new Editor(formContainerElement,
-          "New project details:",
-          defaultProject,
-          this.closeAddProjectForm.bind(this),
-          this.submitAddProjectForm.bind(this),
-          null,
-          defaultProject)
-    };
   }
 
   /**
