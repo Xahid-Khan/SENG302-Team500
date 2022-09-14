@@ -25,7 +25,6 @@ class ProjectView {
     addMilestoneLoadingStatus = LoadingStatus.NotYetAttempted;
 
     constructor(containerElement, project, editCallback, deleteCallback, sprintDeleteCallback, sprintUpdateCallback, eventDeleteCallback, eventUpdateCallback, deadlineDeleteCallback, deadlineUpdateCallback, milestoneDeleteCallback, milestoneUpdateCallback, eventEditCallback, deadlineEditCallback, milestoneEditCallback) {
-        console.log("project", project)
         this.containerElement = containerElement;
         this.project = project;
         this.sprintContainer = null;
@@ -147,7 +146,7 @@ class ProjectView {
                       <button class="button visibility-button toggle-project-details" id="toggle-project-details-${this.project.id}"><span class='material-icons'>visibility_off</span></button>
                   </span>
                   <span class="crud">
-                      <button class="button icon-button" onclick="document.getElementById('modal-open').style.display='block'" id="project-delete-button-${this.project.id}" data-privilege="teacher"><span class="material-icons">clear</span></button>
+                      <button class="button icon-button project-delete-button" id="project-delete-button-${this.project.id}" data-privilege="course_admin"><span class="material-icons">clear</span></button>
                       <button class="button icon-button edit-project" id="project-edit-button-${this.project.id}" data-privilege="teacher"><span class="material-icons">edit</span></button>
                   </span>
                   
@@ -752,6 +751,8 @@ class ProjectView {
     }
     openDeleteModal(){
         this.modalDeleteContainer.style.display='block';
+        document.getElementById('modal-delete-body').innerText=
+            'Are you sure you want to delete the project? A new project with default settings will be created in its place.'
         this.modalDeleteX.addEventListener("click",()=>this.cancelDeleteModal())
         this.modalDeleteCancel.addEventListener("click",()=>this.cancelDeleteModal())
         this.modalDeleteConfirm.addEventListener("click",()=>this.confirmDeleteModal())

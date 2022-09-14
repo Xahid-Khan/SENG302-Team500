@@ -1,5 +1,8 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
 import nz.ac.canterbury.seng302.portfolio.model.contract.PostContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseNotificationContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.PostModel;
@@ -83,56 +86,62 @@ public class PostService {
         return false;
     }
 
-    /**
-     * This function will delete the post by using the postId.
-     * @param postId Integer Post ID
-     * @return True if deletion is successful False otherwise
-     */
-    public boolean deletePost(int postId) {
-        try {
-            var postFound = postRepository.findById(postId);
-            if (postFound.isPresent()) {
-                postRepository.deleteById(postId);
-                commentService.deleteCommentById(postId);
-                return true;
-            } else {
-                return false;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+  /**
+   * This function will delete the post by using the postId.
+   *
+   * @param postId Integer Post ID
+   * @return True if deletion is successful False otherwise
+   */
+  public boolean deletePost(int postId) {
+    try {
+      var postFound = postRepository.findById(postId);
+      if (postFound.isPresent()) {
+        var comments = commentService.getCommentsForGivenPost(postId);
+        postRepository.deleteById(postId);
+        if (!comments.isEmpty()) {
+          commentService.getCommentsForGivenPost(postId);
         }
+        return true;
+      } else {
+        return false;
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+      return false;
     }
+  }
 
-    /**
-     * This function will update the changes made to the post.
-     * @param updatedPost A PostContract
-     * @param postId Integer ID of the Post
-     * @return True if update is successful False otherwise.
-     */
-    public boolean updatePost(PostContract updatedPost, int postId) {
-        try {
-            var post = postRepository.findById(postId).orElseThrow();
-            post.setPostContent(updatedPost.postContent());
-            postRepository.save(post);
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+  /**
+   * This function will update the changes made to the post.
+   *
+   * @param updatedPost A PostContract
+   * @param postId      Integer ID of the Post
+   * @return True if update is successful False otherwise.
+   */
+  public boolean updatePost(PostContract updatedPost, int postId) {
+    try {
+      var post = postRepository.findById(postId).orElseThrow();
+      post.setPostContent(updatedPost.postContent());
+      postRepository.save(post);
+      return true;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return false;
     }
+  }
 
-    /**
-     * This function will get a specific post using Post ID and return it.
-     * @param postId Integer Post ID
-     * @return Returns PostModel if found, null otherwise.
-     */
-    public PostModel getPostById(int postId) {
-        try {
-            return postRepository.findById(postId).orElseThrow();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+  /**
+   * This function will get a specific post using Post ID and return it.
+   *
+   * @param postId Integer Post ID
+   * @return Returns PostModel if found, null otherwise.
+   */
+  public PostModel getPostById(int postId) {
+    try {
+      return postRepository.findById(postId).orElseThrow();
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
     }
+  }
 }
