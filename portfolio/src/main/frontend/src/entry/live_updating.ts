@@ -51,25 +51,6 @@ class PingPageStore {
     this.nextPingValue = newValue
   }
 
-  notify(location: string) {
-    if (this.connected) {
-      console.log("Attempting to send ping...")
-      this.stomp.publish({
-        destination: "/app/" + this.destination,
-        body: location
-            + "~" + notificationId
-            + "~";
-        // TODO: In here, a frontend NotificationContract (or relevant parts of it)
-        //  can be added and then parsed for later handling. The method of wiring up is left
-        //  to the task implementing the logic regarding how notifications are handled,
-        //  such as to avoid an overlap and having two conflicting systems again.
-        //
-        // TODO: Note that LiveUpdatesController will need to be updated to parse whatever
-        //  is decided in here. (File can be found with CTRL + SHIFT + N)
-      })
-    }
-  }
-
   showEdit(location: string) {
     if (this.connected) {
       console.log("Attempting to send ping...")
@@ -180,6 +161,7 @@ class PingPageStore {
     //  the `notify` function. Then, using whatever is decided for parsing, you can utilize the data
     //  here. (This means toasts, adding a notification count to the notification icon,
     //   updating states, etc.)
+    window.location.reload()
   }
 }
 
