@@ -128,7 +128,7 @@ class GroupFeedControllerTest {
         Mockito.when(commentService.getCommentsForGivenPost(post1.getId()))
                 .thenReturn(allComments.stream().filter(commentModel -> commentModel.getPostId() == post1.getId()).collect(Collectors.toList()));
 
-        var result = mockMvc.perform(get("/feed_content/1"))
+        var result = mockMvc.perform(get("/group_feed/feed_content/1"))
                 .andExpect(status().isOk())
                 .andReturn();
         var response = (new JSONObject(result.getResponse().getContentAsString()));
@@ -197,7 +197,7 @@ class GroupFeedControllerTest {
         Mockito.when(groupsClientService.isMemberOfTheGroup(any(int.class), any(int.class))).thenReturn(true);
         Mockito.when(postService.getPostById(any(int.class))).thenReturn(post1);
 
-        mockMvc.perform(delete("/delete_feed/1"))
+        mockMvc.perform(delete("/group_feed/delete_feed/1"))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(status().isOk());
     }
@@ -239,7 +239,7 @@ class GroupFeedControllerTest {
         AuthorisationParamsHelper.setParams("role", UserRole.TEACHER);
         Mockito.when(groupsClientService.isMemberOfTheGroup(any(int.class), any(int.class))).thenReturn(false);
         Mockito.when(postService.getPostById(any(int.class))).thenReturn(post3);
-        mockMvc.perform(delete("/delete_feed/3")
+        mockMvc.perform(delete("/group_feed/delete_feed/3")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
@@ -253,7 +253,7 @@ class GroupFeedControllerTest {
         AuthorisationParamsHelper.setParams("role", UserRole.COURSE_ADMINISTRATOR);
         Mockito.when(groupsClientService.isMemberOfTheGroup(any(int.class), any(int.class))).thenReturn(false);
         Mockito.when(postService.getPostById(any(int.class))).thenReturn(post3);
-        mockMvc.perform(delete("/delete_feed/3")
+        mockMvc.perform(delete("/group_feed/delete_feed/3")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
@@ -268,7 +268,7 @@ class GroupFeedControllerTest {
         Mockito.when(postService.getPostById(any(int.class))).thenReturn(post1);
         Mockito.when(postService.updatePost(any(PostContract.class), any(int.class))).thenReturn(true);
 
-        mockMvc.perform(put("/update_feed/" + post1.getId())
+        mockMvc.perform(put("/group_feed/update_feed/" + post1.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
