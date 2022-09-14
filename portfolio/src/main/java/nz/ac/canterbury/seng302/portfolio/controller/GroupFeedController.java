@@ -6,9 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
-import nz.ac.canterbury.seng302.portfolio.model.contract.CommentContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.PostContract;
-import nz.ac.canterbury.seng302.portfolio.model.contract.PostReactionContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.PostModel;
 import nz.ac.canterbury.seng302.portfolio.repository.PostModelRepository;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
@@ -31,33 +29,25 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * This is an end point controller for group posts.
- */
+/** This is an end point controller for group posts. */
 @RestController
 @RequestMapping("/group_feed")
 public class GroupFeedController extends AuthenticatedController {
 
-  @Autowired
-  private PostService postService;
+  @Autowired private PostService postService;
 
-  @Autowired
-  private GroupsClientService groupsClientService;
+  @Autowired private GroupsClientService groupsClientService;
 
-  @Autowired
-  private CommentService commentService;
+  @Autowired private CommentService commentService;
 
-  @Autowired
-  private UserAccountService userAccountService;
+  @Autowired private UserAccountService userAccountService;
 
-  @Autowired
-  private ReactionService reactionService;
+  @Autowired private ReactionService reactionService;
 
-  @Autowired
-  private PostModelRepository postModelRepository;
+  @Autowired private PostModelRepository postModelRepository;
 
-  public GroupFeedController(AuthStateService authStateService,
-      UserAccountService userAccountService) {
+  public GroupFeedController(
+      AuthStateService authStateService, UserAccountService userAccountService) {
     super(authStateService, userAccountService);
   }
 
@@ -65,8 +55,8 @@ public class GroupFeedController extends AuthenticatedController {
   public ResponseEntity<?> getFeedContent(@PathVariable Integer groupId) {
     try {
       GroupDetailsResponse groupDetailsResponse = groupsClientService.getGroupById(groupId);
-      List<PostModel> allPosts = postService.getAllPostsForAGroup(
-          groupDetailsResponse.getGroupId());
+      List<PostModel> allPosts =
+          postService.getAllPostsForAGroup(groupDetailsResponse.getGroupId());
       if (allPosts.size() == 0) {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
       }
@@ -78,8 +68,8 @@ public class GroupFeedController extends AuthenticatedController {
   }
 
   @PostMapping(value = "/new_post", produces = "application/json")
-  public ResponseEntity<?> addNewPost(@AuthenticationPrincipal PortfolioPrincipal principal,
-      @RequestBody PostContract newPost) {
+  public ResponseEntity<?> addNewPost(
+      @AuthenticationPrincipal PortfolioPrincipal principal, @RequestBody PostContract newPost) {
     try {
       int userId = getUserId(principal);
       if (groupsClientService.isMemberOfTheGroup(userId, newPost.groupId())) {
@@ -94,13 +84,14 @@ public class GroupFeedController extends AuthenticatedController {
   }
 
   @DeleteMapping(value = "/delete_feed/{postId}", produces = "application/json")
-  public ResponseEntity<?> deletePost(@AuthenticationPrincipal PortfolioPrincipal principal,
-      @PathVariable int postId) {
+  public ResponseEntity<?> deletePost(
+      @AuthenticationPrincipal PortfolioPrincipal principal, @PathVariable int postId) {
     try {
       int userId = getUserId(principal);
       PostModel post = postService.getPostById(postId);
-      if (isTeacher(principal) || (groupsClientService.isMemberOfTheGroup(userId, post.getGroupId())
-          && userId == post.getUserId())) {
+      if (isTeacher(principal)
+          || (groupsClientService.isMemberOfTheGroup(userId, post.getGroupId())
+              && userId == post.getUserId())) {
         postService.deletePost(postId);
         return ResponseEntity.ok().build();
       } else {
@@ -112,8 +103,10 @@ public class GroupFeedController extends AuthenticatedController {
   }
 
   @PutMapping(value = "/update_feed/{postId}", produces = "application/json")
-  public ResponseEntity<?> updatePost(@AuthenticationPrincipal PortfolioPrincipal principal,
-      @PathVariable int postId, @RequestBody PostContract updatedPost) {
+  public ResponseEntity<?> updatePost(
+      @AuthenticationPrincipal PortfolioPrincipal principal,
+      @PathVariable int postId,
+      @RequestBody PostContract updatedPost) {
     try {
       int userId = getUserId(principal);
       PostModel post = postService.getPostById(postId);
@@ -133,31 +126,33 @@ public class GroupFeedController extends AuthenticatedController {
   /**
    * This function creates a Map from posts to send it to the front end as JSON object.
    *
-   * @param posts                All the posts from a group as a List
+   * @param posts All the posts from a group as a List
    * @param groupDetailsResponse The details of a Group
    * @return A Hash Map where first element is string and second is an object.
    */
-  private Map<String, Object> combineAndPrepareForFrontEnd(List<PostModel> posts,
-      GroupDetailsResponse groupDetailsResponse) {
+  private Map<String, Object> combineAndPrepareForFrontEnd(
+      List<PostModel> posts, GroupDetailsResponse groupDetailsResponse) {
     Map<String, Object> postWithComments = new HashMap<>();
     postWithComments.put("groupId", groupDetailsResponse.getGroupId());
     postWithComments.put("shortName", groupDetailsResponse.getShortName());
 
     List<Map<String, Object>> allPosts = new ArrayList<>();
 
-    posts.forEach(post -> {
-      Map<String, Object> filteredPosts = new HashMap<>();
-      filteredPosts.put("postId", post.getId());
-      filteredPosts.put("userId", post.getUserId());
-      filteredPosts.put("username", userAccountService.getUserById(post.getUserId()).getUsername());
-      filteredPosts.put("time", post.getCreated());
-      filteredPosts.put("content", post.getPostContent());
-      filteredPosts.put("reactions", reactionService.getUsernamesOfUsersWhoReactedToPost(
-          post.getId()));
-      filteredPosts.put("comments", commentService.getCommentsForThePostAsJson(post.getId()));
+    posts.forEach(
+        post -> {
+          Map<String, Object> filteredPosts = new HashMap<>();
+          filteredPosts.put("postId", post.getId());
+          filteredPosts.put("userId", post.getUserId());
+          filteredPosts.put(
+              "username", userAccountService.getUserById(post.getUserId()).getUsername());
+          filteredPosts.put("time", post.getCreated());
+          filteredPosts.put("content", post.getPostContent());
+          filteredPosts.put(
+              "reactions", reactionService.getUsernamesOfUsersWhoReactedToPost(post.getId()));
+          filteredPosts.put("comments", commentService.getCommentsForThePostAsJson(post.getId()));
 
-      allPosts.add(filteredPosts);
-    });
+          allPosts.add(filteredPosts);
+        });
     postWithComments.put("posts", allPosts);
     return postWithComments;
   }

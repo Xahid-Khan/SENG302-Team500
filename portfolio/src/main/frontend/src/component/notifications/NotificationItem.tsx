@@ -22,13 +22,13 @@ export const NotificationItem: React.FC<INotificationItemProps> = observer((prop
     }
 
     return (
-        <MenuItem style={{whiteSpace: 'normal'}}>
-            <Box sx={{flexGrow: 1, display: "flex", flexDirection: "column"}}>
+        <MenuItem disabled style={{whiteSpace: 'normal', opacity: 1}}>
+            <Box  sx={{flexGrow: 1, display: "flex", flexDirection: "column"}}>
                 <Box sx={{display: "flex", justifyContent: "space-between"}}>
-                    <Box sx={{flexGrow: 1}}><Typography  variant="subtitle2">{timeFormat(props.time)}</Typography></Box>
-                    <Box sx={{flexGrow: 0}}><Typography  variant="subtitle1">{props.from}</Typography></Box>
+                    <Box sx={{flexGrow: 1}}><Typography variant="subtitle2">{timeFormat(props.time)}</Typography></Box>
+                    <Box sx={{flexGrow: 0}}><Typography variant="subtitle1">{props.from}</Typography></Box>
                 </Box>
-                <Typography  variant="body2">{props.description}</Typography>
+                <Typography variant="body2">{props.description}</Typography>
             </Box>
         </MenuItem>
 
