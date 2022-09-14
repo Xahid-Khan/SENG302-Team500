@@ -8,7 +8,7 @@ export function ShowAllPosts() {
 
   const [newComment, setNewComment] = React.useState("");
 
-  const username = document.getElementsByClassName('username')[0].textContent
+  const username = localStorage.getItem("username");
 
   const getCurrentGroup = async () => {
     const currentGroupResponse = await fetch(`feed_content/${viewGroupId}`);
@@ -19,21 +19,8 @@ export function ShowAllPosts() {
         "groupId": -1,
         "shortName": "",
         "posts": [{
-          "postId": -1,
-          "userId": -1,
-          "username": "",
-          "time": "",
-          "content": "",
           "reactions": [],
-          "comments": [{
-            "commentId": -1,
-            "userId": -1,
-            "username": "",
-            "name": "",
-            "time": "",
-            "content": "",
-            "reactions": []
-          }]
+          "comments": []
         }]
       }
   )

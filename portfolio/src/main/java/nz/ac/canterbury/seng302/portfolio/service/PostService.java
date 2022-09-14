@@ -50,6 +50,8 @@ public class PostService {
         return false;
     }
 
+    public List<PostModel> getAllPostsForAUser(int userId) { return postRepository.findPostModelByUserId(userId); }
+
     /**
      * This function will delete the post by using the postId.
      * @param postId Integer Post ID
