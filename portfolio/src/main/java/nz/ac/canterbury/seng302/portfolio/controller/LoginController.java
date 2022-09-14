@@ -93,6 +93,7 @@ public class LoginController {
           domain.startsWith("localhost") ? null : domain);
       // Redirect user if login succeeds
       redirectAttributes.addFlashAttribute("message", "Successfully logged in.");
+      model.addAttribute("username", loginReply.getUsername());
       return "redirect:my_account";
     }
 

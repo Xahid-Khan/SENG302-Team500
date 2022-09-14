@@ -50,7 +50,7 @@ class PingPageStore {
             console.log("Attempting to send ping...")
             this.stomp.publish({
                 destination: "/app/alert",
-                body: location + "~show~" + document.getElementsByClassName("username")[0].textContent
+                body: location + "~show~" + localStorage.getItem("username")
             })
         } else {
             console.log("Not connected")
@@ -62,7 +62,7 @@ class PingPageStore {
             console.log("Attempting to send ping...")
             this.stomp.publish({
                 destination: "/app/alert",
-                body: location + "~cancel~" + document.getElementsByClassName("username")[0].textContent
+                body: location + "~cancel~" + localStorage.getItem("username")
             })
         } else {
             console.log("Not connected")
@@ -74,7 +74,7 @@ class PingPageStore {
             console.log("Attempting to send ping...")
             this.stomp.publish({
                 destination: "/app/alert",
-                body: location + "~save~" + document.getElementsByClassName("username")[0].textContent
+                body: location + "~save~" + localStorage.getItem("username")
             })
         } else {
             console.log("Not connected")
@@ -117,7 +117,7 @@ class PingPageStore {
             this.pongArray.push(frame.body)
             const message = JSON.parse(frame.body)
             if (document.title !== "Calendar") {
-                if (message['username'] !== document.getElementsByClassName("username")[0].textContent) {
+                if (message['username'] !== localStorage.getItem("username")) {
                     if (message['action'] === "show") {
                         if (document.getElementById("event-form-" + message['location'])) {
                             document.getElementById("event-form-" + message['location']).innerText = message['name'] + " is currently editing"
