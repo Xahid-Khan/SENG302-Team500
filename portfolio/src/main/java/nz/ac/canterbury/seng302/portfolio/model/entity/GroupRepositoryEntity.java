@@ -25,13 +25,14 @@ public class GroupRepositoryEntity extends PortfolioEntity {
 
     }
 
-    /**
-     * Creates a new GroupRepositoryEntity with just a group ID
-     * @param groupId The ID of the group associated
-     */
-    public GroupRepositoryEntity(int groupId) {
-        this.groupId = groupId;
-    }
+//    /**
+//     * Creates a new GroupRepositoryEntity with just a group ID
+//     * @param groupId The ID of the group associated
+//     */
+//    public GroupRepositoryEntity(int groupId) {
+//        this.groupId = groupId;
+//
+//    }
 
     /**
      * Creates a new GroupRepositoryEntity with a group ID, token and a repository ID

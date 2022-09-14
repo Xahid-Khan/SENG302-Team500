@@ -10,6 +10,11 @@ import nz.ac.canterbury.seng302.portfolio.model.entity.GroupRepositoryRepository
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.PersistenceContext;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
+
 @Service
 /** A service that manages CRUD operations for group repository settings. */
 public class GroupRepositoryService {
@@ -52,15 +57,15 @@ public class GroupRepositoryService {
   /**
    * Adds a group repository to the database with the given ID.
    *
-   * @param id to associate with the group repository (this should be done on group creation)
+   * @param groupId to associate with the group repository (this should be done on group creation)
    */
-  public GroupRepositoryContract add(int id) {
+  public GroupRepositoryContract add(int groupId) {
     // checks if the group repository already exists
-    if (groupRepositoryRepository.existsById(Integer.toString(id))) {
+    if (groupRepositoryRepository.existsById(Integer.toString(groupId))) {
       return null;
     }
-    var groupRepository = new GroupRepositoryEntity(id);
-    var result = groupRepositoryRepository.save(groupRepository);
+      var newGroupRepository = new GroupRepositoryEntity(groupId, -1, "No token");
+      var result = groupRepositoryRepository.save(newGroupRepository);
 
     return groupRepositoryMapper.toContract(result);
   }
@@ -75,22 +80,47 @@ public class GroupRepositoryService {
     return true;
   }
 
-  /**
-   * Updates a group repository in the database with the given ID. Sets the repositoryID and token
-   */
-  public boolean update(int id, int repositoryId, String token) {
-    GroupRepositoryEntity groupRepository;
-    List<GroupRepositoryEntity> groupRepositories =
-        groupRepositoryRepository.findGroupRepositoryEntityByGroupId(id);
-    // checks if the group repository exists
-    if (!groupRepositories.isEmpty()) {
-      groupRepository = groupRepositories.get(0);
-      groupRepository.setRepositoryID(repositoryId);
-      groupRepository.setToken(token);
-      groupRepositoryRepository.save(groupRepository);
+    /**
+     * Updates a group repository in the database with the given ID. Sets the repositoryID and token
+     */
+    public boolean update(int id, int repositoryID, String token) {
+        //checks if the group repository exists
+        if (groupRepositoryRepository.findGroupRepositoryEntityByGroupId(id).size() == 0) {
+            var newGroupRepository = new GroupRepositoryEntity(id, -1, "No token");
+            var result = groupRepositoryRepository.save(newGroupRepository);
 
-      return true;
+            return true;
+        }
+        var groupRepository = groupRepositoryRepository.findGroupRepositoryEntityByGroupId(id).get(0);
+        if (groupRepositoryRepository.findGroupRepositoryEntityByGroupId(id).size() > 0) {
+            groupRepository.setRepositoryID(repositoryID);
+            groupRepository.setToken(token);
+            groupRepositoryRepository.save(groupRepository);
+            return true;
+        }
+        return false;
     }
-    return false;
-  }
+//  /**
+//   * Updates a group repository in the database with the given ID. Sets the repositoryID and token
+//   */
+//  public boolean update(int id, int repositoryId, String token) {
+//    GroupRepositoryEntity groupRepository;
+//    List<GroupRepositoryEntity> groupRepositories =
+//        groupRepositoryRepository.findGroupRepositoryEntityByGroupId(id);
+//    // checks if the group repository exists
+//    if (!groupRepositories.isEmpty()) {
+//      groupRepository = groupRepositories.get(0);
+//      groupRepository.setRepositoryID(repositoryId);
+//      groupRepository.setToken(token);
+//      groupRepositoryRepository.save(groupRepository);
+//
+//      return true;
+//    }else{
+//        var newGroupRepository = new GroupRepositoryEntity(id, -1, "No token");
+//        var result = groupRepositoryRepository.save(newGroupRepository);
+//
+//        return true;
+//    }
+//
+//  }
 }

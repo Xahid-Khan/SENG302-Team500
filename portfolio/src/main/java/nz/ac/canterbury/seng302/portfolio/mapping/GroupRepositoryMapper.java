@@ -20,7 +20,7 @@ public class GroupRepositoryMapper
      */
     @Override
     public GroupRepositoryEntity toEntity(BaseGroupRepositoryContract contract) {
-        return new GroupRepositoryEntity(contract.groupId());
+        return new GroupRepositoryEntity(contract.groupId(),-1,"No token");
     }
 
     /**
@@ -32,6 +32,6 @@ public class GroupRepositoryMapper
      */
     @Override
     public GroupRepositoryContract toContract(GroupRepositoryEntity entity) {
-        return new GroupRepositoryContract(Integer.parseInt(entity.getId()),entity.getRepositoryID(),entity.getToken());
+        return new GroupRepositoryContract(entity.getGroupId(),entity.getRepositoryID(),entity.getToken());
     }
 }

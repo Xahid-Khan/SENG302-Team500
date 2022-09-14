@@ -1,10 +1,25 @@
 import * as React from "react";
 import {useEffect} from "react";
+import {getBranchAndCommit, repositoryBranchAndCommits} from "./RepositoryBranchAndCommits";
+
+// create object to hold userId, json for commits and json for branches
+interface GroupRepositoryInfo {
+    id: number;
+    commits: string;
+    branches: string;
+}
 
 
 const getAllGroups = async ()  => {
     const allGroupsResponse = await fetch('api/v1/groups/all')
     return allGroupsResponse.json()
+}
+const getAllGroupRepositories = async ()  => {
+    const allGroupsRepositoriesResponse = await fetch('/groups/all_repository/')
+    const allGroupsRepositories = allGroupsRepositoriesResponse.json();
+
+    return allGroupsRepositories;
+
 }
 const commitRequest = new Request('https://eng-git.canterbury.ac.nz/api/v4/projects/13845/repository/commits', {
     method: 'GET',
@@ -18,6 +33,7 @@ const branchRequest = new Request('https://eng-git.canterbury.ac.nz/api/v4/proje
         'PRIVATE-TOKEN': 'YDuDmqxJrQzXPL9NNzAD',
     })
 });
+
 const getCommits = async () => {
     const getCommitsResponse = await fetch(commitRequest)
     return getCommitsResponse.json()
@@ -86,12 +102,25 @@ const toggleGroupView = (id: number) => {
 export function ShowAllGroups({setViewGroupId}: any) {
 
     const [groups, setGroups] = React.useState([])
+    const[groupRepositories,setGroupRepositories] = React.useState([])
     const[commits, setCommits] = React.useState([])
     const[branches, setBranches] = React.useState([])
+    const[allGroupsBranchCommits,setAllGroupsBranchCommits] = React.useState([])
 
     useEffect(() => {
         getAllGroups().then((result) => {
             setGroups(result)
+        })
+        getAllGroupRepositories().then((result) => {
+            setGroupRepositories(result)
+            console.log(result)
+            //for each group repository get the commits and branches
+            result.forEach((groupRepository:any) => {
+                getBranchAndCommit(groupRepository.groupId,groupRepository.repositoryId,groupRepository.token).then((result:any) => {
+                    setAllGroupsBranchCommits((prev:any) => [...prev,result])
+                })
+            })
+            // console.log(result)
         })
         getCommits().then((result) => {
             setCommits(result)
@@ -123,29 +152,41 @@ export function ShowAllGroups({setViewGroupId}: any) {
         return toReturn
     }
 
+
+
     return (
         <div>
             {groups.map((group: any) => (
                 <div className={'raised-card group'} id={`group-${group['id']}`} key={group['id']}>
                     <div className={"group-header"}>
-                        {group['shortName'] !== 'Teachers' && group['shortName'] !== 'Non Group' && isTeacher ? <div className={"delete-group"}>
-                            <span className={"material-icons"} onClick={() => wireModal(group['id'], groups)}>clear</span>
-                        </div>
-                        : "" }
+                        {group['shortName'] !== 'Teachers' && group['shortName'] !== 'Non Group' && isTeacher ?
+                            <div className={"delete-group"}>
+                                <span className={"material-icons"}
+                                      onClick={() => wireModal(group['id'], groups)}>clear</span>
+                            </div>
+                            : ""}
                         {isTeacher ?
-                        <button className="button edit-group-button" id="edit-group" data-privilege="teacher" onClick={() => {document.getElementById("modal-edit-group-members-open").style.display = "block"; setViewGroupId(group.id)}}> Manage Group Members</button>
-                        : ""}
+                            <button className="button edit-group-button" id="edit-group" data-privilege="teacher"
+                                    onClick={() => {
+                                        document.getElementById("modal-edit-group-members-open").style.display = "block";
+                                        setViewGroupId(group.id)
+                                    }}> Manage Group Members</button>
+                            : ""}
                         <div>
-                            <button className={"button show-group-feed-button"} onClick={() => window.location.href=`group_feed/${group['id']}`}>View Feed</button>
+                            <button className={"button show-group-feed-button"}
+                                    onClick={() => window.location.href = `group_feed/${group['id']}`}>View Feed
+                            </button>
                         </div>
                         <div>
                             <span className={"material-icons group-settings"} onClick={() => {
-                                document.getElementById("group-settings-modal-open").style.display='block';
+                                document.getElementById("group-settings-modal-open").style.display = 'block';
                                 setViewGroupId(group.id)
                             }}>settings</span>
                         </div>
                         <div id={`toggle-group-details-${group['id']}`}>
-                            <span className={"material-icons toggle-group-details"} id={`group-toggle-button-${group['id']}`} onClick={() => toggleGroupView(group['id'])}>visibility</span>
+                            <span className={"material-icons toggle-group-details"}
+                                  id={`group-toggle-button-${group['id']}`}
+                                  onClick={() => toggleGroupView(group['id'])}>visibility</span>
                         </div>
                         <h2 className={'group-name-short'}>{group['shortName']}</h2>
                     </div>
@@ -168,34 +209,7 @@ export function ShowAllGroups({setViewGroupId}: any) {
                             ))}
                         </div>
                     </div>
-                        <div className={"groups-page-repository"} id={`groups-repository-${group['id']}`}>
-                            <h3 className={'group-repository-title'}>Branches</h3>
-                            <div className={"table"} id={"group-list-branches"}>
-
-                                {branches.map((branch: any) => (
-                                    <div className="tableRow">
-                                        <div className="tableCell">
-                                            <a href={branch['web_url']} target="_blank">{branch['name']} ({Object.keys(branch['commit']).length} commits)</a> <br></br>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                            <h3 className={'group-repository-title'}>Commits</h3>
-                            <div className={"table"} id={"group-list-commits"}>
-
-                            {commits.map((commit: any) => (
-                                <div className="tableRow">
-                                    <div className="tableCell">
-                                        <strong>Name:</strong>{commit['author_name']} <br></br>
-                                        <strong>Message:</strong> {commit['message']} <br></br>
-                                        <strong>ID:</strong><a href={commit['web_url']} target="_blank">{commit['id']}</a> <br></br>
-                                        </div>
-                                </div>
-                            ))}
-
-
-                        </div>
-                    </div>
+                    {repositoryBranchAndCommits(group['id'])}
                 </div>
             ))}
         </div>

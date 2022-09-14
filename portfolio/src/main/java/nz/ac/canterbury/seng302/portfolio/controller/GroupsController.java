@@ -189,7 +189,7 @@ public class GroupsController extends AuthenticatedController {
 
         if (response.getIsSuccess()) {
           //associates a group repository with the group
-//          groupsRepositoryService.add(response.getNewGroupId());
+          groupsRepositoryService.add(response.getNewGroupId());
           return ResponseEntity.ok().build();
         } else {
           return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Oh dear");
