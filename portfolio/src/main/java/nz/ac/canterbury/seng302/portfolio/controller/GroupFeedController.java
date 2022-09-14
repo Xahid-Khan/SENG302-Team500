@@ -6,8 +6,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
+import nz.ac.canterbury.seng302.portfolio.model.contract.CommentContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.PostContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.PostModel;
+import nz.ac.canterbury.seng302.portfolio.repository.PostModelRepository;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
 import nz.ac.canterbury.seng302.portfolio.service.CommentService;
 import nz.ac.canterbury.seng302.portfolio.service.GroupsClientService;
@@ -19,18 +21,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * This is an end point controller for group posts.
  */
-@Controller
+@RestController
+@RequestMapping("/group_feed")
 public class GroupFeedController extends AuthenticatedController {
 
   @Autowired
@@ -48,23 +52,24 @@ public class GroupFeedController extends AuthenticatedController {
   @Autowired
   private ReactionService reactionService;
 
+  @Autowired
+  private PostModelRepository postModelRepository;
 
   public GroupFeedController(AuthStateService authStateService,
       UserAccountService userAccountService) {
     super(authStateService, userAccountService);
   }
 
-  @GetMapping(value = "/group_feed/{groupId}", produces = "application/json")
-  public String getGroupFeed(@PathVariable Integer groupId) {
-    return "group_feed";
-  }
-
   @GetMapping(value = "/feed_content/{groupId}", produces = "application/json")
   public ResponseEntity<?> getFeedContent(@PathVariable Integer groupId) {
+    addMockDataForTesting();
     try {
       GroupDetailsResponse groupDetailsResponse = groupsClientService.getGroupById(groupId);
       List<PostModel> allPosts = postService.getAllPostsForAGroup(
           groupDetailsResponse.getGroupId());
+      if (allPosts.size() == 0) {
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+      }
       Map<String, Object> data = combineAndPrepareForFrontEnd(allPosts, groupDetailsResponse);
       return ResponseEntity.ok(data);
     } catch (NoSuchElementException e) {
@@ -72,7 +77,7 @@ public class GroupFeedController extends AuthenticatedController {
     }
   }
 
-  @PostMapping(value = "/group_feed/new_post", produces = "application/json")
+  @PostMapping(value = "/new_post", produces = "application/json")
   public ResponseEntity<?> addNewPost(@AuthenticationPrincipal PortfolioPrincipal principal,
       @RequestBody PostContract newPost) {
     try {
@@ -144,7 +149,7 @@ public class GroupFeedController extends AuthenticatedController {
       Map<String, Object> filteredPosts = new HashMap<>();
       filteredPosts.put("postId", post.getId());
       filteredPosts.put("userId", post.getUserId());
-      filteredPosts.put("name", userAccountService.getUserById(post.getUserId()).getUsername());
+      filteredPosts.put("username", userAccountService.getUserById(post.getUserId()).getUsername());
       filteredPosts.put("time", post.getCreated());
       filteredPosts.put("content", post.getPostContent());
       filteredPosts.put("reactions", reactionService.getUsernamesOfUsersWhoReactedToPost(
@@ -156,5 +161,14 @@ public class GroupFeedController extends AuthenticatedController {
     postWithComments.put("posts", allPosts);
     return postWithComments;
   }
-
+  private void addMockDataForTesting() {
+    if (postService.getAllPosts().size() == 0) {
+      postService.createPost(new PostContract(1, "This is a test 1 post"), 3);
+      postService.createPost(new PostContract(1, "This is a test 2 post"), 3);
+      postService.createPost(new PostContract(1, "This is a test 3 post"), 3);
+      commentService.addNewCommentsToPost(new CommentContract(3, postService.getAllPosts().get(0).getId(), "This is a comment to the post for test1."));
+      commentService.addNewCommentsToPost(new CommentContract(3, postService.getAllPosts().get(1).getId(), "This is a comment to the post for test2."));
+      commentService.addNewCommentsToPost(new CommentContract(3, postService.getAllPosts().get(0).getId(), "This is a comment to the post for test3."));
+    }
+  }
 }

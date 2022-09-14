@@ -15,16 +15,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * A CRUD controller for high-five reactions.
  */
-@Controller
+@RestController
+@RequestMapping("/group_feed")
 public class ReactionController extends AuthenticatedController {
 
   @Autowired
@@ -37,6 +39,7 @@ public class ReactionController extends AuthenticatedController {
 
   /**
    * get the reactions for a given post using the post id.
+   *
    * @param id Post id.
    * @return A Map of key username and a list of usernames as values.
    */
@@ -59,6 +62,7 @@ public class ReactionController extends AuthenticatedController {
 
   /**
    * get the reactions for a given comment using the comment id.
+   *
    * @param id Comment id.
    * @return A Map of key username and a list of usernames as values.
    */
@@ -82,7 +86,8 @@ public class ReactionController extends AuthenticatedController {
 
   /**
    * This end-point process the request for adding a high-five reaction to the posts.
-   * @param principal authentication principal.
+   *
+   * @param principal        authentication principal.
    * @param reactionContract A contract that contains info about the reaction.
    * @return A ResponseEntity.
    */
@@ -93,8 +98,12 @@ public class ReactionController extends AuthenticatedController {
       int userId = getUserId(principal);
       PostReactionContract postReactionContract = new PostReactionContract(
           reactionContract.postId(), userId);
-      reactionService.processPostHighFive(postReactionContract);
-      return ResponseEntity.status(HttpStatus.CREATED).build();
+      boolean response = reactionService.processPostHighFive(postReactionContract);
+      if (response) {
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+      } else {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+      }
     } catch (Exception e) {
       e.printStackTrace();
       return ResponseEntity.internalServerError().build();
@@ -103,7 +112,8 @@ public class ReactionController extends AuthenticatedController {
 
   /**
    * This end-point process the request for adding a high-five reaction to the comment.
-   * @param principal authentication principal.
+   *
+   * @param principal        authentication principal.
    * @param reactionContract A contract that contains info about the reaction.
    * @return A ResponseEntity.
    */
