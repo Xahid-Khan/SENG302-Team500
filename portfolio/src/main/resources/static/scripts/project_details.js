@@ -1,7 +1,5 @@
 'use strict';
 
-import {Socket} from "../../../frontend/src/entry/live_updating";
-
 const LoadingStatus = {
   NotYetAttempted: "NotYetAttempted",
   Pending: "Pending",
