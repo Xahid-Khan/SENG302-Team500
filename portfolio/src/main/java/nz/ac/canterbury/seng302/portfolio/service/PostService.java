@@ -86,30 +86,31 @@ public class PostService {
         return false;
     }
 
-  /**
-   * This function will delete the post by using the postId.
-   *
-   * @param postId Integer Post ID
-   * @return True if deletion is successful False otherwise
-   */
-  public boolean deletePost(int postId) {
-    try {
-      var postFound = postRepository.findById(postId);
-      if (postFound.isPresent()) {
-        var comments = commentService.getCommentsForGivenPost(postId);
-        postRepository.deleteById(postId);
-        if (!comments.isEmpty()) {
-          commentService.getCommentsForGivenPost(postId);
+    public List<PostModel> getAllPostsForAUser(int userId) { return postRepository.findPostModelByUserId(userId); }
+
+    /**
+     * This function will delete the post by using the postId.
+     * @param postId Integer Post ID
+     * @return True if deletion is successful False otherwise
+     */
+    public boolean deletePost(int postId) {
+        try {
+            var postFound = postRepository.findById(postId);
+            if (postFound.isPresent()) {
+                var comments = commentService.getCommentsForGivenPost(postId);
+                postRepository.deleteById(postId);
+                if (!comments.isEmpty()) {
+                    commentService.getCommentsForGivenPost(postId);
+                }
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
-        return true;
-      } else {
-        return false;
-      }
-    } catch (Exception e) {
-      e.printStackTrace();
-      return false;
     }
-  }
 
   /**
    * This function will update the changes made to the post.
