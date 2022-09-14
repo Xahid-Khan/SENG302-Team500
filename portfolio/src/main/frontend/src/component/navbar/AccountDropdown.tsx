@@ -1,6 +1,7 @@
 import React from "react";
 import {observer} from "mobx-react-lite";
 import {Avatar, Box, IconButton, Menu, MenuItem} from "@mui/material";
+import {navigateTo} from "./NavBar";
 
 export const AccountDropdown: React.FC = observer(() => {
     const globalImagePath = localStorage.getItem("globalImagePath");
@@ -17,10 +18,6 @@ export const AccountDropdown: React.FC = observer(() => {
 
     //uses the last clicked element to determine which menu to open
     const open2 = anchorEl?.id === 'account-button';
-
-    const navigateTo = (page: string) => {
-        window.location.href=page
-    }
 
     return (
         <React.Fragment>
