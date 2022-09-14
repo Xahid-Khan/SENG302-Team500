@@ -8,7 +8,7 @@ export function ShowAllPosts() {
 
   const [newComment, setNewComment] = React.useState("");
 
-  const username = document.getElementsByClassName('username')[0].textContent
+  const username = localStorage.getItem("username");
 
   const getCurrentGroup = async () => {
     const currentGroupResponse = await fetch(`feed_content/${viewGroupId}`);
