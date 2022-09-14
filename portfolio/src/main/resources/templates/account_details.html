@@ -8,9 +8,19 @@
   <link rel="stylesheet" th:href="@{styles/pages/project_details.css}">
   <link rel="stylesheet" th:href="@{styles/navbar.css}"/>
 
+  <script th:inline="javascript">
+    /*<![CDATA[*/
+    window.localStorage.setItem("userId", [[${userId}]] + "")
+    window.localStorage.setItem("globalImagePath", [[${globalImagePath}]] + "")
+    window.localStorage.setItem("globalUrlPathPrefix", [[${globalUrlPathPrefix}]] + "")
+    window.localStorage.setItem("username", [[${username}]] + "")
+    /*]]>*/
+  </script>
+  <script type="text/javascript" th:src="@{frontend/navbar.js}" defer></script>
+
 </head>
 <body>
-<div th:replace="fragments/header :: header" class="navbar"></div>
+<div id="navbar-react-root"></div>
 <div class="raised-card card-padding">
   <div class="container">
     <div class="name-container">

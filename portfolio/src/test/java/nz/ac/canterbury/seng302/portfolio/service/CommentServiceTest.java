@@ -3,6 +3,8 @@ package nz.ac.canterbury.seng302.portfolio.service;
 import nz.ac.canterbury.seng302.portfolio.model.contract.CommentContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.CommentModel;
 import nz.ac.canterbury.seng302.portfolio.repository.CommentModelRepository;
+import nz.ac.canterbury.seng302.portfolio.repository.PostModelRepository;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,6 +18,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static org.mockito.ArgumentMatchers.anyInt;
+
 @SpringBootTest
 class CommentServiceTest {
     @InjectMocks
@@ -23,6 +27,12 @@ class CommentServiceTest {
 
     @Mock
     private CommentModelRepository mockCommentRepository;
+
+    @Mock
+    private PostModelRepository postModelRepository;
+
+    @Mock
+    private UserAccountService userAccountService;
 
     private CommentContract comment1;
     private CommentContract comment2;
@@ -92,6 +102,7 @@ class CommentServiceTest {
     @Test
     void AddNewCommentToAPostExpectPass () throws Exception  {
         Mockito.when(mockCommentRepository.save(commentList.get(0))).thenReturn(null);
+        Mockito.when(userAccountService.getUserById(anyInt())).thenReturn(UserResponse.newBuilder().build());
         var result = commentService.addNewCommentsToPost(comment1);
         Assertions.assertNotNull(result);
         Assertions.assertEquals(commentList.get(0).getPostId(), result.getPostId());

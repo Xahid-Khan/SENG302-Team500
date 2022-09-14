@@ -69,7 +69,7 @@ public class HomePageController {
     @GetMapping(value = "/subscribe/{userId}", produces = "application/json")
     public ResponseEntity<?> getAll(@AuthenticationPrincipal PortfolioPrincipal principal,
                                          @PathVariable int userId) {
-        try {
+        try{
             var subscriptions = subscriptionService.getAll(userId);
             return ResponseEntity.ok(subscriptions);
         } catch (Exception e){

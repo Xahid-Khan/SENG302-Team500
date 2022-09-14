@@ -80,6 +80,8 @@ class DeadlineView {
     }
     openDeleteModal(){
         this.modalDeleteContainer.style.display='block';
+        document.getElementById('modal-delete-body').innerText=
+            'Are you sure you want to delete the deadline?'
         this.modalDeleteX.addEventListener("click",()=>this.cancelDeleteModal())
         this.modalDeleteCancel.addEventListener("click",()=>this.cancelDeleteModal())
         this.modalDeleteConfirm.addEventListener("click",()=>this.confirmDeleteModal())

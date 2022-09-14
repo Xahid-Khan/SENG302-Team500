@@ -69,7 +69,7 @@ public class SubscriptionServiceTest {
      * Tests that you can successfully retrieve all groups you are subscribed to
      */
     @Test
-    public void getAllSubscriptions() {
+    public void getAllSubscribersForGroup() {
         Mockito.when(subscriptionRepository.findByUserId(USER_ID)).thenReturn(
                 new ArrayList<>(Arrays.asList(
                         new SubscriptionEntity(USER_ID, 1),
@@ -77,10 +77,29 @@ public class SubscriptionServiceTest {
                         new SubscriptionEntity(USER_ID, 3)
                 ))
         );
-        List<Integer> groupIds = subscriptionService.getAll(USER_ID);
+        List<Integer> groupIds = subscriptionService.getAllByUserId(USER_ID);
         Mockito.verify(subscriptionRepository).findByUserId(USER_ID);
         for (int i = 0; i < 3; i++) {
             assertEquals( i + 1, groupIds.get(i));
+        }
+    }
+
+    /**
+     * Tests that you can successfully retrieve all groups you are subscribed to
+     */
+    @Test
+    public void getAllSubscriptionsFromGroup() {
+        Mockito.when(subscriptionRepository.findByGroupId(GROUP_ID)).thenReturn(
+                new ArrayList<>(Arrays.asList(
+                        new SubscriptionEntity(1, GROUP_ID),
+                        new SubscriptionEntity(2, GROUP_ID),
+                        new SubscriptionEntity(3, GROUP_ID)
+                ))
+        );
+        List<Integer> userIds = subscriptionService.getAllByGroupId(GROUP_ID);
+        Mockito.verify(subscriptionRepository).findByGroupId(GROUP_ID);
+        for (int i = 0; i < 3; i++) {
+            assertEquals( i + 1, userIds.get(i));
         }
     }
 }

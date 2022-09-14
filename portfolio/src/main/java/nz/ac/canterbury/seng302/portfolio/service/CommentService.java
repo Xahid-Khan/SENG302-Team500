@@ -6,8 +6,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import nz.ac.canterbury.seng302.portfolio.model.contract.CommentContract;
+import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseNotificationContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.CommentModel;
+import nz.ac.canterbury.seng302.portfolio.model.entity.PostModel;
 import nz.ac.canterbury.seng302.portfolio.repository.CommentModelRepository;
+import nz.ac.canterbury.seng302.portfolio.repository.PostModelRepository;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,10 +23,18 @@ public class CommentService {
 
   @Autowired
   private CommentModelRepository commentRepository;
+
   @Autowired
   private UserAccountService userAccountService;
+
   @Autowired
   private ReactionService reactionService;
+
+  @Autowired
+  private PostModelRepository postModelRepository;
+
+  @Autowired
+  private NotificationService notificationService;
 
   /**
    * This funciton will gather all the comments in the database and return it.
@@ -70,6 +82,11 @@ public class CommentService {
       CommentModel comment = new CommentModel(newComment.postId(), newComment.userId(),
           newComment.comment());
       commentRepository.save(comment);
+      Optional<PostModel> post = postModelRepository.findById(newComment.postId());
+      UserResponse user = userAccountService.getUserById(newComment.userId());
+      if (post.isPresent()) {
+        notificationService.create(new BaseNotificationContract(post.get().getUserId(), "Your Posts", user.getUsername() + " commented on your post!"));
+      }
       return comment;
     } catch (Exception e) {
       e.printStackTrace();
@@ -109,6 +126,7 @@ public class CommentService {
    */
   public boolean deleteCommentById(int commentId) {
     try {
+      System.err.println(commentId);
       return commentRepository.deleteById(commentId);
     } catch (Exception e) {
       e.printStackTrace();

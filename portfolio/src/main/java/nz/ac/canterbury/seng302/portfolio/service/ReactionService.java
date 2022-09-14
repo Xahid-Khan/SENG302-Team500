@@ -2,10 +2,16 @@ package nz.ac.canterbury.seng302.portfolio.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
 import nz.ac.canterbury.seng302.portfolio.model.contract.CommentReactionContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.PostReactionContract;
+import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseNotificationContract;
+import nz.ac.canterbury.seng302.portfolio.model.entity.PostModel;
 import nz.ac.canterbury.seng302.portfolio.model.entity.ReactionModel;
+import nz.ac.canterbury.seng302.portfolio.repository.PostModelRepository;
 import nz.ac.canterbury.seng302.portfolio.repository.ReactionModelRepository;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +26,12 @@ public class ReactionService {
 
   @Autowired
   private UserAccountService userAccountService;
+
+  @Autowired
+  private PostModelRepository postModelRepository;
+
+  @Autowired
+  private NotificationService notificationService;
 
   /**
    * get all the reactions for a specific user, using the user id.
@@ -106,6 +118,11 @@ public class ReactionService {
       ReactionModel newReaction = new ReactionModel(postReactionContract.userId(),
           postReactionContract.postId());
       reactionRepository.save(newReaction);
+      Optional<PostModel> post = postModelRepository.findById(postReactionContract.postId());
+      UserResponse user = userAccountService.getUserById(postReactionContract.userId());
+      if (post.isPresent()) {
+        notificationService.create(new BaseNotificationContract(post.get().getUserId(), "Your Posts", user.getUsername() + " high-fived your post!"));
+      }
       return true;
     } catch (Exception e) {
       return false;

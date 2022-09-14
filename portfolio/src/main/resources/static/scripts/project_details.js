@@ -186,7 +186,7 @@ class Application {
     }
 
     console.log("Binding project");
-    this.projects.set(projectData.id, new Project(projectElement, projectData, this.deleteProject.bind(this)));
+    this.projects.set(projectData.id, new Project(projectElement, projectData, this.deleteProject.bind(this), this.submitAddProjectForm.bind(this)));
 
     console.log("Project bound");
 
@@ -257,7 +257,7 @@ class Application {
   // Start
   const application = new Application(document.getElementById("project-list"));
   if (document.getElementsByClassName('studentMode').length === 0) {
-    Socket.start();
+    Socket.start("edit-project", "alert")
   }
   application.fetchProjects();
 })()
