@@ -9,9 +9,16 @@
   <link rel="stylesheet" th:href="@{styles/pages/edit_account.css}"/>
   <link rel="stylesheet" th:href="@{styles/navbar.css}"/>
 
+  <script th:inline="javascript">
+    /*<![CDATA[*/
+    window.localStorage.setItem("globalImagePath", [[${globalImagePath}]] + "")
+    window.localStorage.setItem("globalUrlPathPrefix", [[${globalUrlPathPrefix}]] + "")
+    /*]]>*/
+  </script>
+  <script type="text/javascript" th:src="@{frontend/navbar.js}" defer></script>
 </head>
 <body>
-<div th:replace="fragments/header :: header" class="navbar"></div>
+<div id="navbar-react-root"></div>
 <div class="raised-card card-padding" style="display: flex;justify-content: center;">
   <div class="container">
     <div class="name-container">
