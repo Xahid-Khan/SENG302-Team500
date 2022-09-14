@@ -1,4 +1,4 @@
-import React, {FormEvent, useEffect} from "react";
+import React, {useEffect} from "react";
 import {DatetimeUtils} from "../../util/DatetimeUtils";
 
 export function ShowAllPosts() {
@@ -7,6 +7,8 @@ export function ShowAllPosts() {
   const viewGroupId = urlData[urlData.length - 1];
 
   const [newComment, setNewComment] = React.useState("");
+
+  const username = document.getElementsByClassName('username')[0].textContent
 
   const getCurrentGroup = async () => {
     const currentGroupResponse = await fetch(`feed_content/${viewGroupId}`);
@@ -21,21 +23,8 @@ export function ShowAllPosts() {
         "groupId": -1,
         "shortName": "",
         "posts": [{
-          "postId": -1,
-          "userId": -1,
-          "username": "",
-          "time": "",
-          "content": "",
           "reactions": [],
-          "comments": [{
-            "commentId": -1,
-            "userId": -1,
-            "username": "",
-            "name": "",
-            "time": "",
-            "content": "",
-            "reactions": []
-          }]
+          "comments": []
         }]
       }
   )
@@ -48,7 +37,6 @@ export function ShowAllPosts() {
     }
   }, [groupPosts.groupId])
 
-  const groupShortName = document.getElementById("group-feed-title").innerText;
   const isTeacher = localStorage.getItem("isTeacher") === "true";
 
   const handleCancel = () => {
@@ -110,9 +98,23 @@ export function ShowAllPosts() {
     window.location.reload();
   }
 
-  const clickHighFive = (id: number) => {
+  const clickHighFive = async (id: number) => {
     const button = document.getElementById(`high-five-${id}`)
     button.style.backgroundSize = button.style.backgroundSize === "100% 100%" ? "0 100%" : "100% 100%"
+
+    const res = await fetch('post_high_five', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        "postId": id
+      })
+    });
+    await getCurrentGroup().then((result) => {
+      setGroupPosts(result)
+    })
+
   }
 
   const toggleCommentDisplay = (id: number) => {
@@ -191,14 +193,15 @@ export function ShowAllPosts() {
 
   return (
       <div>
-        <div className={"group-feed-name"}>{groupShortName} Feed</div>
+        <div className={"group-feed-name"}>{groupPosts.shortName} Feed</div>
         {groupPosts.groupId != -1 ?
-            groupPosts.posts.map((post) => (
+            groupPosts.posts.map((post: any) => (
                 <div className={"raised-card group-post"} key={post.postId}>
-                  <div className={"post-header"}>
-                    <div className={"post-info"}>
+                  <div className={"post-header"} key={"postHeader" + post.postId}>
+                    <div className={"post-info"} key={"postInfo" + post.postId}>
                       <div>{post.username}</div>
-                      <div className={"post-time"}>{post.time}</div>
+                      <div
+                          className={"post-time"}>{DatetimeUtils.timeStringToTimeSince(post.time)}</div>
                     </div>
                     {post.userId == parseInt(localStorage.getItem("userId")) || isTeacher ?
                         <>
@@ -223,18 +226,27 @@ export function ShowAllPosts() {
                         :
                         ""}
                   </div>
-                  <div className={"post-body"}>{post.content}</div>
+                  <div className={"post-body"} key={"postBody" + post.postId}>{post.content}</div>
                   <div className={"border-line"}/>
                   <div className={"post-footer"}>
                     <div className={"high-five-container"}>
+                      <div className={"high-fives"}>
                       <div className={"high-five-overlay"}>
                         <span className={"high-five-text"}>High Five!</span> <span
                           className={"material-icons"}>sign_language</span>
                       </div>
-                      <div className={"high-five"} id={`high-five-${post.postId}`}
+                      <div className={"high-five"} id={`high-five-${post.postId}`} style={{backgroundSize: post.reactions.includes(username) ? "100% 100%" : "0% 100%"}}
                            onClick={() => clickHighFive(post.postId)}>
                         <span className={"high-five-text"}>High Five!</span> <span
                           className={"material-icons"}>sign_language</span>
+                      </div>
+                        <div className={"high-five-list"}>
+                          <div className={"high-five-count"}><span className={"material-icons"} style={{fontSize: 15}}>sign_language</span>{post.reactions.length}</div>
+                          <div className={"border-line high-five-separator"}/>
+                          {post.reactions.map((highFiveName: string) => (
+                              <div className={"high-five-names"} key={highFiveName}>{highFiveName}</div>
+                          ))}
+                        </div>
                       </div>
                     </div>
                     <div className={"comments-icon-container"}>
@@ -249,7 +261,7 @@ export function ShowAllPosts() {
                     <div className={"border-line"}/>
                     <div className={"post-comments"} id={`post-comments-${post.postId}`}>
                       {post.comments.map((comment: any) => (
-                              <div className={"post-comment-container"}>
+                              <div className={"post-comment-container"} key={comment.commentId}>
                                 <div
                                     className={"comment-name"}>{comment.username} ({DatetimeUtils.timeStringToTimeSince(comment.time)})
                                 </div>
@@ -279,13 +291,13 @@ export function ShowAllPosts() {
                     </form>
                   </div>
                 </div>
+
             ))
             :
             <div className={"raised-card group-post"} key={"-1"}>
-              <h3>There are no Posts</h3>
+              <h3>There are no posts</h3>
             </div>
         }
-        {getEditModalData()}
       </div>
   )
 }
