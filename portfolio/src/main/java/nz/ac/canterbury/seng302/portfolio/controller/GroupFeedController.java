@@ -159,6 +159,7 @@ public class GroupFeedController extends AuthenticatedController {
     postWithComments.put("posts", allPosts);
     return postWithComments;
   }
+
   private void addMockDataForTesting() {
     if (postService.getAllPosts().size() == 0) {
       postService.createPost(new PostContract(1, "This is a test 1 post"), 3);
@@ -169,4 +170,5 @@ public class GroupFeedController extends AuthenticatedController {
       commentService.addNewCommentsToPost(new CommentContract(3, postService.getAllPosts().get(0).getId(), "This is a comment to the post for test3."));
     }
   }
+
 }

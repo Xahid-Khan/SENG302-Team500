@@ -51,58 +51,59 @@ class PingPageStore {
     this.nextPingValue = newValue
   }
 
-  notify(location: string) {
-    if (this.connected) {
-      console.log("Attempting to send ping...")
-      this.stomp.publish({
-        destination: "/app/" + this.destination,
-        body: location + "~"
-        // TODO: In here, a frontend NotificationContract (or relevant parts of it)
-        //  can be added and then parsed for later handling. The method of wiring up is left
-        //  to the task implementing the logic regarding how notifications are handled,
-        //  such as to avoid an overlap and having two conflicting systems again.
-        //
-        // TODO: Note that LiveUpdatesController will need to be updated to parse whatever
-        //  is decided in here. (File can be found with CTRL + SHIFT + N)
-      })
-    }
-  }
 
-  showEdit(location: string) {
-    if (this.connected) {
-      console.log("Attempting to send ping...")
-      this.stomp.publish({
-        destination: "/app/" + this.destination,
-        body: location + "~show~" + document.getElementsByClassName("username")[0].textContent
-      })
-    } else {
-      console.log("Not connected")
+    notify(location: string) {
+        if (this.connected) {
+            console.log("Attempting to send ping...")
+            this.stomp.publish({
+                destination: "/app/" + this.destination,
+                body: location + "~"
+                // TODO: In here, a frontend NotificationContract (or relevant parts of it)
+                //  can be added and then parsed for later handling. The method of wiring up is left
+                //  to the task implementing the logic regarding how notifications are handled,
+                //  such as to avoid an overlap and having two conflicting systems again.
+                //
+                // TODO: Note that LiveUpdatesController will need to be updated to parse whatever
+                //  is decided in here. (File can be found with CTRL + SHIFT + N)
+            })
+        }
     }
-  }
 
-  cancelEdit(location: string) {
-    if (this.connected) {
-      console.log("Attempting to send ping...")
-      this.stomp.publish({
-        destination: "/app/" + this.destination,
-        body: location + "~cancel~" + document.getElementsByClassName("username")[0].textContent
-      })
-    } else {
-      console.log("Not connected")
+    showEdit(location: string) {
+        if (this.connected) {
+            console.log("Attempting to send ping...")
+            this.stomp.publish({
+                destination: "/app/alert",
+                body: location + "~show~" + localStorage.getItem("username")
+            })
+        } else {
+            console.log("Not connected")
+        }
     }
-  }
 
-  saveEdit(location: string) {
-    if (this.connected) {
-      console.log("Attempting to send ping...")
-      this.stomp.publish({
-        destination: "/app/" + this.destination,
-        body: location + "~save~" + document.getElementsByClassName("username")[0].textContent
-      })
-    } else {
-      console.log("Not connected")
+    cancelEdit(location: string) {
+        if (this.connected) {
+            console.log("Attempting to send ping...")
+            this.stomp.publish({
+                destination: "/app/alert",
+                body: location + "~cancel~" + localStorage.getItem("username")
+            })
+        } else {
+            console.log("Not connected")
+        }
     }
-  }
+
+    saveEdit(location: string) {
+        if (this.connected) {
+            console.log("Attempting to send ping...")
+            this.stomp.publish({
+                destination: "/app/alert",
+                body: location + "~save~" + localStorage.getItem("username")
+            })
+        } else {
+            console.log("Not connected")
+        }
+    }
 
   async start(location: string, destination: string) {
     await new Promise<void>((res) => {
@@ -143,44 +144,43 @@ class PingPageStore {
     })
   }
 
-  protected onReceiveEditAlert(frame: StompMessage) {
-    runInAction(() => {
-      this.pongArray.push(frame.body)
-      const message = JSON.parse(frame.body)
-      if (document.title !== "Calendar") {
-        if (message['username'] !== document.getElementsByClassName("username")[0].textContent) {
-          if (message['action'] === "show") {
-            if (document.getElementById("event-form-" + message['location'])) {
-              document.getElementById("event-form-" + message['location']).innerText = message['name'] + " is currently editing"
+    protected onReceiveEditAlert(frame: StompMessage) {
+        runInAction(() => {
+            this.pongArray.push(frame.body)
+            const message = JSON.parse(frame.body)
+            if (document.title !== "Calendar") {
+                if (message['username'] !== localStorage.getItem("username")) {
+                    if (message['action'] === "show") {
+                        if (document.getElementById("event-form-" + message['location'])) {
+                            document.getElementById("event-form-" + message['location']).innerText = message['name'] + " is currently editing"
+                        } else {
+                            document.getElementById("editing-form-" + message['location']).innerText = message['name'] + " is currently editing"
+                        }
+                    } else {
+                        if (message['action'] === "save") {
+                            window.location.reload();
+                        }
+                        if (document.getElementById("event-form-" + message['location'])) {
+                            document.getElementById("event-form-" + message['location']).innerText = "";
+                        } else {
+                            document.getElementById("editing-form-" + message['location']).innerText = "";
+                        }
+                    }
+                }
             } else {
-              document.getElementById("editing-form-" + message['location']).innerText = message['name'] + " is currently editing"
+                if (message['action'] !== "show") {
+                    window.location.reload();
+                }
             }
-          } else {
-            if (message['action'] === "save") {
-              window.location.reload();
-            }
-            if (document.getElementById("event-form-" + message['location'])) {
-              document.getElementById("event-form-" + message['location']).innerText = "";
-            } else {
-              document.getElementById("editing-form-" + message['location']).innerText = "";
-            }
-          }
-        }
-      } else {
-        if (message['action'] !== "show") {
-          window.location.reload()
-        }
-      }
-    })
-  }
-
-  protected onNotification(frame: StompMessage) {
-    const message = JSON.parse(frame.body)
-    // TODO: Hook to frontend here. The message will be the contents of whatever is parsed in from
-    //  the `notify` function. Then, using whatever is decided for parsing, you can utilize the data
-    //  here. (This means toasts, adding a notification count to the notification icon,
-    //   updating states, etc.)
-  }
+        })
+    }
+    protected onNotification(frame: StompMessage) {
+        const message = JSON.parse(frame.body)
+        // TODO: Hook to frontend here. The message will be the contents of whatever is parsed in from
+        //  the `notify` function. Then, using whatever is decided for parsing, you can utilize the data
+        //  here. (This means toasts, adding a notification count to the notification icon,
+        //   updating states, etc.)
+    }
 }
 
 export class Socket {

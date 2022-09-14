@@ -3,12 +3,14 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import nz.ac.canterbury.seng302.portfolio.AuthorisationParamsHelper;
+import nz.ac.canterbury.seng302.portfolio.model.GetPaginatedUsersOrderingElement;
 import nz.ac.canterbury.seng302.portfolio.model.contract.MilestoneContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.MilestoneEntity;
 import nz.ac.canterbury.seng302.portfolio.model.entity.ProjectEntity;
 import nz.ac.canterbury.seng302.portfolio.repository.MilestoneRepository;
 import nz.ac.canterbury.seng302.portfolio.repository.ProjectRepository;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
+import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedUsersResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
 import org.junit.jupiter.api.BeforeEach;
@@ -180,6 +182,8 @@ public class MilestoneControllerTest {
         var project = new ProjectEntity("test project", null, Instant.parse("2022-12-01T10:15:30.00Z"), Instant.parse("2023-01-20T10:15:30.00Z"));
         projectRepository.save(project);
 
+        Mockito.when(userAccountService.getPaginatedUsers(0, Integer.MAX_VALUE, GetPaginatedUsersOrderingElement.NAME, true)).thenReturn(PaginatedUsersResponse.newBuilder().build());
+
         var apiPath = String.format("/api/v1/projects/%s/milestones", project.getId());
         var body = """
             {
@@ -236,6 +240,8 @@ public class MilestoneControllerTest {
     public void createNewNoDescription() throws Exception {
         var project = new ProjectEntity("test project", null, Instant.parse("2022-12-01T10:15:30.00Z"), Instant.parse("2023-01-20T10:15:30.00Z"));
         projectRepository.save(project);
+
+        Mockito.when(userAccountService.getPaginatedUsers(0, Integer.MAX_VALUE, GetPaginatedUsersOrderingElement.NAME, true)).thenReturn(PaginatedUsersResponse.newBuilder().build());
 
         var apiPath = String.format("/api/v1/projects/%s/milestones", project.getId());
         var body = """

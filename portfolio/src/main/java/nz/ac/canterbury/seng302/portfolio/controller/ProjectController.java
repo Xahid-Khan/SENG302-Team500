@@ -5,10 +5,7 @@ import java.util.NoSuchElementException;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.portfolio.model.contract.ProjectContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseProjectContract;
-import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
-import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
-import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
-import nz.ac.canterbury.seng302.portfolio.service.ValidationService;
+import nz.ac.canterbury.seng302.portfolio.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +29,8 @@ public class ProjectController extends AuthenticatedController {
   @Autowired private ProjectService projectService;
 
   @Autowired private ValidationService validationService;
+
+  @Autowired private EndDateNotificationService endDateNotificationService;
 
   @Autowired
   public ProjectController(
@@ -93,6 +92,7 @@ public class ProjectController extends AuthenticatedController {
           return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
         }
         var project = projectService.create(newProject);
+        endDateNotificationService.addNotifications(project.endDate(), "Project", project.name(), project.id());
         return ResponseEntity.ok(project);
       } catch (Exception error) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -115,6 +115,7 @@ public class ProjectController extends AuthenticatedController {
     if (isTeacher(principal)) {
       try {
         projectService.delete(id);
+        endDateNotificationService.removeNotifications("Project" + id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
       } catch (NoSuchElementException error) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -149,6 +150,8 @@ public class ProjectController extends AuthenticatedController {
           return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
         }
         projectService.update(updatedProject, id);
+        endDateNotificationService.removeNotifications("Project" + id);
+        endDateNotificationService.addNotifications(updatedProject.endDate(), "Project", updatedProject.name(), id);
         return ResponseEntity.ok("");
       } catch (NoSuchElementException error) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

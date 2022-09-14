@@ -3,13 +3,13 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import java.util.List;
 import java.util.NoSuchElementException;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
+import nz.ac.canterbury.seng302.portfolio.model.GetPaginatedUsersOrderingElement;
 import nz.ac.canterbury.seng302.portfolio.model.contract.EventContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseEventContract;
-import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
-import nz.ac.canterbury.seng302.portfolio.service.EventService;
-import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
-import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
-import nz.ac.canterbury.seng302.portfolio.service.ValidationService;
+import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseNotificationContract;
+import nz.ac.canterbury.seng302.portfolio.service.*;
+import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedUsersResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -34,6 +34,14 @@ public class EventController extends AuthenticatedController {
   @Autowired private ProjectService projectService;
 
   @Autowired private ValidationService validationService;
+
+  @Autowired private UserAccountService userAccountService;
+
+  @Autowired private AuthStateService authStateService;
+
+  @Autowired private NotificationService notificationService;
+
+  @Autowired private EndDateNotificationService endDateNotificationService;
 
   @Autowired
   public EventController(AuthStateService authStateService, UserAccountService userAccountService) {
@@ -99,7 +107,14 @@ public class EventController extends AuthenticatedController {
 
       try {
         var result = eventService.createEvent(projectId, event);
-
+        PaginatedUsersResponse users = userAccountService.getPaginatedUsers(0, Integer.MAX_VALUE, GetPaginatedUsersOrderingElement.NAME, true);
+        UserResponse eventCreator = userAccountService.getUserById(authStateService.getId(principal));
+        for (UserResponse user: users.getUsersList()) {
+          if (user.getId() != eventCreator.getId()) {
+            notificationService.create(new BaseNotificationContract(user.getId(), "Project", eventCreator.getUsername() + " added a new event " + event.name() +"!"));
+          }
+        }
+        endDateNotificationService.addNotifications(event.endDate(), "Event", event.name(), result.eventId());
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
       } catch (NoSuchElementException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -133,7 +148,8 @@ public class EventController extends AuthenticatedController {
 
       try {
         eventService.update(id, event);
-
+        endDateNotificationService.removeNotifications("Event" + id);
+        endDateNotificationService.addNotifications(event.endDate(), "Event", event.name(), id);
         return ResponseEntity.ok(eventService.get(id));
       } catch (NoSuchElementException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -156,7 +172,7 @@ public class EventController extends AuthenticatedController {
     if (isTeacher(principal)) {
       try {
         eventService.delete(id);
-
+        endDateNotificationService.removeNotifications("Event" + id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
       } catch (NoSuchElementException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
