@@ -11,8 +11,9 @@ import {NotificationDropdown} from "../notifications/NotificationDropdown";
 import {AccountDropdown} from "./AccountDropdown";
 
 export const NavBar: React.FC = observer(() => {
+    const userId = parseInt(window.localStorage.getItem("userId"))
     const navigateTo = (page: string) => {
-        window.location.href=page
+        window.location.href= '../' + page
     }
 
     return (
@@ -25,6 +26,9 @@ export const NavBar: React.FC = observer(() => {
                     </Box>
 
                     <Box sx={{pl: 2, flexGrow: 1}}>
+                        <Button color='inherit' onClick={() => navigateTo("home_feed")}>
+                            <Typography textAlign="center">Home</Typography>
+                        </Button>
                         <Button color='inherit' onClick={() => navigateTo("project-details")}>
                             <Typography textAlign="center">Project</Typography>
                         </Button>
