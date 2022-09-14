@@ -1,4 +1,5 @@
-import React, {useEffect} from "react";
+import React, {FormEvent, useEffect} from "react";
+import {DatetimeUtils} from "../../util/DatetimeUtils";
 
 export function ShowAllPosts() {
 
@@ -15,11 +16,6 @@ export function ShowAllPosts() {
   const [content, setContent] = React.useState('');
   const [editPostId, setEditPostId] = React.useState(-1);
   const [longCharacterCount, setLongCharacterCount] = React.useState(0);
-
-  const getCurrentGroup = async () => {
-    const currentGroupResponse = await fetch(`feed_content/${viewGroupId}`);
-    return currentGroupResponse.json()
-  }
 
   const [groupPosts, setGroupPosts] = React.useState({
         "groupId": -1,
@@ -114,6 +110,39 @@ export function ShowAllPosts() {
     window.location.reload();
   }
 
+  const clickHighFive = (id: number) => {
+    const button = document.getElementById(`high-five-${id}`)
+    button.style.backgroundSize = button.style.backgroundSize === "100% 100%" ? "0 100%" : "100% 100%"
+  }
+
+  const toggleCommentDisplay = (id: number) => {
+    const commentsContainer = document.getElementById(`comments-container-${id}`)
+    commentsContainer.style.display = commentsContainer.style.display === "block" ? "none" : "block"
+  }
+
+  const makeComment = async (id: number) => {
+    setNewComment(document.getElementById(`comment-content-${id}`).getAttribute('value'));
+
+    if (newComment.length != 0) {
+      await fetch(`add_comment`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          "userId": localStorage.getItem("userId"),
+          "postId": id,
+          "comment": newComment
+        })
+      });
+      setNewComment("");
+      await getCurrentGroup().then((result) => {
+        setGroupPosts(result)
+      })
+      document.getElementById(`post-comments-${id}`).scrollTop = document.getElementById(`post-comments-${id}`).scrollHeight;
+    }
+  }
+
   const getEditModalData = () => {
     return (<div className={"modal-container"} id={"edit-post-modal-open"}>
       <div className={"modal-edit-post"}>
@@ -132,7 +161,7 @@ export function ShowAllPosts() {
             <label className={"post-title"}>{title}</label>
             <br/>
             <br/>
-            <span id={"edit-modal-error"} style={{display: error? "none" : "block"}}></span>
+            <span id={"edit-modal-error"}></span>
           </div>
 
           <div className={"post-description"}>
@@ -168,16 +197,16 @@ export function ShowAllPosts() {
                 <div className={"raised-card group-post"} key={post.postId}>
                   <div className={"post-header"}>
                     <div className={"post-info"}>
-                      <div>{post.name}</div>
+                      <div>{post.username}</div>
                       <div className={"post-time"}>{post.time}</div>
                     </div>
-                    {post.userId == localStorage.getItem("userId") || isTeacher ?
+                    {post.userId == parseInt(localStorage.getItem("userId")) || isTeacher ?
                         <>
                           <div className={"post-edit"}>
                             <span className={"material-icons"}
                                   onClick={() => {
                                     setContent(post.content);
-                                    setTitle(post.name);
+                                    setTitle(post.username);
                                     setEditPostId(post.postId);
                                     document.getElementById("edit-post-modal-open").style.display = 'block';
                                   }}
@@ -195,67 +224,6 @@ export function ShowAllPosts() {
                         ""}
                   </div>
                   <div className={"post-body"}>{post.content}</div>
-                </div>
-            ))
-            :
-            <div className={"raised-card group-post"} key={"-1"}>
-              <h3>There are no Posts</h3>
-            </div>
-        }
-        {getEditModalData()}
-      </div>
-  )
-  const clickHighFive = (id: number) => {
-    const button = document.getElementById(`high-five-${id}`)
-    button.style.backgroundSize = button.style.backgroundSize === "100% 100%" ? "0 100%" : "100% 100%"
-  }
-
-  const toggleCommentDisplay = (id: number) => {
-    const commentsContainer = document.getElementById(`comments-container-${id}`)
-    commentsContainer.style.display = commentsContainer.style.display === "block" ? "none" : "block"
-  }
-
-  const makeComment = async (id: number) => {
-    setNewComment(document.getElementById(`comment-content-${id}`).getAttribute('value'));
-
-    if (newComment.length != 0) {
-      await fetch(`add_comment`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          "userId": localStorage.getItem("userId"),
-          "postId": id,
-          "comment": newComment
-        })
-      });
-      setNewComment("");
-      await getCurrentGroup().then((result) => {
-        setGroupPosts(result)
-      })
-      document.getElementById(`post-comments-${id}`).scrollTop = document.getElementById(`post-comments-${id}`).scrollHeight;
-    }
-  }
-
-
-  return (
-      <div>
-        <div className={"group-feed-name"}>{groupPosts.shortName} Feed</div>
-        {groupPosts.groupId != -1 ?
-            groupPosts.posts.map((post: any) => (
-                <div className={"raised-card group-post"} key={post.postId}>
-                  <div className={"post-header"} key={"postHeader" + post.postId}>
-                    <div className={"post-info"} key={"postInfo" + post.postId}>
-                      <div>{post.username}</div>
-                      <div
-                          className={"post-time"}>{DatetimeUtils.timeStringToTimeSince(post.time)}</div>
-                    </div>
-                    {isTeacher ?
-                        <div className={"post-delete"}><span
-                            className={"material-icons"}>clear</span></div> : ""}
-                  </div>
-                  <div className={"post-body"} key={"postBody" + post.postId}>{post.content}</div>
                   <div className={"border-line"}/>
                   <div className={"post-footer"}>
                     <div className={"high-five-container"}>
@@ -311,13 +279,13 @@ export function ShowAllPosts() {
                     </form>
                   </div>
                 </div>
-
             ))
             :
             <div className={"raised-card group-post"} key={"-1"}>
               <h3>There are no Posts</h3>
             </div>
         }
+        {getEditModalData()}
       </div>
   )
 }
