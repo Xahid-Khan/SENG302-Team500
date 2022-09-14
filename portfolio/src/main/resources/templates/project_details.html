@@ -23,8 +23,8 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
-<body class="fullscreen" th:classappend="${!isTeacher ? 'studentMode' : ''}">
 <div id="navbar-react-root"></div>
+<body class="fullscreen" th:classappend="${!isTeacher ? 'studentMode' : ''}">
 <div id="update-insert">
 
 </div>
@@ -45,7 +45,7 @@
             <div class="modal-close-button" id="modal-delete-x">&times;</div>
         </div>
         <div class="border-line"></div>
-        <div class="modal-body">
+        <div id="modal-delete-body" class="modal-body">
             Are you sure you want to delete?
         </div>
         <div class="modal-buttons">
