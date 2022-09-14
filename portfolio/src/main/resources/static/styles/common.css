@@ -118,6 +118,6 @@ input, textarea {
   padding-bottom: 10px;
 }
 .border-line{
-  border-top: black solid 1px;
+  border-top: #666666 solid 1px;
   margin: 10px 0px;
 }
