@@ -70,7 +70,7 @@ public class HomePageController {
     public ResponseEntity<?> getAll(@AuthenticationPrincipal PortfolioPrincipal principal,
                                          @PathVariable int userId) {
         try{
-            var subscriptions = subscriptionService.getAll(userId);
+            var subscriptions = subscriptionService.getAllByUserId(userId);
             return ResponseEntity.ok(subscriptions);
         } catch (Exception e){
             return ResponseEntity.internalServerError().build();
