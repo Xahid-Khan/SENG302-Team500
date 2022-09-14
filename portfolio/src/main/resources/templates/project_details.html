@@ -23,8 +23,8 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
-<body class="fullscreen" th:classappend="${(isStudent) ? 'studentMode' : (isCourseAdmin ? 'courseAdminMode' : '')}">
 <div id="navbar-react-root"></div>
+<body class="fullscreen" th:classappend="${!isTeacher ? 'studentMode' : ''}">
 <div id="update-insert">
 
 </div>
