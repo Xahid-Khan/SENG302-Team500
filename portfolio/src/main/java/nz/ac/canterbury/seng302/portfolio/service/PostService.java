@@ -21,7 +21,6 @@ public class PostService {
   @Autowired private SubscriptionService subscriptionService;
 
   @Autowired private CommentService commentService;
-
   @Autowired private NotificationService notificationService;
 
   @Autowired private UserAccountService userAccountService;
@@ -77,6 +76,10 @@ public class PostService {
       e.printStackTrace();
     }
     return false;
+  }
+
+  public List<PostModel> getAllPostsForAUser(int userId) {
+    return postRepository.findPostModelByUserId(userId);
   }
 
   /**

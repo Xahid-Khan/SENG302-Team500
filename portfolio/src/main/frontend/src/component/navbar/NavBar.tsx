@@ -37,6 +37,7 @@ export const NavBar: React.FC = observer(() => {
 
             <NotificationDropdown></NotificationDropdown>
             <AccountDropdown></AccountDropdown>
+
           </Toolbar>
         </AppBar>
         <Toolbar sx={{mb: 3}}/>

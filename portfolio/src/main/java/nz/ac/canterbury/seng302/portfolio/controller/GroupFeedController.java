@@ -39,7 +39,6 @@ public class GroupFeedController extends AuthenticatedController {
   @Autowired private GroupsClientService groupsClientService;
 
   @Autowired private CommentService commentService;
-
   @Autowired private UserAccountService userAccountService;
 
   @Autowired private ReactionService reactionService;

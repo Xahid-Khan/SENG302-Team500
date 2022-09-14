@@ -129,7 +129,7 @@ class PingPageStore {
       this.pongArray.push(frame.body)
       const message = JSON.parse(frame.body)
       if (document.title !== "Calendar") {
-        if (message['username'] !== document.getElementsByClassName("username")[0].textContent) {
+        if (message['username'] !== localStorage.getItem("username")) {
           if (message['action'] === "show") {
             if (document.getElementById("event-form-" + message['location'])) {
               document.getElementById("event-form-" + message['location']).innerText = message['name'] + " is currently editing"
@@ -149,7 +149,7 @@ class PingPageStore {
         }
       } else {
         if (message['action'] !== "show") {
-          window.location.reload()
+          window.location.reload();
         }
       }
     })

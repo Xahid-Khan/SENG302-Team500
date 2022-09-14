@@ -44,7 +44,7 @@ public class RegisterServerService {
     UserRegisterResponse.Builder reply = UserRegisterResponse.newBuilder();
     var passwordHash = passwordService.hashPassword(request.getPassword());
     List<UserRole> roles = new ArrayList<>();
-    roles.add(UserRole.COURSE_ADMINISTRATOR);
+    roles.add(UserRole.STUDENT);
     UserModel user =
         new UserModel(
             request.getUsername(),
