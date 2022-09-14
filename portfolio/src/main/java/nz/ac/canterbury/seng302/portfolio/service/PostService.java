@@ -61,10 +61,10 @@ public class PostService {
     try {
       var postFound = postRepository.findById(postId);
       if (postFound.isPresent()) {
-        postRepository.deleteById(postId);
         var comments = commentService.getCommentsForGivenPost(postId);
+        postRepository.deleteById(postId);
         if (!comments.isEmpty()) {
-            commentService.deleteCommentById(postId);
+          commentService.getCommentsForGivenPost(postId);
         }
         return true;
       } else {
