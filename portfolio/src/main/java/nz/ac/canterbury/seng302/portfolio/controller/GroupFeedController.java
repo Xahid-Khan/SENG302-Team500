@@ -49,6 +49,9 @@ public class GroupFeedController extends AuthenticatedController {
   private CommentService commentService;
 
   @Autowired
+  private ReactionService reactionService;
+
+  @Autowired
   private UserAccountService userAccountService;
 
 
@@ -59,7 +62,6 @@ public class GroupFeedController extends AuthenticatedController {
 
   @GetMapping(value = "/feed_content/{groupId}", produces = "application/json")
   public ResponseEntity<?> getFeedContent(@PathVariable Integer groupId) {
-    addMockDataForTesting();
     try {
 
       GroupDetailsResponse groupDetailsResponse = groupsClientService.getGroupById(groupId);
@@ -159,16 +161,4 @@ public class GroupFeedController extends AuthenticatedController {
     postWithComments.put("posts", allPosts);
     return postWithComments;
   }
-
-  private void addMockDataForTesting() {
-    if (postService.getAllPosts().size() == 0) {
-      postService.createPost(new PostContract(1, "This is a test 1 post"), 3);
-      postService.createPost(new PostContract(1, "This is a test 2 post"), 3);
-      postService.createPost(new PostContract(1, "This is a test 3 post"), 3);
-      commentService.addNewCommentsToPost(new CommentContract(3, postService.getAllPosts().get(0).getId(), "This is a comment to the post for test1."));
-      commentService.addNewCommentsToPost(new CommentContract(3, postService.getAllPosts().get(1).getId(), "This is a comment to the post for test2."));
-      commentService.addNewCommentsToPost(new CommentContract(3, postService.getAllPosts().get(0).getId(), "This is a comment to the post for test3."));
-    }
-  }
-
 }
