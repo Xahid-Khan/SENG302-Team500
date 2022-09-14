@@ -12,6 +12,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+/**
+ * A controller to manage the request for group post page.
+ */
+
 @Controller
 public class GroupFeedPageController extends AuthenticatedController {
 
