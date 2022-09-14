@@ -11,7 +11,7 @@ import {NotificationDropdown} from "../notifications/NotificationDropdown";
 import {AccountDropdown} from "./AccountDropdown";
 
 export const navigateTo = (page: string) => {
-    const globalUrlPathPrefix = parseInt(window.localStorage.getItem("globalUrlPathPrefix"))
+    const globalUrlPathPrefix = window.localStorage.getItem("globalUrlPathPrefix")
     window.location.href = location.protocol + '//' + location.host + globalUrlPathPrefix + '/' + page
 }
 
