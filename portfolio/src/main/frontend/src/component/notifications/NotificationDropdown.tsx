@@ -8,6 +8,10 @@ import {NotificationItem} from "./NotificationItem";
 export const NotificationDropdown: React.FC = observer(() => {
 
     const userId = parseInt(window.localStorage.getItem("userId"))
+    const globalUrlPathPrefix = localStorage.getItem("globalUrlPathPrefix");
+    const globalImagePath = localStorage.getItem("globalImagePath");
+    console.log(globalUrlPathPrefix)
+    console.log(globalImagePath)
 
     const [notifications, setNotifications] = React.useState([])
     const [numUnseen, setNumUnseen] = React.useState(0)
@@ -29,6 +33,8 @@ export const NotificationDropdown: React.FC = observer(() => {
                 method: 'GET'
             }
         )
+        console.log(globalUrlPathPrefix)
+        console.log(globalImagePath)
         return notifications.json()
     }
 
