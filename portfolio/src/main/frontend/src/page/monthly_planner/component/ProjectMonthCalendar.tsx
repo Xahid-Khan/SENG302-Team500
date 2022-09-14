@@ -22,7 +22,7 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
     const project = useProjectStore()
     const toaster = useToasterStore()
     if(window.localStorage.getItem("canEdit") === "true" && !Socket.isConnected()) {
-        Socket.start()
+        Socket.start("edit-project", "alert")
     }
 
     /**

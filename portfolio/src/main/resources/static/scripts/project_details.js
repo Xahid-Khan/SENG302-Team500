@@ -1,5 +1,7 @@
 'use strict';
 
+import {Socket} from "../../../frontend/src/entry/live_updating";
+
 const LoadingStatus = {
   NotYetAttempted: "NotYetAttempted",
   Pending: "Pending",
@@ -257,7 +259,7 @@ class Application {
   // Start
   const application = new Application(document.getElementById("project-list"));
   if (document.getElementsByClassName('studentMode').length === 0) {
-    Socket.start();
+    Socket.start("edit-project", "alert")
   }
   application.fetchProjects();
 })()
