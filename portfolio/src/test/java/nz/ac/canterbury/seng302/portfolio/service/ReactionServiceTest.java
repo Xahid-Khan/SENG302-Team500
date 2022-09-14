@@ -1,14 +1,17 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import nz.ac.canterbury.seng302.portfolio.model.contract.CommentReactionContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.PostReactionContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.ReactionModel;
+import nz.ac.canterbury.seng302.portfolio.repository.PostModelRepository;
 import nz.ac.canterbury.seng302.portfolio.repository.ReactionModelRepository;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.junit.jupiter.api.Assertions;
@@ -29,6 +32,8 @@ class ReactionServiceTest {
   private ReactionModelRepository mockReactionRepository;
   @Mock
   private UserAccountService userAccountService;
+  @Mock
+  private PostModelRepository postModelRepository;
 
   private CommentReactionContract commentReactionContract1;
   private CommentReactionContract commentReactionContract2;
@@ -196,6 +201,7 @@ class ReactionServiceTest {
     Mockito.when(mockReactionRepository.getReactionsByUserId(any(int.class)))
         .thenReturn(new ArrayList<>());
     Mockito.when(mockReactionRepository.save(any())).thenReturn(allReactionsPosts.get(1));
+    Mockito.when(userAccountService.getUserById(anyInt())).thenReturn(UserResponse.newBuilder().build());
 
     var result = reactionService.processPostHighFive(postReactionContract1);
     Assertions.assertTrue(result);

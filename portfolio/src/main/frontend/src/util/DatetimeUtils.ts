@@ -58,7 +58,7 @@ export class DatetimeUtils {
    * Gets date and time and formats it to DMY and 12:00 PM format
    */
   static localToDMYWithTime(date: Date) {
-    return `${date.getDate()} ${date.toLocaleString('default', {month: 'long'})} ${date.getFullYear()} ${date.getHours() % 12}:${leftPadNumber(date.getMinutes(), 2)}${(date.getSeconds() !== 0) ? ':' + leftPadNumber(date.getSeconds(), 2) : ''} ${date.getHours() > 12 ? 'PM' : 'AM'}`
+    return `${date.getDate()} ${date.toLocaleString('default', {month: 'long'})} ${date.getFullYear()} ${date.getHours() == 0 || date.getHours() == 12 ? 12 : date.getHours() % 12}:${leftPadNumber(date.getMinutes(), 2)}${(date.getSeconds() !== 0) ? ':' + leftPadNumber(date.getSeconds(), 2) : ''} ${date.getHours() >= 12 ? 'PM' : 'AM'}`
   }
 
   /**
