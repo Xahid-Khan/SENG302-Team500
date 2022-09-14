@@ -10,11 +10,12 @@ import {
 import {NotificationDropdown} from "../notifications/NotificationDropdown";
 import {AccountDropdown} from "./AccountDropdown";
 
+export const navigateTo = (page: string) => {
+    const globalUrlPathPrefix = parseInt(window.localStorage.getItem("globalUrlPathPrefix"))
+    window.location.href = location.protocol + '//' + location.host + globalUrlPathPrefix + '/' + page
+}
+
 export const NavBar: React.FC = observer(() => {
-    const userId = parseInt(window.localStorage.getItem("userId"))
-    const navigateTo = (page: string) => {
-        window.location.href= '../' + page
-    }
 
     return (
         <React.Fragment>
