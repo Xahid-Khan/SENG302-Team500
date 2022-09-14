@@ -75,7 +75,7 @@ class ReactionControllerTest {
     Mockito.when(reactionService.getUsernamesOfUsersWhoReactedToPost(validPostId))
         .thenReturn(usernames);
 
-    mockMvc.perform(get("/reaction_post/" + validPostId))
+    mockMvc.perform(get("/group_feed/reaction_post/" + validPostId))
         .andExpect(status().isOk())
         .andExpect(content().json("{\"usernames\":[\"user1\",\"user2\", \"user3\"]}"))
         .andReturn();
@@ -94,7 +94,7 @@ class ReactionControllerTest {
     Mockito.when(reactionService.getUsernamesOfUsersWhoReactedToComment(any(int.class)))
         .thenReturn(usernames);
 
-    mockMvc.perform(get("/reaction_comment/" + validCommentId))
+    mockMvc.perform(get("/group_feed/reaction_comment/" + validCommentId))
         .andExpect(status().isOk())
         .andExpect(content().json("{\"usernames\":[\"user1\",\"user2\", \"user3\"]}"))
         .andReturn();
@@ -104,7 +104,7 @@ class ReactionControllerTest {
   void getAllUserNameForUsersWhoReactedToACommentExpectFail() throws Exception {
     Mockito.when(reactionService.getUsernamesOfUsersWhoReactedToComment(any(int.class)))
         .thenReturn(new ArrayList<>());
-    mockMvc.perform(get("/reaction_comment/" + validCommentId))
+    mockMvc.perform(get("/group_feed/reaction_comment/" + validCommentId))
         .andExpect(status().is4xxClientError());
   }
 
@@ -112,7 +112,7 @@ class ReactionControllerTest {
   void postANewReactionToAPostAndExpectToPass() throws Exception {
     Mockito.when(reactionService.processPostHighFive(any(PostReactionContract.class)))
         .thenReturn(true);
-    mockMvc.perform(post("/post_high_five")
+    mockMvc.perform(post("/group_feed/post_high_five")
             .contentType(MediaType.APPLICATION_JSON)
             .content("""
                 {
@@ -127,7 +127,7 @@ class ReactionControllerTest {
   void postANewReactionToACommentAndExpectToPass() throws Exception {
     Mockito.when(reactionService.processPostHighFive(any(PostReactionContract.class)))
         .thenReturn(true);
-    mockMvc.perform(post("/comment_high_five")
+    mockMvc.perform(post("/group_feed/comment_high_five")
             .contentType(MediaType.APPLICATION_JSON)
             .content("""
                 {

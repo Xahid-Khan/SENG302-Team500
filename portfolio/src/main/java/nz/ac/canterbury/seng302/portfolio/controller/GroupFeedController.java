@@ -9,6 +9,7 @@ import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.portfolio.model.contract.CommentContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.PostContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.PostModel;
+import nz.ac.canterbury.seng302.portfolio.repository.PostModelRepository;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
 import nz.ac.canterbury.seng302.portfolio.service.CommentService;
 import nz.ac.canterbury.seng302.portfolio.service.GroupsClientService;
@@ -51,6 +52,8 @@ public class GroupFeedController extends AuthenticatedController {
   @Autowired
   private ReactionService reactionService;
 
+  @Autowired
+  private PostModelRepository postModelRepository;
 
   public GroupFeedController(AuthStateService authStateService,
       UserAccountService userAccountService) {
@@ -58,28 +61,19 @@ public class GroupFeedController extends AuthenticatedController {
   }
 
   @GetMapping(value = "/feed_content/{groupId}", produces = "application/json")
-  public ResponseEntity<?> getFeedContent(@AuthenticationPrincipal PortfolioPrincipal principal, @PathVariable Integer groupId) {
-    addMockDataForTesting(getUserId(principal));
+  public ResponseEntity<?> getFeedContent(@PathVariable Integer groupId) {
+    addMockDataForTesting();
     try {
       GroupDetailsResponse groupDetailsResponse = groupsClientService.getGroupById(groupId);
       List<PostModel> allPosts = postService.getAllPostsForAGroup(
           groupDetailsResponse.getGroupId());
+      if (allPosts.size() == 0) {
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+      }
       Map<String, Object> data = combineAndPrepareForFrontEnd(allPosts, groupDetailsResponse);
       return ResponseEntity.ok(data);
     } catch (NoSuchElementException e) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-    } catch (Exception e) {
-      return ResponseEntity.internalServerError().build();
-    }
-  }
-
-  @GetMapping(value = "get_post/{postId}", produces = "application/json")
-  public ResponseEntity<?> getPostDataById(@PathVariable Integer postId) {
-    try {
-      PostModel postData = postService.getPostById(postId);
-      return ResponseEntity.ok().body(postData);
-    } catch (Exception e) {
-      return ResponseEntity.internalServerError().build();
     }
   }
 
@@ -155,7 +149,7 @@ public class GroupFeedController extends AuthenticatedController {
       Map<String, Object> filteredPosts = new HashMap<>();
       filteredPosts.put("postId", post.getId());
       filteredPosts.put("userId", post.getUserId());
-      filteredPosts.put("name", userAccountService.getUserById(post.getUserId()).getUsername());
+      filteredPosts.put("username", userAccountService.getUserById(post.getUserId()).getUsername());
       filteredPosts.put("time", post.getCreated());
       filteredPosts.put("content", post.getPostContent());
       filteredPosts.put("reactions", reactionService.getUsernamesOfUsersWhoReactedToPost(
@@ -167,21 +161,14 @@ public class GroupFeedController extends AuthenticatedController {
     postWithComments.put("posts", allPosts);
     return postWithComments;
   }
-
-  private void addMockDataForTesting(int userId) {
+  private void addMockDataForTesting() {
     if (postService.getAllPosts().size() == 0) {
-      postService.createPost(new PostContract(1, "This is a test 1 post"), userId);
-      postService.createPost(new PostContract(1, "This is a test 2 post"), userId);
+      postService.createPost(new PostContract(1, "This is a test 1 post"), 3);
+      postService.createPost(new PostContract(1, "This is a test 2 post"), 3);
       postService.createPost(new PostContract(1, "This is a test 3 post"), 3);
-      commentService.addNewCommentsToPost(
-          new CommentContract(userId, postService.getAllPosts().get(0).getId(),
-              "This is a comment to the post for test1."));
-      commentService.addNewCommentsToPost(
-          new CommentContract(userId, postService.getAllPosts().get(1).getId(),
-              "This is a comment to the post for test2."));
-      commentService.addNewCommentsToPost(
-          new CommentContract(userId, postService.getAllPosts().get(0).getId(),
-              "This is a comment to the post for test3."));
+      commentService.addNewCommentsToPost(new CommentContract(3, postService.getAllPosts().get(0).getId(), "This is a comment to the post for test1."));
+      commentService.addNewCommentsToPost(new CommentContract(3, postService.getAllPosts().get(1).getId(), "This is a comment to the post for test2."));
+      commentService.addNewCommentsToPost(new CommentContract(3, postService.getAllPosts().get(0).getId(), "This is a comment to the post for test3."));
     }
   }
 }

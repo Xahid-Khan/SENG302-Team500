@@ -11,21 +11,11 @@ import {NotificationDropdown} from "../notifications/NotificationDropdown";
 import {AccountDropdown} from "./AccountDropdown";
 
 export const navigateTo = (page: string) => {
-    const globalUrlPathPrefix = localStorage.getItem("globalUrlPathPrefix");
-    const globalImagePath = localStorage.getItem("globalImagePath");
-    console.log(globalUrlPathPrefix)
-    console.log(globalImagePath)
-    console.log(window.location.href)
-    window.location.href = location.protocol + '//' + location.host +globalUrlPathPrefix+ '/' + page
+    const globalUrlPathPrefix = parseInt(window.localStorage.getItem("globalUrlPathPrefix"))
+    window.location.href = location.protocol + '//' + location.host + globalUrlPathPrefix + '/' + page
 }
 
 export const NavBar: React.FC = observer(() => {
-    const userId = parseInt(window.localStorage.getItem("userId"))
-    const globalUrlPathPrefix = localStorage.getItem("globalUrlPathPrefix");
-    const globalImagePath = localStorage.getItem("globalImagePath");
-    console.log(globalUrlPathPrefix)
-    console.log(globalImagePath)
-    console.log(window.location.href)
 
     return (
         <React.Fragment>
