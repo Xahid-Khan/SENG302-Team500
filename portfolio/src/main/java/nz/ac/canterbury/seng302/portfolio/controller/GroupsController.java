@@ -5,11 +5,14 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.portfolio.model.contract.GroupContract;
+import nz.ac.canterbury.seng302.portfolio.model.contract.SubscriptionContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.UserContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseGroupContract;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
 import nz.ac.canterbury.seng302.portfolio.service.GroupsClientService;
+import nz.ac.canterbury.seng302.portfolio.service.SubscriptionService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
+import nz.ac.canterbury.seng302.portfolio.service.GroupRepositoryService;
 import nz.ac.canterbury.seng302.shared.identityprovider.CreateGroupResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.DeleteGroupResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.GroupDetailsResponse;
@@ -32,6 +35,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/api/v1")
 public class GroupsController extends AuthenticatedController {
   @Autowired private GroupsClientService groupsClientService;
+  @Autowired private SubscriptionService subscriptionService;
+
+  @Autowired private GroupRepositoryService groupsRepositoryService;
 
   @Autowired
   public GroupsController(
@@ -65,6 +71,11 @@ public class GroupsController extends AuthenticatedController {
     }
   }
 
+  /**
+   * Helper method to convert a list of UserResponse objects into a list of UserContract objects.
+   * @param userList
+   * @return
+   */
   private ArrayList<UserContract> getUsers(List<UserResponse> userList) {
     ArrayList<UserContract> users = new ArrayList<>();
     for (UserResponse user : userList) {
@@ -124,6 +135,7 @@ public class GroupsController extends AuthenticatedController {
     if (isTeacher(principal)) {
       try {
         groupsClientService.addGroupMembers(Integer.parseInt(groupId), members);
+        members.stream().forEach(member -> subscriptionService.subscribe(new SubscriptionContract(member, Integer.parseInt(groupId))));
         return ResponseEntity.ok().build();
       } catch (Exception error) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -147,6 +159,8 @@ public class GroupsController extends AuthenticatedController {
       try {
         DeleteGroupResponse response = groupsClientService.deleteGroup(Integer.parseInt(groupId));
         if (response.getIsSuccess()) {
+          //associates a group repository with the group
+          groupsRepositoryService.delete(Integer.parseInt(groupId));
           return ResponseEntity.ok().build();
         } else {
           return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -172,7 +186,10 @@ public class GroupsController extends AuthenticatedController {
     if (isTeacher(principal)) {
       try {
         CreateGroupResponse response = groupsClientService.createGroup(newGroup);
+
         if (response.getIsSuccess()) {
+          //associates a group repository with the group
+          groupsRepositoryService.add(response.getNewGroupId());
           return ResponseEntity.ok().build();
         } else {
           return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Oh dear");

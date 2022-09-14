@@ -4,15 +4,20 @@
 }
 
 .group-post {
+    padding: 15px;
     margin: 20px;
-    padding: 15px 15px;
 }
 
 .post-time {
-    font-size: 15px;
+    font-size: 10px;
 }
 
 .post-delete {
+    float: right;
+    cursor: pointer;
+}
+
+.post-edit {
     float: right;
     cursor: pointer;
 }
@@ -23,12 +28,10 @@
 
 .post-body {
     padding: 15px 0 10px 0;
-    font-size: 17px;
 }
 
 .post-info {
     width: 100%;
-    font-size: 25px;
 }
 
 .post-header {
@@ -50,95 +53,92 @@
     font-weight: bold;
 }
 
-.high-five {
-    display: flex;
-    cursor: pointer;
-    background-position: 50% 50%;
-    background-repeat: no-repeat;
-    background-size: 0 100%;
-    background-image: radial-gradient(circle at center, red 10%, orange, green, blue, violet);
-    transition: background-size 0.6s;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    z-index: 1;
-    position: absolute;
-    padding-left: 15px;
-    -webkit-user-select: none; /*Taken from https://www.w3schools.com/howto/howto_css_disable_text_selection.asp */
-    -ms-user-select: none; /*Taken from https://www.w3schools.com/howto/howto_css_disable_text_selection.asp */
-    user-select: none; /*Taken from https://www.w3schools.com/howto/howto_css_disable_text_selection.asp */
+/*.modal-create-group {*/
+/*    background-color: #fff;*/
+/*    margin: 20% auto;*/
+/*    width: 40%;*/
+/*    border: black solid 1px;*/
+/*    border-radius: 20px;*/
+/*    padding: 20px 20px 50px 20px;*/
+/*}*/
+
+.modal-edit-post {
+    background-color: #fff;
+    margin: 5% auto;
+    width: 80%;
+    border: black solid 1px;
+    border-radius: 20px;
+    padding: 20px 20px 50px 20px;
 }
 
-.high-five-overlay {
-    position: absolute;
-    padding-left: 15px;
-    display: flex;
-}
-
-.comments-select {
-    cursor: pointer;
-    float: right;
-    display: flex;
-}
-
-.post-footer {
-    width: 50%;
-    padding-bottom: 23px;
-}
-
-.comments-select-text {
-    padding-right: 5px;
-    padding-top: 4px;
-}
-
-.comments-text {
-    padding: 5px 5px 0 0;
-}
-
-.high-five-text {
-    padding: 5px 5px 0 0;
-}
-
-.make-comment-container {
-    width: 100%;
-    display: flex;
-    padding-top: 5px;
-}
-
-.input-comment {
+.modal-edit-post-body {
     width: 100%;
 }
-
-.input-comment-text {
-    width: 100%;
-    height: 100%;
-}
-
-.submit-comment-button {
-    width: 100%;
-    white-space: nowrap;
-}
-
-.comments-container {
+.modal-delete-container{
     display: none;
+    z-index:1;
+    background-color: rgba(0,0,0,0.3);
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
 }
 
-.comment-name {
-    font-size: 12px;
-    padding: 0 0 2px 8px;
+.modal-edit-header{
+    display: flex;
 }
 
-.post-comment {
-    background-color: #cecece;
-    border-radius: 10px;
-    display: inline-block;
-    padding: 5px 10px;
+.modal-edit-buttons{
+    flex: 1;
+    float: right;
+}
+.modal-edit-close-button{
+    flex: 1;
+    float: right;
+}
+.modal-edit-close-button:hover{
+    cursor: pointer;
+}
+.modal-edit-title{
+    font-size: 20px;
+    width: 100%;
+}
+.modal-edit-body{
+    width: 90%;
+    font-size: 16px;
+    padding-bottom: 10px;
+}
+.modal-size {
+    width: 50%;
+    height: 50%;
+
+    top: 50%;
+    left: 50%;
+    right: auto;
+    bottom: auto;
+
+    transform: translate(-50%, -50%);
 }
 
-.post-comments {
-    overflow-y: scroll;
-    max-height: 200px;
+.modal-group-settings {
+    background-color: #fff;
+    margin: 5% auto;
+    width: 80%;
+    border: black solid 1px;
+    border-radius: 20px;
+    padding: 20px 20px 50px 20px;
 }
-
-.post-comment-container {
-    margin: 10px;
+.text-area{
+    width: 100%;
+    height: 20%;
+}
+.post-title{
+    width: 50%;
+}
+.title-length {
+    white-space: nowrap;
+    padding-left: 3px;
 }
