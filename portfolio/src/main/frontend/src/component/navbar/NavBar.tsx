@@ -13,7 +13,7 @@ import {AccountDropdown} from "./AccountDropdown";
 export const NavBar: React.FC = observer(() => {
     const userId = parseInt(window.localStorage.getItem("userId"))
     const navigateTo = (page: string) => {
-        window.location.href= '../' + page
+        window.location.href = page
     }
 
     return (
