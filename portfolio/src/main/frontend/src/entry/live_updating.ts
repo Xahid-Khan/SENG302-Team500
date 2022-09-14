@@ -56,7 +56,7 @@ class PingPageStore {
       console.log("Attempting to send ping...")
       this.stomp.publish({
         destination: "/app/" + this.destination,
-        body: location + "~"
+        body: location + "~";
         // TODO: In here, a frontend NotificationContract (or relevant parts of it)
         //  can be added and then parsed for later handling. The method of wiring up is left
         //  to the task implementing the logic regarding how notifications are handled,

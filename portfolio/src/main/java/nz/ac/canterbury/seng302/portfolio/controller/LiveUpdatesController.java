@@ -35,15 +35,21 @@ public class LiveUpdatesController {
   /**
    * STOMP endpoints which handles notifications.
    *
-   * @param principal authentication principal
    * @param alert the alert
    * @return a parsed message
    */
   @MessageMapping("/notification")
   @SendTo("/topic/notification")
-  public Map<String, String> notify(
-      @AuthenticationPrincipal PreAuthenticatedAuthenticationToken principal, String alert) {
-    // TODO: Parse whatever message format is decided in live_updating.ts
-    return null;
+  public Map<String, String> notify(String alert) {
+    Map<String, String> message = new HashMap<>();
+    String[] notification = alert.split("~");
+    message.put("location", notification[0]);
+    message.put("notification-id", notification[1]);
+    message.put("user-id", notification[2]);
+    message.put("timeNotified", notification[3]);
+    message.put("notifiedFrom", notification[4]);
+    message.put("description", notification[5]);
+    message.put("seen", notification[6]);
+    return message;
   }
 }
