@@ -15,14 +15,38 @@
     <script th:inline="javascript">
         /*<![CDATA[*/
         window.localStorage.setItem("userId", [[${userId}]] + "")
+        window.localStorage.setItem("isStudent", [[${isStudent}]] + "")
+        window.localStorage.setItem("globalImagePath", [[${globalImagePath}]] + "")
+        window.localStorage.setItem("globalUrlPathPrefix", [[${globalUrlPathPrefix}]] + "")
         window.localStorage.setItem("isMember", [[${isMember}]] + "")
         /*]]>*/
     </script>
+    <script type="text/javascript" th:src="@{../frontend/navbar.js}" defer></script>
     <script type="text/javascript" th:src="@{../frontend/group_feed.js}" defer></script>
 </head>
 <body>
-<div th:replace="fragments/header :: header" class="navbar"></div>
+<div id="navbar-react-root"></div>
 <div th:text="${groupName}" class="group-feed-title" id="group-feed-title" style="display: none"></div>
 <div id="react-root"></div>
+
+<div class="modal-delete-container" id="modal-delete-open">
+    <div class="modal-delete">
+        <div class="modal-header">
+            <div class="modal-title">
+                Delete Group Post Confirmation
+            </div>
+            <div class="modal-close-button" id="modal-delete-x">&times;</div>
+        </div>
+        <div class="border-line"></div>
+        <div class="modal-delete-body">
+            Are you sure you want to delete your Post?
+        </div>
+        <div class="modal-buttons">
+            <button class="button" id="modal-delete-cancel">Cancel</button>
+            <button class="button dangerous-button" id="modal-delete-confirm">Delete</button>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>

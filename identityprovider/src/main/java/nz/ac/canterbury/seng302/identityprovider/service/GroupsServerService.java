@@ -342,8 +342,8 @@ public class GroupsServerService extends GroupsServiceGrpc.GroupsServiceImplBase
   public void getGroupDetails(GetGroupDetailsRequest request,
       StreamObserver<GroupDetailsResponse> responseObserver) {
     Optional<GroupModel> groupModel = groupRepository.findById(request.getGroupId());
-
-    var groupMembersIds = groupMemberRepository.findById(groupModel.get().getId()).get().getUserIds();
+    var groupMembersIds = groupMemberRepository.findById(groupModel.get().getId()).get()
+        .getUserIds();
     var groupMembersIterable = userRepository.findAllById(groupMembersIds);
     ArrayList<UserResponse> groupMembers = new ArrayList<>();
 

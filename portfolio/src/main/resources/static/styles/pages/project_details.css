@@ -2,6 +2,10 @@
     display: none !important;
 }
 
+.courseAdminMode [data-privilege="course_admin"] {
+    display: inline-block !important;
+}
+
 body {
     min-height: 100vh;
 }
@@ -333,6 +337,9 @@ textarea {
     padding: 25px;
 }
 
+.project-delete-button {
+    display: none;
+}
 
 
 

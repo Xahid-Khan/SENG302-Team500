@@ -6,12 +6,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
+import nz.ac.canterbury.seng302.portfolio.model.contract.CommentContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.PostContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.PostModel;
+import nz.ac.canterbury.seng302.portfolio.repository.PostModelRepository;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
 import nz.ac.canterbury.seng302.portfolio.service.CommentService;
 import nz.ac.canterbury.seng302.portfolio.service.GroupsClientService;
 import nz.ac.canterbury.seng302.portfolio.service.PostService;
+import nz.ac.canterbury.seng302.portfolio.service.ReactionService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
 import nz.ac.canterbury.seng302.shared.identityprovider.GroupDetailsResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,11 +59,15 @@ public class GroupFeedController extends AuthenticatedController {
 
   @GetMapping(value = "/feed_content/{groupId}", produces = "application/json")
   public ResponseEntity<?> getFeedContent(@PathVariable Integer groupId) {
+    addMockDataForTesting();
     try {
 
       GroupDetailsResponse groupDetailsResponse = groupsClientService.getGroupById(groupId);
       List<PostModel> allPosts = postService.getAllPostsForAGroup(
           groupDetailsResponse.getGroupId());
+      if (allPosts.size() == 0) {
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+      }
       Map<String, Object> data = combineAndPrepareForFrontEnd(allPosts, groupDetailsResponse);
       return ResponseEntity.ok(data);
     } catch (NoSuchElementException e) {
@@ -140,36 +147,26 @@ public class GroupFeedController extends AuthenticatedController {
       Map<String, Object> filteredPosts = new HashMap<>();
       filteredPosts.put("postId", post.getId());
       filteredPosts.put("userId", post.getUserId());
-      filteredPosts.put("name", userAccountService.getUserById(post.getUserId()).getUsername());
+      filteredPosts.put("username", userAccountService.getUserById(post.getUserId()).getUsername());
       filteredPosts.put("time", post.getCreated());
       filteredPosts.put("content", post.getPostContent());
-      filteredPosts.put("comments", getCommentsForThePost(post.getId()));
+      filteredPosts.put("reactions", reactionService.getUsernamesOfUsersWhoReactedToPost(
+          post.getId()));
+      filteredPosts.put("comments", commentService.getCommentsForThePostAsJson(post.getId()));
 
       allPosts.add(filteredPosts);
     });
     postWithComments.put("posts", allPosts);
     return postWithComments;
   }
-
-  /**
-   * A helper function that will retrieve all the comments for a given post and return them as a
-   * list of Hash Map
-   *
-   * @param postId A post ID of type Integer
-   * @return A list containing all the comments for the post as HashMap objects.
-   */
-  private List<Map<String, Object>> getCommentsForThePost(int postId) {
-    List<Map<String, Object>> comments = new ArrayList<>();
-    commentService.getCommentsForGivenPost(postId).forEach(comment -> {
-      Map<String, Object> commentObject = new HashMap<>();
-      commentObject.put("commentId", comment.getId());
-      commentObject.put("userId", comment.getUserId());
-      commentObject.put("name", userAccountService.getUserById(comment.getUserId()).getUsername());
-      commentObject.put("time", comment.getCreated());
-      commentObject.put("content", comment.getCommentContent());
-      comments.add(commentObject);
-    });
-
-    return comments;
+  private void addMockDataForTesting() {
+    if (postService.getAllPosts().size() == 0) {
+      postService.createPost(new PostContract(1, "This is a test 1 post"), 3);
+      postService.createPost(new PostContract(1, "This is a test 2 post"), 3);
+      postService.createPost(new PostContract(1, "This is a test 3 post"), 3);
+      commentService.addNewCommentsToPost(new CommentContract(3, postService.getAllPosts().get(0).getId(), "This is a comment to the post for test1."));
+      commentService.addNewCommentsToPost(new CommentContract(3, postService.getAllPosts().get(1).getId(), "This is a comment to the post for test2."));
+      commentService.addNewCommentsToPost(new CommentContract(3, postService.getAllPosts().get(0).getId(), "This is a comment to the post for test3."));
+    }
   }
 }

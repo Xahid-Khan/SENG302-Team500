@@ -2,35 +2,56 @@ package nz.ac.canterbury.seng302.portfolio.model.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "reaction_model")
 public class ReactionModel {
-    @Id
-    @Column(name = "id", nullable = false)
-    private Long id;
 
-    @Column(name = "user_id", nullable = false)
-    private int userId;
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  @Column(name = "id", nullable = false)
+  private int id;
 
-    @Column(name = "post_id", nullable = false)
-    private int postId;
+  @Column(name = "user_id", nullable = false)
+  private int userId;
 
-    public Long getId() {
-        return id;
-    }
+  @Column(name = "post_id", nullable = false)
+  private int postId;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+  @Column(name = "comment_id")
+  private int commentId;
 
-    public int getUserId() {
-        return userId;
-    }
+  protected ReactionModel() {
+  }
 
-    public int getPostId() {
-        return postId;
-    }
+  public ReactionModel(int userId, int postId) {
+    this.userId = userId;
+    this.postId = postId;
+  }
+
+  public ReactionModel(int userId, int postId, int commentId) {
+    this.userId = userId;
+    this.postId = postId;
+    this.commentId = commentId;
+  }
+
+  public int getId() {
+    return id;
+  }
+
+  public int getUserId() {
+    return userId;
+  }
+
+  public int getPostId() {
+    return postId;
+  }
+
+  public int getCommentId() {
+    return this.commentId;
+  }
 }

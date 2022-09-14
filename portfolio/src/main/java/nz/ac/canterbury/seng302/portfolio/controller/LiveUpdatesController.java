@@ -9,9 +9,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.stereotype.Controller;
 
-/** Controller for handling and dispatching live project update notifications. */
+/** Controller for handling and dispatching live socket messages. */
 @Controller
-public class LiveProjectUpdatesController {
+public class LiveUpdatesController {
 
   /**
    * STOMP endpoint that receives a message string and echos it back with metadata attached.
@@ -30,5 +30,20 @@ public class LiveProjectUpdatesController {
     message.put("location", alert.split("~")[0]);
     message.put("name", authState.getName());
     return message;
+  }
+
+  /**
+   * STOMP endpoints which handles notifications.
+   *
+   * @param principal authentication principal
+   * @param alert the alert
+   * @return a parsed message
+   */
+  @MessageMapping("/notification")
+  @SendTo("/topic/notification")
+  public Map<String, String> notify(
+      @AuthenticationPrincipal PreAuthenticatedAuthenticationToken principal, String alert) {
+    // TODO: Parse whatever message format is decided in live_updating.ts
+    return null;
   }
 }
