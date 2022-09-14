@@ -16,12 +16,15 @@
         /*<![CDATA[*/
         window.localStorage.setItem("userId", [[${userId}]] + "")
         window.localStorage.setItem("isStudent", [[${isStudent}]] + "")
+        window.localStorage.setItem("globalImagePath", [[${globalImagePath}]] + "")
+        window.localStorage.setItem("globalUrlPathPrefix", [[${globalUrlPathPrefix}]] + "")
         /*]]>*/
     </script>
+    <script type="text/javascript" th:src="@{../frontend/navbar.js}" defer></script>
     <script type="text/javascript" th:src="@{../frontend/group_feed.js}" defer></script>
 </head>
 <body>
-<div th:replace="fragments/header :: header" class="navbar"></div>
+<div id="navbar-react-root"></div>
 <div th:text="${groupName}" class="group-feed-title" id="group-feed-title" style="display: none"></div>
 <div id="react-root"></div>
 </body>
