@@ -16,7 +16,7 @@ export const navigateTo = (page: string) => {
     console.log(globalUrlPathPrefix)
     console.log(globalImagePath)
     console.log(window.location.href)
-    window.location.href = location.protocol + '//' + location.host + '/' + page
+    window.location.href = location.protocol + '//' + location.host +globalUrlPathPrefix+ '/' + page
 }
 
 export const NavBar: React.FC = observer(() => {
