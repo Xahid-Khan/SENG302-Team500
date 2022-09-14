@@ -14,4 +14,6 @@ public interface SubscriptionRepository extends CrudRepository<SubscriptionEntit
 
     ArrayList<SubscriptionEntity> findByUserId(int user_id);
 
+    ArrayList<SubscriptionEntity> findByGroupId(int group_id);
+
 }
