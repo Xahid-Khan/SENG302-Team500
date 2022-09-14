@@ -19,21 +19,8 @@ export function ShowAllPosts() {
         "groupId": -1,
         "shortName": "",
         "posts": [{
-          "postId": -1,
-          "userId": -1,
-          "username": "",
-          "time": "",
-          "content": "",
           "reactions": [],
-          "comments": [{
-            "commentId": -1,
-            "userId": -1,
-            "username": "",
-            "name": "",
-            "time": "",
-            "content": "",
-            "reactions": []
-          }]
+          "comments": []
         }]
       }
   )
