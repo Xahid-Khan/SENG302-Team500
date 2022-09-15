@@ -18,7 +18,7 @@ export function CreatePostModal({viewGroupId}: any) {
       document.getElementById("create-post-error").innerText = errorMessage;
     } else {
 
-      await fetch(`group_feed/new_post`, {
+      await fetch(`new_post`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
