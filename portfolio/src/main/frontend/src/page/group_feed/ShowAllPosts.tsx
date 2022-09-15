@@ -184,8 +184,8 @@ export function ShowAllPosts() {
 
 
           <div className="modal-buttons">
-            <button className="button" id="create-post-save" type={"submit"}>Save</button>
-            <button className="button" type={"reset"} id="create-post-cancel"
+            <button className="button" id="edit-post-save" type="submit">Save</button>
+            <button className="button" type="reset" id="create-post-cancel"
                     onClick={handleCancelEditPost}>Cancel
             </button>
           </div>

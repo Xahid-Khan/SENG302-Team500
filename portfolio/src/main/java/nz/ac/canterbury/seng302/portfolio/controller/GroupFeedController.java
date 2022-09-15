@@ -67,11 +67,16 @@ public class GroupFeedController extends AuthenticatedController {
       GroupDetailsResponse groupDetailsResponse = groupsClientService.getGroupById(groupId);
       List<PostModel> allPosts = postService.getAllPostsForAGroup(
           groupDetailsResponse.getGroupId());
-      if (allPosts.size() == 0) {
+      System.err.println("This is post Size....");
+      System.err.println(allPosts.size());
+      if (allPosts.isEmpty()) {
+        System.err.println("NO DATA FOUND....");
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+      } else {
+        System.err.println("There IS Data....");
+        Map<String, Object> data = combineAndPrepareForFrontEnd(allPosts, groupDetailsResponse);
+        return ResponseEntity.ok(data);
       }
-      Map<String, Object> data = combineAndPrepareForFrontEnd(allPosts, groupDetailsResponse);
-      return ResponseEntity.ok(data);
     } catch (NoSuchElementException e) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
@@ -139,6 +144,7 @@ public class GroupFeedController extends AuthenticatedController {
    */
   private Map<String, Object> combineAndPrepareForFrontEnd(List<PostModel> posts,
       GroupDetailsResponse groupDetailsResponse) {
+    System.err.println("Combine Data is Called...");
     Map<String, Object> postWithComments = new HashMap<>();
     postWithComments.put("groupId", groupDetailsResponse.getGroupId());
     postWithComments.put("shortName", groupDetailsResponse.getShortName());
