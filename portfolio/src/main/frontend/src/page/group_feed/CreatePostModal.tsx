@@ -1,5 +1,5 @@
 import * as React from "react";
-import {FormEvent, useEffect} from "react";
+import {FormEvent} from "react";
 
 export function CreatePostModal({viewGroupId}: any) {
 

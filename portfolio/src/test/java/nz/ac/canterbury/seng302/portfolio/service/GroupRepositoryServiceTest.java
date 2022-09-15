@@ -96,7 +96,7 @@ public class GroupRepositoryServiceTest {
         assertEquals(emptyRepoContract1.groupId(), result.groupId());
 
         var resultTwice = groupRepositoryService.add(emptyRepoContract1.groupId());
-        assertNull(resultTwice);
+        assertNotNull(resultTwice);
     }
 
     /**

@@ -26,8 +26,9 @@ export function ShowAllPosts() {
     if (!isNaN(Number(viewGroupId))) {
       getCurrentGroup().then((result: any) => {
         console.log(result);
-        setGroupPosts(result)}).catch((error) => {
-          console.log(error);
+        setGroupPosts(result)
+      }).catch((error) => {
+        console.log(error);
       })
     }
   }, [])

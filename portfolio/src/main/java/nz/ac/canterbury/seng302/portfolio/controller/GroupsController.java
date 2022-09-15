@@ -186,7 +186,6 @@ public class GroupsController extends AuthenticatedController {
     if (isTeacher(principal)) {
       try {
         CreateGroupResponse response = groupsClientService.createGroup(newGroup);
-
         if (response.getIsSuccess()) {
           //associates a group repository with the group
           groupsRepositoryService.add(response.getNewGroupId());
