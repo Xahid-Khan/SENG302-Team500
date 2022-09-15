@@ -33,7 +33,7 @@ public class MonthlyPlannerController extends AuthenticatedController {
   @GetMapping("/monthly-planner/{projectId}")
   public String getMonthlyPlanner(@AuthenticationPrincipal PortfolioPrincipal principal, Model model) {
     model.addAttribute("relativePath", urlPathPrefix);
-    model.addAttribute("isTeacher", isTeacher(principal));
+    model.addAttribute("canEdit", isTeacher(principal));
     return "monthly_planner";
   }
 }
