@@ -3,13 +3,13 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import java.util.List;
 import java.util.NoSuchElementException;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
+import nz.ac.canterbury.seng302.portfolio.model.GetPaginatedUsersOrderingElement;
 import nz.ac.canterbury.seng302.portfolio.model.contract.MilestoneContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseMilestoneContract;
-import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
-import nz.ac.canterbury.seng302.portfolio.service.MilestoneService;
-import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
-import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
-import nz.ac.canterbury.seng302.portfolio.service.ValidationService;
+import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseNotificationContract;
+import nz.ac.canterbury.seng302.portfolio.service.*;
+import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedUsersResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -34,6 +34,14 @@ public class MilestoneController extends AuthenticatedController {
   @Autowired private ProjectService projectService;
 
   @Autowired private ValidationService validationService;
+
+  @Autowired private UserAccountService userAccountService;
+
+  @Autowired private AuthStateService authStateService;
+
+  @Autowired private NotificationService notificationService;
+
+  @Autowired private EndDateNotificationService endDateNotificationService;
 
   @Autowired
   public MilestoneController(
@@ -106,7 +114,14 @@ public class MilestoneController extends AuthenticatedController {
 
       try {
         var result = milestoneService.createMilestone(projectId, milestone);
-
+        PaginatedUsersResponse users = userAccountService.getPaginatedUsers(0, Integer.MAX_VALUE, GetPaginatedUsersOrderingElement.NAME, true);
+        UserResponse milestoneCreator = userAccountService.getUserById(authStateService.getId(principal));
+        for (UserResponse user: users.getUsersList()) {
+          if (user.getId() != milestoneCreator.getId()) {
+            notificationService.create(new BaseNotificationContract(user.getId(), "Project", milestoneCreator.getUsername() + " added a new milestone " + milestone.name() + "!"));
+          }
+        }
+        endDateNotificationService.addNotifications(milestone.startDate(), "Milestone", milestone.name(), result.milestoneId());
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
       } catch (NoSuchElementException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -140,7 +155,8 @@ public class MilestoneController extends AuthenticatedController {
 
       try {
         milestoneService.update(id, milestone);
-
+        endDateNotificationService.removeNotifications("Milestone" + id);
+        endDateNotificationService.addNotifications(milestone.startDate(), "Milestone", milestone.name(), id);
         return ResponseEntity.ok(milestoneService.get(id));
       } catch (NoSuchElementException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -163,7 +179,7 @@ public class MilestoneController extends AuthenticatedController {
     if (isTeacher(principal)) {
       try {
         milestoneService.delete(id);
-
+        endDateNotificationService.removeNotifications("Milestone" + id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
       } catch (NoSuchElementException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

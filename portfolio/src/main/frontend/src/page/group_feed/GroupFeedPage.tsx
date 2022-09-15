@@ -1,26 +1,32 @@
 import React from "react";
 import {ToasterRoot} from "../../component/toast/ToasterRoot";
 import {ShowAllPosts} from "./ShowAllPosts";
+import {EditGroupMembersModal} from "../group_page/EditGroupMembersModal";
+import {CreatePostModal} from "./CreatePostModal";
 
 export function GroupFeedPage() {
 
-    const isStudent = localStorage.getItem("isStudent") === "true"
+    const [viewGroupId, setViewGroupId] = React.useState(-1)
+    const isMember = localStorage.getItem("isMember") === "true"
+
 
     return (
         <ToasterRoot>
             <div className="create-post">
                 <div>
-                    {isStudent ? "" :
+                    {!isMember ? "" :
                         <button className="button add-group-button" id="add-group"
-                                onClick={() => document.getElementById("modal-create-group-open").style.display = "block"}> Create
+                                onClick={() => document.getElementById("create-post-modal-open").style.display='block'}> Create
                             Post
                         </button>
+
                     }
                 </div>
             </div>
             <div className={"raised-card groups-feed"}>
                 <ShowAllPosts/>
             </div>
+            <CreatePostModal viewGroupId={viewGroupId}/>
         </ToasterRoot>
 
     )

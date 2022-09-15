@@ -9,13 +9,13 @@ const getAllGroups = async ()  => {
 const commitRequest = new Request('https://eng-git.canterbury.ac.nz/api/v4/projects/13845/repository/commits', {
     method: 'GET',
     headers: new Headers({
-        'PRIVATE-TOKEN': 'YDuDmqxJrQzXPL9NNzAD',
+        'PRIVATE-TOKEN': 'ysewGuxG33Mzy4fixgjW',
     })
 });
 const branchRequest = new Request('https://eng-git.canterbury.ac.nz/api/v4/projects/13845/repository/branches', {
     method: 'GET',
     headers: new Headers({
-        'PRIVATE-TOKEN': 'YDuDmqxJrQzXPL9NNzAD',
+        'PRIVATE-TOKEN': 'ysewGuxG33Mzy4fixgjW',
     })
 });
 const getCommits = async () => {
@@ -83,15 +83,28 @@ const toggleGroupView = (id: number) => {
 
 }
 
+const getSubscriptions = async () => {
+    const userId = localStorage.getItem("userId")
+    const subscriptionResponse = await fetch(`api/v1/subscribe/${userId}`)
+    return subscriptionResponse.json()
+
+}
+
 export function ShowAllGroups({setViewGroupId}: any) {
 
     const [groups, setGroups] = React.useState([])
     const[commits, setCommits] = React.useState([])
     const[branches, setBranches] = React.useState([])
+    const [subscriptions, setSubscriptions] = React.useState([])
+
+    const userId = localStorage.getItem("userId")
 
     useEffect(() => {
         getAllGroups().then((result) => {
             setGroups(result)
+        })
+        getSubscriptions().then((result) => {
+            setSubscriptions(result)
         })
         getCommits().then((result) => {
             setCommits(result)
@@ -123,6 +136,34 @@ export function ShowAllGroups({setViewGroupId}: any) {
         return toReturn
     }
 
+    const subscribeUserToGroup = async (groupId: number) => {
+        const subscriptionResponse = await fetch(`/api/v1/subscribe`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({"userId": userId,
+                            "groupId": groupId})
+        });
+        getSubscriptions().then((result) => {
+            setSubscriptions(result)
+        })
+    }
+
+    const unsubscribeUserToGroup = async (groupId: number) => {
+        const subscriptionResponse = await fetch(`/api/v1/subscribe`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({"userId": userId,
+                "groupId": groupId})
+        });
+        getSubscriptions().then((result) => {
+            setSubscriptions(result)
+        })
+    }
+
     return (
         <div>
             {groups.map((group: any) => (
@@ -135,6 +176,10 @@ export function ShowAllGroups({setViewGroupId}: any) {
                         {isTeacher ?
                         <button className="button edit-group-button" id="edit-group" data-privilege="teacher" onClick={() => {document.getElementById("modal-edit-group-members-open").style.display = "block"; setViewGroupId(group.id)}}> Manage Group Members</button>
                         : ""}
+                        <div>
+                            {subscriptions.includes(group.id) ? <button className={"button subscribe-button"} onClick={() => unsubscribeUserToGroup(group.id)}>Unsubscribe</button> :
+                            <button className={"button subscribe-button"} onClick={() => subscribeUserToGroup(group.id)}>Subscribe</button>}
+                        </div>
                         <div>
                             <button className={"button show-group-feed-button"} onClick={() => window.location.href=`group_feed/${group['id']}`}>View Feed</button>
                         </div>

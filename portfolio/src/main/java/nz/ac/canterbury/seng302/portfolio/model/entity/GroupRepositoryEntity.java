@@ -16,12 +16,13 @@ import java.sql.Timestamp;
 public class GroupRepositoryEntity extends PortfolioEntity {
 
     @Id
+    @Column(name = "groupId")
     private int id = -1;
 
-    @Column(name = "repository_id")
+    @Column(name = "repository_id", nullable = true)
     private int repositoryId= -1;
 
-    @Column(name = "token")
+    @Column(name = "token", nullable = true)
     private String token="No token";
 
     protected GroupRepositoryEntity() {

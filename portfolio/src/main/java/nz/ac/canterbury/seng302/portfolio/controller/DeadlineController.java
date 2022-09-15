@@ -3,13 +3,13 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import java.util.List;
 import java.util.NoSuchElementException;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
+import nz.ac.canterbury.seng302.portfolio.model.GetPaginatedUsersOrderingElement;
 import nz.ac.canterbury.seng302.portfolio.model.contract.DeadlineContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseDeadlineContract;
-import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
-import nz.ac.canterbury.seng302.portfolio.service.DeadlineService;
-import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
-import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
-import nz.ac.canterbury.seng302.portfolio.service.ValidationService;
+import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseNotificationContract;
+import nz.ac.canterbury.seng302.portfolio.service.*;
+import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedUsersResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -34,6 +34,14 @@ public class DeadlineController extends AuthenticatedController {
   @Autowired private ProjectService projectService;
 
   @Autowired private ValidationService validationService;
+
+  @Autowired private UserAccountService userAccountService;
+
+  @Autowired private AuthStateService authStateService;
+
+  @Autowired private NotificationService notificationService;
+
+  @Autowired private EndDateNotificationService endDateNotificationService;
 
   @Autowired
   public DeadlineController(
@@ -105,7 +113,14 @@ public class DeadlineController extends AuthenticatedController {
 
       try {
         var result = deadlineService.createDeadline(projectId, deadline);
-
+        PaginatedUsersResponse users = userAccountService.getPaginatedUsers(0, Integer.MAX_VALUE, GetPaginatedUsersOrderingElement.NAME, true);
+        UserResponse deadlineCreator = userAccountService.getUserById(authStateService.getId(principal));
+        for (UserResponse user: users.getUsersList()) {
+          if (user.getId() != deadlineCreator.getId()) {
+            notificationService.create(new BaseNotificationContract(user.getId(), "Project", deadlineCreator.getUsername() + " added a new deadline " + deadline.name() + "!"));
+          }
+        }
+        endDateNotificationService.addNotifications(deadline.startDate(), "Deadline", deadline.name(), result.deadlineId());
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
       } catch (NoSuchElementException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -139,7 +154,8 @@ public class DeadlineController extends AuthenticatedController {
 
       try {
         deadlineService.update(id, deadline);
-
+        endDateNotificationService.removeNotifications("Deadline" + id);
+        endDateNotificationService.addNotifications(deadline.startDate(), "Deadline", deadline.name(), id);
         return ResponseEntity.ok(deadlineService.get(id));
       } catch (NoSuchElementException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -162,7 +178,7 @@ public class DeadlineController extends AuthenticatedController {
     if (isTeacher(principal)) {
       try {
         deadlineService.delete(id);
-
+        endDateNotificationService.removeNotifications("Deadline" + id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
       } catch (NoSuchElementException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
