@@ -11,8 +11,10 @@ import java.sql.Timestamp;
  */
 @Entity
 @Table(name = "subscription")
-@IdClass(SubscriptionId.class)
-public class SubscriptionEntity extends PortfolioEntity {
+public class SubscriptionEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private int id;
 
     @Column(name = "user_id", nullable = false)
     private int userId;
