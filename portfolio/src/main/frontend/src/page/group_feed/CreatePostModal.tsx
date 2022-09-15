@@ -1,13 +1,10 @@
 import * as React from "react";
-import {FormEvent, useEffect} from "react";
+import {FormEvent} from "react";
 
 export function CreatePostModal({viewGroupId}: any) {
 
   const [post, setPost] = React.useState('')
-  const [shortCharacterCount, setShortCharacterCount] = React.useState(0)
   const [longCharacterCount, setLongCharacterCount] = React.useState(0)
-  const userId = parseInt(window.localStorage.getItem("userId"))
-  const isStudent = window.localStorage.getItem("isStudent")
 
   const validateCreateForm = async (formEvent: FormEvent) => {
     formEvent.preventDefault()
@@ -21,7 +18,7 @@ export function CreatePostModal({viewGroupId}: any) {
       document.getElementById("create-post-error").innerText = errorMessage;
     } else {
 
-      await fetch(`/group_feed/new_post`, {
+      await fetch(`new_post`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -66,6 +63,7 @@ export function CreatePostModal({viewGroupId}: any) {
                 setPost(e.target.value);
                 setLongCharacterCount(e.target.value.length)
               }}/>
+              <span className="title-length" id="title-length">{longCharacterCount} / 4096</span>
               <br/>
             </div>
             <div className="form-error" id="create-post-error"/>
