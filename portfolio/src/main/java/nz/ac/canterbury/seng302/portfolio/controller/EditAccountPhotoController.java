@@ -134,12 +134,11 @@ public class EditAccountPhotoController extends AuthenticatedController {
    * A controller (endpoint) for deleting a user photo.
    *
    * @param principal An Authority State to verify user.
-   * @param user A user of type User.
    * @return a String to redirect the page to.
    */
   @PostMapping(value = "/edit_account/imageDelete")
   public String deleteUserPhoto(
-      @AuthenticationPrincipal PortfolioPrincipal principal, @ModelAttribute User user) {
+      @AuthenticationPrincipal PortfolioPrincipal principal) {
     int userId = getUserId(principal);
     registerClientService.deleteUserPhoto(userId);
     return "redirect:/my_account";
