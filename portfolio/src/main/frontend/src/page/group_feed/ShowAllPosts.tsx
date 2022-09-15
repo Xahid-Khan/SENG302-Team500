@@ -5,20 +5,13 @@ export function ShowAllPosts() {
 
   const urlData = document.URL.split("?")[0].split("/");
   const viewGroupId = urlData[urlData.length - 1];
-
   const [newComment, setNewComment] = React.useState("");
-
   const username = localStorage.getItem("username");
-
-  const getCurrentGroup = async () => {
-    const currentGroupResponse = await fetch(`feed_content/${viewGroupId}`);
-    return currentGroupResponse.json()
-  }
   const [title, setTitle] = React.useState("");
   const [content, setContent] = React.useState('');
   const [editPostId, setEditPostId] = React.useState(-1);
   const [longCharacterCount, setLongCharacterCount] = React.useState(0);
-
+  const isTeacher = localStorage.getItem("isTeacher") === "true";
   const [groupPosts, setGroupPosts] = React.useState({
         "groupId": -1,
         "shortName": "",
@@ -31,13 +24,24 @@ export function ShowAllPosts() {
 
   useEffect(() => {
     if (!isNaN(Number(viewGroupId))) {
-      getCurrentGroup().then((result) => {
+      getCurrentGroup().then((result: any) => {
+        console.log(result);
         setGroupPosts(result)
+      }).catch((error) => {
+        console.log(error);
       })
     }
-  }, [groupPosts.groupId])
+  }, [])
 
-  const isTeacher = localStorage.getItem("isTeacher") === "true";
+  const getCurrentGroup = async () => {
+    const currentGroupResponse = await fetch(`feed_content/${viewGroupId}`, {
+      method: "GET",
+      "headers": {
+        'Content-Type': 'application/json'
+      }
+    })
+    return currentGroupResponse.json()
+  }
 
   const handleCancelEditPost = () => {
     setContent("");
@@ -111,7 +115,7 @@ export function ShowAllPosts() {
         "postId": id
       })
     });
-    await getCurrentGroup().then((result) => {
+    await getCurrentGroup().then((result: any) => {
       setGroupPosts(result)
     })
 
@@ -138,7 +142,7 @@ export function ShowAllPosts() {
         })
       });
       setNewComment("");
-      await getCurrentGroup().then((result) => {
+      await getCurrentGroup().then((result: any) => {
         setGroupPosts(result)
       })
       document.getElementById(`post-comments-${id}`).scrollTop = document.getElementById(`post-comments-${id}`).scrollHeight;
@@ -181,8 +185,8 @@ export function ShowAllPosts() {
 
 
           <div className="modal-buttons">
-            <button className="button" id="create-post-save" type={"submit"}>Save</button>
-            <button className="button" type={"reset"} id="create-post-cancel"
+            <button className="button" id="edit-post-save" type="submit">Save</button>
+            <button className="button" type="reset" id="create-post-cancel"
                     onClick={handleCancelEditPost}>Cancel
             </button>
           </div>

@@ -9,13 +9,13 @@ const getAllGroups = async ()  => {
 const commitRequest = new Request('https://eng-git.canterbury.ac.nz/api/v4/projects/13845/repository/commits', {
     method: 'GET',
     headers: new Headers({
-        'PRIVATE-TOKEN': 'YDuDmqxJrQzXPL9NNzAD',
+        'PRIVATE-TOKEN': 'ysewGuxG33Mzy4fixgjW',
     })
 });
 const branchRequest = new Request('https://eng-git.canterbury.ac.nz/api/v4/projects/13845/repository/branches', {
     method: 'GET',
     headers: new Headers({
-        'PRIVATE-TOKEN': 'YDuDmqxJrQzXPL9NNzAD',
+        'PRIVATE-TOKEN': 'ysewGuxG33Mzy4fixgjW',
     })
 });
 const getCommits = async () => {
@@ -137,7 +137,7 @@ export function ShowAllGroups({setViewGroupId}: any) {
     }
 
     const subscribeUserToGroup = async (groupId: number) => {
-        const subscriptionResponse = await fetch(`/api/v1/subscribe`, {
+        const subscriptionResponse = await fetch(`api/v1/subscribe`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -151,7 +151,7 @@ export function ShowAllGroups({setViewGroupId}: any) {
     }
 
     const unsubscribeUserToGroup = async (groupId: number) => {
-        const subscriptionResponse = await fetch(`/api/v1/subscribe`, {
+        const subscriptionResponse = await fetch(`api/v1/subscribe`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'
