@@ -21,9 +21,9 @@ import {Socket} from "../../../entry/live_updating";
 export const ProjectMonthCalendar: React.FC = observer(() => {
     const project = useProjectStore()
     const toaster = useToasterStore()
-    // if(window.localStorage.getItem("canEdit") === "true" && !Socket.isConnected()) {
-    //     Socket.start("edit-project", "alert")
-    // }
+    if(window.localStorage.getItem("canEdit") === "true" && !Socket.isConnected()) {
+        Socket.start("edit-project", "alert")
+    }
 
     /**
      * Callback that is triggered when a calendar event is updated by the user. Saves the change to the store, managing
@@ -302,7 +302,7 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
                 eventOverlap={canOverlap}
                 eventConstraint={projectRange}
                 eventChange={onSaveDatesCallback}
-                eventClick={eventClick}
+                eventClick={(x) => {eventClick(x);console.log("efesefesf")}}
 
                 /* Calendar config */
                 validRange={projectRange}
