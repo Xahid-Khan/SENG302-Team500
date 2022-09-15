@@ -3,11 +3,7 @@ package nz.ac.canterbury.seng302.portfolio.model.entity;
 import nz.ac.canterbury.seng302.portfolio.model.SubscriptionId;
 import org.hibernate.annotations.CreationTimestamp;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.IdClass;
-import javax.persistence.Table;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.sql.Timestamp;
 
 /**
@@ -16,13 +12,12 @@ import java.sql.Timestamp;
 @Entity
 @Table(name = "subscription")
 @IdClass(SubscriptionId.class)
-public class SubscriptionEntity {
+public class SubscriptionEntity extends PortfolioEntity {
 
-    @Id
     @Column(name = "user_id", nullable = false)
     private int userId;
 
-    @Id
+
     @Column(name = "group_id", nullable = false)
     private int groupId;
 
