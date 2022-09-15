@@ -165,6 +165,10 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
     const [events, setEvents] = React.useState(arrayOfEvents(null));
 
     const eventClick = (info : any) => {
+        console.log("here we go")
+        console.log(window.localStorage.getItem("canEdit"))
+        console.log(window.localStorage.getItem("canEdit") === "true")
+        console.log(info.event.id)
         if(window.localStorage.getItem("canEdit") === "true") {
             const sprintId = info.event.id;
             setEvents(arrayOfEvents(sprintId))
