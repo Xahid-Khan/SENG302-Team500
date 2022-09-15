@@ -137,7 +137,7 @@ export function ShowAllGroups({setViewGroupId}: any) {
     }
 
     const subscribeUserToGroup = async (groupId: number) => {
-        const subscriptionResponse = await fetch(`/api/v1/subscribe`, {
+        const subscriptionResponse = await fetch(`api/v1/subscribe`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -151,7 +151,7 @@ export function ShowAllGroups({setViewGroupId}: any) {
     }
 
     const unsubscribeUserToGroup = async (groupId: number) => {
-        const subscriptionResponse = await fetch(`/api/v1/subscribe`, {
+        const subscriptionResponse = await fetch(`api/v1/subscribe`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'
