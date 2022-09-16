@@ -29,7 +29,7 @@ export const NotificationDropdown: React.FC = observer(() => {
     const open = anchorEl?.id === 'notification-button';
 
     const getNotifications = async () => {
-        const notifications = await fetch(`../api/v1/notifications/${userId}`, {
+        const notifications = await fetch(`api/v1/notifications/${userId}`, {
                 method: 'GET'
             }
         )
@@ -39,7 +39,7 @@ export const NotificationDropdown: React.FC = observer(() => {
     }
 
     const markAllAsSeen = async () => {
-        await fetch(`../api/v1/notifications/seen/${userId}`, {
+        await fetch(`api/v1/notifications/seen/${userId}`, {
                 method: 'POST'
             }
         )
