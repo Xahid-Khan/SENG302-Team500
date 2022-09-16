@@ -8,7 +8,7 @@ import java.util.ArrayList;
 /**
  * this interface extends the CRUD repository and makes use of the function/methods provided by the library.
  */
-public interface SubscriptionRepository extends CrudRepository<SubscriptionEntity, String> {
+public interface SubscriptionRepository extends CrudRepository<SubscriptionEntity, Integer> {
 
     SubscriptionEntity findByUserIdAndGroupId(int user_id, int group_id);
 

@@ -18,8 +18,10 @@ public class SortingParametersService {
     public void saveSortingParams(int userId, String sortingParam, boolean reverseOrder) {
         SortingParameterEntity sortingData = new SortingParameterEntity(userId, sortingParam, reverseOrder);
         if (checkExistance(userId)) {
+            System.out.println("Trying to Delete");
             sortingRepository.deleteById(userId);
         }
+        System.out.println("Trying to save" + " " +  userId+ " " + sortingParam+ " " + reverseOrder);
         sortingRepository.save(sortingData);
     }
 

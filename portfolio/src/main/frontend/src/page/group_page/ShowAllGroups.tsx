@@ -160,7 +160,7 @@ export function ShowAllGroups({setViewGroupId}: any) {
                 "groupId": groupId})
         });
         getSubscriptions().then((result) => {
-            setSubscriptions(result)
+            setSubscriptions(result);
         })
     }
 
@@ -193,6 +193,8 @@ export function ShowAllGroups({setViewGroupId}: any) {
             </div>
         )
     }
+
+
 
     return (
         <div>

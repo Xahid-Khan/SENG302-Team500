@@ -56,7 +56,11 @@ public class ProjectDetailsController extends AuthenticatedController {
 
     model.addAttribute("userId", userId);
     model.addAttribute("username", userDetails.getUsername());
+    System.out.println(urlPathPrefix);
+    System.out.println(urlPathPrefix);
+    System.out.println(urlPathPrefix);
 
+    model.addAttribute("relativePath", urlPathPrefix);
     return "project_details";
   }
 }

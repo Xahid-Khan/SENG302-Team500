@@ -1,10 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.*;
+
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.portfolio.model.contract.PostContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.PostModel;
@@ -63,11 +60,13 @@ public class GroupFeedController extends AuthenticatedController {
       GroupDetailsResponse groupDetailsResponse = groupsClientService.getGroupById(groupId);
       List<PostModel> allPosts = postService.getAllPostsForAGroup(
           groupDetailsResponse.getGroupId());
+      Collections.reverse(allPosts);
       if (allPosts.isEmpty()) {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+      } else {
+        Map<String, Object> data = combineAndPrepareForFrontEnd(allPosts, groupDetailsResponse);
+        return ResponseEntity.ok(data);
       }
-      Map<String, Object> data = combineAndPrepareForFrontEnd(allPosts, groupDetailsResponse);
-      return ResponseEntity.ok(data);
     } catch (NoSuchElementException e) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
