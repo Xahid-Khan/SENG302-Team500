@@ -69,7 +69,6 @@ public class UserListController extends AuthenticatedController {
       @RequestParam("asc") Optional<String> ascendingMaybe,
       Model model
   ) {
-    System.out.println(pageMaybe + ", " + sortAttributeMaybe + ", " + ascendingMaybe);
     Optional<?>[] maybeVariables = {pageMaybe, sortAttributeMaybe, ascendingMaybe};
     // Standard for loop for mutability
     for (int i = 0; i < maybeVariables.length; i++) {
@@ -77,16 +76,6 @@ public class UserListController extends AuthenticatedController {
         maybeVariables[i] = Optional.empty();
       }
     }
-//    if (pageMaybe.isPresent() && pageMaybe.get().toString().equals("undefined")) {
-//      pageMaybe = Optional.empty();
-//    }
-//    if (sortAttributeMaybe.isPresent() && sortAttributeMaybe.get().equals("undefined")) {
-//      sortAttributeMaybe = Optional.empty();
-//    }
-//    if (ascendingMaybe.isPresent() && ascendingMaybe.get().equals("undefined")) {
-//      ascendingMaybe = Optional.empty();
-//    }
-
     int userId = getUserId(principal);
 
     String sortAttributeString;
@@ -106,7 +95,6 @@ public class UserListController extends AuthenticatedController {
     } else if (sortAttributeMaybe.isPresent()) {
       sortAttributeString = sortAttributeMaybe.get();
 
-      System.out.println(userId);
       sortingParametersService.saveSortingParams(userId, sortAttributeString, ascending);
     } else {
       sortAttributeString = "name";

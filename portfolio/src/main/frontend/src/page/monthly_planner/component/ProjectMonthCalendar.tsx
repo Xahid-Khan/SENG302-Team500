@@ -78,7 +78,7 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
     iconEvents.forEach((event) => {
       let startDate = new Date(event.startDate);
       let endDate: Date;
-      code == "_ES" ? endDate = new Date(event.endDate) : endDate = new Date(event.startDate)
+      endDate = code == "_ES" ? new Date(event.endDate) : new Date(event.startDate)
       while (startDate <= endDate) {
         if (dict.has(JSON.parse(JSON.stringify(startDate.toLocaleDateString())))) {
           const currentEvents = (dict.get(startDate.toLocaleDateString()));
@@ -166,10 +166,6 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
   const [events, setEvents] = React.useState(arrayOfEvents(null));
 
   const eventClick = (info: any) => {
-    console.log("here we go")
-    console.log(window.localStorage.getItem("canEdit"))
-    console.log(window.localStorage.getItem("canEdit") === "true")
-    console.log(info.event.id)
     if (window.localStorage.getItem("canEdit") === "true") {
       const sprintId = info.event.id;
       setEvents(arrayOfEvents(sprintId))
@@ -312,7 +308,7 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
             eventConstraint={projectRange}
             eventChange={onSaveDatesCallback}
             eventClick={eventClick}
-            selectable={true}
+
             /* Calendar config */
             validRange={projectRange}
             height='100vh'

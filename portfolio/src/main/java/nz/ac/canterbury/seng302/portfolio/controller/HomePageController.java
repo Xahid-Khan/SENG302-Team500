@@ -1,7 +1,10 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import java.util.*;
-
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.portfolio.model.contract.SubscriptionContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.PostModel;
@@ -54,7 +57,8 @@ public class HomePageController extends AuthenticatedController {
    * @param authStateService   an AuthStateService
    * @param userAccountService a UserAccountService
    */
-  protected HomePageController(AuthStateService authStateService, UserAccountService userAccountService) {
+  protected HomePageController(AuthStateService authStateService,
+      UserAccountService userAccountService) {
     super(authStateService, userAccountService);
   }
 

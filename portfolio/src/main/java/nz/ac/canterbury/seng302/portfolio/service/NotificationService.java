@@ -1,5 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
+import java.util.ArrayList;
+import java.util.List;
 import nz.ac.canterbury.seng302.portfolio.mapping.NotificationMapper;
 import nz.ac.canterbury.seng302.portfolio.model.contract.NotificationContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseNotificationContract;
@@ -8,55 +10,57 @@ import nz.ac.canterbury.seng302.portfolio.repository.NotificationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
-
 @Service
 public class NotificationService {
 
-    @Autowired
-    NotificationRepository repository;
+  @Autowired
+  NotificationRepository repository;
 
-    @Autowired
-    NotificationMapper mapper;
+  @Autowired
+  NotificationMapper mapper;
 
-    /**
-     * Inserts a new notification into the database and returns the entry
-     * @param baseContract
-     * @return
-     */
-    public NotificationContract create(BaseNotificationContract baseContract) {
-        NotificationEntity entity = repository.save(mapper.toEntity(baseContract ));
-        return mapper.toContract(entity);
+  /**
+   * Inserts a new notification into the database and returns the entry
+   *
+   * @param baseContract
+   * @return
+   */
+  public NotificationContract create(BaseNotificationContract baseContract) {
+    NotificationEntity entity = repository.save(mapper.toEntity(baseContract));
+    return mapper.toContract(entity);
+  }
+
+  /**
+   * Retrieves all the notification for a particular user
+   *
+   * @param userId The id of the user whose notification will be retrieved
+   * @return An arraylist of the users notifications
+   */
+  public List<NotificationContract> getAll(int userId) {
+    Iterable<NotificationEntity> entities = repository.findAllByUserIdOrderByTimeNotifiedDesc(
+        userId);
+
+    ArrayList<NotificationContract> contracts = new ArrayList<>();
+    for (NotificationEntity entity : entities) {
+      contracts.add(mapper.toContract(entity));
     }
+    return contracts;
+  }
 
-    /**
-     * Retrieves all the notification for a particular user
-     * @param userId The id of the user whose notification will be retrieved
-     * @return An arraylist of the users notifications
-     */
-    public ArrayList<NotificationContract> getAll(int userId) {
-        Iterable<NotificationEntity> entities = repository.findAllByUserIdOrderByTimeNotifiedDesc(userId);
-
-        ArrayList<NotificationContract> contracts = new ArrayList<>();
-        for(NotificationEntity entity : entities){
-            contracts.add(mapper.toContract(entity));
-        }
-        return contracts;
+  public void createForAllUsers(List<Integer> userIds, String fromLocation,
+      String description) {
+    for (Integer userId : userIds) {
+      create(new BaseNotificationContract(userId, fromLocation, description));
     }
+  }
 
-    public void createForAllUsers(ArrayList<Integer> userIds, String fromLocation, String description) {
-        for (Integer userId: userIds) {
-            create(new BaseNotificationContract(userId, fromLocation, description));
-        }
+  public void setNotificationsSeen(Integer userId) {
+    Iterable<NotificationEntity> notifications = repository.findAllByUserIdOrderByTimeNotifiedDesc(
+        userId);
+    for (NotificationEntity notification : notifications) {
+      notification.setSeen(true);
+      repository.save(notification);
     }
-
-    public void setNotificationsSeen(Integer userId) {
-        Iterable<NotificationEntity> notifications = repository.findAllByUserIdOrderByTimeNotifiedDesc(userId);
-        for (NotificationEntity notification: notifications) {
-            notification.setSeen(true);
-            repository.save(notification);
-        }
-    }
+  }
 
 }

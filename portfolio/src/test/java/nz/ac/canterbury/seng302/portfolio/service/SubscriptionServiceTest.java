@@ -23,7 +23,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
 public class SubscriptionServiceTest {
-
   private final int USER_ID = 1;
   private final int GROUP_ID = 1;
   private final SubscriptionContract contract = new SubscriptionContract(USER_ID, GROUP_ID);
