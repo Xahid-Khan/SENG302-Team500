@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  */
 @Controller
 @RequestMapping("/api/v1")
-public class HomePageController {
+public class HomePageController extends AuthenticatedController {
 
   @Autowired
   private SubscriptionService subscriptionService;
@@ -49,6 +49,16 @@ public class HomePageController {
   private CommentService commentService;
 
   /**
+   * This is similar to autowiring, but apparently recommended more than field injection.
+   *
+   * @param authStateService   an AuthStateService
+   * @param userAccountService a UserAccountService
+   */
+  protected HomePageController(AuthStateService authStateService, UserAccountService userAccountService) {
+    super(authStateService, userAccountService);
+  }
+
+  /**
    * Handles post requests on the /subscribe endpoint to subscribe a user to a group.
    */
   @PostMapping(value = "/subscribe", produces = "application/json")
@@ -56,7 +66,8 @@ public class HomePageController {
       @RequestBody SubscriptionContract subscription) {
     try {
       subscriptionService.subscribe(subscription);
-      return ResponseEntity.ok().build();
+      var result = subscriptionService.getAllByUserId(getUserId(principal));
+      return ResponseEntity.ok().body(result);
     } catch (HttpMessageNotReadableException e) {
       return ResponseEntity.badRequest().build();
     } catch (Exception e) {
@@ -72,10 +83,11 @@ public class HomePageController {
       @RequestBody SubscriptionContract subscription) {
     try {
       subscriptionService.unsubscribe(subscription);
+      var result = subscriptionService.getAllByUserId(getUserId(principal));
+      return ResponseEntity.ok().body(result);
     } catch (Exception e) {
       return ResponseEntity.internalServerError().build();
     }
-    return ResponseEntity.ok().build();
   }
 
   @GetMapping(value = "/subscribe/{userId}", produces = "application/json")

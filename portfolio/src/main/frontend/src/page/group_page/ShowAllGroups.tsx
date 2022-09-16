@@ -162,7 +162,8 @@ export function ShowAllGroups({setViewGroupId}: any) {
         });
         getSubscriptions().then((result) => {
             console.log("request Came back...");
-            setSubscriptions(result)
+            console.log(result.body);
+            setSubscriptions(result.body);
         })
     }
 
