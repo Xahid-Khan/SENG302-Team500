@@ -151,6 +151,7 @@ export function ShowAllGroups({setViewGroupId}: any) {
     }
 
     const unsubscribeUserToGroup = async (groupId: number) => {
+        console.log("Unsubscribe...");
         const subscriptionResponse = await fetch(`api/v1/subscribe`, {
             method: 'DELETE',
             headers: {
@@ -160,6 +161,7 @@ export function ShowAllGroups({setViewGroupId}: any) {
                 "groupId": groupId})
         });
         getSubscriptions().then((result) => {
+            console.log("request Came back...");
             setSubscriptions(result)
         })
     }
