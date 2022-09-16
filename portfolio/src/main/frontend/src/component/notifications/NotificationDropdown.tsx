@@ -29,7 +29,9 @@ export const NotificationDropdown: React.FC = observer(() => {
     const open = anchorEl?.id === 'notification-button';
 
     const getNotifications = async () => {
-        const notifications = await fetch(`api/v1/notifications/${userId}`, {
+        const globalUrlPathPrefix = window.localStorage.getItem("globalUrlPathPrefix")
+        const path = location.protocol + '//' + location.host + globalUrlPathPrefix + '/' + `api/v1/notifications/${userId}`
+        const notifications = await fetch(path, {
                 method: 'GET'
             }
         )
@@ -39,7 +41,9 @@ export const NotificationDropdown: React.FC = observer(() => {
     }
 
     const markAllAsSeen = async () => {
-        await fetch(`api/v1/notifications/seen/${userId}`, {
+        const globalUrlPathPrefix = window.localStorage.getItem("globalUrlPathPrefix")
+        const path = location.protocol + '//' + location.host + globalUrlPathPrefix + '/' + `api/v1/notifications/${userId}`
+        await fetch(path, {
                 method: 'POST'
             }
         )
