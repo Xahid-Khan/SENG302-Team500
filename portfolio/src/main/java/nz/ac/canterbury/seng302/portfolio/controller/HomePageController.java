@@ -1,9 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.portfolio.model.contract.SubscriptionContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.PostModel;
@@ -95,6 +93,7 @@ public class HomePageController {
   public ResponseEntity<?> getAllPosts(@AuthenticationPrincipal PortfolioPrincipal principal) {
     try {
       List<PostModel> posts = postService.getAllPosts();
+      Collections.reverse(posts);
       Map<String, Object> data = combineAndPrepareForFrontEnd(posts);
       return ResponseEntity.ok(data);
     } catch (Exception e) {
