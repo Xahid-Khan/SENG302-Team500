@@ -56,11 +56,8 @@ public class HomePageController {
   @PostMapping(value = "/subscribe", produces = "application/json")
   public ResponseEntity<?> subscribe(@AuthenticationPrincipal PortfolioPrincipal principal,
       @RequestBody SubscriptionContract subscription) {
-    System.err.println("im here...");
     try {
-      System.err.println("IN TRY...");
       subscriptionService.subscribe(subscription);
-      System.err.println("Subscribed......");
       return ResponseEntity.ok().build();
     } catch (HttpMessageNotReadableException e) {
       return ResponseEntity.badRequest().build();

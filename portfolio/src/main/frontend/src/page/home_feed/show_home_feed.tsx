@@ -60,7 +60,7 @@ export function ShowHomeFeed() {
         const button = document.getElementById(`high-five-${id}`)
         button.style.backgroundSize = button.style.backgroundSize === "100% 100%" ? "0 100%" : "100% 100%"
 
-        const res = await fetch('/group_feed/post_high_five', {
+        const res = await fetch('group_feed/post_high_five', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -83,7 +83,7 @@ export function ShowHomeFeed() {
         setNewComment(document.getElementById(`comment-content-${id}`).getAttribute('value'));
 
         if (newComment.length != 0) {
-            await fetch(`/group_feed/add_comment`, {
+            await fetch(`group_feed/add_comment`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

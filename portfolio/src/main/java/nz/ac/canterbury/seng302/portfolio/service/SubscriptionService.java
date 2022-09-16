@@ -26,11 +26,8 @@ public class SubscriptionService {
    * @param subscription SubscriptionContract containing the user and group
    */
   public void subscribe(SubscriptionContract subscription) {
-    System.err.println("Subscribing....... INTO SERVICE...");
     var result = subscriptionMapper.toEntity(subscription);
-    System.err.println("Mapped to Entity...");
     subscriptionRepository.save(result);
-    System.err.println("Saved Into DB");
   }
 
   /**
