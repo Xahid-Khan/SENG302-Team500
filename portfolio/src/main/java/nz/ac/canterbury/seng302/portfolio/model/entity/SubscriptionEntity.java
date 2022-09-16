@@ -59,4 +59,8 @@ public class SubscriptionEntity {
     public void setTimeSubscribed(Timestamp timeSubscribed) {
         this.timeSubscribed = timeSubscribed;
     }
+
+    public int getId(){
+        return this.id;
+    }
 }
