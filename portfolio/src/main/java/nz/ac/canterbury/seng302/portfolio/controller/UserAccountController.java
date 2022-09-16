@@ -59,7 +59,6 @@ public class UserAccountController extends AuthenticatedController {
 
     // Add this class as a delegate, such that formatting can be called.
     model.addAttribute("delegate", this);
-
     return "account_details";
   }
 

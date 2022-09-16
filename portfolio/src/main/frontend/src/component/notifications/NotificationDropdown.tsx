@@ -8,6 +8,10 @@ import {NotificationItem} from "./NotificationItem";
 export const NotificationDropdown: React.FC = observer(() => {
 
     const userId = parseInt(window.localStorage.getItem("userId"))
+    const globalUrlPathPrefix = localStorage.getItem("globalUrlPathPrefix");
+    const globalImagePath = localStorage.getItem("globalImagePath");
+    console.log(globalUrlPathPrefix)
+    console.log(globalImagePath)
 
     const [notifications, setNotifications] = React.useState([])
     const [numUnseen, setNumUnseen] = React.useState(0)
@@ -25,15 +29,21 @@ export const NotificationDropdown: React.FC = observer(() => {
     const open = anchorEl?.id === 'notification-button';
 
     const getNotifications = async () => {
-        const notifications = await fetch(`../api/v1/notifications/${userId}`, {
+        const globalUrlPathPrefix = window.localStorage.getItem("globalUrlPathPrefix")
+        const path = location.protocol + '//' + location.host + globalUrlPathPrefix + '/' + `api/v1/notifications/${userId}`
+        const notifications = await fetch(path, {
                 method: 'GET'
             }
         )
+        console.log(globalUrlPathPrefix)
+        console.log(globalImagePath)
         return notifications.json()
     }
 
     const markAllAsSeen = async () => {
-        await fetch(`../api/v1/notifications/seen/${userId}`, {
+        const globalUrlPathPrefix = window.localStorage.getItem("globalUrlPathPrefix")
+        const path = location.protocol + '//' + location.host + globalUrlPathPrefix + '/' + `api/v1/notifications/${userId}`
+        await fetch(path, {
                 method: 'POST'
             }
         )
