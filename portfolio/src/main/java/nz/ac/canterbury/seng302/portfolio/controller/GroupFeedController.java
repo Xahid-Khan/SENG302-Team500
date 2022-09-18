@@ -43,8 +43,6 @@ public class GroupFeedController extends AuthenticatedController {
 
   @Autowired private ReactionService reactionService;
 
-  @Autowired private PostModelRepository postModelRepository;
-
   public GroupFeedController(
       AuthStateService authStateService, UserAccountService userAccountService) {
     super(authStateService, userAccountService);
