@@ -14,6 +14,8 @@ export function ShowHomeFeed() {
 
     const username = localStorage.getItem("username")
 
+    const userId = localStorage.getItem("userId")
+
     const getAllPosts = async () => {
         const currentGroupResponse = await fetch(`api/v1/posts`);
         return currentGroupResponse.json()
@@ -101,6 +103,21 @@ export function ShowHomeFeed() {
             document.getElementById(`post-comments-${id}`).scrollTop = document.getElementById(`post-comments-${id}`).scrollHeight;
         }
     }
+
+    const unsubscribeUserToGroup = async (groupId: number) => {
+        const subscriptionResponse = await fetch(`api/v1/subscribe`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({"userId": userId,
+                "groupId": groupId})
+        });
+        getSubscriptions().then((result) => {
+            setSubscriptions(result);
+        })
+    }
+
     return (
         <div>
             <div className={"group-feed-name"}>Welcome!</div>
@@ -112,6 +129,9 @@ export function ShowHomeFeed() {
                                 <div>{post.username}</div>
                                 <div
                                     className={"post-time"}>{DatetimeUtils.timeStringToTimeSince(post.time)}</div>
+                            </div>
+                            <div className={"post-unsubscribe"}>
+                                <button className={"button subscribe-button"} onClick={() => unsubscribeUserToGroup(post.groupId)}>Unsubscribe</button>
                             </div>
                             {isTeacher ?
                                 <div className={"post-delete"}><span

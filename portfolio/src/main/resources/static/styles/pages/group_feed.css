@@ -17,6 +17,11 @@
     cursor: pointer;
 }
 
+.post-unsubscribe {
+    float: right;
+    cursor: pointer;
+}
+
 .post-edit {
     float: right;
     cursor: pointer;
