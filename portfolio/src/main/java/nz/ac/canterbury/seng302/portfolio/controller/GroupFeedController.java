@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,7 +9,6 @@ import java.util.NoSuchElementException;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.portfolio.model.contract.PostContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.PostModel;
-import nz.ac.canterbury.seng302.portfolio.repository.PostModelRepository;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
 import nz.ac.canterbury.seng302.portfolio.service.CommentService;
 import nz.ac.canterbury.seng302.portfolio.service.GroupsClientService;
@@ -56,11 +56,13 @@ public class GroupFeedController extends AuthenticatedController {
       GroupDetailsResponse groupDetailsResponse = groupsClientService.getGroupById(groupId);
       List<PostModel> allPosts =
           postService.getAllPostsForAGroup(groupDetailsResponse.getGroupId());
-      if (allPosts.size() == 0) {
+      Collections.reverse(allPosts);
+      if (allPosts.isEmpty()) {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+      } else {
+        Map<String, Object> data = combineAndPrepareForFrontEnd(allPosts, groupDetailsResponse);
+        return ResponseEntity.ok(data);
       }
-      Map<String, Object> data = combineAndPrepareForFrontEnd(allPosts, groupDetailsResponse);
-      return ResponseEntity.ok(data);
     } catch (NoSuchElementException e) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
@@ -131,28 +133,33 @@ public class GroupFeedController extends AuthenticatedController {
    */
   private Map<String, Object> combineAndPrepareForFrontEnd(
       List<PostModel> posts, GroupDetailsResponse groupDetailsResponse) {
-    Map<String, Object> postWithComments = new HashMap<>();
-    postWithComments.put("groupId", groupDetailsResponse.getGroupId());
-    postWithComments.put("shortName", groupDetailsResponse.getShortName());
+    try {
+      Map<String, Object> postWithComments = new HashMap<>();
+      postWithComments.put("groupId", groupDetailsResponse.getGroupId());
+      postWithComments.put("shortName", groupDetailsResponse.getShortName());
 
-    List<Map<String, Object>> allPosts = new ArrayList<>();
+      List<Map<String, Object>> allPosts = new ArrayList<>();
 
-    posts.forEach(
-        post -> {
-          Map<String, Object> filteredPosts = new HashMap<>();
-          filteredPosts.put("postId", post.getId());
-          filteredPosts.put("userId", post.getUserId());
-          filteredPosts.put(
-              "username", userAccountService.getUserById(post.getUserId()).getUsername());
-          filteredPosts.put("time", post.getCreated());
-          filteredPosts.put("content", post.getPostContent());
-          filteredPosts.put(
-              "reactions", reactionService.getUsernamesOfUsersWhoReactedToPost(post.getId()));
-          filteredPosts.put("comments", commentService.getCommentsForThePostAsJson(post.getId()));
+      posts.forEach(
+          post -> {
+            Map<String, Object> filteredPosts = new HashMap<>();
+            filteredPosts.put("postId", post.getId());
+            filteredPosts.put("userId", post.getUserId());
+            filteredPosts.put(
+                "username", userAccountService.getUserById(post.getUserId()).getUsername());
+            filteredPosts.put("time", post.getCreated());
+            filteredPosts.put("content", post.getPostContent());
+            filteredPosts.put(
+                "reactions", reactionService.getUsernamesOfUsersWhoReactedToPost(post.getId()));
+            filteredPosts.put("comments", commentService.getCommentsForThePostAsJson(post.getId()));
 
-          allPosts.add(filteredPosts);
-        });
-    postWithComments.put("posts", allPosts);
-    return postWithComments;
+            allPosts.add(filteredPosts);
+          });
+      postWithComments.put("posts", allPosts);
+      return postWithComments;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return new HashMap<>();
+    }
   }
 }

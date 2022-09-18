@@ -76,7 +76,6 @@ public class UserListController extends AuthenticatedController {
         maybeVariables[i] = Optional.empty();
       }
     }
-
     int userId = getUserId(principal);
 
     String sortAttributeString;

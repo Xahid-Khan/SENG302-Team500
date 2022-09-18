@@ -9,13 +9,13 @@ const getAllGroups = async ()  => {
 const commitRequest = new Request('https://eng-git.canterbury.ac.nz/api/v4/projects/13845/repository/commits', {
     method: 'GET',
     headers: new Headers({
-        'PRIVATE-TOKEN': 'YDuDmqxJrQzXPL9NNzAD',
+        'PRIVATE-TOKEN': 'ysewGuxG33Mzy4fixgjW',
     })
 });
 const branchRequest = new Request('https://eng-git.canterbury.ac.nz/api/v4/projects/13845/repository/branches', {
     method: 'GET',
     headers: new Headers({
-        'PRIVATE-TOKEN': 'YDuDmqxJrQzXPL9NNzAD',
+        'PRIVATE-TOKEN': 'ysewGuxG33Mzy4fixgjW',
     })
 });
 const getCommits = async () => {
@@ -137,7 +137,7 @@ export function ShowAllGroups({setViewGroupId}: any) {
     }
 
     const subscribeUserToGroup = async (groupId: number) => {
-        const subscriptionResponse = await fetch(`/api/v1/subscribe`, {
+        const subscriptionResponse = await fetch(`api/v1/subscribe`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -151,7 +151,7 @@ export function ShowAllGroups({setViewGroupId}: any) {
     }
 
     const unsubscribeUserToGroup = async (groupId: number) => {
-        const subscriptionResponse = await fetch(`/api/v1/subscribe`, {
+        const subscriptionResponse = await fetch(`api/v1/subscribe`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'
@@ -160,9 +160,41 @@ export function ShowAllGroups({setViewGroupId}: any) {
                 "groupId": groupId})
         });
         getSubscriptions().then((result) => {
-            setSubscriptions(result)
+            setSubscriptions(result);
         })
     }
+
+    function groups_page_user_list(group: any) {
+        if(group['users'].length === 0){
+            return (
+                <div style={{paddingTop: '1em', paddingBottom: '1em'}}>
+                    This group has no members
+                </div>
+            )
+        }
+        return (
+            <div className={"groups-page-user-list"} id={`groups-user-list-${group['id']}`}>
+                <div className={"table"} id={"group-list"}>
+                    <div className={"groups-header"}>
+                        <div className="tableCell"><b>Name</b></div>
+                        <div className="tableCell"><b>Username</b></div>
+                        <div className="tableCell"><b>Alias</b></div>
+                        <div className="tableCell"><b>Roles</b></div>
+                    </div>
+                    {group['users'].map((user: any) => (
+                        <div className="tableRow" id={`group-${group['id']}-user-${user.id}`} key={user.id}>
+                            <div className="tableCell">{user['firstName']} {user['lastName']}</div>
+                            <div className="tableCell">{user['username']}</div>
+                            <div className="tableCell">{user['nickName']}</div>
+                            <div className="tableCell">{formatRoles(user['roles'])}</div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        )
+    }
+
+
 
     return (
         <div>
@@ -195,24 +227,7 @@ export function ShowAllGroups({setViewGroupId}: any) {
                         <h2 className={'group-name-short'}>{group['shortName']}</h2>
                     </div>
                     <h3 className={'group-name-long'}>{group['longName']}</h3>
-                    <div className={"groups-page-user-list"} id={`groups-user-list-${group['id']}`}>
-                        <div className={"table"} id={"group-list"}>
-                            <div className={"groups-header"}>
-                                <div className="tableCell"><b>Name</b></div>
-                                <div className="tableCell"><b>Username</b></div>
-                                <div className="tableCell"><b>Alias</b></div>
-                                <div className="tableCell"><b>Roles</b></div>
-                            </div>
-                            {group['users'].map((user: any) => (
-                                <div className="tableRow" id={`group-${group['id']}-user-${user.id}`} key={user.id}>
-                                    <div className="tableCell">{user['firstName']} {user['lastName']}</div>
-                                    <div className="tableCell">{user['username']}</div>
-                                    <div className="tableCell">{user['nickName']}</div>
-                                    <div className="tableCell">{formatRoles(user['roles'])}</div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
+                        {groups_page_user_list(group)}
                         <div className={"groups-page-repository"} id={`groups-repository-${group['id']}`}>
                             <h3 className={'group-repository-title'}>Branches</h3>
                             <div className={"table"} id={"group-list-branches"}>

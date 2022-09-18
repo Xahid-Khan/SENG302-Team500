@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
 import java.util.ArrayList;
+import java.util.List;
 import nz.ac.canterbury.seng302.portfolio.mapping.NotificationMapper;
 import nz.ac.canterbury.seng302.portfolio.model.contract.NotificationContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseNotificationContract;
@@ -36,7 +37,7 @@ public class NotificationService {
    * @param userId The id of the user whose notification will be retrieved
    * @return An arraylist of the users notifications
    */
-  public ArrayList<NotificationContract> getAll(int userId) {
+  public List<NotificationContract> getAll(int userId) {
     Iterable<NotificationEntity> entities =
         repository.findAllByUserIdOrderByTimeNotifiedDesc(userId);
 
@@ -47,8 +48,7 @@ public class NotificationService {
     return contracts;
   }
 
-  public void createForAllUsers(
-      ArrayList<Integer> userIds, String fromLocation, String description) {
+  public void createForAllUsers(List<Integer> userIds, String fromLocation, String description) {
     for (Integer userId : userIds) {
       create(new BaseNotificationContract(userId, fromLocation, description));
     }
