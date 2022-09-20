@@ -161,7 +161,7 @@ export function ShowAllPosts() {
         </div>
         <div className={"border-line"}/>
 
-        <form onSubmit={(e) => validateCreateForm(e)}>
+        <form onSubmit={(e) => {if (longCharacterCount > 0) validateCreateForm(e)}}>
           <div className="modal-body modal-edit-post-body">
             <label className={"post-title"}>{title}</label>
             <br/>
@@ -175,8 +175,13 @@ export function ShowAllPosts() {
             <textarea className={"text-area"} id={`edit-post-content`} required
                       defaultValue={content}
                       cols={50} rows={10} maxLength={4096} onChange={(e) => {
-              setContent(e.target.value);
-              setLongCharacterCount(e.target.value.length)
+              setContent(e.target.value.trim());
+              setLongCharacterCount(e.target.value.trim().length);
+              if (longCharacterCount > 0) {
+                document.getElementById("edit-post-save").removeAttribute("disabled");
+              } else {
+                document.getElementById("edit-post-save").setAttribute("disabled", "true");
+              }
             }}/>
             <span className="title-length" id="title-length">{longCharacterCount} / 4096</span>
             <br/>
@@ -287,7 +292,7 @@ export function ShowAllPosts() {
                       <div className={"input-comment"}>
                         <input type={"text"} className={"input-comment-text"}
                                id={`comment-content-${post.postId}`}
-                               onChange={(e) => setNewComment(e.target.value)}
+                               onChange={(e) => setNewComment(e.target.value.trim())}
                                placeholder={"Comment on post..."}/>
                       </div>
                       <div className={"submit-comment"}>

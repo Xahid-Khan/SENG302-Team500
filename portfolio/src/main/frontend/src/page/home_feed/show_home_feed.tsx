@@ -62,7 +62,7 @@ export function ShowHomeFeed() {
         const button = document.getElementById(`high-five-${id}`)
         button.style.backgroundSize = button.style.backgroundSize === "100% 100%" ? "0 100%" : "100% 100%"
 
-        const res = await fetch('group_feed/post_high_five', {
+        await fetch('group_feed/post_high_five', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -105,7 +105,7 @@ export function ShowHomeFeed() {
     }
 
     const unsubscribeUserToGroup = async (groupId: number) => {
-        const subscriptionResponse = await fetch(`api/v1/subscribe`, {
+        await fetch(`api/v1/subscribe`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'
@@ -184,13 +184,15 @@ export function ShowHomeFeed() {
                             </div>
                             <form className={"make-comment-container"} onSubmit={(e) => {
                                 e.preventDefault();
-                                makeComment(post.postId)
+                                if (newComment.length > 0) {
+                                    makeComment(post.postId);
+                                    e.currentTarget.reset();
+                                }
                             }}>
                                 <div className={"input-comment"}>
                                     <input type={"text"} className={"input-comment-text"}
                                            id={`comment-content-${post.postId}`}
-                                           value={newComment}
-                                           onChange={(e) => setNewComment(e.target.value)}
+                                           onChange={(e) => setNewComment(e.target.value.trim())}
                                            placeholder={"Comment on post..."}/>
                                 </div>
                                 <div className={"submit-comment"}>
