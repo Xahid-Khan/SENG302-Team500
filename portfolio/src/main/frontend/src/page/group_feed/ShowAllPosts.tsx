@@ -106,7 +106,7 @@ export function ShowAllPosts() {
     const button = document.getElementById(`high-five-${id}`)
     button.style.backgroundSize = button.style.backgroundSize === "100% 100%" ? "0 100%" : "100% 100%"
 
-    const res = await fetch('post_high_five', {
+    await fetch('post_high_five', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -281,12 +281,12 @@ export function ShowAllPosts() {
                     </div>
                     <form className={"make-comment-container"} onSubmit={(e) => {
                       e.preventDefault();
-                      makeComment(post.postId)
+                      makeComment(post.postId);
+                      e.currentTarget.reset();
                     }}>
                       <div className={"input-comment"}>
                         <input type={"text"} className={"input-comment-text"}
                                id={`comment-content-${post.postId}`}
-                               value={newComment}
                                onChange={(e) => setNewComment(e.target.value)}
                                placeholder={"Comment on post..."}/>
                       </div>
