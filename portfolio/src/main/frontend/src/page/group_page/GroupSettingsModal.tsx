@@ -5,6 +5,7 @@ export function GroupSettingsModal({viewGroupId}: any) {
 
     const handleCancel = () => {
         document.getElementById("group-settings-modal-open").style.display = "none"
+        window.location.reload()
     }
 
     return (
