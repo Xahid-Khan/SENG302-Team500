@@ -34,6 +34,7 @@
 .post-body {
     padding: 15px 0 10px 0;
     font-size: 17px;
+    white-space: pre-wrap;
 }
 
 .post-info {
@@ -262,6 +263,7 @@
     border-radius: 10px;
     display: inline-block;
     padding: 5px 10px;
+    overflow-wrap: anywhere;
 }
 
 .post-comments {
@@ -271,6 +273,7 @@
 
 .post-comment-container {
     margin: 10px;
+    white-space: pre-wrap;
 }
 
 .modal-edit-post {
