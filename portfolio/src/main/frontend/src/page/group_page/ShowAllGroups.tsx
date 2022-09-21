@@ -151,6 +151,7 @@ export function ShowAllGroups({setViewGroupId}: any) {
     }
 
     const unsubscribeUserToGroup = async (groupId: number) => {
+        console.log("UNSUB");
         await fetch(`api/v1/unsubscribe`, {
             method: 'DELETE',
             headers: {
@@ -159,6 +160,7 @@ export function ShowAllGroups({setViewGroupId}: any) {
             body: JSON.stringify({"userId": userId,
                 "groupId": groupId})
         });
+        console.log("UNSUB-Reqested...");
         getSubscriptions().then((result) => {
             setSubscriptions(result);
         })

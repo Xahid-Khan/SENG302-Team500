@@ -82,10 +82,12 @@ public class HomePageController extends AuthenticatedController {
                                        @RequestBody SubscriptionContract subscription) {
     try {
       int userId = getUserId(principal);
-      var allGroupMembers = groupsClientService.getGroupById(subscription.groupId()).getMembersList();
+      System.err.println("IN CONTROLLER");
 
       //Stops user from unsubscribing from a group if they are in it
-      if (groupsClientService.isMemberOfTheGroup(userId, subscription.groupId())) {
+      var isMember = groupsClientService.isMemberOfTheGroup(subscription.userId(), subscription.groupId());
+      System.err.println(isMember);
+      if (isMember) {
         return ResponseEntity.badRequest().build();
       }
 
