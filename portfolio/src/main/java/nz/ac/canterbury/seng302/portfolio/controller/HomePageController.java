@@ -1,10 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.portfolio.model.contract.SubscriptionContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.PostModel;
@@ -116,7 +113,14 @@ public class HomePageController extends AuthenticatedController {
   @GetMapping(value = "/posts", produces = "application/json")
   public ResponseEntity<?> getAllPosts(@AuthenticationPrincipal PortfolioPrincipal principal) {
     try {
-      List<PostModel> posts = postService.getAllPosts();
+      Integer userId = authStateService.getId(principal);
+      List<Integer> subscriptions = subscriptionService.getAllByUserId(userId);
+      List<PostModel> posts = new ArrayList<>();
+      for(int subscriptionId: subscriptions) {
+        posts.addAll(postService.getAllPostsForAGroup(subscriptionId));
+      }
+      posts.sort(Comparator.comparing(PostModel::getCreated));
+
       Collections.reverse(posts);
       Map<String, Object> data = combineAndPrepareForFrontEnd(posts);
       return ResponseEntity.ok(data);
@@ -147,7 +151,7 @@ public class HomePageController extends AuthenticatedController {
               post.getId()));
       filteredPosts.put("groupId", post.getGroupId());
       filteredPosts.put("comments", commentService.getCommentsForThePostAsJson(post.getId()));
-
+      filteredPosts.put("groupName", groupsClientService.getGroupById(post.getGroupId()).getShortName());
       allPosts.add(filteredPosts);
     });
     postMap.put("posts", allPosts);

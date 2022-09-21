@@ -22,26 +22,18 @@ export function ShowHomeFeed() {
     }
 
     const [groupPosts, setGroupPosts] = React.useState({
-        "groupId": -1,
-        "shortName": "",
-        "posts": [{
-            "postId": -1,
-            "userId": -1,
-            "username": "",
-            "time": "",
-            "content": "",
-            "reactions": [],
-            "groupId": -1,
-            "comments": [{
-                "commentId": -1,
-                "userId": -1,
-                "username": "",
-                "name": "",
+        "posts": [
+            {
+                "comments": [],
+                "groupId": -1,
+                "reactions": [],
+                "postId": -1,
                 "time": "",
+                "userId": -1,
                 "content": "",
-                "reactions": []
-            }]
-        }]
+                "username": ""
+            }
+        ]
     });
 
     const [subscriptions, setSubscriptions] = React.useState([])
@@ -49,7 +41,6 @@ export function ShowHomeFeed() {
     useEffect(() => {
         getAllPosts().then((result) => {
             setGroupPosts(result)
-            console.log(result)
         })
         getSubscriptions().then((result) => {
             setSubscriptions(result)
@@ -121,12 +112,12 @@ export function ShowHomeFeed() {
     return (
         <div>
             <div className={"group-feed-name"}>Welcome!</div>
-            {groupPosts.posts.filter((post) => subscriptions.includes(post.groupId)).length === 0 ? <div><h2>Looks like there are no posts! Subscribe to more groups to see there posts here!</h2></div> :
+            {groupPosts.posts.length === 0 ? <div><h2>Looks like there are no posts! Subscribe to more groups to see there posts here!</h2></div> :
                 <div>{groupPosts.posts.filter((post) => subscriptions.includes(post.groupId)).map((post: any) => (
                     <div className={"raised-card group-post"} key={post.postId}>
                         <div className={"post-header"} key={"postHeader" + post.postId}>
                             <div className={"post-info"} key={"postInfo" + post.postId}>
-                                <div>{post.username}</div>
+                                <div>{post.username} <span  onClick={() => window.location.href = `../group_feed/${post.groupId}`} style={{fontSize: 14, cursor: "pointer"}}> Group: {post.groupName}</span></div>
                                 <div
                                     className={"post-time"}>{DatetimeUtils.timeStringToTimeSince(post.time)}</div>
                             </div>

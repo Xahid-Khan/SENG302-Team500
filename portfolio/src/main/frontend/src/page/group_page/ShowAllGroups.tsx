@@ -102,6 +102,7 @@ export function ShowAllGroups({setViewGroupId}: any) {
     useEffect(() => {
         getAllGroups().then((result) => {
             setGroups(result)
+            console.log(result)
         })
         getSubscriptions().then((result) => {
             setSubscriptions(result)
@@ -209,8 +210,8 @@ export function ShowAllGroups({setViewGroupId}: any) {
                         <button className="button edit-group-button" id="edit-group" data-privilege="teacher" onClick={() => {document.getElementById("modal-edit-group-members-open").style.display = "block"; setViewGroupId(group.id)}}> Manage Group Members</button>
                         : ""}
                         <div>
-                            {subscriptions.includes(group.id) ? <button className={"button subscribe-button"} onClick={() => unsubscribeUserToGroup(group.id)}>Unsubscribe</button> :
-                            <button className={"button subscribe-button"} onClick={() => subscribeUserToGroup(group.id)}>Subscribe</button>}
+                            {group.users.filter((groupUser: any) => groupUser.id !== userId).length === 0 ? (subscriptions.includes(group.id) ? <button className={"button subscribe-button"} onClick={() => unsubscribeUserToGroup(group.id)}>Unsubscribe</button> :
+                            <button className={"button subscribe-button"} onClick={() => subscribeUserToGroup(group.id)}>Subscribe</button>): ""}
                         </div>
                         <div>
                             <button className={"button show-group-feed-button"} onClick={() => window.location.href=`group_feed/${group['id']}`}>View Feed</button>
