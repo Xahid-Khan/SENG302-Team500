@@ -1,6 +1,7 @@
 import React, {FormEvent, useEffect} from "react";
 import {PostAndCommentContainer} from "./PostAndCommentContainer";
 import {EditPostDataModal} from "./EditPostDataModal";
+import {Tooltip} from "@mui/material";
 
 export function ShowAllPosts() {
 
@@ -198,7 +199,13 @@ export function ShowAllPosts() {
                     }
                   </>
                   :
-                    ""
+                    <>
+                      <Tooltip title={"You cannot unsubscribe if you're member of the group."}>
+                        <span className={"feed-Sub-Button"} style={{padding:"1px"}}>
+                          <button disabled={true}>Unsubscribe</button>
+                        </span>
+                      </Tooltip>
+                    </>
                 }
                 {
                   groupPosts.posts.length > 0 ?

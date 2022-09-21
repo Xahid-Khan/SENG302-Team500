@@ -105,7 +105,7 @@ export function ShowHomeFeed() {
   }
 
   const unsubscribeUserToGroup = async (groupId: number) => {
-    await fetch(`api/v1/subscribe`, {
+    await fetch(`api/v1/unsubscribe`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json'
