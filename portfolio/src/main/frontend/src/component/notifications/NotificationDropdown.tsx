@@ -42,7 +42,7 @@ export const NotificationDropdown: React.FC = observer(() => {
 
     const markAllAsSeen = async () => {
         const globalUrlPathPrefix = window.localStorage.getItem("globalUrlPathPrefix")
-        const path = location.protocol + '//' + location.host + globalUrlPathPrefix + '/' + `api/v1/notifications/${userId}`
+        const path = location.protocol + '//' + location.host + globalUrlPathPrefix + '/' + `api/v1/notifications/seen/${userId}`
         await fetch(path, {
                 method: 'POST'
             }
