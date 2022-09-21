@@ -234,7 +234,7 @@ export function EditGroupMembers({viewGroupId}: any) {
                 nonGroup = group
             }
             group['users'].forEach((user: any) => {
-                if (otherUsersSelected.includes(user.id)) {
+                if (otherUsersSelected.includes(user.id) && !usersToAddIds.includes(user.id)) {
                     usersToAdd.push(user)
                     usersToAddIds.push(user.id)
                 }
@@ -498,7 +498,6 @@ export function EditGroupMembers({viewGroupId}: any) {
 
     const handleCancel = async () => {
         document.getElementById("modal-edit-group-members-open").style.display = "none"
-        window.location.reload()
     }
 
     if (document.getElementById("group-edit-members-confirm")) {
