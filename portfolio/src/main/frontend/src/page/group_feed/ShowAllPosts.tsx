@@ -201,8 +201,8 @@ export function ShowAllPosts() {
                   :
                     <>
                       <Tooltip title={"You cannot unsubscribe if you're member of the group."}>
-                        <span className={"feed-Sub-Button"} style={{padding:"5px"}}>
-                          <button disabled={true} style={{marginTop:"35px"}}>Unsubscribe</button>
+                        <span className={"feed-Sub-Button"} style={{padding:"5px", marginTop:"-35px"}}>
+                          <button disabled={true}>Unsubscribe</button>
                         </span>
                       </Tooltip>
                     </>
