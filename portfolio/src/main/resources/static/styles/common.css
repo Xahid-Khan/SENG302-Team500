@@ -20,6 +20,13 @@ body {
   background: white;
 }
 
+raised-card-half {
+  width: 45%;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.30);
+  background: white;
+}
+
 /* Buttons */
 button {
   color: #fff;

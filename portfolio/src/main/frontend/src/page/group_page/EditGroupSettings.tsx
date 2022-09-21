@@ -8,11 +8,43 @@ const getAllGroups = async ()  => {
 
 export function EditGroupSettings( {viewGroupId}: any ) {
 
+    const[commits, setCommits] = React.useState([])
+    const[branches, setBranches] = React.useState([])
+
+    const commitRequest = new Request('https://eng-git.canterbury.ac.nz/api/v4/projects/13845/repository/commits', {
+        method: 'GET',
+        headers: new Headers({
+            'PRIVATE-TOKEN': 'ysewGuxG33Mzy4fixgjW',
+        })
+    });
+    const branchRequest = new Request('https://eng-git.canterbury.ac.nz/api/v4/projects/13845/repository/branches', {
+        method: 'GET',
+        headers: new Headers({
+            'PRIVATE-TOKEN': 'ysewGuxG33Mzy4fixgjW',
+        })
+    });
+
+    const getCommits = async () => {
+        const getCommitsResponse = await fetch(commitRequest)
+        return getCommitsResponse.json()
+    }
+    const getBranches = async () => {
+        const getBranchesResponse = await fetch(branchRequest)
+        return getBranchesResponse.json()
+    }
+
     const [groups, setGroups] = React.useState([])
 
     useEffect(() => {
         getAllGroups().then((result) => {
             setGroups(result)
+        })
+
+        getCommits().then((result) => {
+            setCommits(result)
+        })
+        getBranches().then((result) => {
+            setBranches(result)
         })
     }, [])
 
@@ -128,6 +160,37 @@ export function EditGroupSettings( {viewGroupId}: any ) {
                         </div>
                     </div>
                 </div>
+
+
+                <div className={"groups-page-repository"} id={`groups-repository`}>
+                    <h3 className={'group-repository-title'}>Branches</h3>
+                    <div className={"table"} id={"group-list-branches"}>
+
+                        {branches.map((branch: any) => (
+                            <div className="tableRow">
+                                <div className="tableCell">
+                                    <a href={branch['web_url']} target="_blank">{branch['name']} ({Object.keys(branch['commit']).length} commits)</a> <br></br>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    <h3 className={'group-repository-title'}>Commits</h3>
+                    <div className={"table"} id={"group-list-commits"}>
+
+                        {commits.map((commit: any) => (
+                            <div className="tableRow">
+                                <div className="tableCell">
+                                    <strong>Name:</strong>{commit['author_name']} <br></br>
+                                    <strong>Message:</strong> {commit['message']} <br></br>
+                                    <strong>ID:</strong><a href={commit['web_url']} target="_blank">{commit['id']}</a> <br></br>
+                                </div>
+                            </div>
+                        ))}
+
+
+                    </div>
+                </div>
+
             </div>
             : ""}</div>
     );
