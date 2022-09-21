@@ -60,17 +60,12 @@ public class GroupFeedController extends AuthenticatedController {
   @GetMapping(value = "/feed_content/{groupId}", produces = "application/json")
   public ResponseEntity<?> getFeedContent(@PathVariable Integer groupId) {
     try {
-
       GroupDetailsResponse groupDetailsResponse = groupsClientService.getGroupById(groupId);
       List<PostModel> allPosts = postService.getAllPostsForAGroup(
           groupDetailsResponse.getGroupId());
       Collections.reverse(allPosts);
-      if (allPosts.isEmpty()) {
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-      } else {
-        Map<String, Object> data = combineAndPrepareForFrontEnd(allPosts, groupDetailsResponse);
-        return ResponseEntity.ok(data);
-      }
+      Map<String, Object> data = combineAndPrepareForFrontEnd(allPosts, groupDetailsResponse);
+      return ResponseEntity.ok(data);
     } catch (NoSuchElementException e) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
