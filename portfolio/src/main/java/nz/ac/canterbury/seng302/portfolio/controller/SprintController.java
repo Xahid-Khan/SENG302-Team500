@@ -1,28 +1,22 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import java.util.List;
-import java.util.NoSuchElementException;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
+import nz.ac.canterbury.seng302.portfolio.model.GetPaginatedUsersOrderingElement;
 import nz.ac.canterbury.seng302.portfolio.model.contract.SprintContract;
+import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseNotificationContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseSprintContract;
-import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
-import nz.ac.canterbury.seng302.portfolio.service.RolesService;
-import nz.ac.canterbury.seng302.portfolio.service.SprintService;
-import nz.ac.canterbury.seng302.portfolio.service.ValidationService;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
+import nz.ac.canterbury.seng302.portfolio.service.*;
+import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedUsersResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * This sprint controller file allows users to make API calls, such as GET, POST, PUT, DELETE
@@ -30,14 +24,26 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api/v1")
-public class SprintController {
+public class SprintController extends AuthenticatedController {
   @Autowired private SprintService sprintService;
 
   @Autowired private ProjectService projectService;
 
   @Autowired private ValidationService validationService;
 
-  @Autowired private RolesService rolesService;
+  @Autowired private UserAccountService userAccountService;
+
+  @Autowired private AuthStateService authStateService;
+
+  @Autowired private NotificationService notificationService;
+
+  @Autowired private EndDateNotificationService endDateNotificationService;
+
+  @Autowired
+  public SprintController(
+      AuthStateService authStateService, UserAccountService userAccountService) {
+    super(authStateService, userAccountService);
+  }
 
   /**
    * This method will be invoked when API receives a GET request with a sprint ID embedded in URL.
@@ -86,9 +92,7 @@ public class SprintController {
       @AuthenticationPrincipal PortfolioPrincipal principal,
       @PathVariable String projectId,
       @RequestBody BaseSprintContract sprint) {
-    List<UserRole> roles = rolesService.getRolesByToken(principal);
-
-    if (roles.contains(UserRole.TEACHER) || roles.contains(UserRole.COURSE_ADMINISTRATOR)) {
+    if (isTeacher(principal)) {
       String errorMessage = validationService.checkAddSprint(projectId, sprint);
       if (!errorMessage.equals("Okay")) {
         if (errorMessage.equals("Project ID does not exist")
@@ -100,7 +104,14 @@ public class SprintController {
 
       try {
         var result = sprintService.create(projectId, sprint);
-
+        PaginatedUsersResponse users = userAccountService.getPaginatedUsers(0, Integer.MAX_VALUE, GetPaginatedUsersOrderingElement.NAME, true);
+        UserResponse sprintCreator = userAccountService.getUserById(authStateService.getId(principal));
+        for (UserResponse user: users.getUsersList()) {
+          if (user.getId() != sprintCreator.getId()) {
+            notificationService.create(new BaseNotificationContract(user.getId(), "Project", sprintCreator.getUsername() + " added a new sprint " + sprint.name() + "!"));
+          }
+        }
+        endDateNotificationService.addNotifications(sprint.endDate(), "Sprint", sprint.name(), result.sprintId());
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
       } catch (NoSuchElementException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -122,8 +133,7 @@ public class SprintController {
       @AuthenticationPrincipal PortfolioPrincipal principal,
       @PathVariable String id,
       @RequestBody BaseSprintContract sprint) {
-    List<UserRole> roles = rolesService.getRolesByToken(principal);
-    if (roles.contains(UserRole.TEACHER) || roles.contains(UserRole.COURSE_ADMINISTRATOR)) {
+    if (isTeacher(principal)) {
       String errorMessage = validationService.checkUpdateSprint(id, sprint);
       if (!errorMessage.equals("Okay")) {
         if (errorMessage.equals("Project ID does not exist")
@@ -135,7 +145,8 @@ public class SprintController {
 
       try {
         sprintService.update(id, sprint);
-
+        endDateNotificationService.removeNotifications("Sprint" + id);
+        endDateNotificationService.addNotifications(sprint.endDate(), "Sprint", sprint.name(), id);
         return ResponseEntity.ok(sprintService.get(id));
       } catch (NoSuchElementException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -146,7 +157,8 @@ public class SprintController {
   }
 
   /**
-   * This method will be invoked when API receives a DELETE request with a Sprint ID embedded in URL
+   * This method will be invoked when API receives a DELETE request with a Sprint ID embedded in
+   * URL.
    *
    * @param id Sprint ID the user wants to delete
    * @return status_Code 204.
@@ -154,11 +166,10 @@ public class SprintController {
   @DeleteMapping(value = "/sprints/{id}")
   public ResponseEntity<Void> deleteSprint(
       @AuthenticationPrincipal PortfolioPrincipal principal, @PathVariable String id) {
-    List<UserRole> roles = rolesService.getRolesByToken(principal);
-    if (roles.contains(UserRole.TEACHER) || roles.contains(UserRole.COURSE_ADMINISTRATOR)) {
+    if (isTeacher(principal)) {
       try {
         sprintService.delete(id);
-
+        endDateNotificationService.removeNotifications("Sprint" + id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
       } catch (NoSuchElementException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

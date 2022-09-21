@@ -1,15 +1,11 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.NoSuchElementException;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.portfolio.model.contract.ProjectContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseProjectContract;
-import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
-import nz.ac.canterbury.seng302.portfolio.service.RolesService;
-import nz.ac.canterbury.seng302.portfolio.service.ValidationService;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
+import nz.ac.canterbury.seng302.portfolio.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,12 +25,18 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api/v1")
-public class ProjectController {
+public class ProjectController extends AuthenticatedController {
   @Autowired private ProjectService projectService;
 
   @Autowired private ValidationService validationService;
 
-  @Autowired private RolesService rolesService;
+  @Autowired private EndDateNotificationService endDateNotificationService;
+
+  @Autowired
+  public ProjectController(
+      AuthStateService authStateService, UserAccountService userAccountService) {
+    super(authStateService, userAccountService);
+  }
 
   /**
    * This method will be invoked when API receives a GET request, and will produce a list of all the
@@ -70,7 +72,7 @@ public class ProjectController {
 
   /**
    * This method will be invoked when API receives a POST request with data of new project embedded
-   * in body - (JSON type)
+   * in body - (JSON type).
    *
    * @param newProject data of new project
    * @return a project contract (JSON) type of the newly created project.
@@ -79,8 +81,7 @@ public class ProjectController {
   public ResponseEntity<?> addNewProject(
       @AuthenticationPrincipal PortfolioPrincipal principal,
       @RequestBody BaseProjectContract newProject) {
-    List<UserRole> roles = rolesService.getRolesByToken(principal);
-    if (roles.contains(UserRole.TEACHER) || roles.contains(UserRole.COURSE_ADMINISTRATOR)) {
+    if (isTeacher(principal)) {
       try {
         var errorMessage = validationService.checkAddProject(newProject);
 
@@ -91,6 +92,7 @@ public class ProjectController {
           return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
         }
         var project = projectService.create(newProject);
+        endDateNotificationService.addNotifications(project.endDate(), "Project", project.name(), project.id());
         return ResponseEntity.ok(project);
       } catch (Exception error) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -102,7 +104,7 @@ public class ProjectController {
 
   /**
    * This method will be invoked when API receives a DELETE request with a Project ID embedded in
-   * URL
+   * URL.
    *
    * @param id Project ID the user wants to delete
    * @return a project contract (JSON) type of the project.
@@ -110,10 +112,10 @@ public class ProjectController {
   @DeleteMapping(value = "/projects/{id}", produces = "application/json")
   public ResponseEntity<?> removeProject(
       @AuthenticationPrincipal PortfolioPrincipal principal, @PathVariable String id) {
-    List<UserRole> roles = rolesService.getRolesByToken(principal);
-    if (roles.contains(UserRole.TEACHER) || roles.contains(UserRole.COURSE_ADMINISTRATOR)) {
+    if (isTeacher(principal)) {
       try {
         projectService.delete(id);
+        endDateNotificationService.removeNotifications("Project" + id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
       } catch (NoSuchElementException error) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -127,7 +129,7 @@ public class ProjectController {
 
   /**
    * This method will be invoked when API receives a UPDATE request with a Project ID embedded in
-   * URL
+   * URL.
    *
    * @param id Project ID the user wants to Update
    * @return a project contract (JSON) type of the project.
@@ -137,8 +139,7 @@ public class ProjectController {
       @AuthenticationPrincipal PortfolioPrincipal principal,
       @RequestBody ProjectContract updatedProject,
       @PathVariable String id) {
-    List<UserRole> roles = rolesService.getRolesByToken(principal);
-    if (roles.contains(UserRole.TEACHER) || roles.contains(UserRole.COURSE_ADMINISTRATOR)) {
+    if (isTeacher(principal)) {
       try {
         var errorMessage = validationService.checkUpdateProject(id, updatedProject);
 
@@ -149,6 +150,8 @@ public class ProjectController {
           return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
         }
         projectService.update(updatedProject, id);
+        endDateNotificationService.removeNotifications("Project" + id);
+        endDateNotificationService.addNotifications(updatedProject.endDate(), "Project", updatedProject.name(), id);
         return ResponseEntity.ok("");
       } catch (NoSuchElementException error) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

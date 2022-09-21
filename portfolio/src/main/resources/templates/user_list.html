@@ -13,7 +13,14 @@
   <link rel="stylesheet" th:href="@{styles/pages/user_list.css}"/>
   <link rel="stylesheet" th:href="@{styles/dropdown.css}"/>
 
+  <script th:inline="javascript">
+    /*<![CDATA[*/
+    window.localStorage.setItem("globalImagePath", [[${globalImagePath}]] + "")
+    window.localStorage.setItem("globalUrlPathPrefix", [[${globalUrlPathPrefix}]] + "")
+    /*]]>*/
+  </script>
   <script type="text/javascript" th:src="@{scripts/user_list.js}"></script>
+  <script type="text/javascript" th:src="@{frontend/navbar.js}" defer></script>
 </head>
 <body>
 <div style="display: none">
@@ -32,7 +39,7 @@
   </th:block>
 </div>
 
-<div th:replace="fragments/header :: header" class="navbar"></div>
+<div id="navbar-react-root"></div>
 
 <div class="raised-card card-padding">
   <h1>Users</h1>
@@ -70,7 +77,7 @@
 
       </div>
     </div>
-    </br>
+    <br/>
     <div class="table">
       <div class="tableRow">
         <th:block th:include="::columnHeaderFragment ('name', 'Name')"></th:block>
@@ -88,7 +95,7 @@
             <div class="chip-row">
               <div th:each="role: ${user.rolesList}">
                 <form class="chip"
-                      th:disabled="${isAdmin==false or user.id == userId or user.rolesList.size()==1}"
+                      th:disabled="${isTeacher==false or user.id == userId or user.rolesList.size()==1}"
                       th:method="delete">
                   <input type="hidden" th:name="action" th:value="remove"/>
                   <input type="hidden" th:name="id" th:value="${user.id}"/>
@@ -103,7 +110,7 @@
             </div>
             <div class="dropdown-box" th:with="roles=${delegate.getAvailableRoles(user)}">
               <button class="button add-button"
-                      th:disabled="${isAdmin==false or user.id==userId or roles.size()==0}">
+                      th:disabled="${isTeacher==false or user.id==userId or roles.size()==0}">
                 +
               </button>
               <div class="dropdown-content">
@@ -122,6 +129,7 @@
           </div>
         </div>
       </div>
+    </div>
   </th:block>
 </div>
 </body>

@@ -1,17 +1,19 @@
 package nz.ac.canterbury.seng302.identityprovider.service;
 
-import com.google.protobuf.Timestamp;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import io.grpc.stub.StreamObserver;
-import net.devh.boot.grpc.client.inject.GrpcClient;
-import nz.ac.canterbury.seng302.identityprovider.database.*;
-import nz.ac.canterbury.seng302.shared.identityprovider.*;
+import nz.ac.canterbury.seng302.identityprovider.database.GroupMemberModel;
+import nz.ac.canterbury.seng302.identityprovider.database.GroupMemberRepository;
+import nz.ac.canterbury.seng302.identityprovider.database.GroupModel;
+import nz.ac.canterbury.seng302.identityprovider.database.GroupRepository;
+import nz.ac.canterbury.seng302.identityprovider.database.UserModel;
+import nz.ac.canterbury.seng302.identityprovider.database.UserRepository;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterRequest;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
 import nz.ac.canterbury.seng302.shared.util.ValidationError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,8 +25,6 @@ public class RegisterServerService {
   @Autowired private UserRepository repository;
 
   @Autowired private PasswordService passwordService;
-
-  @Autowired private GroupsServerService groupsServerService;
 
   @Autowired private GroupRepository groupRepository;
 
@@ -56,8 +56,7 @@ public class RegisterServerService {
             request.getBio(),
             request.getPersonalPronouns(),
             request.getEmail(),
-            roles,
-            currentTimestamp());
+            roles);
 
     List<ValidationError> validationErrors = new ArrayList<>();
 
@@ -107,14 +106,5 @@ public class RegisterServerService {
     }
 
     return reply.build();
-  }
-
-  /**
-   * Helper function to get the current timestamp.
-   *
-   * @return the current timestamp
-   */
-  private static Timestamp currentTimestamp() {
-    return Timestamp.newBuilder().setSeconds(Instant.now().getEpochSecond()).build();
   }
 }

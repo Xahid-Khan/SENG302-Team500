@@ -32,6 +32,7 @@ class SprintView {
     
         <div class="card-content">
             <div class="sprints" id="sprints-container-${this.sprint.sprintId}"></div>
+            <div class="editing-live-update" id="event-form-${this.sprint.sprintId}"></div>
             <div class="events-title">
                 <span id="sprint-order-text-${this.sprint.sprintId}"></span>: <span id="sprint-title-text-${this.sprint.sprintId}" style="font-style: italic;"></span> | <span id="start-date-${this.sprint.sprintId}"></span> - <span id="end-date-${this.sprint.sprintId}"></span>
         
@@ -70,11 +71,10 @@ class SprintView {
         this.sprintMilestones = document.getElementById(`sprint-milestones-${this.sprint.sprintId}`);
         document.getElementById(`sprint-order-text-${this.sprint.sprintId}`).innerText = `Sprint ${this.sprint.orderNumber}`;
         document.getElementById(`sprint-title-text-${this.sprint.sprintId}`).innerText = this.sprint.name;
-        if(this.sprint.description.trim().length !== 0){
+        if(this.sprint.description && this.sprint.description.trim().length !== 0){
             this.descriptionLabel.innerText = "Description:\n";
         }
         this.description.innerText = this.sprint.description;
-
         this.sprintEvents.innerHTML = this.getEvents();
         let found = false;
         this.events.forEach((event) => {
@@ -101,7 +101,6 @@ class SprintView {
         if(!found) {
             this.occurencesLabel.innerText = "No occurences this sprint"
         }
-
         this.colourBlock.style.background = this.sprint.colour;
         document.getElementById(`start-date-${this.sprint.sprintId}`).innerText = DatetimeUtils.localToUserDMY(this.sprint.startDate);
         const displayedDate = new Date(this.sprint.endDate.valueOf());
@@ -127,6 +126,8 @@ class SprintView {
     }
     openDeleteModal(){
         this.modalDeleteContainer.style.display='block';
+        document.getElementById('modal-delete-body').innerText=
+            'Are you sure you want to delete the sprint?'
         this.modalDeleteX.addEventListener("click",()=>this.cancelDeleteModal())
         this.modalDeleteCancel.addEventListener("click",()=>this.cancelDeleteModal())
         this.modalDeleteConfirm.addEventListener("click",()=>this.confirmDeleteModal())
@@ -145,6 +146,7 @@ class SprintView {
         this.modalDeleteX.removeEventListener("click",()=>this.cancelDeleteModal())
         this.modalDeleteCancel.removeEventListener("click",()=>this.cancelDeleteModal())
         this.modalDeleteConfirm.removeEventListener("click",()=>this.confirmDeleteModal())
+        Socket.saveEdit(this.sprint.sprintId)
         this.deleteCallback()
     }
 

@@ -6,7 +6,26 @@ const getAllGroups = async ()  => {
     const allGroupsResponse = await fetch('api/v1/groups/all')
     return allGroupsResponse.json()
 }
-
+const commitRequest = new Request('https://eng-git.canterbury.ac.nz/api/v4/projects/13845/repository/commits', {
+    method: 'GET',
+    headers: new Headers({
+        'PRIVATE-TOKEN': 'ysewGuxG33Mzy4fixgjW',
+    })
+});
+const branchRequest = new Request('https://eng-git.canterbury.ac.nz/api/v4/projects/13845/repository/branches', {
+    method: 'GET',
+    headers: new Headers({
+        'PRIVATE-TOKEN': 'ysewGuxG33Mzy4fixgjW',
+    })
+});
+const getCommits = async () => {
+    const getCommitsResponse = await fetch(commitRequest)
+    return getCommitsResponse.json()
+}
+const getBranches = async () => {
+    const getBranchesResponse = await fetch(branchRequest)
+    return getBranchesResponse.json()
+}
 const deleteGroup = async (id: number, groups: any) => {
     let usersToRemoveIds: any = []
     groups.forEach((group: any) => {
@@ -58,20 +77,44 @@ const wireModal = (id: number, groups: any[]) => {
 
 const toggleGroupView = (id: number) => {
     document.getElementById(`groups-user-list-${id}`).style.display = document.getElementById(`groups-user-list-${id}`).style.display === "none" ? "block" : "none"
+    document.getElementById(`groups-repository-${id}`).style.display = document.getElementById(`groups-repository-${id}`).style.display === "none" ? "block" : "none"
+
     document.getElementById(`group-toggle-button-${id}`).innerText = document.getElementById(`group-toggle-button-${id}`).innerText === "visibility" ? "visibility_off" : "visibility"
+
+}
+
+const getSubscriptions = async () => {
+    const userId = localStorage.getItem("userId")
+    const subscriptionResponse = await fetch(`api/v1/subscribe/${userId}`)
+    return subscriptionResponse.json()
+
 }
 
 export function ShowAllGroups({setViewGroupId}: any) {
 
     const [groups, setGroups] = React.useState([])
+    const[commits, setCommits] = React.useState([])
+    const[branches, setBranches] = React.useState([])
+    const [subscriptions, setSubscriptions] = React.useState([])
+
+    const userId = localStorage.getItem("userId")
 
     useEffect(() => {
         getAllGroups().then((result) => {
             setGroups(result)
         })
+        getSubscriptions().then((result) => {
+            setSubscriptions(result)
+        })
+        getCommits().then((result) => {
+            setCommits(result)
+        })
+        getBranches().then((result) => {
+            setBranches(result)
+        })
     }, [])
 
-    const isStudent = localStorage.getItem("isStudent") === "true"
+    const isTeacher = localStorage.getItem("isTeacher") === "true"
 
     const formatRoles = (roles: any) => {
         let toReturn: string = ""
@@ -93,18 +136,85 @@ export function ShowAllGroups({setViewGroupId}: any) {
         return toReturn
     }
 
+    const subscribeUserToGroup = async (groupId: number) => {
+        const subscriptionResponse = await fetch(`api/v1/subscribe`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({"userId": userId,
+                            "groupId": groupId})
+        });
+        getSubscriptions().then((result) => {
+            setSubscriptions(result)
+        })
+    }
+
+    const unsubscribeUserToGroup = async (groupId: number) => {
+        const subscriptionResponse = await fetch(`api/v1/subscribe`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({"userId": userId,
+                "groupId": groupId})
+        });
+        getSubscriptions().then((result) => {
+            setSubscriptions(result);
+        })
+    }
+
+    function groups_page_user_list(group: any) {
+        if(group['users'].length === 0){
+            return (
+                <div style={{paddingTop: '1em', paddingBottom: '1em'}}>
+                    This group has no members
+                </div>
+            )
+        }
+        return (
+            <div className={"groups-page-user-list"} id={`groups-user-list-${group['id']}`}>
+                <div className={"table"} id={"group-list"}>
+                    <div className={"groups-header"}>
+                        <div className="tableCell"><b>Name</b></div>
+                        <div className="tableCell"><b>Username</b></div>
+                        <div className="tableCell"><b>Alias</b></div>
+                        <div className="tableCell"><b>Roles</b></div>
+                    </div>
+                    {group['users'].map((user: any) => (
+                        <div className="tableRow" id={`group-${group['id']}-user-${user.id}`} key={user.id}>
+                            <div className="tableCell">{user['firstName']} {user['lastName']}</div>
+                            <div className="tableCell">{user['username']}</div>
+                            <div className="tableCell">{user['nickName']}</div>
+                            <div className="tableCell">{formatRoles(user['roles'])}</div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        )
+    }
+
+
+
     return (
         <div>
             {groups.map((group: any) => (
                 <div className={'raised-card group'} id={`group-${group['id']}`} key={group['id']}>
                     <div className={"group-header"}>
-                        {group['shortName'] !== 'Teachers' && group['shortName'] !== 'Non Group' && !isStudent ? <div className={"delete-group"}>
+                        {group['shortName'] !== 'Teachers' && group['shortName'] !== 'Non Group' && isTeacher ? <div className={"delete-group"}>
                             <span className={"material-icons"} onClick={() => wireModal(group['id'], groups)}>clear</span>
                         </div>
                         : "" }
-                        {!isStudent ?
+                        {isTeacher ?
                         <button className="button edit-group-button" id="edit-group" data-privilege="teacher" onClick={() => {document.getElementById("modal-edit-group-members-open").style.display = "block"; setViewGroupId(group.id)}}> Manage Group Members</button>
                         : ""}
+                        <div>
+                            {subscriptions.includes(group.id) ? <button className={"button subscribe-button"} onClick={() => unsubscribeUserToGroup(group.id)}>Unsubscribe</button> :
+                            <button className={"button subscribe-button"} onClick={() => subscribeUserToGroup(group.id)}>Subscribe</button>}
+                        </div>
+                        <div>
+                            <button className={"button show-group-feed-button"} onClick={() => window.location.href=`group_feed/${group['id']}`}>View Feed</button>
+                        </div>
                         <div>
                             <span className={"material-icons group-settings"} onClick={() => {
                                 document.getElementById("group-settings-modal-open").style.display='block';
@@ -117,22 +227,33 @@ export function ShowAllGroups({setViewGroupId}: any) {
                         <h2 className={'group-name-short'}>{group['shortName']}</h2>
                     </div>
                     <h3 className={'group-name-long'}>{group['longName']}</h3>
-                    <div className={"groups-page-user-list"} id={`groups-user-list-${group['id']}`}>
-                        <div className={"table"} id={"group-list"}>
-                            <div className={"groups-header"}>
-                                <div className="tableCell"><b>Name</b></div>
-                                <div className="tableCell"><b>Username</b></div>
-                                <div className="tableCell"><b>Alias</b></div>
-                                <div className="tableCell"><b>Roles</b></div>
+                        {groups_page_user_list(group)}
+                        <div className={"groups-page-repository"} id={`groups-repository-${group['id']}`}>
+                            <h3 className={'group-repository-title'}>Branches</h3>
+                            <div className={"table"} id={"group-list-branches"}>
+
+                                {branches.map((branch: any) => (
+                                    <div className="tableRow">
+                                        <div className="tableCell">
+                                            <a href={branch['web_url']} target="_blank">{branch['name']} ({Object.keys(branch['commit']).length} commits)</a> <br></br>
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
-                            {group['users'].map((user: any) => (
-                                <div className="tableRow" id={`group-${group['id']}-user-${user.id}`} key={user.id}>
-                                    <div className="tableCell">{user['firstName']} {user['lastName']}</div>
-                                    <div className="tableCell">{user['username']}</div>
-                                    <div className="tableCell">{user['nickName']}</div>
-                                    <div className="tableCell">{formatRoles(user['roles'])}</div>
+                            <h3 className={'group-repository-title'}>Commits</h3>
+                            <div className={"table"} id={"group-list-commits"}>
+
+                            {commits.map((commit: any) => (
+                                <div className="tableRow">
+                                    <div className="tableCell">
+                                        <strong>Name:</strong>{commit['author_name']} <br></br>
+                                        <strong>Message:</strong> {commit['message']} <br></br>
+                                        <strong>ID:</strong><a href={commit['web_url']} target="_blank">{commit['id']}</a> <br></br>
+                                        </div>
                                 </div>
                             ))}
+
+
                         </div>
                     </div>
                 </div>
