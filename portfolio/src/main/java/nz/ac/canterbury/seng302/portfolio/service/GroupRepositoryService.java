@@ -90,7 +90,9 @@ public class GroupRepositoryService {
   public boolean update(int id, int repositoryID, String token) {
     //checks if the group repository exists
     if (!groupRepositoryRepository.existsById(Integer.toString(id))) {
-      return false;
+      var newGroupRepository = new GroupRepositoryEntity(id, repositoryID, token);
+      var result = groupRepositoryRepository.save(newGroupRepository);
+      return true;
     }
     var groupRepository = groupRepositoryRepository.findById(Integer.toString(id)).orElseThrow();
     groupRepository.setRepositoryID(repositoryID);
@@ -99,4 +101,6 @@ public class GroupRepositoryService {
 
     return true;
   }
+
+
 }
