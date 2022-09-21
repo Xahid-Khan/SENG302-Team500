@@ -14,6 +14,7 @@ import nz.ac.canterbury.seng302.portfolio.service.CommentService;
 import nz.ac.canterbury.seng302.portfolio.service.GroupsClientService;
 import nz.ac.canterbury.seng302.portfolio.service.PostService;
 import nz.ac.canterbury.seng302.portfolio.service.ReactionService;
+import nz.ac.canterbury.seng302.portfolio.service.SubscriptionService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
 import nz.ac.canterbury.seng302.shared.identityprovider.GroupDetailsResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +52,9 @@ public class GroupFeedController extends AuthenticatedController {
   @Autowired
   private UserAccountService userAccountService;
 
+  @Autowired
+  private SubscriptionService subscriptionService;
+
 
   public GroupFeedController(AuthStateService authStateService,
       UserAccountService userAccountService) {
@@ -58,13 +62,17 @@ public class GroupFeedController extends AuthenticatedController {
   }
 
   @GetMapping(value = "/feed_content/{groupId}", produces = "application/json")
-  public ResponseEntity<?> getFeedContent(@PathVariable Integer groupId) {
+  public ResponseEntity<?> getFeedContent(@AuthenticationPrincipal PortfolioPrincipal principal,
+      @PathVariable Integer groupId) {
     try {
       GroupDetailsResponse groupDetailsResponse = groupsClientService.getGroupById(groupId);
       List<PostModel> allPosts = postService.getAllPostsForAGroup(
           groupDetailsResponse.getGroupId());
       Collections.reverse(allPosts);
       Map<String, Object> data = combineAndPrepareForFrontEnd(allPosts, groupDetailsResponse);
+      data.put("isSubscribed", subscriptionService.getAllByGroupId(groupId).contains(getUserId(principal)));
+      data.put("isMember", groupsClientService.isMemberOfTheGroup(getUserId(principal), groupId));
+
       return ResponseEntity.ok(data);
     } catch (NoSuchElementException e) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

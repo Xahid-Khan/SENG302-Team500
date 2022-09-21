@@ -356,3 +356,8 @@
     white-space: nowrap;
     padding-left: 3px;
 }
+
+.feed-Sub-Button {
+    float: right;
+    margin-top: -30px;
+}

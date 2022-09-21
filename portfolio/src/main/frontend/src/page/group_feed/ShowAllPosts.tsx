@@ -6,6 +6,7 @@ export function ShowAllPosts() {
 
   const urlData = document.URL.split("?")[0].split("/");
   const viewGroupId = urlData[urlData.length - 1];
+  const userId = parseInt(localStorage.getItem("userId"));
   const [newComment, setNewComment] = React.useState("");
   const username = localStorage.getItem("username");
   const [title, setTitle] = React.useState("");
@@ -16,6 +17,8 @@ export function ShowAllPosts() {
   const [groupPosts, setGroupPosts] = React.useState({
         "groupId": -1,
         "shortName": "",
+        "isSubscribed": false,
+        "isMember": false,
         "posts": [{
           "reactions": [],
           "comments": []
@@ -150,47 +153,88 @@ export function ShowAllPosts() {
     }
   }
 
-  return (
-    <div>
-      {
-        groupPosts.groupId != -1 ?
-          <>
-            <div className={"group-feed-name"}>{groupPosts.shortName} Feed</div>
-            {
-              groupPosts.posts.length > 0 ?
-                groupPosts.posts.map((post: any) => (
-                  <PostAndCommentContainer post={post} isTeacher={isTeacher}
-                                           setContent={setContent}
-                                           setLongCharacterCount={setLongCharacterCount}
-                                           setTitle={setTitle}
-                                           setEditPostId={setEditPostId}
-                                           clickHighFive={clickHighFive}
-                                           openConfirmationModal={openConfirmationModal}
-                                           toggleCommentDisplay={toggleCommentDisplay}
-                                           makeComment={makeComment}
-                                           setNewComment={setNewComment}
-                                           username={username}
-                  />))
-                :
-                <div className={"raised-card group-post"} key={"-1"}>
-                  <h3>There are no posts</h3>
-                </div>
-            }
-            <EditPostDataModal handleCancelEditPost={handleCancelEditPost}
-                               longCharacterCount={longCharacterCount}
-                               validateCreateForm={validateCreateForm}
-                               title={title}
-                               content={content}
-                               setContent={setContent}
-                               setLongCharacterCount={setLongCharacterCount}
+  const subscribeUserToGroup = async (groupId: number) => {
+    await fetch(`../api/v1/subscribe`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({"userId": userId,
+        "groupId": groupId})
+    });
+    getCurrentGroup().then((response) => {
+      setGroupPosts(response);
+    })
+  }
 
-            />
-          </>
-          :
-          <div>
-            <h1>Loading...</h1>
-          </div>
-      }
-    </div>
+  const unsubscribeUserToGroup = async (groupId: number) => {
+    await fetch(`../api/v1/unsubscribe`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({"userId": userId,
+        "groupId": groupId})
+    });
+    getCurrentGroup().then((response) => {
+      setGroupPosts(response);
+    })
+  }
+
+
+  return (
+      <div>
+        {
+          groupPosts.groupId != -1 ?
+              <>
+                <div className={"group-feed-name"}>{groupPosts.shortName} Feed</div>
+                {!groupPosts.isMember ?
+                  <>
+                    {
+                      groupPosts.isSubscribed ?
+                          <button className={"feed-Sub-Button"} onClick={() => unsubscribeUserToGroup(groupPosts.groupId)} >Unsubscribe</button>
+                          :
+                          <button className={"feed-Sub-Button"} onClick={() => subscribeUserToGroup(groupPosts.groupId)}>Subscribe</button>
+                    }
+                  </>
+                  :
+                    ""
+                }
+                {
+                  groupPosts.posts.length > 0 ?
+                      groupPosts.posts.map((post: any) => (
+                          <PostAndCommentContainer post={post} isTeacher={isTeacher}
+                                                   setContent={setContent}
+                                                   setLongCharacterCount={setLongCharacterCount}
+                                                   setTitle={setTitle}
+                                                   setEditPostId={setEditPostId}
+                                                   clickHighFive={clickHighFive}
+                                                   openConfirmationModal={openConfirmationModal}
+                                                   toggleCommentDisplay={toggleCommentDisplay}
+                                                   makeComment={makeComment}
+                                                   setNewComment={setNewComment}
+                                                   username={username}
+                          />))
+                      :
+                      <div className={"raised-card group-post"} key={"-1"}>
+                        <h3>There are no posts</h3>
+                      </div>
+                }
+                <EditPostDataModal handleCancelEditPost={handleCancelEditPost}
+                                   longCharacterCount={longCharacterCount}
+                                   validateCreateForm={validateCreateForm}
+                                   title={title}
+                                   content={content}
+                                   setContent={setContent}
+                                   setLongCharacterCount={setLongCharacterCount}
+
+                />
+              </>
+              :
+              <div>
+                <h1>Loading...</h1>
+              </div>
+        }
+      </div>
   )
 }
