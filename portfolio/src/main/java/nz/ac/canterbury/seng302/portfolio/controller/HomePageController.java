@@ -85,8 +85,7 @@ public class HomePageController extends AuthenticatedController {
       var allGroupMembers = groupsClientService.getGroupById(subscription.groupId()).getMembersList();
 
       //Stops user from unsubscribing from a group if they are in it
-      boolean isUserInGroup = allGroupMembers.stream().anyMatch(member -> member.getId() == userId);
-      if (isUserInGroup) {
+      if (groupsClientService.isMemberOfTheGroup(userId, subscription.groupId())) {
         return ResponseEntity.badRequest().build();
       }
 
