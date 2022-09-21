@@ -36,9 +36,12 @@ public class SubscriptionService {
    * @param subscription SubscriptionContract containing the user and group
    */
   public void unsubscribe(SubscriptionContract subscription) {
+    System.err.println("PROCESSING>>>");
     var data = subscriptionRepository.findByUserIdAndGroupId(subscription.userId(),
         subscription.groupId());
+    System.err.println("PROCESSED>>>");
     subscriptionRepository.deleteById(data.getId());
+    System.err.println("DELETED>>>");
   }
 
   /**

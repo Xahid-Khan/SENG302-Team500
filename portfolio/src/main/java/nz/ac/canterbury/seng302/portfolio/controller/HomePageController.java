@@ -90,10 +90,11 @@ public class HomePageController extends AuthenticatedController {
       if (isMember) {
         return ResponseEntity.badRequest().build();
       }
-
+      System.err.println("NOT MEMEBER");
       subscriptionService.unsubscribe(subscription);
-      var result = subscriptionService.getAllByUserId(userId);
-      return ResponseEntity.ok().body(result);
+      System.err.println("UNSUB- COMPLETE...");
+//      var result = subscriptionService.getAllByUserId(userId);
+      return ResponseEntity.ok().build();
 
     } catch (Exception e) {
       return ResponseEntity.internalServerError().build();
