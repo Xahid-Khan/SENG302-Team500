@@ -125,12 +125,11 @@ class PingPageStore {
     let store = this;
     let socket = new SockJS(this.path)
     store.stomp = Stomp.over(socket);
-
     store.stomp.connect({}, () => {
       console.log("Connected.")
       console.log("Subscribing...")
       store.connectStatus = new LoadingDone()
-      if (location === "alert") {
+      if (destination === "alert") {
         store.stomp.subscribe("/topic/" + location, (message: StompMessage) => {
           store.onReceiveEditAlert(message)
         })
