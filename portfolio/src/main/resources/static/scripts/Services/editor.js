@@ -183,6 +183,12 @@ class Editor {
             this.setNameError("A name is required.");
             return false;
         }
+        if(!this.nameInput.value.match("(?=^[\\p{L}]?)(?!^['-/ ])(?!.*['-/]{2})(?!.* {2})([\\p{L} '/-]*)")){
+            this.setNameError("Name must only contain alphabetical characters, or special characters:"
+                + " \"/\", \"-\", \":\", or \"'\".\""
+                + " It must also not contain two special characters in a row");
+            return false;
+        }
 
         if (this.nameInput.value.trim() === "") {
             this.setNameError("Name must not contain only whitespaces.");
