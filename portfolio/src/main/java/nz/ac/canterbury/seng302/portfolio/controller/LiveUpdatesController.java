@@ -36,14 +36,14 @@ public class LiveUpdatesController {
    * STOMP endpoints which handles notifications.
    *
    * @param principal authentication principal
-   * @param alert the alert
    * @return a parsed message
    */
   @MessageMapping("/notification")
   @SendTo("/topic/notification")
-  public Map<String, String> notify(
-      @AuthenticationPrincipal PreAuthenticatedAuthenticationToken principal, String alert) {
+  public String notify(
+      @AuthenticationPrincipal PreAuthenticatedAuthenticationToken principal, String username) {
     // TODO: Parse whatever message format is decided in live_updating.ts
-    return null;
+    System.err.println("We are in");
+    return username;
   }
 }

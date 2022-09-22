@@ -9,6 +9,8 @@ import {
 } from "@mui/material";
 import {NotificationDropdown} from "../notifications/NotificationDropdown";
 import {AccountDropdown} from "./AccountDropdown";
+import {Socket} from "../../entry/live_updating";
+import {Message as StompMessage} from "@stomp/stompjs/esm6/i-message";
 
 export const navigateTo = (page: string) => {
     const globalUrlPathPrefix = window.localStorage.getItem("globalUrlPathPrefix")
@@ -16,6 +18,8 @@ export const navigateTo = (page: string) => {
 }
 
 export const NavBar: React.FC = observer(() => {
+
+    Socket.start("notification", "notification");
 
     return (
         <React.Fragment>

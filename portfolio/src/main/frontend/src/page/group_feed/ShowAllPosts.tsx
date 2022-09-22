@@ -1,5 +1,6 @@
 import React, {FormEvent, useEffect} from "react";
 import {DatetimeUtils} from "../../util/DatetimeUtils";
+import {Socket} from "../../entry/live_updating";
 
 export function ShowAllPosts() {
 
@@ -104,6 +105,12 @@ export function ShowAllPosts() {
 
   const clickHighFive = async (id: number) => {
     const button = document.getElementById(`high-five-${id}`)
+    if(button.style.backgroundSize === "100% 100%") {
+      button.style.backgroundSize = "0% 100%";
+    } else {
+      button.style.backgroundSize = "100% 100%";
+      Socket.notify()
+    }
     button.style.backgroundSize = button.style.backgroundSize === "100% 100%" ? "0 100%" : "100% 100%"
 
     await fetch('post_high_five', {
@@ -141,6 +148,9 @@ export function ShowAllPosts() {
           "comment": newComment
         })
       });
+
+      Socket.notify()
+
       setNewComment("");
       await getCurrentGroup().then((result: any) => {
         setGroupPosts(result)
