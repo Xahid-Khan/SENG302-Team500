@@ -497,7 +497,8 @@ export function EditGroupMembers({viewGroupId}: any) {
     }
 
     const handleCancel = async () => {
-        document.getElementById("modal-edit-group-members-open").style.display = "none"
+        document.getElementById("modal-edit-group-members-open").style.display = "none";
+        window.location.reload();
     }
 
     if (document.getElementById("group-edit-members-confirm")) {
