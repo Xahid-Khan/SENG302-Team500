@@ -64,9 +64,9 @@ public class ValidationService {
 
     // This is the regex used in the user's name fields. Effectively, alphabetic or special only,
     //  then only ', /, and - allowed. No double special characters in a row.
-    Pattern regex = Pattern.compile(
-            "^(?=^[\\p{L}0123456789]?)(?!^['-/: ])(?!.*['-/:]{2})(?!.* {2})([\\p{L} -0123456789:]*)"
-    );
+    Pattern regex =
+        Pattern.compile(
+            "^(?=^[\\p{L}0123456789]?)(?!^['-/: ])(?!.*['-/:]{2})(?!.* {2})([\\p{L} -0123456789:]*)");
     Matcher nameMatcher = regex.matcher(name);
     if (!nameMatcher.matches()) {
       return type

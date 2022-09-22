@@ -1,7 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.DTO;
 
 import com.google.protobuf.Timestamp;
-
 import javax.annotation.Nullable;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;

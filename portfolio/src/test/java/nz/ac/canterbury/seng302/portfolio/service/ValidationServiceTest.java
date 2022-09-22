@@ -1,8 +1,18 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import nz.ac.canterbury.seng302.portfolio.mapping.ProjectMapper;
 import nz.ac.canterbury.seng302.portfolio.mapping.SprintMapper;
-import nz.ac.canterbury.seng302.portfolio.model.contract.*;
+import nz.ac.canterbury.seng302.portfolio.model.contract.DeadlineContract;
+import nz.ac.canterbury.seng302.portfolio.model.contract.EventContract;
+import nz.ac.canterbury.seng302.portfolio.model.contract.MilestoneContract;
+import nz.ac.canterbury.seng302.portfolio.model.contract.ProjectContract;
+import nz.ac.canterbury.seng302.portfolio.model.contract.SprintContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseProjectContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseSprintContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.ProjectEntity;
@@ -15,13 +25,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
@@ -121,16 +124,31 @@ public class ValidationServiceTest {
   }
 
   @ParameterizedTest
-  @ValueSource(strings = {"Project 1", "Project-1", "sprint-2", "Sprint '2'", "Deadline 4: Deadline time"} )
+  @ValueSource(
+      strings = {"Project 1", "Project-1", "sprint-2", "Sprint '2'", "Deadline 4: Deadline time"})
   public void TestBoundaryRegexValidationAndExpectPass(String textToTest) {
 
-    assertEquals("Okay",TestRegex(textToTest));
+    assertEquals("Okay", TestRegex(textToTest));
   }
 
   @ParameterizedTest
-  @ValueSource(strings = {" Test","-Test", "'Test", "Test  ", "Test--","Test' --2","P '- '- '- -' '- '- -'","@~@~@~@~@~@~@@~@~@~@~","@'-'-32\"@-232323/2?213!23%4565#%(#@*","\\\\\\\\\\\\\\\\", "/////////", "Project: -_- '1"} )
+  @ValueSource(
+      strings = {
+        " Test",
+        "-Test",
+        "'Test",
+        "Test  ",
+        "Test--",
+        "Test' --2",
+        "P '- '- '- -' '- '- -'",
+        "@~@~@~@~@~@~@@~@~@~@~",
+        "@'-'-32\"@-232323/2?213!23%4565#%(#@*",
+        "\\\\\\\\\\\\\\\\",
+        "/////////",
+        "Project: -_- '1"
+      })
   public void TestInvalidRegexValidationAndExpectFail(String textToTest) {
-    assertNotEquals("Okay",TestRegex(textToTest));
+    assertNotEquals("Okay", TestRegex(textToTest));
   }
 
   @Test
@@ -408,8 +426,7 @@ public class ValidationServiceTest {
             sprints.stream().toList(),
             new ArrayList<EventContract>(),
             new ArrayList<MilestoneContract>().stream().toList(),
-            new ArrayList<DeadlineContract>().stream().toList()
-        );
+            new ArrayList<DeadlineContract>().stream().toList());
     startDate = Instant.parse("2021-12-04T00:00:30.00Z");
     response = validationService.checkSprintDetails(project, "", startDate, endDate, "#000000");
     assertEquals("Sprint cannot begin while another sprint is still in progress", response);
