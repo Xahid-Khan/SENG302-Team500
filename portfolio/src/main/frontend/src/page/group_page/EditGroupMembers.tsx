@@ -601,9 +601,9 @@ export function EditGroupMembers({viewGroupId}: any) {
                         <h2>Current Group</h2>
                         <div className={'raised-card group'} id={`current-group-members-${myGroup['id']}`}>
                             <div className={"group-header"}>
-                                <h2 className={'group-name-long'}>{myGroup['longName']}</h2>
+                                <h2 className={'group-name-short'}>{myGroup['shortName']}</h2>
                             </div>
-                            <h3 className={'group-name-short'}>{myGroup['shortName']}</h3>
+                            <h3 className={'group-name-long'}>{myGroup['longName']}</h3>
                             <div className={"user-list-table"}>
                                 <div className={"table groups-table"} id={"current-group-users-list"}>
                                     <div className={"groups-header"}>
