@@ -102,7 +102,6 @@ export function ShowAllGroups({setViewGroupId}: any) {
     useEffect(() => {
         getAllGroups().then((result) => {
             setGroups(result)
-            console.log(result)
         })
         getSubscriptions().then((result) => {
             setSubscriptions(result)

@@ -89,8 +89,8 @@ public class HomePageController extends AuthenticatedController {
       if (isUserInGroup) {
         return ResponseEntity.badRequest().build();
       }
-
       subscriptionService.unsubscribe(subscription);
+
       var result = subscriptionService.getAllByUserId(userId);
       return ResponseEntity.ok().body(result);
 
@@ -116,13 +116,12 @@ public class HomePageController extends AuthenticatedController {
       Integer userId = authStateService.getId(principal);
       List<Integer> subscriptions = subscriptionService.getAllByUserId(userId);
       List<PostModel> posts = new ArrayList<>();
-      for(int subscriptionId: subscriptions) {
-        posts.addAll(postService.getAllPostsForAGroup(subscriptionId));
+      for(int groupIds: subscriptions) {
+        posts.addAll(postService.getAllPostsForAGroup(groupIds));
       }
       posts.sort(Comparator.comparing(PostModel::getCreated));
-
       Collections.reverse(posts);
-      Map<String, Object> data = combineAndPrepareForFrontEnd(posts);
+      Map<String, Object> data = combineAndPrepareForFrontEnd(posts, userId);
       return ResponseEntity.ok(data);
     } catch (Exception e) {
       return ResponseEntity.internalServerError().build();
@@ -135,12 +134,12 @@ public class HomePageController extends AuthenticatedController {
    * @param posts All the posts from a group as a List
    * @return A Hash Map where first element is string and second is an object.
    */
-  private Map<String, Object> combineAndPrepareForFrontEnd(List<PostModel> posts) {
+  private Map<String, Object> combineAndPrepareForFrontEnd(List<PostModel> posts, int userId) {
     Map<String, Object> postMap = new HashMap<>();
 
     List<Map<String, Object>> allPosts = new ArrayList<>();
-
-    posts.forEach(post -> {
+    HashSet<PostModel> postSet = new HashSet<>(posts);
+    postSet.forEach(post -> {
       Map<String, Object> filteredPosts = new HashMap<>();
       filteredPosts.put("postId", post.getId());
       filteredPosts.put("userId", post.getUserId());
@@ -152,6 +151,7 @@ public class HomePageController extends AuthenticatedController {
       filteredPosts.put("groupId", post.getGroupId());
       filteredPosts.put("comments", commentService.getCommentsForThePostAsJson(post.getId()));
       filteredPosts.put("groupName", groupsClientService.getGroupById(post.getGroupId()).getShortName());
+      filteredPosts.put("isMember", groupsClientService.isMemberOfTheGroup(userId, post.getGroupId()));
       allPosts.add(filteredPosts);
     });
     postMap.put("posts", allPosts);

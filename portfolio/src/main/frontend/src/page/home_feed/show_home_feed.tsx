@@ -31,7 +31,8 @@ export function ShowHomeFeed() {
                 "time": "",
                 "userId": -1,
                 "content": "",
-                "username": ""
+                "username": "",
+                "isMember": false,
             }
         ]
     });
@@ -43,7 +44,7 @@ export function ShowHomeFeed() {
             setGroupPosts(result)
         })
         getSubscriptions().then((result) => {
-            setSubscriptions(result)
+            setSubscriptions(result);
         })
     }, [])
 
@@ -122,11 +123,13 @@ export function ShowHomeFeed() {
                                     className={"post-time"}>{DatetimeUtils.timeStringToTimeSince(post.time)}</div>
                             </div>
                             <div className={"post-unsubscribe"}>
-                                <button className={"button subscribe-button"} onClick={() => unsubscribeUserToGroup(post.groupId)}>Unsubscribe</button>
+                                {post.isMember ?
+                                    ""
+                                    :
+                                    <button className={"button subscribe-button"}
+                                            onClick={() => unsubscribeUserToGroup(post.groupId)}>Unsubscribe</button>
+                                }
                             </div>
-                            {isTeacher ?
-                                <div className={"post-delete"}><span
-                                    className={"material-icons"}>clear</span></div> : ""}
                         </div>
                         <div className={"post-body"} key={"postBody" + post.postId}>{post.content}</div>
                         <div className={"border-line"}/>
