@@ -146,7 +146,7 @@
 .post-title{
     width: 50%;
 }
-.title-length {
+.content-length {
     white-space: nowrap;
     padding-left: 3px;
 }
@@ -352,10 +352,6 @@
 }
 .post-title{
     width: 50%;
-}
-.title-length {
-    white-space: nowrap;
-    padding-left: 3px;
 }
 
 .feed-Sub-Button {
