@@ -1,7 +1,6 @@
 import React, {useEffect} from "react";
 import {DatetimeUtils} from "../../util/DatetimeUtils";
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import {NativeSelect} from "@mui/material";
+import {UnsubscribeDropDown} from "./UnsubscribeDropDown";
 
 const getSubscriptions = async () => {
   const userId = localStorage.getItem("userId")

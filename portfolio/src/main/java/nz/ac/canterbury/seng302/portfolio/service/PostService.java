@@ -145,4 +145,16 @@ public class PostService {
       return null;
     }
   }
+
+  /**
+   * This method will delete all the posts made by a group when a group is deleted.
+   * @param groupId An integer
+   */
+  public void deleteAllPostWithGroupId(int groupId) {
+    var data = postRepository.findPostModelByGroupId(groupId);
+    for (PostModel post: data) {
+      commentService.deleteAllCommentByPostId(post.getId());
+      postRepository.deleteById(post.getId());
+    }
+  }
 }
