@@ -201,7 +201,7 @@ class ReactionServiceTest {
    */
   @Test
   void processAPostHighFiveThatUserHasNotReactedToExpectPass() {
-    doNothing().when(notificationService.create(any()));
+    Mockito.when(notificationService.create(any())).thenReturn(null);
     Mockito.when(mockReactionRepository.getReactionsByUserId(any(int.class)))
         .thenReturn(new ArrayList<>());
     Mockito.when(mockReactionRepository.save(any())).thenReturn(allReactionsPosts.get(1));

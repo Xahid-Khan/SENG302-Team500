@@ -107,7 +107,7 @@ class CommentServiceTest {
      */
     @Test
     void AddNewCommentToAPostExpectPass () throws Exception  {
-        doNothing().when(notificationService.create(any()));
+        Mockito.when(notificationService.create(any())).thenReturn(null);
         Mockito.when(mockCommentRepository.save(commentList.get(0))).thenReturn(null);
         Mockito.when(userAccountService.getUserById(anyInt())).thenReturn(UserResponse.newBuilder().build());
         var result = commentService.addNewCommentsToPost(comment1);
