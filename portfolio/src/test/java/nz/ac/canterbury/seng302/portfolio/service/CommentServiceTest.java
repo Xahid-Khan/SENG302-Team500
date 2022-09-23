@@ -4,6 +4,7 @@ import nz.ac.canterbury.seng302.portfolio.model.contract.CommentContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.CommentModel;
 import nz.ac.canterbury.seng302.portfolio.repository.CommentModelRepository;
 import nz.ac.canterbury.seng302.portfolio.repository.PostModelRepository;
+import nz.ac.canterbury.seng302.portfolio.repository.SubscriptionRepository;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +19,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doNothing;
 
 @SpringBootTest
 class CommentServiceTest {
@@ -33,6 +36,9 @@ class CommentServiceTest {
 
     @Mock
     private UserAccountService userAccountService;
+
+    @Mock
+    private NotificationService notificationService;
 
     private CommentContract comment1;
     private CommentContract comment2;
@@ -101,6 +107,7 @@ class CommentServiceTest {
      */
     @Test
     void AddNewCommentToAPostExpectPass () throws Exception  {
+        doNothing().when(notificationService.create(any()));
         Mockito.when(mockCommentRepository.save(commentList.get(0))).thenReturn(null);
         Mockito.when(userAccountService.getUserById(anyInt())).thenReturn(UserResponse.newBuilder().build());
         var result = commentService.addNewCommentsToPost(comment1);

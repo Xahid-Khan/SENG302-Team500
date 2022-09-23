@@ -28,6 +28,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 
 @SpringBootTest
 class GroupFeedServiceTest {
@@ -267,6 +268,7 @@ class GroupFeedServiceTest {
      */
     @Test
     void highFivePostAndSendNotifications() {
+        doNothing().when(notificationService.create(any()));
         PostReactionContract postReactionContract = new PostReactionContract(newPost.getId(), newPost.getUserId());
         Mockito.when(mockPostModelRepository.findById(newPost.getId())).thenReturn(Optional.ofNullable(newPost));
         Mockito.when(userAccountService.getUserById(newPost.getUserId())).thenReturn(UserResponse.newBuilder().setId(newPost.getUserId()).build());
@@ -281,6 +283,7 @@ class GroupFeedServiceTest {
      */
     @Test
     void commentOnPostAndSendNotifications() {
+        doNothing().when(notificationService.create(any()));
         CommentContract commentContract = new CommentContract(newPost.getUserId(), newPost.getId(), "test");
         Mockito.when(mockPostModelRepository.findById(newPost.getId())).thenReturn(Optional.ofNullable(newPost));
         Mockito.when(userAccountService.getUserById(newPost.getUserId())).thenReturn(UserResponse.newBuilder().setId(newPost.getUserId()).build());
