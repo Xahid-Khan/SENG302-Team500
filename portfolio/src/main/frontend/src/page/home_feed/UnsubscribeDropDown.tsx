@@ -2,11 +2,11 @@ import React from "react";
 import {Box, IconButton, Menu, MenuItem} from "@mui/material";
 import {MoreVertRounded} from "@mui/icons-material";
 
-export function UnsubscribeDropDown (props: any) {
+export function UnsubscribeDropDown(props: any) {
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
-  const unsubscribeUserToGroup = async (groupId: number, userId: number) => {
+  const unsubscribeUserToGroup = async (groupId: number) => {
     console.log("UNSUB---Requested...")
     await fetch(`api/v1/unsubscribe`, {
       method: 'DELETE',
@@ -14,12 +14,12 @@ export function UnsubscribeDropDown (props: any) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        "userId": userId,
+        "userId": props.userId,
         "groupId": groupId
       })
     });
-    props.getSubscriptions().then((result: any) => {
-      props.setSubscriptions(result);
+    props.getAllPosts().then((result: any) => {
+      props.setGroupPosts(result)
     })
   }
 
@@ -30,7 +30,6 @@ export function UnsubscribeDropDown (props: any) {
     setAnchorEl(null);
   };
 
-  //uses the last clicked element to determine which menu to open
   const unsubMenu = anchorEl?.id === 'unsubscribe-button';
 
   return (
@@ -41,7 +40,7 @@ export function UnsubscribeDropDown (props: any) {
               id={"unsubscribe-button"}
               size={"medium"}
           >
-          <MoreVertRounded/>
+            <MoreVertRounded/>
           </IconButton>
         </Box>
         <Menu
@@ -54,7 +53,7 @@ export function UnsubscribeDropDown (props: any) {
             transformOrigin={{horizontal: 'right', vertical: 'top'}}
             anchorOrigin={{horizontal: 'right', vertical: 'bottom'}}
         >
-          <MenuItem onClick={() => unsubscribeUserToGroup(props.post.groupId, props.post.userId)}>
+          <MenuItem onClick={() => unsubscribeUserToGroup(props.post.groupId)}>
             Unsubscribe
           </MenuItem>
         </Menu>
