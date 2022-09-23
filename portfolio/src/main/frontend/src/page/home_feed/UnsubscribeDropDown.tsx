@@ -7,7 +7,6 @@ export function UnsubscribeDropDown(props: any) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
   const unsubscribeUserToGroup = async (groupId: number) => {
-    console.log("UNSUB---Requested...")
     await fetch(`api/v1/unsubscribe`, {
       method: 'DELETE',
       headers: {
