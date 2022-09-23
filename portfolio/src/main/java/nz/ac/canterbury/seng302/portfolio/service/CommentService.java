@@ -128,7 +128,6 @@ public class CommentService {
    */
   public boolean deleteCommentById(int commentId) {
     try {
-      System.err.println(commentId);
       return commentRepository.deleteById(commentId);
     } catch (Exception e) {
       e.printStackTrace();

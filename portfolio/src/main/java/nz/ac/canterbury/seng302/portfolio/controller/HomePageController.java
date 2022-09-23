@@ -1,10 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.portfolio.model.contract.SubscriptionContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.PostModel;
@@ -82,19 +79,16 @@ public class HomePageController extends AuthenticatedController {
                                        @RequestBody SubscriptionContract subscription) {
     try {
       int userId = getUserId(principal);
-      System.err.println("IN CONTROLLER");
 
       //Stops user from unsubscribing from a group if they are in it
-      var isMember = groupsClientService.isMemberOfTheGroup(subscription.userId(), subscription.groupId());
-      System.err.println(isMember);
-      if (isMember) {
+      if (groupsClientService.isMemberOfTheGroup(userId, subscription.groupId())) {
         return ResponseEntity.badRequest().build();
       }
-      System.err.println("NOT MEMEBER");
+
       subscriptionService.unsubscribe(subscription);
-      System.err.println("UNSUB- COMPLETE...");
-//      var result = subscriptionService.getAllByUserId(userId);
-      return ResponseEntity.ok().build();
+
+      var result = subscriptionService.getAllByUserId(userId);
+      return ResponseEntity.ok().body(result);
 
     } catch (Exception e) {
       return ResponseEntity.internalServerError().build();
@@ -115,9 +109,16 @@ public class HomePageController extends AuthenticatedController {
   @GetMapping(value = "/posts", produces = "application/json")
   public ResponseEntity<?> getAllPosts(@AuthenticationPrincipal PortfolioPrincipal principal) {
     try {
-      List<PostModel> posts = postService.getAllPosts();
+      Integer userId = getUserId(principal);
+      List<Integer> subscriptions = subscriptionService.getAllByUserId(userId);
+      List<PostModel> posts = new ArrayList<>();
+      for(int groupIds: subscriptions) {
+        posts.addAll(postService.getAllPostsForAGroup(groupIds));
+      }
+
+      posts.sort(Comparator.comparing(PostModel::getCreated));
       Collections.reverse(posts);
-      Map<String, Object> data = combineAndPrepareForFrontEnd(posts);
+      Map<String, Object> data = combineAndPrepareForFrontEnd(posts, userId);
       return ResponseEntity.ok(data);
     } catch (Exception e) {
       return ResponseEntity.internalServerError().build();
@@ -130,12 +131,12 @@ public class HomePageController extends AuthenticatedController {
    * @param posts All the posts from a group as a List
    * @return A Hash Map where first element is string and second is an object.
    */
-  private Map<String, Object> combineAndPrepareForFrontEnd(List<PostModel> posts) {
+  private Map<String, Object> combineAndPrepareForFrontEnd(List<PostModel> posts, int userId) {
     Map<String, Object> postMap = new HashMap<>();
 
     List<Map<String, Object>> allPosts = new ArrayList<>();
-
-    posts.forEach(post -> {
+    HashSet<PostModel> postSet = new HashSet<>(posts);
+    postSet.forEach(post -> {
       Map<String, Object> filteredPosts = new HashMap<>();
       filteredPosts.put("postId", post.getId());
       filteredPosts.put("userId", post.getUserId());
@@ -146,7 +147,8 @@ public class HomePageController extends AuthenticatedController {
               post.getId()));
       filteredPosts.put("groupId", post.getGroupId());
       filteredPosts.put("comments", commentService.getCommentsForThePostAsJson(post.getId()));
-
+      filteredPosts.put("groupName", groupsClientService.getGroupById(post.getGroupId()).getShortName());
+      filteredPosts.put("isMember", groupsClientService.isMemberOfTheGroup(userId, post.getGroupId()));
       allPosts.add(filteredPosts);
     });
     postMap.put("posts", allPosts);

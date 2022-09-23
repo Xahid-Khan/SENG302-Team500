@@ -1,6 +1,7 @@
 import React, {useEffect} from "react";
 import {DatetimeUtils} from "../../util/DatetimeUtils";
-import {Socket} from "../../entry/live_updating";
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import {NativeSelect} from "@mui/material";
 
 const getSubscriptions = async () => {
   const userId = localStorage.getItem("userId")
@@ -18,39 +19,32 @@ export function ShowHomeFeed() {
   const userId = localStorage.getItem("userId")
 
   const getAllPosts = async () => {
+    setTimeout(()=> {}, 500);
     const currentGroupResponse = await fetch(`api/v1/posts`);
     return currentGroupResponse.json()
   }
 
-  const [groupPosts, setGroupPosts] = React.useState({
-    "groupId": -1,
-    "shortName": "",
-    "posts": [{
-      "postId": -1,
-      "userId": -1,
-      "username": "",
-      "time": "",
-      "content": "",
-      "reactions": [],
-      "groupId": -1,
-      "comments": [{
-        "commentId": -1,
-        "userId": -1,
-        "username": "",
-        "name": "",
-        "time": "",
-        "content": "",
-        "reactions": []
-      }]
-    }]
-  });
+    const [groupPosts, setGroupPosts] = React.useState({
+        "posts": [
+            {
+                "comments": [],
+                "groupId": -1,
+                "reactions": [],
+                "postId": -1,
+                "time": "",
+                "userId": -1,
+                "content": "",
+                "username": "",
+                "isMember": false,
+            }
+        ]
+    });
 
   const [subscriptions, setSubscriptions] = React.useState([])
 
   useEffect(() => {
     getAllPosts().then((result) => {
       setGroupPosts(result)
-      console.log(result)
     })
     getSubscriptions().then((result) => {
       setSubscriptions(result)
@@ -59,13 +53,9 @@ export function ShowHomeFeed() {
 
   const isTeacher = localStorage.getItem("isTeacher") === "true";
 
-    const clickHighFive = async (id: number) => {
-        const button = document.getElementById(`high-five-${id}`)
-        if(button.style.backgroundSize === "100% 100%") {
-            button.style.backgroundSize = "0% 100%";
-        } else {
-            button.style.backgroundSize = "100% 100%";
-        }
+  const clickHighFive = async (id: number) => {
+    const button = document.getElementById(`high-five-${id}`)
+    button.style.backgroundSize = button.style.backgroundSize === "100% 100%" ? "0 100%" : "100% 100%"
 
     await fetch('group_feed/post_high_five', {
       method: 'POST',
@@ -125,30 +115,42 @@ export function ShowHomeFeed() {
     })
   }
 
-  return (
-      <div>
-        {groupPosts.groupId != -1 ?
+    return (
+        <div>
+          {
+            (groupPosts.posts.length > 0 && groupPosts.posts[0].groupId != -1) || groupPosts.posts.length == 0 ?
             <>
-              <div className={"group-feed-name"}>Welcome!</div>
-              {groupPosts.posts.filter((post) => subscriptions.includes(post.groupId)).length === 0 ?
-                  <div><h2>Looks like there are no posts! Subscribe to more groups to see there posts
-                    here!</h2></div> :
-                  <div>{groupPosts.posts.filter((post) => subscriptions.includes(post.groupId)).map((post: any) => (
-                      <div className={"raised-card group-post"} key={post.postId}>
+            <div className={"group-feed-name"}>Welcome!</div>
+            {groupPosts.posts.length === 0 ? <div><h2>Looks like there are no posts! Subscribe to more groups to see there posts here!</h2></div> :
+                <div>{groupPosts.posts.filter((post) => subscriptions.includes(post.groupId)).map((post: any) => (
+                    <div className={"raised-card group-post"} key={post.postId}>
                         <div className={"post-header"} key={"postHeader" + post.postId}>
                           <div className={"post-info"} key={"postInfo" + post.postId}>
-                            <div>{post.username}</div>
-                            <div
-                                className={"post-time"}>{DatetimeUtils.timeStringToTimeSince(post.time)}</div>
+                              <div>{post.username} <span  onClick={() => window.location.href = `../group_feed/${post.groupId}`} style={{fontSize: 14, cursor: "pointer"}}> Group: {post.groupName}</span></div>
+                              <div
+                                  className={"post-time"}>{DatetimeUtils.timeStringToTimeSince(post.time)}</div>
                           </div>
-                          <div className={"post-unsubscribe"}>
-                            <button className={"button subscribe-button"}
-                                    onClick={() => unsubscribeUserToGroup(post.groupId)}>Unsubscribe
-                            </button>
+                          <div className={"post-unsubscribe"} style={{height: "26px",
+                              width: "6px",
+                              overflow: "clip",
+                              position: "relative"}}>
+                              {post.isMember ?
+                                  ""
+                                  :
+                                  <>
+                                    <MoreVertIcon style={{float:"left", position:"absolute", right:"-12px"}}/>
+                                    <NativeSelect className={"subscribe-button"} id={`unsubscribe-${post.postId}`}
+                                                  IconComponent={() => {return(<></>)}} value={""}
+                                                  style={{float:"left", width:"5px", height:"23px", padding:"0", position:"absolute"}}>
+                                        <option label={""} value={""} hidden={true}></option>
+                                        <option onClick={() => unsubscribeUserToGroup(post.groupId)}
+                                                id={`unsub-${post.groupId}`} value={"Unsubscribe"}
+                                                label={"Unsubscribe"}
+                                        ></option>
+                                    </NativeSelect>
+                                  </>
+                              }
                           </div>
-                          {isTeacher ?
-                              <div className={"post-delete"}><span
-                                  className={"material-icons"}>clear</span></div> : ""}
                         </div>
                         <div className={"post-body"} key={"postBody" + post.postId}>{post.content}</div>
                         <div className={"border-line"}/>
