@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.AuthorisationParamsHelper;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
+import nz.ac.canterbury.seng302.portfolio.controller.group.GroupRepositoryController;
 import nz.ac.canterbury.seng302.portfolio.model.contract.GroupRepositoryContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.GroupRepositoryEntity;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;

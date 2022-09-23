@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.AuthorisationParamsHelper;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
+import nz.ac.canterbury.seng302.portfolio.controller.feed.HomeFeedController;
 import nz.ac.canterbury.seng302.portfolio.model.contract.SubscriptionContract;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
 import nz.ac.canterbury.seng302.portfolio.service.SubscriptionService;
@@ -32,18 +33,18 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * Tests for the HomePageController
+ * Tests for the HomeFeedController
  */
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
 @AutoConfigureWebTestClient
-public class HomePageControllerTest {
+public class HomeFeedControllerTest {
 
     @Autowired
     private MockMvc mockMvc ;
 
     @Autowired
-    private HomePageController controller;
+    private HomeFeedController controller;
 
     @MockBean
     private UserAccountService userAccountService;

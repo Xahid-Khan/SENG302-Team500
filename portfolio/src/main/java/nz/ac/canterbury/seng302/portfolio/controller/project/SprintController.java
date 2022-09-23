@@ -1,6 +1,7 @@
-package nz.ac.canterbury.seng302.portfolio.controller;
+package nz.ac.canterbury.seng302.portfolio.controller.project;
 
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
+import nz.ac.canterbury.seng302.portfolio.controller.AuthenticatedController;
 import nz.ac.canterbury.seng302.portfolio.model.GetPaginatedUsersOrderingElement;
 import nz.ac.canterbury.seng302.portfolio.model.contract.SprintContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseNotificationContract;

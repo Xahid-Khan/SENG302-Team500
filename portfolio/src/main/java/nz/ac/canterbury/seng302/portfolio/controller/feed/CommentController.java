@@ -1,9 +1,10 @@
-package nz.ac.canterbury.seng302.portfolio.controller;
+package nz.ac.canterbury.seng302.portfolio.controller.feed;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
+import nz.ac.canterbury.seng302.portfolio.controller.AuthenticatedController;
 import nz.ac.canterbury.seng302.portfolio.model.contract.CommentContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.CommentModel;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;

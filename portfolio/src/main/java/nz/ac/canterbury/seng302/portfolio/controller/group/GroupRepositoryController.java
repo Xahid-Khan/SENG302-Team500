@@ -1,7 +1,8 @@
-package nz.ac.canterbury.seng302.portfolio.controller;
+package nz.ac.canterbury.seng302.portfolio.controller.group;
 
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
+import nz.ac.canterbury.seng302.portfolio.controller.AuthenticatedController;
 import nz.ac.canterbury.seng302.portfolio.model.contract.GroupRepositoryContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseGroupRepositoryContract;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;

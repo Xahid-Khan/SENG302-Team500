@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.AuthorisationParamsHelper;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
+import nz.ac.canterbury.seng302.portfolio.controller.live.NotificationsController;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
 import nz.ac.canterbury.seng302.portfolio.service.NotificationService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;

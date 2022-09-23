@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import nz.ac.canterbury.seng302.portfolio.AuthorisationParamsHelper;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
+import nz.ac.canterbury.seng302.portfolio.controller.feed.ReactionController;
 import nz.ac.canterbury.seng302.portfolio.model.contract.PostReactionContract;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
 import nz.ac.canterbury.seng302.portfolio.service.ReactionService;

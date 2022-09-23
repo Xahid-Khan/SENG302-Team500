@@ -1,4 +1,4 @@
-package nz.ac.canterbury.seng302.portfolio.controller;
+package nz.ac.canterbury.seng302.portfolio.controller.feed;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -6,9 +6,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
+import nz.ac.canterbury.seng302.portfolio.controller.AuthenticatedController;
 import nz.ac.canterbury.seng302.portfolio.model.contract.SubscriptionContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.PostModel;
-import nz.ac.canterbury.seng302.portfolio.service.*;
+import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
+import nz.ac.canterbury.seng302.portfolio.service.CommentService;
+import nz.ac.canterbury.seng302.portfolio.service.GroupsClientService;
+import nz.ac.canterbury.seng302.portfolio.service.PostService;
+import nz.ac.canterbury.seng302.portfolio.service.ReactionService;
+import nz.ac.canterbury.seng302.portfolio.service.SubscriptionService;
+import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -21,51 +28,39 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-/**
- * Handles the post and delete requests on the /subscribe endpoint.
- */
+/** Handles the post and delete requests on the /subscribe endpoint. */
 @Controller
 @RequestMapping("/api/v1")
-public class HomePageController extends AuthenticatedController {
+public class HomeFeedController extends AuthenticatedController {
 
-  @Autowired
-  private SubscriptionService subscriptionService;
+  @Autowired private SubscriptionService subscriptionService;
 
-  @Autowired
-  private GroupsClientService groupsClientService;
+  @Autowired private GroupsClientService groupsClientService;
 
-  @Autowired
-  private AuthStateService authStateService;
+  @Autowired private PostService postService;
 
-  @Autowired
-  private PostService postService;
+  @Autowired private UserAccountService userAccountService;
 
-  @Autowired
-  private UserAccountService userAccountService;
+  @Autowired private ReactionService reactionService;
 
-  @Autowired
-  private ReactionService reactionService;
-
-  @Autowired
-  private CommentService commentService;
+  @Autowired private CommentService commentService;
 
   /**
    * This is similar to autowiring, but apparently recommended more than field injection.
    *
-   * @param authStateService   an AuthStateService
+   * @param authStateService an AuthStateService
    * @param userAccountService a UserAccountService
    */
-  protected HomePageController(AuthStateService authStateService,
-                               UserAccountService userAccountService) {
+  protected HomeFeedController(
+      AuthStateService authStateService, UserAccountService userAccountService) {
     super(authStateService, userAccountService);
   }
 
-  /**
-   * Handles post requests on the /subscribe endpoint to subscribe a user to a group.
-   */
+  /** Handles post requests on the /subscribe endpoint to subscribe a user to a group. */
   @PostMapping(value = "/subscribe", produces = "application/json")
-  public ResponseEntity<?> subscribe(@AuthenticationPrincipal PortfolioPrincipal principal,
-                                     @RequestBody SubscriptionContract subscription) {
+  public ResponseEntity<?> subscribe(
+      @AuthenticationPrincipal PortfolioPrincipal principal,
+      @RequestBody SubscriptionContract subscription) {
     try {
       subscriptionService.subscribe(subscription);
       var result = subscriptionService.getAllByUserId(getUserId(principal));
@@ -77,17 +72,17 @@ public class HomePageController extends AuthenticatedController {
     }
   }
 
-  /**
-   * Handles delete requests on the /subscribe endpoint to unsubscribe a user from a group.
-   */
+  /** Handles delete requests on the /subscribe endpoint to unsubscribe a user from a group. */
   @DeleteMapping(value = "/subscribe", produces = "application/json")
-  public ResponseEntity<?> unsubscribe(@AuthenticationPrincipal PortfolioPrincipal principal,
-                                       @RequestBody SubscriptionContract subscription) {
+  public ResponseEntity<?> unsubscribe(
+      @AuthenticationPrincipal PortfolioPrincipal principal,
+      @RequestBody SubscriptionContract subscription) {
     try {
       int userId = getUserId(principal);
-      var allGroupMembers = groupsClientService.getGroupById(subscription.groupId()).getMembersList();
+      var allGroupMembers =
+          groupsClientService.getGroupById(subscription.groupId()).getMembersList();
 
-      //Stops user from unsubscribing from a group if they are in it
+      // Stops user from unsubscribing from a group if they are in it
       boolean isUserInGroup = allGroupMembers.stream().anyMatch(member -> member.getId() == userId);
       if (isUserInGroup) {
         return ResponseEntity.badRequest().build();
@@ -103,8 +98,7 @@ public class HomePageController extends AuthenticatedController {
   }
 
   @GetMapping(value = "/subscribe/{userId}", produces = "application/json")
-  public ResponseEntity<?> getAll(@AuthenticationPrincipal PortfolioPrincipal principal,
-                                  @PathVariable int userId) {
+  public ResponseEntity<?> getAll(@PathVariable int userId) {
     try {
       var subscriptions = subscriptionService.getAllByUserId(userId);
       return ResponseEntity.ok(subscriptions);
@@ -136,20 +130,22 @@ public class HomePageController extends AuthenticatedController {
 
     List<Map<String, Object>> allPosts = new ArrayList<>();
 
-    posts.forEach(post -> {
-      Map<String, Object> filteredPosts = new HashMap<>();
-      filteredPosts.put("postId", post.getId());
-      filteredPosts.put("userId", post.getUserId());
-      filteredPosts.put("username", userAccountService.getUserById(post.getUserId()).getUsername());
-      filteredPosts.put("time", post.getCreated());
-      filteredPosts.put("content", post.getPostContent());
-      filteredPosts.put("reactions", reactionService.getUsernamesOfUsersWhoReactedToPost(
-              post.getId()));
-      filteredPosts.put("groupId", post.getGroupId());
-      filteredPosts.put("comments", commentService.getCommentsForThePostAsJson(post.getId()));
+    posts.forEach(
+        post -> {
+          Map<String, Object> filteredPosts = new HashMap<>();
+          filteredPosts.put("postId", post.getId());
+          filteredPosts.put("userId", post.getUserId());
+          filteredPosts.put(
+              "username", userAccountService.getUserById(post.getUserId()).getUsername());
+          filteredPosts.put("time", post.getCreated());
+          filteredPosts.put("content", post.getPostContent());
+          filteredPosts.put(
+              "reactions", reactionService.getUsernamesOfUsersWhoReactedToPost(post.getId()));
+          filteredPosts.put("groupId", post.getGroupId());
+          filteredPosts.put("comments", commentService.getCommentsForThePostAsJson(post.getId()));
 
-      allPosts.add(filteredPosts);
-    });
+          allPosts.add(filteredPosts);
+        });
     postMap.put("posts", allPosts);
     return postMap;
   }

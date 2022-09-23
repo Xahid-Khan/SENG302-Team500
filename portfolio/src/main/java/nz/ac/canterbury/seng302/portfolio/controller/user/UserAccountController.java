@@ -1,4 +1,4 @@
-package nz.ac.canterbury.seng302.portfolio.controller;
+package nz.ac.canterbury.seng302.portfolio.controller.user;
 
 import com.google.protobuf.Timestamp;
 import java.time.Instant;
@@ -10,6 +10,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import nz.ac.canterbury.seng302.portfolio.controller.AuthenticatedController;
 import nz.ac.canterbury.seng302.portfolio.mapping.UserMapper;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;

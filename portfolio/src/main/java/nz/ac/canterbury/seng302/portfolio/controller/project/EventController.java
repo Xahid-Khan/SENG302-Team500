@@ -1,8 +1,9 @@
-package nz.ac.canterbury.seng302.portfolio.controller;
+package nz.ac.canterbury.seng302.portfolio.controller.project;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
+import nz.ac.canterbury.seng302.portfolio.controller.AuthenticatedController;
 import nz.ac.canterbury.seng302.portfolio.model.GetPaginatedUsersOrderingElement;
 import nz.ac.canterbury.seng302.portfolio.model.contract.EventContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseEventContract;

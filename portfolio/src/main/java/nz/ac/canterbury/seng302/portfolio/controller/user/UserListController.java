@@ -1,9 +1,10 @@
-package nz.ac.canterbury.seng302.portfolio.controller;
+package nz.ac.canterbury.seng302.portfolio.controller.user;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
+import nz.ac.canterbury.seng302.portfolio.controller.AuthenticatedController;
 import nz.ac.canterbury.seng302.portfolio.model.GetPaginatedUsersOrderingElement;
 import nz.ac.canterbury.seng302.portfolio.model.entity.SortingParameterEntity;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;

@@ -1,8 +1,9 @@
-package nz.ac.canterbury.seng302.portfolio.controller;
+package nz.ac.canterbury.seng302.portfolio.controller.project;
 
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
+import nz.ac.canterbury.seng302.portfolio.controller.AuthenticatedController;
 import nz.ac.canterbury.seng302.portfolio.model.contract.ProjectContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseProjectContract;
 import nz.ac.canterbury.seng302.portfolio.service.*;

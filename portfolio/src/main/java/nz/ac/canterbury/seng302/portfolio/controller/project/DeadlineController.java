@@ -1,11 +1,12 @@
-package nz.ac.canterbury.seng302.portfolio.controller;
+package nz.ac.canterbury.seng302.portfolio.controller.project;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
+import nz.ac.canterbury.seng302.portfolio.controller.AuthenticatedController;
 import nz.ac.canterbury.seng302.portfolio.model.GetPaginatedUsersOrderingElement;
-import nz.ac.canterbury.seng302.portfolio.model.contract.MilestoneContract;
-import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseMilestoneContract;
+import nz.ac.canterbury.seng302.portfolio.model.contract.DeadlineContract;
+import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseDeadlineContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseNotificationContract;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedUsersResponse;
@@ -24,12 +25,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-/** This controller handles all Milestone interactions. */
+/** This controller handles all Deadline interactions. */
 @RestController
 @RequestMapping("/api/v1")
-public class MilestoneController extends AuthenticatedController {
+public class DeadlineController extends AuthenticatedController {
 
-  @Autowired private MilestoneService milestoneService;
+  @Autowired private DeadlineService deadlineService;
 
   @Autowired private ProjectService projectService;
 
@@ -44,24 +45,23 @@ public class MilestoneController extends AuthenticatedController {
   @Autowired private EndDateNotificationService endDateNotificationService;
 
   @Autowired
-  public MilestoneController(
+  public DeadlineController(
       AuthStateService authStateService, UserAccountService userAccountService) {
     super(authStateService, userAccountService);
   }
 
   /**
-   * This method will be invoked when API receives a GET request with a milestone ID embedded in
-   * URL.
+   * This method will be invoked when API receives a GET request with a deadline ID embedded in URL.
    *
-   * @param milestoneId milestone-ID the user wants to retrieve
-   * @return a milestone contract (JSON) type of the milestone.
+   * @param deadlineId deadline-ID the user wants to retrieve
+   * @return a deadline contract (JSON) type of the deadline.
    */
-  @GetMapping(value = "/milestones/{milestoneId}", produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<MilestoneContract> getMilestone(@PathVariable String milestoneId) {
+  @GetMapping(value = "/deadlines/{deadlineId}", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<DeadlineContract> getDeadline(@PathVariable String deadlineId) {
     try {
-      var milestone = milestoneService.get(milestoneId);
+      var deadline = deadlineService.get(deadlineId);
 
-      return ResponseEntity.ok(milestone);
+      return ResponseEntity.ok(deadline);
     } catch (NoSuchElementException ex) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
@@ -69,18 +69,18 @@ public class MilestoneController extends AuthenticatedController {
 
   /**
    * This method will be invoked when API receives a GET request with a Project ID embedded in URL
-   * and will produce all the milestones of that specific project.
+   * and will produce all the deadlines of that specific project.
    *
    * @param projectId Project-ID of the project User is interested in
-   * @return A list of milestones of a given project in milestone Contract (JSON) type.
+   * @return A list of deadlines of a given project in deadline Contract (JSON) type.
    */
   @GetMapping(
-      value = "/projects/{projectId}/milestones",
+      value = "/projects/{projectId}/deadlines",
       produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<List<MilestoneContract>> getProjectMilestones(
+  public ResponseEntity<List<DeadlineContract>> getProjectDeadlines(
       @PathVariable String projectId) {
     try {
-      var result = projectService.getById(projectId).milestones();
+      var result = projectService.getById(projectId).deadlines();
 
       return ResponseEntity.ok(result);
     } catch (NoSuchElementException ex) {
@@ -90,38 +90,38 @@ public class MilestoneController extends AuthenticatedController {
 
   /**
    * This method will be invoked when API receives a POST request with a Project ID embedded in URL
-   * and data for the milestone in the body.
+   * and data for the deadline in the body.
    *
-   * @param projectId Project-ID of the project User wants the milestone to be added to.
-   * @return A list of milestones of a given project in milestone Contract (JSON) type.
+   * @param projectId Project-ID of the project User wants the deadline to be added to.
+   * @return A list of deadlines of a given project in deadline Contract (JSON) type.
    */
   @PostMapping(
-      value = "/projects/{projectId}/milestones",
+      value = "/projects/{projectId}/deadlines",
       produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<?> createMilestone(
+  public ResponseEntity<?> createDeadline(
       @AuthenticationPrincipal PortfolioPrincipal principal,
       @PathVariable String projectId,
-      @RequestBody BaseMilestoneContract milestone) {
+      @RequestBody BaseDeadlineContract deadline) {
     if (isTeacher(principal)) {
-      String errorMessage = validationService.checkAddMilestone(projectId, milestone);
+      String errorMessage = validationService.checkAddDeadline(projectId, deadline);
       if (!errorMessage.equals("Okay")) {
         if (errorMessage.equals("Project ID does not exist")
-            || errorMessage.equals("Milestone ID does not exist")) {
+            || errorMessage.equals("Deadline ID does not exist")) {
           return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
       }
 
       try {
-        var result = milestoneService.createMilestone(projectId, milestone);
+        var result = deadlineService.createDeadline(projectId, deadline);
         PaginatedUsersResponse users = userAccountService.getPaginatedUsers(0, Integer.MAX_VALUE, GetPaginatedUsersOrderingElement.NAME, true);
-        UserResponse milestoneCreator = userAccountService.getUserById(authStateService.getId(principal));
+        UserResponse deadlineCreator = userAccountService.getUserById(authStateService.getId(principal));
         for (UserResponse user: users.getUsersList()) {
-          if (user.getId() != milestoneCreator.getId()) {
-            notificationService.create(new BaseNotificationContract(user.getId(), "Project", milestoneCreator.getUsername() + " added a new milestone " + milestone.name() + "!"));
+          if (user.getId() != deadlineCreator.getId()) {
+            notificationService.create(new BaseNotificationContract(user.getId(), "Project", deadlineCreator.getUsername() + " added a new deadline " + deadline.name() + "!"));
           }
         }
-        endDateNotificationService.addNotifications(milestone.startDate(), "Milestone", milestone.name(), result.milestoneId());
+        endDateNotificationService.addNotifications(deadline.startDate(), "Deadline", deadline.name(), result.deadlineId());
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
       } catch (NoSuchElementException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -133,31 +133,31 @@ public class MilestoneController extends AuthenticatedController {
 
   /**
    * This method will be invoked when API receives a PUT request with a Project ID embedded in URL
-   * and updated milestone data in the body.
+   * and updated deadline data in the body.
    *
    * @param id Project-ID of the project User wants to make the changes to.
-   * @return The updated milestone value
+   * @return The updated deadline value
    */
-  @PutMapping(value = "/milestones/{id}")
-  public ResponseEntity<?> updateMilestone(
+  @PutMapping(value = "/deadlines/{id}")
+  public ResponseEntity<?> updateDeadline(
       @AuthenticationPrincipal PortfolioPrincipal principal,
       @PathVariable String id,
-      @RequestBody BaseMilestoneContract milestone) {
+      @RequestBody BaseDeadlineContract deadline) {
     if (isTeacher(principal)) {
-      String errorMessage = validationService.checkUpdateMilestone(id, milestone);
+      String errorMessage = validationService.checkUpdateDeadline(id, deadline);
       if (!errorMessage.equals("Okay")) {
         if (errorMessage.equals("Project ID does not exist")
-            || errorMessage.equals("Milestone ID does not exist")) {
+            || errorMessage.equals("Deadline ID does not exist")) {
           return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
       }
 
       try {
-        milestoneService.update(id, milestone);
-        endDateNotificationService.removeNotifications("Milestone" + id);
-        endDateNotificationService.addNotifications(milestone.startDate(), "Milestone", milestone.name(), id);
-        return ResponseEntity.ok(milestoneService.get(id));
+        deadlineService.update(id, deadline);
+        endDateNotificationService.removeNotifications("Deadline" + id);
+        endDateNotificationService.addNotifications(deadline.startDate(), "Deadline", deadline.name(), id);
+        return ResponseEntity.ok(deadlineService.get(id));
       } catch (NoSuchElementException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
       }
@@ -167,19 +167,19 @@ public class MilestoneController extends AuthenticatedController {
   }
 
   /**
-   * This method will be invoked when API receives a DELETE request with a Milestone ID embedded in
+   * This method will be invoked when API receives a DELETE request with a deadline ID embedded in
    * URL.
    *
-   * @param id Milestone ID the user wants to delete
+   * @param id Deadline ID the user wants to delete
    * @return status_Code 204.
    */
-  @DeleteMapping(value = "/milestones/{id}")
-  public ResponseEntity<Void> deleteMilestone(
+  @DeleteMapping(value = "/deadlines/{id}")
+  public ResponseEntity<Void> deleteDeadline(
       @AuthenticationPrincipal PortfolioPrincipal principal, @PathVariable String id) {
     if (isTeacher(principal)) {
       try {
-        milestoneService.delete(id);
-        endDateNotificationService.removeNotifications("Milestone" + id);
+        deadlineService.delete(id);
+        endDateNotificationService.removeNotifications("Deadline" + id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
       } catch (NoSuchElementException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

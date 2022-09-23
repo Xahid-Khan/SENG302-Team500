@@ -1,7 +1,8 @@
-package nz.ac.canterbury.seng302.portfolio.controller;
+package nz.ac.canterbury.seng302.portfolio.controller.live;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import nz.ac.canterbury.seng302.portfolio.controller.AuthenticatedController;
 import nz.ac.canterbury.seng302.portfolio.model.contract.NotificationContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseNotificationContract;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;

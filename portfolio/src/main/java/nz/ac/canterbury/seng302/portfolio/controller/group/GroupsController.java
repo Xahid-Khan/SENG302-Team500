@@ -1,9 +1,10 @@
-package nz.ac.canterbury.seng302.portfolio.controller;
+package nz.ac.canterbury.seng302.portfolio.controller.group;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
+import nz.ac.canterbury.seng302.portfolio.controller.AuthenticatedController;
 import nz.ac.canterbury.seng302.portfolio.model.contract.GroupContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.SubscriptionContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.UserContract;
