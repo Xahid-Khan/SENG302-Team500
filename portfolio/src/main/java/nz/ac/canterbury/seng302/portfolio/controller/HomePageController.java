@@ -32,9 +32,6 @@ public class HomePageController extends AuthenticatedController {
   private GroupsClientService groupsClientService;
 
   @Autowired
-  private AuthStateService authStateService;
-
-  @Autowired
   private PostService postService;
 
   @Autowired
@@ -77,7 +74,7 @@ public class HomePageController extends AuthenticatedController {
   /**
    * Handles delete requests on the /subscribe endpoint to unsubscribe a user from a group.
    */
-  @DeleteMapping(value = "/subscribe", produces = "application/json")
+  @DeleteMapping(value = "/unsubscribe", produces = "application/json")
   public ResponseEntity<?> unsubscribe(@AuthenticationPrincipal PortfolioPrincipal principal,
                                        @RequestBody SubscriptionContract subscription) {
     try {

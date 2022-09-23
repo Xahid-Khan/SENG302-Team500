@@ -9,10 +9,11 @@ import {
 } from "@mui/material";
 import {NotificationDropdown} from "../notifications/NotificationDropdown";
 import {AccountDropdown} from "./AccountDropdown";
+import {getAbsolutePath} from "../../util/RelativePathUtil";
 
 export const navigateTo = (page: string) => {
     const globalUrlPathPrefix = window.localStorage.getItem("globalUrlPathPrefix")
-    window.location.href = location.protocol + '//' + location.host + globalUrlPathPrefix + '/' + page
+    window.location.href = getAbsolutePath(globalUrlPathPrefix, page)
 }
 
 export const NavBar: React.FC = observer(() => {

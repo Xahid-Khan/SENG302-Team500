@@ -30,7 +30,7 @@ export const AccountDropdown: React.FC = observer(() => {
               aria-controls={open ? 'account-menu' : undefined}
               aria-haspopup="true"
               aria-expanded={open ? 'true' : undefined}>
-            <Avatar src={"//" + globalImagePath + userId}/>
+            <Avatar src={`//${globalImagePath}${userId}`}/>
           </IconButton>
         </Box>
         <Menu

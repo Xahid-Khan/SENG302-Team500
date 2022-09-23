@@ -103,7 +103,7 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
   let sprintDates = new Set();
 
   /**
-   * This function checks if ID is provided or not, If ID is not provided then it creates an list of events that are not
+   * This function checks if ID is provided or not, If ID is not provided then it creates a list of events that are not
    * editable, otherwise events are editable.
    * @param id userId of teacher/admins
    */
@@ -218,11 +218,11 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
   function renderEventIcons(eventInfo: any) {
     if (eventInfo.event.title.includes("Sprint")) {
       return (
-          <p style={{zIndex: 0}}>{eventInfo.event.title}</p>
+          <p>{eventInfo.event.title}</p>
       )
     } else {
       return (
-          <div style={{display: "grid", zIndex: 0}}>
+          <div className={"toolTipData"} style={{display: "grid"}}>
             {
               eventDictionary.has(eventInfo.event.id) ?
                   <>
@@ -240,6 +240,7 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
                     <ReactTooltip id={"events" + eventInfo.event.id.toString()} place="right"
                                   effect="float" html={true} multiline={true}
                                   getContent={() => getEventHoverData(eventInfo.event.id, "events")}
+                                  className={"ReactTooltip"}
                     >
                     </ReactTooltip>
                   </>
