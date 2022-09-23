@@ -19,6 +19,7 @@ export function ShowHomeFeed() {
   const userId = localStorage.getItem("userId")
 
   const getAllPosts = async () => {
+    setTimeout(()=> {}, 500);
     const currentGroupResponse = await fetch(`api/v1/posts`);
     return currentGroupResponse.json()
   }
@@ -46,7 +47,7 @@ export function ShowHomeFeed() {
       setGroupPosts(result)
     })
     getSubscriptions().then((result) => {
-      setSubscriptions(result.sort((post: { time: any; }) =>{ return post.time}))
+      setSubscriptions(result)
     })
   }, [])
 
@@ -66,7 +67,7 @@ export function ShowHomeFeed() {
       })
     });
     await getAllPosts().then((result) => {
-      setGroupPosts(result.sort((post: { time: any; }) =>{ return post.time}))
+      setGroupPosts(result)
     })
   }
 
@@ -92,7 +93,7 @@ export function ShowHomeFeed() {
       });
       setNewComment("");
       await getAllPosts().then((result) => {
-        setGroupPosts(result.sort((post: { time: any; }) =>{ return post.time}))
+        setGroupPosts(result)
       })
       document.getElementById(`post-comments-${id}`).scrollTop = document.getElementById(`post-comments-${id}`).scrollHeight;
     }
@@ -110,7 +111,7 @@ export function ShowHomeFeed() {
       })
     });
     getSubscriptions().then((result) => {
-      setSubscriptions(result.sort((post: { time: any; }) =>{ return post.time}));
+      setSubscriptions(result);
     })
   }
 
