@@ -1,10 +1,13 @@
 import React, {FormEvent, useEffect} from "react";
-import {DatetimeUtils} from "../../util/DatetimeUtils";
+import {PostAndCommentContainer} from "./PostAndCommentContainer";
+import {EditPostDataModal} from "./EditPostDataModal";
+import {Tooltip} from "@mui/material";
 
 export function ShowAllPosts() {
 
   const urlData = document.URL.split("?")[0].split("/");
   const viewGroupId = urlData[urlData.length - 1];
+  const userId = parseInt(localStorage.getItem("userId"));
   const [newComment, setNewComment] = React.useState("");
   const username = localStorage.getItem("username");
   const [title, setTitle] = React.useState("");
@@ -15,6 +18,8 @@ export function ShowAllPosts() {
   const [groupPosts, setGroupPosts] = React.useState({
         "groupId": -1,
         "shortName": "",
+        "isSubscribed": false,
+        "isMember": false,
         "posts": [{
           "reactions": [],
           "comments": []
@@ -129,7 +134,7 @@ export function ShowAllPosts() {
   const makeComment = async (id: number) => {
     setNewComment(document.getElementById(`comment-content-${id}`).getAttribute('value'));
 
-    if (newComment.length != 0) {
+    if (newComment.length != 0 && newComment.length < 4096) {
       await fetch(`add_comment`, {
         method: 'POST',
         headers: {
@@ -149,168 +154,94 @@ export function ShowAllPosts() {
     }
   }
 
-  const getEditModalData = () => {
-    return (<div className={"modal-container"} id={"edit-post-modal-open"}>
-      <div className={"modal-edit-post"}>
-        <div className={"modal-header"}>
-          <div className={"modal-title"}>
-            Edit Post
-          </div>
-          <div className={"modal-close-button"} id={"edit-post-cancel-x"}
-               onClick={handleCancelEditPost}>&times;</div>
-        </div>
-        <div className={"border-line"}/>
-
-        <form onSubmit={(e) => {if (longCharacterCount > 0) validateCreateForm(e)}}>
-          <div className="modal-body modal-edit-post-body">
-            <label className={"post-title"}>{title}</label>
-            <br/>
-            <br/>
-            <span id={"edit-modal-error"}></span>
-          </div>
-
-          <div className={"post-description"}>
-            <label className={"settings-description"}>Content:</label>
-            <br/>
-            <textarea className={"text-area"} id={`edit-post-content`} required
-                      defaultValue={content}
-                      cols={50} rows={10} maxLength={4096} onChange={(e) => {
-              setContent(e.target.value.trim());
-              setLongCharacterCount(e.target.value.trim().length);
-              if (longCharacterCount > 0) {
-                document.getElementById("edit-post-save").removeAttribute("disabled");
-              } else {
-                document.getElementById("edit-post-save").setAttribute("disabled", "true");
-              }
-            }}/>
-            <span className="title-length" id="title-length">{longCharacterCount} / 4096</span>
-            <br/>
-          </div>
-          <div className="form-error" id="create-post-error"/>
-
-
-          <div className="modal-buttons">
-            <button className="button" id="edit-post-save" type="submit">Save</button>
-            <button className="button" type="reset" id="create-post-cancel"
-                    onClick={handleCancelEditPost}>Cancel
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>)
+  const subscribeUserToGroup = async (groupId: number) => {
+    await fetch(`../api/v1/subscribe`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({"userId": userId,
+        "groupId": groupId})
+    });
+    getCurrentGroup().then((response) => {
+      setGroupPosts(response);
+    })
   }
+
+  const unsubscribeUserToGroup = async (groupId: number) => {
+    await fetch(`../api/v1/unsubscribe`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({"userId": userId,
+        "groupId": groupId})
+    });
+    getCurrentGroup().then((response) => {
+      setGroupPosts(response);
+    })
+  }
+
 
   return (
       <div>
-        <div className={"group-feed-name"}>{groupPosts.shortName} Feed</div>
-        {groupPosts.groupId != -1 ?
-            groupPosts.posts.map((post: any) => (
-                <div className={"raised-card group-post"} key={post.postId}>
-                  <div className={"post-header"} key={"postHeader" + post.postId}>
-                    <div className={"post-info"} key={"postInfo" + post.postId}>
-                      <div>{post.username}</div>
-                      <div
-                          className={"post-time"}>{DatetimeUtils.timeStringToTimeSince(post.time)}</div>
-                    </div>
-                    {post.userId == parseInt(localStorage.getItem("userId")) || isTeacher ?
-                        <>
-                          <div className={"post-edit"}>
-                            <span className={"material-icons"}
-                                  onClick={() => {
-                                    setContent(post.content);
-                                    setTitle(post.name);
-                                    setEditPostId(post.postId);
-                                    document.getElementById("edit-post-modal-open").style.display = 'block';
-                                  }}
-                                  id={`post-edit-${post.postId}`}>edit</span>
-                          </div>
-                          <div className={"post-delete"}>
-                            <span className={"material-icons"}
-                                  onClick={() => {
-                                    openConfirmationModal(post.postId);
-                                  }}
-                                  id={`post-delete-${post.postId}`}>clear</span>
-                          </div>
-                        </>
-                        :
-                        ""}
-                  </div>
-                  <div className={"post-body"} key={"postBody" + post.postId}>{post.content}</div>
-                  <div className={"border-line"}/>
-                  <div className={"post-footer"}>
-                    <div className={"high-five-container"}>
-                      <div className={"high-fives"}>
-                        <div className={"high-five-overlay"}>
-                          <span className={"high-five-text"}>High Five!</span> <span
-                            className={"material-icons"}>sign_language</span>
-                        </div>
-                        <div className={"high-five"} id={`high-five-${post.postId}`}
-                             style={{backgroundSize: post.reactions.includes(username) ? "100% 100%" : "0% 100%"}}
-                             onClick={() => clickHighFive(post.postId)}>
-                          <span className={"high-five-text"}>High Five!</span> <span
-                            className={"material-icons"}>sign_language</span>
-                        </div>
-                        <div className={"high-five-list"}>
-                          <div className={"high-five-count"}><span className={"material-icons"}
-                                                                   style={{fontSize: 15}}>sign_language</span>{post.reactions.length}
-                          </div>
-                          <div className={"border-line high-five-separator"}/>
-                          {post.reactions.map((highFiveName: string) => (
-                              <div className={"high-five-names"}
-                                   key={highFiveName}>{highFiveName}</div>
-                          ))}
-                        </div>
+        {
+          groupPosts.groupId != -1 ?
+              <>
+                <div className={"group-feed-name"}>{groupPosts.shortName} Feed</div>
+                {!groupPosts.isMember ?
+                  <>
+                    {
+                      groupPosts.isSubscribed ?
+                          <button className={"feed-Sub-Button"} onClick={() => unsubscribeUserToGroup(groupPosts.groupId)} >Unsubscribe</button>
+                          :
+                          <button className={"feed-Sub-Button"} onClick={() => subscribeUserToGroup(groupPosts.groupId)}>Subscribe</button>
+                    }
+                  </>
+                  :
+                    <>
+                      <Tooltip title={"You cannot unsubscribe if you're member of the group."}>
+                        <span className={"feed-Sub-Button"} style={{padding:"5px", marginTop:"-35px"}}>
+                          <button disabled={true}>Unsubscribe</button>
+                        </span>
+                      </Tooltip>
+                    </>
+                }
+                {
+                  groupPosts.posts.length > 0 ?
+                      groupPosts.posts.map((post: any) => (
+                          <PostAndCommentContainer post={post} isTeacher={isTeacher}
+                                                   setContent={setContent}
+                                                   setLongCharacterCount={setLongCharacterCount}
+                                                   setTitle={setTitle}
+                                                   setEditPostId={setEditPostId}
+                                                   clickHighFive={clickHighFive}
+                                                   openConfirmationModal={openConfirmationModal}
+                                                   toggleCommentDisplay={toggleCommentDisplay}
+                                                   makeComment={makeComment}
+                                                   setNewComment={setNewComment}
+                                                   username={username}
+                          />))
+                      :
+                      <div className={"raised-card group-post"} key={"-1"}>
+                        <h3>There are no posts</h3>
                       </div>
-                    </div>
-                    <div className={"comments-icon-container"}>
-                      <div className={"comments-select"}
-                           onClick={() => toggleCommentDisplay(post.postId)}>
-                        <span className={"comments-select-text"}>Comments</span> <span
-                          className={"material-icons"}>mode_comment</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className={"comments-container"} id={`comments-container-${post.postId}`}>
-                    <div className={"border-line"}/>
-                    <div className={"post-comments"} id={`post-comments-${post.postId}`}>
-                      {post.comments.map((comment: any) => (
-                              <div className={"post-comment-container"} key={comment.commentId}>
-                                <div
-                                    className={"comment-name"}>{comment.username} ({DatetimeUtils.timeStringToTimeSince(comment.time)})
-                                </div>
-                                <div className={"post-comment"}>{comment.content}</div>
+                }
+                <EditPostDataModal handleCancelEditPost={handleCancelEditPost}
+                                   longCharacterCount={longCharacterCount}
+                                   validateCreateForm={validateCreateForm}
+                                   title={title}
+                                   content={content}
+                                   setContent={setContent}
+                                   setLongCharacterCount={setLongCharacterCount}
 
-                              </div>
-                          )
-                      )}
-                    </div>
-                    <form className={"make-comment-container"} onSubmit={(e) => {
-                      e.preventDefault();
-                      makeComment(post.postId);
-                      e.currentTarget.reset();
-                    }}>
-                      <div className={"input-comment"}>
-                        <input type={"text"} className={"input-comment-text"}
-                               id={`comment-content-${post.postId}`}
-                               onChange={(e) => setNewComment(e.target.value.trim())}
-                               placeholder={"Comment on post..."}/>
-                      </div>
-                      <div className={"submit-comment"}>
-                        <button className={"button submit-comment-button"} type={"submit"}
-                                id={`comment-submit-${post.postId}`}>
-                          Add comment
-                        </button>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-            ))
-            :
-            <div className={"raised-card group-post"} key={"-1"}>
-              <h3>There are no posts</h3>
-            </div>
+                />
+              </>
+              :
+              <div>
+                <h1>Loading...</h1>
+              </div>
         }
-        {getEditModalData()}
       </div>
   )
 }
