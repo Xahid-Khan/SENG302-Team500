@@ -8,14 +8,11 @@ import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseNotifi
 import nz.ac.canterbury.seng302.portfolio.model.entity.PostModel;
 import nz.ac.canterbury.seng302.portfolio.repository.PostModelRepository;
 import nz.ac.canterbury.seng302.shared.identityprovider.GroupDetailsResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service
 public class PostService {
@@ -38,7 +35,10 @@ public class PostService {
     @Autowired
     private UserAccountService userAccountService;
 
-
+    /**
+     * Gets all posts in the database.
+     * @return A list of all posts models
+     */
     public List<PostModel> getAllPosts () {
         try {
             return (List<PostModel>) postRepository.findAll();
@@ -47,8 +47,26 @@ public class PostService {
             return new ArrayList<>();
         }
     }
+
+    /**
+     * Gets all posts for a given group
+     * @param groupId The group id
+     * @return A list of post models
+     */
     public List<PostModel> getAllPostsForAGroup(int groupId) {
         return postRepository.findPostModelByGroupId(groupId);
+    }
+
+  /**
+   * Gets the paginated posts for a group
+   * @param groupId The group id
+   * @param offset post number to start retrieving
+   * @param limit post number to stop retrieving
+   * @return
+   */
+    public Page<PostModel> getPaginatedPostsForGroup(int groupId,int offset,int limit){
+      Pageable request = PageRequest.of(offset,limit);
+      return postRepository.getPaginatedPostsByGroupId(groupId,request);
     }
 
     /**

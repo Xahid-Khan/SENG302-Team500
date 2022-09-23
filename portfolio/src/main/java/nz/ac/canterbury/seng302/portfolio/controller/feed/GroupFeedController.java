@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.portfolio.controller.AuthenticatedController;
 import nz.ac.canterbury.seng302.portfolio.model.contract.PostContract;
@@ -18,6 +19,7 @@ import nz.ac.canterbury.seng302.portfolio.service.ReactionService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
 import nz.ac.canterbury.seng302.shared.identityprovider.GroupDetailsResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -28,6 +30,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -57,23 +60,59 @@ public class GroupFeedController extends AuthenticatedController {
       UserAccountService userAccountService) {
     super(authStateService, userAccountService);
   }
+//
+//  @GetMapping(value = "/feed_content/{groupId}", produces = "application/json")
+//  public ResponseEntity<?> getFeedContent(@PathVariable Integer groupId) {
+//    try {
+//
+//      GroupDetailsResponse groupDetailsResponse = groupsClientService.getGroupById(groupId);
+//      List<PostModel> allPosts = postService.getAllPostsForAGroup(
+//          groupDetailsResponse.getGroupId());
+//      Collections.reverse(allPosts);
+//      if (allPosts.isEmpty()) {
+//        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+//      } else {
+//        Map<String, Object> data = combineAndPrepareForFrontEnd(allPosts, groupDetailsResponse);
+//        return ResponseEntity.ok(data);
+//      }
+//    } catch (NoSuchElementException e) {
+//      return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+//    }
+//  }
 
-  @GetMapping(value = "/feed_content/{groupId}", produces = "application/json")
-  public ResponseEntity<?> getFeedContent(@PathVariable Integer groupId) {
+  /**
+   * Returns a paginated list of posts for a group
+   * @param groupId The group id
+   * @param offset The page to start on (page size is 20 items)
+   * @return The posts for the page (20 items)
+   */
+  @GetMapping(value = "/feed_content/{groupId}/", produces = "application/json")
+  public List<PostModel> getPaginatedFeedContent(
+      @PathVariable Integer groupId,
+      @RequestParam("offset") Optional<Integer> offset) {
     try {
 
-      GroupDetailsResponse groupDetailsResponse = groupsClientService.getGroupById(groupId);
-      List<PostModel> allPosts = postService.getAllPostsForAGroup(
-          groupDetailsResponse.getGroupId());
-      Collections.reverse(allPosts);
-      if (allPosts.isEmpty()) {
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-      } else {
-        Map<String, Object> data = combineAndPrepareForFrontEnd(allPosts, groupDetailsResponse);
-        return ResponseEntity.ok(data);
+        if (offset.isPresent() && offset.get().toString().equals("undefined")) {
+          offset = Optional.empty();
+        }
+
+        int offsetValue = offset.orElse(0);
+
+      if (offsetValue < 0) {
+        offsetValue = 0;
       }
+
+
+      Page<PostModel> postsPage = postService.getPaginatedPostsForGroup(groupId, offsetValue,20);
+      // Convert page to list
+      List<PostModel> allPosts = postsPage.getContent();
+
+      Collections.reverse(allPosts);
+
+      return allPosts;
+
     } catch (NoSuchElementException e) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+      return Collections.emptyList();
     }
   }
 
