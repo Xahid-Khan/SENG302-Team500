@@ -4,12 +4,12 @@ import {Badge, Box, Divider, IconButton, Menu, MenuItem, Typography} from "@mui/
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import {NotificationContract} from "../../contract/NotificationContract";
 import {NotificationItem} from "./NotificationItem";
+import {getAPIAbsolutePath} from "../../util/RelativePathUtil";
 
 export const NotificationDropdown: React.FC = observer(() => {
 
     const userId = parseInt(window.localStorage.getItem("userId"))
     const globalUrlPathPrefix = localStorage.getItem("globalUrlPathPrefix");
-    const globalImagePath = localStorage.getItem("globalImagePath");
 
     const [notifications, setNotifications] = React.useState([])
     const [numUnseen, setNumUnseen] = React.useState(0)
@@ -27,9 +27,7 @@ export const NotificationDropdown: React.FC = observer(() => {
     const open = anchorEl?.id === 'notification-button';
 
     const fetchNotifications = async () => {
-        const globalUrlPathPrefix = window.localStorage.getItem("globalUrlPathPrefix")
-        const path = location.protocol + '//' + location.host + globalUrlPathPrefix + '/' + `api/v1/notifications/${userId}`
-        const notifications = await fetch(path, {
+        const notifications = await fetch(getAPIAbsolutePath(globalUrlPathPrefix, `notifications/${userId}`), {
                 method: 'GET'
             }
         )
@@ -43,9 +41,7 @@ export const NotificationDropdown: React.FC = observer(() => {
     }
 
     const markAllAsSeen = async () => {
-        const globalUrlPathPrefix = window.localStorage.getItem("globalUrlPathPrefix")
-        const path = location.protocol + '//' + location.host + globalUrlPathPrefix + '/' + `api/v1/notifications/${userId}`
-        await fetch(path, {
+        await fetch(getAPIAbsolutePath(globalUrlPathPrefix, `notifications/seen/${userId}`), {
                 method: 'POST'
             }
         )
