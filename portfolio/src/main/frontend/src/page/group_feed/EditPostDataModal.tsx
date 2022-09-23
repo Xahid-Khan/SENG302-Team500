@@ -36,7 +36,7 @@ export function EditPostDataModal(props: any) {
               document.getElementById("edit-post-save").setAttribute("disabled", "true");
             }
           }}/>
-          <span className="title-length" id="title-length">{props.longCharacterCount} / 4096</span>
+          <span className="content-length" id="content-length">{props.longCharacterCount} / 4096</span>
           <br/>
         </div>
         <div className="form-error" id="create-post-error"/>

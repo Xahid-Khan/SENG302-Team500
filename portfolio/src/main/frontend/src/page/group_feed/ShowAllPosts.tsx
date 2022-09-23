@@ -1,6 +1,9 @@
 import React, {FormEvent, useEffect} from "react";
+import {DatetimeUtils} from "../../util/DatetimeUtils";
+import {Socket} from "../../entry/live_updating";
 import {PostAndCommentContainer} from "./PostAndCommentContainer";
 import {EditPostDataModal} from "./EditPostDataModal";
+import {Tooltip} from "@mui/material";
 
 export function ShowAllPosts() {
 
@@ -108,6 +111,11 @@ export function ShowAllPosts() {
 
   const clickHighFive = async (id: number) => {
     const button = document.getElementById(`high-five-${id}`)
+    if(button.style.backgroundSize === "100% 100%") {
+      button.style.backgroundSize = "0% 100%";
+    } else {
+      button.style.backgroundSize = "100% 100%";
+    }
     button.style.backgroundSize = button.style.backgroundSize === "100% 100%" ? "0 100%" : "100% 100%"
 
     await fetch('post_high_five', {
@@ -198,7 +206,13 @@ export function ShowAllPosts() {
                     }
                   </>
                   :
-                    ""
+                    <>
+                      <Tooltip title={"You cannot unsubscribe if you're member of the group."}>
+                        <span className={"feed-Sub-Button"} style={{padding:"5px", marginTop:"-35px"}}>
+                          <button disabled={true}>Unsubscribe</button>
+                        </span>
+                      </Tooltip>
+                    </>
                 }
                 {
                   groupPosts.posts.length > 0 ?

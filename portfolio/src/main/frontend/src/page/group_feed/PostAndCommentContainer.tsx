@@ -96,7 +96,7 @@ export function PostAndCommentContainer (props: any) {
               <input type={"text"} className={"input-comment-text"}
                      id={`comment-content-${props.post.postId}`}
                      minLength={1}
-                     maxLength={4096}
+                     maxLength={4095}
                      onChange={(e) => props.setNewComment(e.target.value.trim())}
                      placeholder={"Comment on post..."}/>
             </div>
