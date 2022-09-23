@@ -1,5 +1,7 @@
 import React, {useEffect} from "react";
 import {DatetimeUtils} from "../../util/DatetimeUtils";
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import {NativeSelect} from "@mui/material";
 
 const getSubscriptions = async () => {
     const userId = localStorage.getItem("userId")
@@ -122,12 +124,25 @@ export function ShowHomeFeed() {
                                 <div
                                     className={"post-time"}>{DatetimeUtils.timeStringToTimeSince(post.time)}</div>
                             </div>
-                            <div className={"post-unsubscribe"}>
+                            <div className={"post-unsubscribe"} style={{height: "26px",
+                                width: "6px",
+                                overflow: "clip",
+                                position: "relative"}}>
                                 {post.isMember ?
                                     ""
                                     :
-                                    <button className={"button subscribe-button"}
-                                            onClick={() => unsubscribeUserToGroup(post.groupId)}>Unsubscribe</button>
+                                    <>
+                                      <MoreVertIcon style={{float:"left", position:"absolute", right:"-12px"}}/>
+                                      <NativeSelect className={"subscribe-button"} id={`unsubscribe-${post.postId}`}
+                                                    IconComponent={() => {return(<></>)}} value={""}
+                                                    style={{float:"left", width:"5px", height:"23px", padding:"0", position:"absolute"}}>
+                                          <option label={""} value={""} hidden={true}></option>
+                                          <option onClick={() => unsubscribeUserToGroup(post.groupId)}
+                                                  id={`unsub-${post.groupId}`} value={"Unsubscribe"}
+                                                  label={"Unsubscribe"}
+                                          ></option>
+                                      </NativeSelect>
+                                    </>
                                 }
                             </div>
                         </div>
