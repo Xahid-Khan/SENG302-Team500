@@ -11,6 +11,6 @@ public class LiveUpdatesService {
     private SimpMessagingTemplate template;
 
     public void sendNotification() {
-        template.convertAndSend("/topic/notification", "fuck");
+        template.convertAndSend("/topic/notification", "test");
     }
 }
