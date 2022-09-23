@@ -65,7 +65,6 @@ export function ShowHomeFeed() {
             button.style.backgroundSize = "0% 100%";
         } else {
             button.style.backgroundSize = "100% 100%";
-            Socket.notify()
         }
 
         await fetch('group_feed/post_high_five', {
@@ -103,7 +102,6 @@ export function ShowHomeFeed() {
                 })
             });
 
-            Socket.notify()
 
             setNewComment("");
             await getAllPosts().then((result) => {

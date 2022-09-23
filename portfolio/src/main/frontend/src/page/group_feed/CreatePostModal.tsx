@@ -28,7 +28,6 @@ export function CreatePostModal({viewGroupId}: any) {
       }).then((res) => {
         if (res.ok === true) {
           window.location.reload()
-          Socket.notify()
         } else {
           document.getElementById("create-post-error").innerText = "You do not have permission to post in this group."
         }

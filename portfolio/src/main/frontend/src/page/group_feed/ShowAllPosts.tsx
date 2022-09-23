@@ -109,7 +109,6 @@ export function ShowAllPosts() {
       button.style.backgroundSize = "0% 100%";
     } else {
       button.style.backgroundSize = "100% 100%";
-      Socket.notify()
     }
     button.style.backgroundSize = button.style.backgroundSize === "100% 100%" ? "0 100%" : "100% 100%"
 
@@ -149,7 +148,6 @@ export function ShowAllPosts() {
         })
       });
 
-      Socket.notify()
 
       setNewComment("");
       await getCurrentGroup().then((result: any) => {

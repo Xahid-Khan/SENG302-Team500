@@ -1,13 +1,9 @@
 import * as polyfills from "../util/polyfill/socket_polyfill";
 import {action, computed, makeObservable, observable, runInAction} from "mobx";
-import {
-  LoadingDone,
-  LoadingNotYetAttempted,
-  LoadingPending,
-  LoadingStatus
-} from "../util/network/loading_status";
+import {LoadingDone, LoadingNotYetAttempted, LoadingPending, LoadingStatus} from "../util/network/loading_status";
 import SockJS from "sockjs-client";
 import {Client as StompClient, Message as StompMessage, Stomp} from "@stomp/stompjs";
+import {NotificationDropdown} from "../component/notifications/NotificationDropdown";
 
 /**
  * MobX-enabled store for the Ping/Socket Test page.
@@ -49,19 +45,6 @@ class PingPageStore {
   setNextPingValue(newValue: string) {
     this.nextPingValue = newValue
   }
-
-
-    notify() {
-        console.log("connecting ", this.connected)
-        console.log(this)
-        console.log("Attempting to send ping...")
-        this.stomp.publish({
-            destination: "/app/notification",
-            body: localStorage.getItem("username"),
-        })
-
-
-    }
 
     showEdit(location: string) {
         if (this.connected) {
@@ -131,8 +114,8 @@ class PingPageStore {
           store.onReceiveEditAlert(message)
         })
       } else {
-          store.stomp.subscribe("/topic/edit-project", (message: StompMessage) => {
-              store.onReceiveEditAlert(message)
+          store.stomp.subscribe("/topic/" + location, (message: StompMessage) => {
+              store.onNotification(message)
           })
       }
 
@@ -171,12 +154,10 @@ class PingPageStore {
         })
     }
     protected onNotification(frame: StompMessage) {
-        const message = JSON.parse(frame.body)
-        console.log("final, ", message)
-        // TODO: Hook to frontend here. The message will be the contents of whatever is parsed in from
-        //  the `notify` function. Then, using whatever is decided for parsing, you can utilize the data
-        //  here. (This means toasts, adding a notification count to the notification icon,
-        //   updating states, etc.)
+      runInAction(() => {
+
+
+      })
     }
 }
 
@@ -205,22 +186,6 @@ export class Socket {
         return this.store.connected;
     }
 
-    static subscribe(location: string, destination: string) {
-      if(destination === "notification"){
-          this.store.stomp.subscribe("/topic/" + location, (message: StompMessage) => {
-              this.store.stomp.onNotification(message)
-          })
-      } else if (destination === 'alert'){
-          this.store.stomp.subscribe("/topic/" + location, (message: StompMessage) => {
-              this.store.stomp.onReceiveEditAlert(message)
-          })
-      }
-  }
-
-    static notify() {
-      console.log("notify notify notify")
-        return this.store.notify();
-    }
 }
 
 polyfills.polyfill()
