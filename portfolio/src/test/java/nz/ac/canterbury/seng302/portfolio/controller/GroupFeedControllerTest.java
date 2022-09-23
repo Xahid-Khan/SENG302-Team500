@@ -19,6 +19,7 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import java.util.ArrayList;
@@ -28,6 +29,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * Tests for the GroupFeedController
+ */
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
 @AutoConfigureWebTestClient
@@ -273,4 +277,61 @@ class GroupFeedControllerTest {
                 .andExpect(status().is4xxClientError())
                 .andReturn();
     }
+
+    /**
+     * Tests getting a paginated list of posts
+     * @throws Exception
+     */
+    @Test
+    void getPostsWithPositiveGroupIdExpectPass() throws Exception{
+        PostModel post1 = new PostModel(1, 1, "Post 1");
+        PostModel post2 = new PostModel(2, 1, "Post 2");
+        ArrayList<PostModel> posts = new ArrayList<>();
+        posts.add(post1);
+        posts.add(post2);
+
+        Page<PostModel> postModelPage = Mockito.mock(Page.class);
+
+        Mockito.when(postService.getPaginatedPostsForGroup(post4.getGroupId(), 0,20)).thenReturn(postModelPage);
+        Mockito.when(postModelPage.getContent()).thenReturn(posts);
+
+        mockMvc.perform(get("/feed_content/4")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                                {
+                                    "offset" : "0"
+                                }
+                                """)
+                .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn();
+    }
+
+    /**
+     * Tests that if no offset is given it defaults to 0
+     * @throws Exception
+     */
+    @Test
+    void getPostsWithNoOffsetAndExpectOffsetToBeZero() throws Exception{
+        PostModel post1 = new PostModel(1, 1, "Post 1");
+        PostModel post2 = new PostModel(2, 1, "Post 2");
+        ArrayList<PostModel> posts = new ArrayList<>();
+        posts.add(post1);
+        posts.add(post2);
+
+        Page<PostModel> postModelPage = Mockito.mock(Page.class);
+
+        Mockito.when(postService.getPaginatedPostsForGroup(post4.getGroupId(), 0,20)).thenReturn(postModelPage);
+        Mockito.when(postModelPage.getContent()).thenReturn(posts);
+
+        mockMvc.perform(get("/feed_content/" + post4.getGroupId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("")
+                .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn();
+
+        Mockito.verify(postService, Mockito.times(1)).getPaginatedPostsForGroup(post4.getGroupId(), 0,20);
+    }
 }
+

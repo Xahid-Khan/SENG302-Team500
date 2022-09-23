@@ -86,8 +86,8 @@ public class GroupFeedController extends AuthenticatedController {
    * @param offset The page to start on (page size is 20 items)
    * @return The posts for the page (20 items)
    */
-  @GetMapping(value = "/feed_content/{groupId}/", produces = "application/json")
-  public List<PostModel> getPaginatedFeedContent(
+  @GetMapping(value = "/feed_content/{groupId}", produces = "application/json")
+  public ResponseEntity<List<PostModel>> getPaginatedFeedContent(
       @PathVariable Integer groupId,
       @RequestParam("offset") Optional<Integer> offset) {
     try {
@@ -109,10 +109,10 @@ public class GroupFeedController extends AuthenticatedController {
 
       Collections.reverse(allPosts);
 
-      return allPosts;
+      return ResponseEntity.ok(allPosts);
 
     } catch (NoSuchElementException e) {
-      return Collections.emptyList();
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
   }
 
