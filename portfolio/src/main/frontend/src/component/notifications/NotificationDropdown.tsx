@@ -10,8 +10,6 @@ export const NotificationDropdown: React.FC = observer(() => {
     const userId = parseInt(window.localStorage.getItem("userId"))
     const globalUrlPathPrefix = localStorage.getItem("globalUrlPathPrefix");
     const globalImagePath = localStorage.getItem("globalImagePath");
-    console.log(globalUrlPathPrefix)
-    console.log(globalImagePath)
 
     const [notifications, setNotifications] = React.useState([])
     const [numUnseen, setNumUnseen] = React.useState(0)
@@ -28,16 +26,20 @@ export const NotificationDropdown: React.FC = observer(() => {
     //uses the last clicked element to determine which menu to open
     const open = anchorEl?.id === 'notification-button';
 
-    const getNotifications = async () => {
+    const fetchNotifications = async () => {
         const globalUrlPathPrefix = window.localStorage.getItem("globalUrlPathPrefix")
         const path = location.protocol + '//' + location.host + globalUrlPathPrefix + '/' + `api/v1/notifications/${userId}`
         const notifications = await fetch(path, {
                 method: 'GET'
             }
         )
-        console.log(globalUrlPathPrefix)
-        console.log(globalImagePath)
         return notifications.json()
+    }
+
+    const fetchAndSetNotifications = () => {
+        fetchNotifications().then((result) => {
+            setNotifications(result)
+        })
     }
 
     const markAllAsSeen = async () => {
@@ -47,15 +49,17 @@ export const NotificationDropdown: React.FC = observer(() => {
                 method: 'POST'
             }
         )
-        getNotifications().then((result) => {
-            setNotifications(result)
-        })
+        fetchAndSetNotifications();
     }
 
     useEffect(() => {
-        getNotifications().then((result) => {
-            setNotifications(result)
-        })
+        fetchAndSetNotifications();
+
+        //add event listener for live updating
+        window.addEventListener('notification', fetchAndSetNotifications);
+        return () => {
+            window.removeEventListener('notification', fetchAndSetNotifications);
+        };
     }, [])
 
     useEffect(() => {

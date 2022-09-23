@@ -155,8 +155,7 @@ class PingPageStore {
     }
     protected onNotification(frame: StompMessage) {
       runInAction(() => {
-
-
+          window.dispatchEvent(new Event("notification"))
       })
     }
 }
