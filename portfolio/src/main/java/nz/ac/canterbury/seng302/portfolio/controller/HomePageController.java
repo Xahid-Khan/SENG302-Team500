@@ -1,11 +1,22 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import java.util.*;
-
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.portfolio.model.contract.SubscriptionContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.PostModel;
-import nz.ac.canterbury.seng302.portfolio.service.*;
+import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
+import nz.ac.canterbury.seng302.portfolio.service.CommentService;
+import nz.ac.canterbury.seng302.portfolio.service.GroupsClientService;
+import nz.ac.canterbury.seng302.portfolio.service.PostService;
+import nz.ac.canterbury.seng302.portfolio.service.ReactionService;
+import nz.ac.canterbury.seng302.portfolio.service.SubscriptionService;
+import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -50,7 +61,7 @@ public class HomePageController extends AuthenticatedController {
    * @param userAccountService a UserAccountService
    */
   protected HomePageController(AuthStateService authStateService,
-                               UserAccountService userAccountService) {
+      UserAccountService userAccountService) {
     super(authStateService, userAccountService);
   }
 
@@ -59,7 +70,7 @@ public class HomePageController extends AuthenticatedController {
    */
   @PostMapping(value = "/subscribe", produces = "application/json")
   public ResponseEntity<?> subscribe(@AuthenticationPrincipal PortfolioPrincipal principal,
-                                     @RequestBody SubscriptionContract subscription) {
+      @RequestBody SubscriptionContract subscription) {
     try {
       subscriptionService.subscribe(subscription);
       var result = subscriptionService.getAllByUserId(getUserId(principal));
@@ -76,17 +87,15 @@ public class HomePageController extends AuthenticatedController {
    */
   @DeleteMapping(value = "/unsubscribe", produces = "application/json")
   public ResponseEntity<?> unsubscribe(@AuthenticationPrincipal PortfolioPrincipal principal,
-                                       @RequestBody SubscriptionContract subscription) {
+      @RequestBody SubscriptionContract subscription) {
     try {
       int userId = getUserId(principal);
-
       //Stops user from unsubscribing from a group if they are in it
       if (groupsClientService.isMemberOfTheGroup(userId, subscription.groupId())) {
         return ResponseEntity.badRequest().build();
       }
 
       subscriptionService.unsubscribe(subscription);
-
       var result = subscriptionService.getAllByUserId(userId);
       return ResponseEntity.ok().body(result);
 
@@ -97,7 +106,7 @@ public class HomePageController extends AuthenticatedController {
 
   @GetMapping(value = "/subscribe/{userId}", produces = "application/json")
   public ResponseEntity<?> getAll(@AuthenticationPrincipal PortfolioPrincipal principal,
-                                  @PathVariable int userId) {
+      @PathVariable int userId) {
     try {
       var subscriptions = subscriptionService.getAllByUserId(userId);
       return ResponseEntity.ok(subscriptions);
@@ -112,7 +121,7 @@ public class HomePageController extends AuthenticatedController {
       Integer userId = getUserId(principal);
       List<Integer> subscriptions = subscriptionService.getAllByUserId(userId);
       List<PostModel> posts = new ArrayList<>();
-      for(int groupIds: subscriptions) {
+      for (int groupIds : subscriptions) {
         posts.addAll(postService.getAllPostsForAGroup(groupIds));
       }
 
@@ -144,11 +153,13 @@ public class HomePageController extends AuthenticatedController {
       filteredPosts.put("time", post.getCreated());
       filteredPosts.put("content", post.getPostContent());
       filteredPosts.put("reactions", reactionService.getUsernamesOfUsersWhoReactedToPost(
-              post.getId()));
+          post.getId()));
       filteredPosts.put("groupId", post.getGroupId());
       filteredPosts.put("comments", commentService.getCommentsForThePostAsJson(post.getId()));
-      filteredPosts.put("groupName", groupsClientService.getGroupById(post.getGroupId()).getShortName());
-      filteredPosts.put("isMember", groupsClientService.isMemberOfTheGroup(userId, post.getGroupId()));
+      filteredPosts.put("groupName",
+          groupsClientService.getGroupById(post.getGroupId()).getShortName());
+      filteredPosts.put("isMember",
+          groupsClientService.isMemberOfTheGroup(userId, post.getGroupId()));
       allPosts.add(filteredPosts);
     });
     postMap.put("posts", allPosts);

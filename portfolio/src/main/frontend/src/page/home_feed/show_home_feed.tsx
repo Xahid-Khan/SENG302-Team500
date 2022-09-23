@@ -1,7 +1,6 @@
 import React, {useEffect} from "react";
 import {DatetimeUtils} from "../../util/DatetimeUtils";
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import {NativeSelect} from "@mui/material";
+import {UnsubscribeDropDown} from "./UnsubscribeDropDown";
 
 const getSubscriptions = async () => {
   const userId = localStorage.getItem("userId")
@@ -13,45 +12,36 @@ const getSubscriptions = async () => {
 export function ShowHomeFeed() {
 
   const [newComment, setNewComment] = React.useState("");
-
   const username = localStorage.getItem("username")
-
   const userId = localStorage.getItem("userId")
 
   const getAllPosts = async () => {
-    setTimeout(()=> {}, 500);
     const currentGroupResponse = await fetch(`api/v1/posts`);
     return currentGroupResponse.json()
   }
 
-    const [groupPosts, setGroupPosts] = React.useState({
-        "posts": [
-            {
-                "comments": [],
-                "groupId": -1,
-                "reactions": [],
-                "postId": -1,
-                "time": "",
-                "userId": -1,
-                "content": "",
-                "username": "",
-                "isMember": false,
-            }
-        ]
-    });
-
-  const [subscriptions, setSubscriptions] = React.useState([])
+  const [groupPosts, setGroupPosts] = React.useState({
+    "posts": [
+      {
+        "comments": [],
+        "groupId": -1,
+        "reactions": [],
+        "postId": -1,
+        "time": "",
+        "userId": -1,
+        "content": "",
+        "username": "",
+        "isMember": false,
+      }
+    ]
+  });
 
   useEffect(() => {
     getAllPosts().then((result) => {
       setGroupPosts(result)
     })
-    getSubscriptions().then((result) => {
-      setSubscriptions(result)
-    })
   }, [])
 
-  const isTeacher = localStorage.getItem("isTeacher") === "true";
 
   const clickHighFive = async (id: number) => {
     const button = document.getElementById(`high-five-${id}`)
@@ -99,141 +89,125 @@ export function ShowHomeFeed() {
     }
   }
 
-  const unsubscribeUserToGroup = async (groupId: number) => {
-    await fetch(`api/v1/unsubscribe`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        "userId": userId,
-        "groupId": groupId
-      })
-    });
-    getSubscriptions().then((result) => {
-      setSubscriptions(result);
-    })
-  }
-
-    return (
-        <div>
-          {
-            (groupPosts.posts.length > 0 && groupPosts.posts[0].groupId != -1) || groupPosts.posts.length == 0 ?
-            <>
-            <div className={"group-feed-name"}>Welcome!</div>
-            {groupPosts.posts.length === 0 ? <div><h2>Looks like there are no posts! Subscribe to more groups to see there posts here!</h2></div> :
-                <div>{groupPosts.posts.filter((post) => subscriptions.includes(post.groupId)).map((post: any) => (
-                    <div className={"raised-card group-post"} key={post.postId}>
-                        <div className={"post-header"} key={"postHeader" + post.postId}>
-                          <div className={"post-info"} key={"postInfo" + post.postId}>
-                              <div>{post.username} <span  onClick={() => window.location.href = `../group_feed/${post.groupId}`} style={{fontSize: 14, cursor: "pointer"}}> Group: {post.groupName}</span></div>
+  return (
+      <div>
+        {
+          (groupPosts.posts.length > 0 && groupPosts.posts[0].groupId != -1) || groupPosts.posts.length == 0 ?
+              <>
+                <div className={"group-feed-name"}>Welcome!</div>
+                {groupPosts.posts.length === 0 ?
+                    <div><h2>Looks like there are no posts! Subscribe to more groups to see there
+                      posts here!</h2></div> :
+                    <div>{groupPosts.posts.map((post: any) => (
+                        <div className={"raised-card group-post"} key={post.postId}>
+                          <div className={"post-header"} key={"postHeader" + post.postId}>
+                            <div className={"post-info"} key={"postInfo" + post.postId}>
+                              <div>{post.username} <span
+                                  onClick={() => window.location.href = `group_feed/${post.groupId}`}
+                                  style={{
+                                    fontSize: 14,
+                                    cursor: "pointer"
+                                  }}> Group: {post.groupName}</span></div>
                               <div
                                   className={"post-time"}>{DatetimeUtils.timeStringToTimeSince(post.time)}</div>
-                          </div>
-                          <div className={"post-unsubscribe"} style={{height: "26px",
-                              width: "6px",
-                              overflow: "clip",
-                              position: "relative"}}>
+                            </div>
+                            <div className={"post-unsubscribe"}>
                               {post.isMember ?
                                   ""
                                   :
-                                  <>
-                                    <MoreVertIcon style={{float:"left", position:"absolute", right:"-12px"}}/>
-                                    <NativeSelect className={"subscribe-button"} id={`unsubscribe-${post.postId}`}
-                                                  IconComponent={() => {return(<></>)}} value={""}
-                                                  style={{float:"left", width:"5px", height:"23px", padding:"0", position:"absolute"}}>
-                                        <option label={""} value={""} hidden={true}></option>
-                                        <option onClick={() => unsubscribeUserToGroup(post.groupId)}
-                                                id={`unsub-${post.groupId}`} value={"Unsubscribe"}
-                                                label={"Unsubscribe"}
-                                        ></option>
-                                    </NativeSelect>
-                                  </>
+                                  <UnsubscribeDropDown getSubscriptions={getSubscriptions}
+                                                       post={post} userId={userId}
+                                                       getAllPosts={getAllPosts}
+                                                       setGroupPosts={setGroupPosts}
+                                  />
                               }
-                          </div>
-                        </div>
-                        <div className={"post-body"} key={"postBody" + post.postId}>{post.content}</div>
-                        <div className={"border-line"}/>
-                        <div className={"post-footer"}>
-                          <div className={"high-five-container"}>
-                            <div className={"high-fives"}>
-                              <div className={"high-five-overlay"}>
-                                <span className={"high-five-text"}>High Five!</span> <span
-                                  className={"material-icons"}>sign_language</span>
-                              </div>
-                              <div className={"high-five"} id={`high-five-${post.postId}`}
-                                   style={{backgroundSize: post.reactions.includes(username) ? "100% 100%" : "0% 100%"}}
-                                   onClick={() => clickHighFive(post.postId)}>
-                                <span className={"high-five-text"}>High Five!</span> <span
-                                  className={"material-icons"}>sign_language</span>
-                              </div>
-                              <div className={"high-five-list"}>
-                                <div className={"high-five-count"}><span className={"material-icons"}
-                                                                         style={{fontSize: 15}}>sign_language</span>{post.reactions.length}
-                                </div>
-                                <div className={"border-line high-five-separator"}/>
-                                {post.reactions.map((highFiveName: string) => (
-                                    <div className={"high-five-names"}
-                                         key={highFiveName}>{highFiveName}</div>
-                                ))}
-                              </div>
                             </div>
                           </div>
-                          <div className={"comments-icon-container"}>
-                            <div className={"comments-select"}
-                                 onClick={() => toggleCommentDisplay(post.postId)}>
-                              <span className={"comments-select-text"}>Comments</span> <span
-                                className={"material-icons"}>mode_comment</span>
-                            </div>
-                          </div>
-                        </div>
-                        <div className={"comments-container"} id={`comments-container-${post.postId}`}>
+                          <div className={"post-body"}
+                               key={"postBody" + post.postId}>{post.content}</div>
                           <div className={"border-line"}/>
-                          <div className={"post-comments"} id={`post-comments-${post.postId}`}>
-                            {post.comments.map((comment: any) => (
-                                    <div className={"post-comment-container"} key={comment.commentId}>
-                                      <div
-                                          className={"comment-name"}>{comment.username} ({DatetimeUtils.timeStringToTimeSince(comment.time)})
-                                      </div>
-                                      <div className={"post-comment"}>{comment.content}</div>
-
-                                    </div>
-                                )
-                            )}
+                          <div className={"post-footer"}>
+                            <div className={"high-five-container"}>
+                              <div className={"high-fives"}>
+                                <div className={"high-five-overlay"}>
+                                  <span className={"high-five-text"}>High Five!</span> <span
+                                    className={"material-icons"}>sign_language</span>
+                                </div>
+                                <div className={"high-five"} id={`high-five-${post.postId}`}
+                                     style={{backgroundSize: post.reactions.includes(username) ? "100% 100%" : "0% 100%"}}
+                                     onClick={() => clickHighFive(post.postId)}>
+                                  <span className={"high-five-text"}>High Five!</span> <span
+                                    className={"material-icons"}>sign_language</span>
+                                </div>
+                                <div className={"high-five-list"}>
+                                  <div className={"high-five-count"}><span
+                                      className={"material-icons"}
+                                      style={{fontSize: 15}}>sign_language</span>{post.reactions.length}
+                                  </div>
+                                  <div className={"border-line high-five-separator"}/>
+                                  {post.reactions.map((highFiveName: string) => (
+                                      <div className={"high-five-names"}
+                                           key={highFiveName}>{highFiveName}</div>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                            <div className={"comments-icon-container"}>
+                              <div className={"comments-select"}
+                                   onClick={() => toggleCommentDisplay(post.postId)}>
+                                <span className={"comments-select-text"}>Comments</span> <span
+                                  className={"material-icons"}>mode_comment</span>
+                              </div>
+                            </div>
                           </div>
-                          <form className={"make-comment-container"} onSubmit={(e) => {
-                            e.preventDefault();
-                            if (newComment.length > 0) {
-                              makeComment(post.postId);
-                              e.currentTarget.reset();
-                            }
-                          }}>
-                            <div className={"input-comment"}>
-                              <input type={"text"} className={"input-comment-text"}
-                                     id={`comment-content-${post.postId}`}
-                                     minLength={1}
-                                     maxLength={4095}
-                                     onChange={(e) => setNewComment(e.target.value.trim())}
-                                     placeholder={"Comment on post..."}/>
-                            </div>
-                            <div className={"submit-comment"}>
-                              <button className={"button submit-comment-button"} type={"submit"}
-                                      id={`comment-submit-${post.postId}`}>
-                                Add comment
-                              </button>
-                            </div>
-                          </form>
-                        </div>
-                      </div>
+                          <div className={"comments-container"}
+                               id={`comments-container-${post.postId}`}>
+                            <div className={"border-line"}/>
+                            <div className={"post-comments"} id={`post-comments-${post.postId}`}>
+                              {post.comments.map((comment: any) => (
+                                      <div className={"post-comment-container"} key={comment.commentId}>
+                                        <div
+                                            className={"comment-name"}>{comment.username} ({DatetimeUtils.timeStringToTimeSince(comment.time)})
+                                        </div>
+                                        <div className={"post-comment"}>{comment.content}</div>
 
-                  ))
-                  }
-                  </div>}
-            </>
-            :
-            <div>
-              <h1>Loading...</h1>
-            </div>
+                                      </div>
+                                  )
+                              )}
+                            </div>
+                            <form className={"make-comment-container"} onSubmit={(e) => {
+                              e.preventDefault();
+                              if (newComment.length > 0) {
+                                makeComment(post.postId);
+                                e.currentTarget.reset();
+                              }
+                            }}>
+                              <div className={"input-comment"}>
+                                <input type={"text"} className={"input-comment-text"}
+                                       id={`comment-content-${post.postId}`}
+                                       minLength={1}
+                                       maxLength={4095}
+                                       onChange={(e) => setNewComment(e.target.value.trim())}
+                                       placeholder={"Comment on post..."}/>
+                              </div>
+                              <div className={"submit-comment"}>
+                                <button className={"button submit-comment-button"} type={"submit"}
+                                        id={`comment-submit-${post.postId}`}>
+                                  Add comment
+                                </button>
+                              </div>
+                            </form>
+                          </div>
+                        </div>
+
+                    ))
+                    }
+                    </div>}
+              </>
+              :
+              <div>
+                <h1>Loading...</h1>
+              </div>
         }
       </div>
   )
