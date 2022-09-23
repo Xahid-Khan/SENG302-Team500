@@ -79,13 +79,12 @@ public class HomePageController extends AuthenticatedController {
                                        @RequestBody SubscriptionContract subscription) {
     try {
       int userId = getUserId(principal);
-      var allGroupMembers = groupsClientService.getGroupById(subscription.groupId()).getMembersList();
 
       //Stops user from unsubscribing from a group if they are in it
-      boolean isUserInGroup = allGroupMembers.stream().anyMatch(member -> member.getId() == userId);
-      if (isUserInGroup) {
+      if (groupsClientService.isMemberOfTheGroup(userId, subscription.groupId())) {
         return ResponseEntity.badRequest().build();
       }
+
       subscriptionService.unsubscribe(subscription);
 
       var result = subscriptionService.getAllByUserId(userId);
@@ -110,12 +109,13 @@ public class HomePageController extends AuthenticatedController {
   @GetMapping(value = "/posts", produces = "application/json")
   public ResponseEntity<?> getAllPosts(@AuthenticationPrincipal PortfolioPrincipal principal) {
     try {
-      Integer userId = authStateService.getId(principal);
+      Integer userId = getUserId(principal);
       List<Integer> subscriptions = subscriptionService.getAllByUserId(userId);
       List<PostModel> posts = new ArrayList<>();
       for(int groupIds: subscriptions) {
         posts.addAll(postService.getAllPostsForAGroup(groupIds));
       }
+
       posts.sort(Comparator.comparing(PostModel::getCreated));
       Collections.reverse(posts);
       Map<String, Object> data = combineAndPrepareForFrontEnd(posts, userId);

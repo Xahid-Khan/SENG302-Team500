@@ -46,7 +46,7 @@ export function ShowHomeFeed() {
       setGroupPosts(result)
     })
     getSubscriptions().then((result) => {
-      setSubscriptions(result)
+      setSubscriptions(result.sort((post: { time: any; }) =>{ return post.time}))
     })
   }, [])
 
@@ -66,7 +66,7 @@ export function ShowHomeFeed() {
       })
     });
     await getAllPosts().then((result) => {
-      setGroupPosts(result)
+      setGroupPosts(result.sort((post: { time: any; }) =>{ return post.time}))
     })
   }
 
@@ -92,7 +92,7 @@ export function ShowHomeFeed() {
       });
       setNewComment("");
       await getAllPosts().then((result) => {
-        setGroupPosts(result)
+        setGroupPosts(result.sort((post: { time: any; }) =>{ return post.time}))
       })
       document.getElementById(`post-comments-${id}`).scrollTop = document.getElementById(`post-comments-${id}`).scrollHeight;
     }
@@ -110,66 +110,46 @@ export function ShowHomeFeed() {
       })
     });
     getSubscriptions().then((result) => {
-      setSubscriptions(result);
+      setSubscriptions(result.sort((post: { time: any; }) =>{ return post.time}));
     })
   }
 
-  return (
-      <div>
-        {groupPosts.groupId != -1 ?
-            <>
-              <div className={"group-feed-name"}>Welcome!</div>
-              {groupPosts.posts.filter((post) => subscriptions.includes(post.groupId)).length === 0 ?
-                  <div><h2>Looks like there are no posts! Subscribe to more groups to see there posts
-                    here!</h2></div> :
-                  <div>{groupPosts.posts.filter((post) => subscriptions.includes(post.groupId)).map((post: any) => (
-                      <div className={"raised-card group-post"} key={post.postId}>
     return (
         <div>
+          {
+            (groupPosts.posts.length > 0 && groupPosts.posts[0].groupId != -1) || groupPosts.posts.length == 0 ?
+            <>
             <div className={"group-feed-name"}>Welcome!</div>
             {groupPosts.posts.length === 0 ? <div><h2>Looks like there are no posts! Subscribe to more groups to see there posts here!</h2></div> :
                 <div>{groupPosts.posts.filter((post) => subscriptions.includes(post.groupId)).map((post: any) => (
                     <div className={"raised-card group-post"} key={post.postId}>
                         <div className={"post-header"} key={"postHeader" + post.postId}>
                           <div className={"post-info"} key={"postInfo" + post.postId}>
-                            <div>{post.username}</div>
-                            <div
-                                className={"post-time"}>{DatetimeUtils.timeStringToTimeSince(post.time)}</div>
+                              <div>{post.username} <span  onClick={() => window.location.href = `../group_feed/${post.groupId}`} style={{fontSize: 14, cursor: "pointer"}}> Group: {post.groupName}</span></div>
+                              <div
+                                  className={"post-time"}>{DatetimeUtils.timeStringToTimeSince(post.time)}</div>
                           </div>
-                          <div className={"post-unsubscribe"}>
-                            <button className={"button subscribe-button"}
-                                    onClick={() => unsubscribeUserToGroup(post.groupId)}>Unsubscribe
-                            </button>
+                          <div className={"post-unsubscribe"} style={{height: "26px",
+                              width: "6px",
+                              overflow: "clip",
+                              position: "relative"}}>
+                              {post.isMember ?
+                                  ""
+                                  :
+                                  <>
+                                    <MoreVertIcon style={{float:"left", position:"absolute", right:"-12px"}}/>
+                                    <NativeSelect className={"subscribe-button"} id={`unsubscribe-${post.postId}`}
+                                                  IconComponent={() => {return(<></>)}} value={""}
+                                                  style={{float:"left", width:"5px", height:"23px", padding:"0", position:"absolute"}}>
+                                        <option label={""} value={""} hidden={true}></option>
+                                        <option onClick={() => unsubscribeUserToGroup(post.groupId)}
+                                                id={`unsub-${post.groupId}`} value={"Unsubscribe"}
+                                                label={"Unsubscribe"}
+                                        ></option>
+                                    </NativeSelect>
+                                  </>
+                              }
                           </div>
-                          {isTeacher ?
-                              <div className={"post-delete"}><span
-                                  className={"material-icons"}>clear</span></div> : ""}
-                            <div className={"post-info"} key={"postInfo" + post.postId}>
-                                <div>{post.username} <span  onClick={() => window.location.href = `../group_feed/${post.groupId}`} style={{fontSize: 14, cursor: "pointer"}}> Group: {post.groupName}</span></div>
-                                <div
-                                    className={"post-time"}>{DatetimeUtils.timeStringToTimeSince(post.time)}</div>
-                            </div>
-                            <div className={"post-unsubscribe"} style={{height: "26px",
-                                width: "6px",
-                                overflow: "clip",
-                                position: "relative"}}>
-                                {post.isMember ?
-                                    ""
-                                    :
-                                    <>
-                                      <MoreVertIcon style={{float:"left", position:"absolute", right:"-12px"}}/>
-                                      <NativeSelect className={"subscribe-button"} id={`unsubscribe-${post.postId}`}
-                                                    IconComponent={() => {return(<></>)}} value={""}
-                                                    style={{float:"left", width:"5px", height:"23px", padding:"0", position:"absolute"}}>
-                                          <option label={""} value={""} hidden={true}></option>
-                                          <option onClick={() => unsubscribeUserToGroup(post.groupId)}
-                                                  id={`unsub-${post.groupId}`} value={"Unsubscribe"}
-                                                  label={"Unsubscribe"}
-                                          ></option>
-                                      </NativeSelect>
-                                    </>
-                                }
-                            </div>
                         </div>
                         <div className={"post-body"} key={"postBody" + post.postId}>{post.content}</div>
                         <div className={"border-line"}/>
