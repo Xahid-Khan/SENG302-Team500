@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React from "react";
 import {observer} from "mobx-react-lite";
 import {
     AppBar,
@@ -10,8 +10,6 @@ import {
 import {NotificationDropdown} from "../notifications/NotificationDropdown";
 import {AccountDropdown} from "./AccountDropdown";
 import {getAbsolutePath} from "../../util/RelativePathUtil";
-import {Message as StompMessage} from "@stomp/stompjs/esm6/i-message";
-import {Socket} from "../../entry/live_updating";
 
 export const navigateTo = (page: string) => {
     const globalUrlPathPrefix = window.localStorage.getItem("globalUrlPathPrefix")
@@ -22,7 +20,7 @@ export const NavBar: React.FC = observer(() => {
 
     return (
         <React.Fragment>
-            <AppBar position="fixed" sx={{ bgcolor: "#788" }}>
+            <AppBar position="fixed" sx={{ bgcolor: "#FF0000" }}>
                 <Toolbar>
                     <Box>
                         <Typography
