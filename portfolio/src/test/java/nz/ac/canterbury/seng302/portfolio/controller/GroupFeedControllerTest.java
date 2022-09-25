@@ -295,7 +295,7 @@ class GroupFeedControllerTest {
         Mockito.when(postService.getPaginatedPostsForGroup(post4.getGroupId(), 0,20)).thenReturn(postModelPage);
         Mockito.when(postModelPage.getContent()).thenReturn(posts);
 
-        mockMvc.perform(get("/feed_content/4")
+        mockMvc.perform(get("/group_feed/feed_content/4")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                                 {
@@ -324,7 +324,7 @@ class GroupFeedControllerTest {
         Mockito.when(postService.getPaginatedPostsForGroup(post4.getGroupId(), 0,20)).thenReturn(postModelPage);
         Mockito.when(postModelPage.getContent()).thenReturn(posts);
 
-        mockMvc.perform(get("/feed_content/" + post4.getGroupId())
+        mockMvc.perform(get("/group_feed/feed_content/" + post4.getGroupId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("")
                 .accept(MediaType.APPLICATION_JSON))
