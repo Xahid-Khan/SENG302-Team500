@@ -124,9 +124,6 @@ public class HomePageController extends AuthenticatedController {
       for (int groupIds : subscriptions) {
         posts.addAll(postService.getAllPostsForAGroup(groupIds));
       }
-
-      posts.sort(Comparator.comparing(PostModel::getCreated));
-      Collections.reverse(posts);
       Map<String, Object> data = combineAndPrepareForFrontEnd(posts, userId);
       return ResponseEntity.ok(data);
     } catch (Exception e) {

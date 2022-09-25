@@ -233,7 +233,7 @@ export function ShowAllGroups({setViewGroupId}: any) {
                             <div className={"table"} id={"group-list-branches"}>
 
                                 {branches.map((branch: any) => (
-                                    <div className="tableRow">
+                                    <div className="tableRow" key={branch}>
                                         <div className="tableCell">
                                             <a href={branch['web_url']} target="_blank">{branch['name']} ({Object.keys(branch['commit']).length} commits)</a> <br></br>
                                         </div>
@@ -244,7 +244,7 @@ export function ShowAllGroups({setViewGroupId}: any) {
                             <div className={"table"} id={"group-list-commits"}>
 
                             {commits.map((commit: any) => (
-                                <div className="tableRow">
+                                <div className="tableRow" key={commit.id}>
                                     <div className="tableCell">
                                         <strong>Name:</strong>{commit['author_name']} <br></br>
                                         <strong>Message:</strong> {commit['message']} <br></br>

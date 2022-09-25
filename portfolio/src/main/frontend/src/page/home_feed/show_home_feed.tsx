@@ -20,27 +20,17 @@ export function ShowHomeFeed() {
     return currentGroupResponse.json()
   }
 
-  const [groupPosts, setGroupPosts] = React.useState({
-    "posts": [
-      {
-        "comments": [],
-        "groupId": -1,
-        "reactions": [],
-        "postId": -1,
-        "time": "",
-        "userId": -1,
-        "content": "",
-        "username": "",
-        "isMember": false,
-      }
-    ]
-  });
+    const [groupPosts, setGroupPosts] = React.useState({"posts": []});
 
-  useEffect(() => {
-    getAllPosts().then((result) => {
-      setGroupPosts(result)
-    })
-  }, [])
+
+    useEffect(() => {
+        getAllPosts().then((result) => {
+            result.posts.sort((x: any, y: any) => {
+                return x.time < y.time ? 1 : -1
+            })
+            setGroupPosts(result)
+        })
+    }, [])
 
 
   const clickHighFive = async (id: number) => {
