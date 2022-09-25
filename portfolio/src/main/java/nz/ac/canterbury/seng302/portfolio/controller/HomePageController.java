@@ -1,10 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
@@ -120,10 +117,7 @@ public class HomePageController extends AuthenticatedController {
     try {
       Integer userId = getUserId(principal);
       List<Integer> subscriptions = subscriptionService.getAllByUserId(userId);
-      List<PostModel> posts = new ArrayList<>();
-      for (int groupIds : subscriptions) {
-        posts.addAll(postService.getAllPostsForAGroup(groupIds));
-      }
+      List<PostModel> posts = postService.getAllPostForMultipleGroups(subscriptions);
       Map<String, Object> data = combineAndPrepareForFrontEnd(posts, userId);
       return ResponseEntity.ok(data);
     } catch (Exception e) {
@@ -141,8 +135,7 @@ public class HomePageController extends AuthenticatedController {
     Map<String, Object> postMap = new HashMap<>();
 
     List<Map<String, Object>> allPosts = new ArrayList<>();
-    HashSet<PostModel> postSet = new HashSet<>(posts);
-    postSet.forEach(post -> {
+    posts.forEach(post -> {
       Map<String, Object> filteredPosts = new HashMap<>();
       filteredPosts.put("postId", post.getId());
       filteredPosts.put("userId", post.getUserId());

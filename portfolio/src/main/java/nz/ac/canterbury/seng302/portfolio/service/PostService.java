@@ -11,6 +11,9 @@ import nz.ac.canterbury.seng302.shared.identityprovider.GroupDetailsResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+/**
+ * This is helper service for post to help the CRUD functionality.
+ */
 @Service
 public class PostService {
 
@@ -33,6 +36,11 @@ public class PostService {
   private UserAccountService userAccountService;
 
 
+  /**
+   * This method will get all the posts in the database.
+   *
+   * @return A list of postModels.
+   */
   public List<PostModel> getAllPosts() {
     try {
       return (List<PostModel>) postRepository.findAll();
@@ -42,12 +50,29 @@ public class PostService {
     }
   }
 
+  /**
+   * This method will get all the post for a given group, using the group Id.
+   *
+   * @param groupId A group ID of type integer.
+   * @return A list of post models.
+   */
   public List<PostModel> getAllPostsForAGroup(int groupId) {
     return postRepository.findPostModelByGroupId(groupId);
   }
 
   /**
-   * This funciton will create new instance of the post and save it in the database.
+   * This method/function will return the posts user has subscribed to. All teh posts are in
+   * descending order by created time.
+   *
+   * @param groupIds A list of user IDs
+   * @return A list of Post Models
+   */
+  public List<PostModel> getAllPostForMultipleGroups(List<Integer> groupIds) {
+    return postRepository.findPostModelByGroupIdOrderByCreatedDesc(groupIds);
+  }
+
+  /**
+   * This function will create new instance of the post and save it in the database.
    *
    * @param newPost A post contract containing groupId and contents of the post.
    * @param userId  Integer (Id of the user who made the post)
@@ -148,11 +173,12 @@ public class PostService {
 
   /**
    * This method will delete all the posts made by a group when a group is deleted.
+   *
    * @param groupId An integer
    */
   public void deleteAllPostWithGroupId(int groupId) {
     var data = postRepository.findPostModelByGroupId(groupId);
-    for (PostModel post: data) {
+    for (PostModel post : data) {
       commentService.deleteAllCommentByPostId(post.getId());
       postRepository.deleteById(post.getId());
     }
