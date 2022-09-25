@@ -94,7 +94,6 @@ export const NotificationDropdown: React.FC = observer(() => {
                         markAllAsSeen();
                     }}
                     size="small"
-                    sx={{ml: 2}}
                     aria-controls={open ? 'notification-menu' : undefined}
                     aria-haspopup="true"
                     aria-expanded={open ? 'true' : undefined}
