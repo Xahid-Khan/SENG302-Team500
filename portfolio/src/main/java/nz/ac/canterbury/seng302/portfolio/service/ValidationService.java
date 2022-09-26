@@ -35,6 +35,12 @@ public class ValidationService {
   @Autowired private MilestoneService milestoneService;
 
   @Autowired private DeadlineService deadlineService;
+  
+  private String projectIdDoesntExistMessage = "Project ID does not exist";
+
+  private String SprintString = "Sprint";
+
+    private String EventString = "Event";
 
   /**
    * Checks the base input fields.
@@ -103,7 +109,6 @@ public class ValidationService {
 
     if (start.isBefore(
         LocalDate.now().minusYears(1).atStartOfDay(ZoneId.systemDefault()).toInstant())) {
-      // TODO: Needs to be added to frontend
       return type + " cannot start more than one year ago from today";
     }
 
@@ -139,7 +144,7 @@ public class ValidationService {
         }
       }
     } catch (NoSuchElementException error) {
-      return "Project ID does not exist";
+      return projectIdDoesntExistMessage;
     }
 
     return checkBaseFields(
@@ -165,10 +170,10 @@ public class ValidationService {
         return response;
       }
     } catch (NoSuchElementException error) {
-      return "Project ID does not exist";
+      return projectIdDoesntExistMessage;
     }
     return checkBaseFields(
-        "Sprint",
+        SprintString,
         sprintContract.name(),
         sprintContract.description(),
         sprintContract.startDate(),
@@ -185,10 +190,10 @@ public class ValidationService {
         return response;
       }
     } catch (NoSuchElementException error) {
-      return "Project ID does not exist";
+      return projectIdDoesntExistMessage;
     }
     return checkBaseFields(
-        "Event",
+        EventString,
         eventContract.name(),
         eventContract.description(),
         eventContract.startDate(),
@@ -214,7 +219,7 @@ public class ValidationService {
         }
         response =
             checkBaseFields(
-                "Sprint",
+                SprintString,
                 sprintContract.name(),
                 sprintContract.description(),
                 sprintContract.startDate(),
@@ -224,7 +229,7 @@ public class ValidationService {
         }
 
       } catch (NoSuchElementException error) {
-        return "Project ID does not exist";
+        return projectIdDoesntExistMessage;
       }
 
     } catch (NoSuchElementException error) {
@@ -233,7 +238,7 @@ public class ValidationService {
     }
 
     return checkBaseFields(
-        "Sprint",
+        SprintString,
         sprintContract.name(),
         sprintContract.description(),
         sprintContract.startDate(),
@@ -254,7 +259,7 @@ public class ValidationService {
         }
         response =
             checkBaseFields(
-                "Event",
+                EventString,
                 eventContract.name(),
                 eventContract.description(),
                 eventContract.startDate(),
@@ -264,7 +269,7 @@ public class ValidationService {
         }
 
       } catch (NoSuchElementException error) {
-        return "Project ID does not exist";
+        return projectIdDoesntExistMessage;
       }
 
     } catch (NoSuchElementException error) {
@@ -273,7 +278,7 @@ public class ValidationService {
     }
 
     return checkBaseFields(
-        "Event",
+        EventString,
         eventContract.name(),
         eventContract.description(),
         eventContract.startDate(),
@@ -340,7 +345,7 @@ public class ValidationService {
         return response;
       }
     } catch (NoSuchElementException error) {
-      return "Project ID does not exist";
+      return projectIdDoesntExistMessage;
     }
     return checkBaseFields("Milestone", milestoneContract.name(), milestoneContract.description());
   }
@@ -363,7 +368,7 @@ public class ValidationService {
         }
 
       } catch (NoSuchElementException error) {
-        return "Project ID does not exist";
+        return projectIdDoesntExistMessage;
       }
 
     } catch (NoSuchElementException error) {
@@ -383,7 +388,7 @@ public class ValidationService {
         return response;
       }
     } catch (NoSuchElementException error) {
-      return "Project ID does not exist";
+      return projectIdDoesntExistMessage;
     }
     return checkBaseFields("Deadline", deadlineContract.name(), deadlineContract.description());
   }
@@ -406,7 +411,7 @@ public class ValidationService {
         }
 
       } catch (NoSuchElementException error) {
-        return "Project ID does not exist";
+        return projectIdDoesntExistMessage;
       }
 
     } catch (NoSuchElementException error) {

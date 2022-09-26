@@ -306,6 +306,13 @@ class Editor {
         this.setDateError("The end date must be after the start date.");
         return false;
       }
+      //check if the start date is less than 1 year ago
+        const oneYearAgo = new Date();
+        oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+        if (startDate < oneYearAgo) {
+            this.setDateError("The project cannot occur more than one year ago from today");
+            return false;
+        }
     }
     const customError = this.customDatesValidator(startDate, endDate);
     if (customError !== null) {
