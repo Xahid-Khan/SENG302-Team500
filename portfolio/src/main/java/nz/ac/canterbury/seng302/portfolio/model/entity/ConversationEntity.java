@@ -19,11 +19,6 @@ import org.hibernate.annotations.LazyCollectionOption;
 @Entity
 @Table(name = "conversation")
 public class ConversationEntity extends PortfolioEntity {
-  // Eager since loading all IDs always is vital
-  @ElementCollection(fetch = FetchType.EAGER)
-  @Column(nullable = false)
-  private final List<Integer> userIds = new ArrayList<>();
-
   @OneToMany(mappedBy = "conversation", fetch = FetchType.LAZY)
   @Fetch(value = FetchMode.SUBSELECT)
   // This ensures that some collection operations do not trigger collection initialization
@@ -31,7 +26,10 @@ public class ConversationEntity extends PortfolioEntity {
   // https://sites.google.com/a/pintailconsultingllc.com/java/hibernate-extra-lazy-collection-fetching
   @LazyCollection(LazyCollectionOption.EXTRA)
   private final List<MessageEntity> messages = new ArrayList<>();
-
+  // Eager since loading all IDs always is vital
+  @ElementCollection(fetch = FetchType.EAGER)
+  @Column(nullable = false)
+  private List<Integer> userIds = new ArrayList<>();
   // Makes the database automatically create the timestamp when the user is inserted
   @CreationTimestamp
   @Column(name = "creationDate", nullable = false, updatable = false)
@@ -50,6 +48,10 @@ public class ConversationEntity extends PortfolioEntity {
 
   public List<Integer> getUserIds() {
     return userIds;
+  }
+
+  public void setUserIds(List<Integer> userIds) {
+    this.userIds = userIds;
   }
 
   /**
