@@ -33,16 +33,25 @@ export const MessageButton: React.FC = observer(() => {
         //     }
         // )
         // return notifications.json()
+        //TODO sort by seen
         return [
             {
                 userId: "3",
                 name: "Cody",
-                seen: true
+                seen: true,
+                lastMessage: " wadfawdfaw dfwa fawf awf waf waf awf awf wa f",
             },
             {
                 userId: "3",
                 name: "Zahid",
-                seen: false
+                seen: false,
+                lastMessage: " wadfawdfaw dfwa fawf awf waf waf awf awf wa f",
+            },
+            {
+                userId: "3",
+                name: "Zahid",
+                seen: false,
+                lastMessage: " wadfawf wa f",
             },
         ]
     }
@@ -71,24 +80,6 @@ export const MessageButton: React.FC = observer(() => {
         }
     }, [chats])
 
-    const chats_items = () =>
-        chats.map((contract: any) =>
-            <ChatListItem
-                key={contract.userId}
-                userId={contract.userId}
-                name={contract.name}
-                seen={contract.seen}
-            />
-        )
-
-    const no_chats_item = () => {
-        return (
-            <MenuItem disabled style={{whiteSpace: 'normal', opacity: 1}} sx={{pt: 10, pb: 10}}>
-                <Typography variant="body1">Looks like you have no notifications.</Typography>
-            </MenuItem>
-        )
-    }
-
     return (
         <React.Fragment>
             <Box sx={{display: 'flex', alignItems: 'center', textAlign: 'center'}}>
@@ -109,26 +100,15 @@ export const MessageButton: React.FC = observer(() => {
                     </Badge>
                 </IconButton>
             </Box>
-            <Menu
-                anchorEl={document.body}
-                id="chat-menu"
+
+
+            <ChatList
                 open={open}
                 onClose={handleClose}
-                PaperProps={{sx: {maxHeight: 0.4, maxWidth: 0.3, minWidth: '300px'}}}
-                transformOrigin={{horizontal: 'right', vertical: 'bottom'}}
-                anchorOrigin={{horizontal: 'right', vertical: 'bottom'}}
-            >
-                <ListItem style={{opacity: 1}}>
-                    <Box sx={{flexGrow: 1, display: 'flex', alignItems: 'center', textAlign: 'center', justifyContent: 'space-between'}}>
-                        <Typography>Chats</Typography>
-                        <IconButton>
-                            <AddIcon></AddIcon>
-                        </IconButton>
-                    </Box>
-                </ListItem>
-                <Divider/>
-                {chats.length === 0 ? no_chats_item() : chats_items()}
-            </Menu>
+                chats={chats}
+            />
+
+
         </React.Fragment>
     )
 })
