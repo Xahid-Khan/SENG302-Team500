@@ -37,261 +37,265 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc(addFilters = false)
 @AutoConfigureWebTestClient
 class GroupRepositoryControllerTest {
-    @Autowired
-    private MockMvc mockMvc;
 
-    @Autowired
-    private GroupRepositoryController controller;
+  private final int validUserId = 3;
+  @Autowired
+  private MockMvc mockMvc;
+  @Autowired
+  private GroupRepositoryController controller;
+  @MockBean
+  private GroupRepositoryService groupRepositoryService;
+  @MockBean
+  private UserAccountService userAccountService;
+  @MockBean
+  private GroupsClientService groupsClientService;
+  @MockBean
+  private AuthStateService authStateService;
+  private int requestedID = 1;
+  private int requestedRepositoryID = 1;
+  private String requestedToken = "TOKEN";
+  private String requestedIDString = "1";
+  private GroupRepositoryEntity repoEntity1;
+  private GroupRepositoryContract repoContract1;
 
+  /**
+   * Mocks the authentication service to return a valid student
+   */
+  @BeforeEach
+  void setupBeforeEach() {
+    Mockito.when(userAccountService.getUserById(any(int.class))).thenReturn(
+        UserResponse.newBuilder()
+            .setId(validUserId)
+            .setUsername("testing")
+            .build()
+    );
+    Mockito.when(authStateService.getId(any(PortfolioPrincipal.class))).thenReturn(3);
+    AuthorisationParamsHelper.setParams("role", UserRole.STUDENT);
 
-    @MockBean
-    private GroupRepositoryService groupRepositoryService;
+  }
 
-    @MockBean
-    private UserAccountService userAccountService;
+  /**
+   * This test makes sure that controller is loaded and running.
+   *
+   * @throws Exception if mockMvc fails
+   */
+  @Test
+  void contextLoads() throws Exception {
+    Assertions.assertNotNull(controller);
+  }
 
-    @MockBean
-    private GroupsClientService groupsClientService;
+  /**
+   * Get a repo
+   *
+   * @throws Exception if mockMvc fails
+   */
+  @Test
+  void getValidRepoAndExpectPass() throws Exception {
+    Mockito.when(groupRepositoryService.get(requestedIDString))
+        .thenReturn(new GroupRepositoryContract(1, 1, "TOKEN", ""));
 
-    @MockBean
-    private AuthStateService authStateService;
+    var result = mockMvc.perform(get("/groups/repository/" + requestedIDString + "/"))
+        .andExpect(status().isOk())
+        .andReturn();
+    var response = (new JSONObject(result.getResponse().getContentAsString()));
 
-    private final int validUserId = 3;
-    private int requestedID = 1;
-    private int requestedRepositoryID = 1;
-    private String requestedToken = "TOKEN";
-    private String requestedIDString = "1";
-    private GroupRepositoryEntity repoEntity1;
-    private GroupRepositoryContract repoContract1;
+    //Checks that the response id matches the requested id
+    Assertions.assertNotNull(response);
+    Assertions.assertEquals(requestedIDString, response.get("groupId").toString());
 
-    /**
-     * Mocks the authentication service to return a valid student
-     */
-    @BeforeEach
-    void setupBeforeEach() {
-        Mockito.when(userAccountService.getUserById(any(int.class))).thenReturn(
-                UserResponse.newBuilder()
-                        .setId(validUserId)
-                        .setUsername("testing")
-                        .build()
-        );
-        Mockito.when(authStateService.getId(any(PortfolioPrincipal.class))).thenReturn(3);
-        AuthorisationParamsHelper.setParams("role", UserRole.STUDENT);
+  }
 
-    }
+  /**
+   * Get an invalid repo
+   *
+   * @throws Exception if mockMvc fails
+   */
+  @Test
+  void getInvalidRepoAndExpectFail() throws Exception {
+    Mockito.when(groupRepositoryService.get(requestedIDString)).thenReturn(null);
 
-    /**
-     * This test makes sure that controller is loaded and running.
-     *
-     @throws Exception if mockMvc fails
-     */
-    @Test
-    void contextLoads() throws Exception {
-        Assertions.assertNotNull(controller);
-    }
+    var result = mockMvc.perform(get("/groups/repository/1"))
+        .andExpect(status().isNotFound())
+        .andReturn();
+  }
 
-    /**
-     * Get a repo
-     *
-     @throws Exception if mockMvc fails
-     */
-    @Test
-    void getValidRepoAndExpectPass() throws Exception {
-        Mockito.when(groupRepositoryService.get(requestedIDString)).thenReturn(new GroupRepositoryContract(1, 1, "TOKEN"));
+  /**
+   * Add a repo with a valid id
+   *
+   * @throws Exception if mockMvc fails
+   */
+  @Test
+  void addValidRepoAndExpectPass() throws Exception {
+    Mockito.when(groupRepositoryService.add(requestedID))
+        .thenReturn(new GroupRepositoryContract(1, -1, "No token", ""));
 
-        var result = mockMvc.perform(get("/groups/repository/"+requestedIDString+"/"))
-                .andExpect(status().isOk())
-                .andReturn();
-        var response = (new JSONObject(result.getResponse().getContentAsString()));
+    mockMvc.perform(post("/groups/add_repository/")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                    "groupId" : "1"                           
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().is2xxSuccessful())
+        .andReturn();
+  }
 
-        //Checks that the response id matches the requested id
-        Assertions.assertNotNull(response);
-        Assertions.assertEquals(requestedIDString, response.get("groupId").toString());
+  /**
+   * Add a repo with a valid id twice
+   *
+   * @throws Exception if mockMvc fails
+   */
+  @Test
+  void addValidRepoTwiceAndExpectFail() throws Exception {
+    Mockito.when(groupRepositoryService.add(requestedID))
+        .thenReturn(new GroupRepositoryContract(1, -1, "No token", "")).thenReturn(null);
 
-    }
+    mockMvc.perform(post("/groups/add_repository/")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                    "groupId" : "1"                           
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().is2xxSuccessful())
+        .andReturn();
 
-    /**
-     * Get an invalid repo
-     *
-     @throws Exception if mockMvc fails
-     */
-    @Test
-    void getInvalidRepoAndExpectFail() throws Exception {
-        Mockito.when(groupRepositoryService.get(requestedIDString)).thenReturn(null);
+    //post again
+    mockMvc.perform(post("/groups/repository")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                    "groupId" : "1"                           
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().is4xxClientError())
+        .andReturn();
+  }
 
-        var result = mockMvc.perform(get("/groups/repository/1"))
-                .andExpect(status().isNotFound())
-                .andReturn();
-    }
+  /**
+   * Add a repo with a string as the id
+   *
+   * @throws Exception if mockMvc fails
+   */
+  @Test
+  void addInvalidRepoAndExpectFail() throws Exception {
+    Mockito.when(groupRepositoryService.add(requestedID))
+        .thenReturn(new GroupRepositoryContract(1, -1, "No token", ""));
 
-    /**
-     * Add a repo with a valid id
-     *
-     @throws Exception if mockMvc fails
-     */
-    @Test
-    void addValidRepoAndExpectPass() throws Exception {
-        Mockito.when(groupRepositoryService.add(requestedID)).thenReturn(new GroupRepositoryContract(1, -1, "No token"));
+    mockMvc.perform(post("/groups/add_repository/")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                    "groupId" : "abc"                           
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().is4xxClientError())
+        .andReturn();
+  }
 
-        mockMvc.perform(post("/groups/add_repository/")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {
-                                    "groupId" : "1"                           
-                                }
-                                """)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().is2xxSuccessful())
-                .andReturn();
-    }
+  /**
+   * Delete a repo with a valid id
+   *
+   * @throws Exception if mockMvc fails
+   */
+  @Test
+  void deleteValidRepoAndExpectPass() throws Exception {
+    Mockito.when(groupRepositoryService.delete(requestedID)).thenReturn(true);
 
-    /**
-     * Add a repo with a valid id twice
-     *
-     * @throws Exception if mockMvc fails
-     */
-    @Test
-    void addValidRepoTwiceAndExpectFail() throws Exception {
-        Mockito.when(groupRepositoryService.add(requestedID)).thenReturn(new GroupRepositoryContract(1, -1, "No token")).thenReturn(null);
+    mockMvc.perform(delete("/groups/delete_repository/" + requestedIDString + "/"))
+        .andExpect(status().is2xxSuccessful())
+        .andReturn();
+  }
 
-        mockMvc.perform(post("/groups/add_repository/")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {
-                                    "groupId" : "1"                           
-                                }
-                                """)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().is2xxSuccessful())
-                .andReturn();
+  /**
+   * Delete a repo that does not exist
+   */
+  @Test
+  void deleteInvalidRepoAndExpectFail() throws Exception {
+    Mockito.when(groupRepositoryService.delete(requestedID)).thenReturn(false);
 
-        //post again
-        mockMvc.perform(post("/groups/repository")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {
-                                    "groupId" : "1"                           
-                                }
-                                """)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().is4xxClientError())
-                .andReturn();
-    }
-
-    /**
-     * Add a repo with a string as the id
-     @throws Exception if mockMvc fails
-     */
-    @Test
-    void addInvalidRepoAndExpectFail() throws Exception {
-        Mockito.when(groupRepositoryService.add(requestedID)).thenReturn(new GroupRepositoryContract(1, -1, "No token"));
-
-        mockMvc.perform(post("/groups/add_repository/")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {
-                                    "groupId" : "abc"                           
-                                }
-                                """)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().is4xxClientError())
-                .andReturn();
-    }
-
-    /**
-     * Delete a repo with a valid id
-     *
-     @throws Exception if mockMvc fails
-     */
-    @Test
-    void deleteValidRepoAndExpectPass() throws Exception {
-        Mockito.when(groupRepositoryService.delete(requestedID)).thenReturn(true);
-
-        mockMvc.perform(delete("/groups/delete_repository/"+requestedIDString+"/"))
-                .andExpect(status().is2xxSuccessful())
-                .andReturn();
-    }
-
-    /**
-     * Delete a repo that does not exist
-     */
-    @Test
-    void deleteInvalidRepoAndExpectFail() throws Exception {
-        Mockito.when(groupRepositoryService.delete(requestedID)).thenReturn(false);
-
-        mockMvc.perform(delete("/groups/delete_repository/"+requestedIDString+"/"))
-                .andExpect(status().is5xxServerError())
-                .andReturn();
-    }
-
+    mockMvc.perform(delete("/groups/delete_repository/" + requestedIDString + "/"))
+        .andExpect(status().is5xxServerError())
+        .andReturn();
+  }
 
 
-    /**
-     * Update a repo which exists
-     *
-     @throws Exception if mockMvc fails
-     */
-    @Test
-    void updateValidRepoAndExpectPass() throws Exception {
-        //mocks service finding repo
-        Mockito.when(groupRepositoryService.update(anyInt(),anyInt(),anyString())).thenReturn(true);
+  /**
+   * Update a repo which exists
+   *
+   * @throws Exception if mockMvc fails
+   */
+  @Test
+  void updateValidRepoAndExpectPass() throws Exception {
+    //mocks service finding repo
+    Mockito.when(groupRepositoryService.update(anyInt(), anyInt(), anyString(), anyString()))
+        .thenReturn(true);
 
-        mockMvc.perform(put("/groups/update_repository/")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {
-                                    "groupId" : "1",
-                                    "repositoryId" : "1",
-                                    "token" : "TOKEN"
-                                }
-                                """)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().is2xxSuccessful())
-                .andReturn();
-    }
+    mockMvc.perform(put("/groups/update_repository/")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                    "groupId" : "1",
+                    "repositoryId" : "1",
+                    "token" : "TOKEN",
+                    "alias" : ""
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().is2xxSuccessful())
+        .andReturn();
+  }
 
-    /**
-     * Update a repo which does not exist
-     *
-     @throws Exception if mockMvc fails
-     */
-    @Test
-    void updateInvalidRepoAndExpectFail() throws Exception {
-        //mocks service not finding repo
-        Mockito.when(groupRepositoryService.update(requestedID, requestedRepositoryID, requestedToken)).thenReturn(false);
+  /**
+   * Update a repo which does not exist
+   *
+   * @throws Exception if mockMvc fails
+   */
+  @Test
+  void updateInvalidRepoAndExpectFail() throws Exception {
+    //mocks service not finding repo
+    Mockito.when(
+            groupRepositoryService.update(requestedID, requestedRepositoryID, requestedToken, ""))
+        .thenReturn(false);
 
-        mockMvc.perform(put("/groups/update_repository/")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {
-                                    "groupId" : "1",
-                                    "repositoryId" : "1",
-                                    "token" : "TOKEN"
-                                }
-                                """)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().is5xxServerError())
-                .andReturn();
-    }
+    mockMvc.perform(put("/groups/update_repository/")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                    "groupId" : "1",
+                    "repositoryId" : "1",
+                    "token" : "TOKEN"
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().is5xxServerError())
+        .andReturn();
+  }
 
 
-    /**
-     * Tests getting all repository info
-     */
-    @Test
-    void getAllRepoInfoAndExpectPass() throws Exception {
-        Mockito.when(groupRepositoryService.getAll()).thenReturn(List.of(new GroupRepositoryContract(requestedID, 1, "TOKEN"),new GroupRepositoryContract(2, 2, "TOKEN")));
+  /**
+   * Tests getting all repository info
+   */
+  @Test
+  void getAllRepoInfoAndExpectPass() throws Exception {
+    Mockito.when(groupRepositoryService.getAll()).thenReturn(
+        List.of(new GroupRepositoryContract(requestedID, 1, "TOKEN", ""),
+            new GroupRepositoryContract(2, 2, "TOKEN", "")));
 
-        var result = mockMvc.perform(get("/groups/all_repository/"))
-                .andExpect(status().isOk())
-                .andReturn();
-        var response = (new JSONArray(result.getResponse().getContentAsString()));
+    var result = mockMvc.perform(get("/groups/all_repository/"))
+        .andExpect(status().isOk())
+        .andReturn();
+    var response = (new JSONArray(result.getResponse().getContentAsString()));
 
-        //Checks that the response id matches the requested id
-        Assertions.assertNotNull(response);
-        Assertions.assertEquals(2, response.length());
-        Assertions.assertEquals(response.getJSONObject(0).get("groupId").toString(), requestedIDString);
-    }
+    //Checks that the response id matches the requested id
+    Assertions.assertNotNull(response);
+    Assertions.assertEquals(2, response.length());
+    Assertions.assertEquals(response.getJSONObject(0).get("groupId").toString(), requestedIDString);
+  }
 }
 
 

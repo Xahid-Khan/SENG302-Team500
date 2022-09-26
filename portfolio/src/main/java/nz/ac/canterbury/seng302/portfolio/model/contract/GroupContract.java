@@ -17,6 +17,7 @@ public record GroupContract(
     Integer id,
     String shortName,
     String longName,
+    String alia,
     ArrayList<UserContract> users,
 //    GroupRepositoryContract repoInfo
     Object branches,

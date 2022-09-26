@@ -2,7 +2,6 @@ package nz.ac.canterbury.seng302.portfolio.model.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.Table;
 
 /**
@@ -20,6 +19,9 @@ public class GroupRepositoryEntity extends PortfolioEntity {
 
   @Column(name = "token")
   private String token = "No token";
+
+  @Column(name = "alias")
+  private String alias;
 
   protected GroupRepositoryEntity() {
 
@@ -41,10 +43,11 @@ public class GroupRepositoryEntity extends PortfolioEntity {
    * @param repositoryId Groups repository ID
    * @param token        The token used to access the repository
    */
-  public GroupRepositoryEntity(int groupId, int repositoryId, String token) {
+  public GroupRepositoryEntity(int groupId, int repositoryId, String token, String alias) {
     this.groupId = groupId;
     this.repositoryId = repositoryId;
     this.token = token;
+    this.alias = alias;
   }
 
   public int getRepositoryID() {
@@ -65,6 +68,10 @@ public class GroupRepositoryEntity extends PortfolioEntity {
 
   public int getGroupId() {
     return this.groupId;
+  }
+
+  public String getAlis() {
+    return this.alias;
   }
 
 

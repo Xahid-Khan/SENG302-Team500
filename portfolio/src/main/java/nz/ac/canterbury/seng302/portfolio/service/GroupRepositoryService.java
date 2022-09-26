@@ -43,7 +43,7 @@ public class GroupRepositoryService {
     if (data != null) {
       return groupRepositoryMapper.toContract(data);
     } else {
-      return new GroupRepositoryContract(-1, -1, "");
+      return new GroupRepositoryContract(-1, -1, "", "");
     }
   }
 
@@ -75,7 +75,7 @@ public class GroupRepositoryService {
     if (groupRepositoryRepository.existsByGroupId(id)) {
       return null;
     }
-    var groupRepository = new GroupRepositoryEntity(id, id + id, "token" + id);
+    var groupRepository = new GroupRepositoryEntity(id, id + id, "token" + id, "");
     groupRepositoryRepository.save(groupRepository);
 
     return groupRepositoryMapper.toContract(groupRepository);
@@ -96,10 +96,10 @@ public class GroupRepositoryService {
   /**
    * Updates a group repository in the database with the given ID. Sets the repositoryID and token
    */
-  public boolean update(int id, int repositoryID, String token) {
+  public boolean update(int id, int repositoryID, String token, String alias) {
     //checks if the group repository exists
     if (!groupRepositoryRepository.existsById(Integer.toString(id))) {
-      var newGroupRepository = new GroupRepositoryEntity(id, repositoryID, token);
+      var newGroupRepository = new GroupRepositoryEntity(id, repositoryID, token, alias);
       var result = groupRepositoryRepository.save(newGroupRepository);
       return true;
     }

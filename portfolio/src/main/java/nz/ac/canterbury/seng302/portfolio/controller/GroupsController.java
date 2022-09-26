@@ -1,11 +1,11 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.portfolio.model.contract.GroupContract;
+import nz.ac.canterbury.seng302.portfolio.model.contract.GroupRepositoryContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.SubscriptionContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.UserContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseGroupContract;
@@ -69,18 +69,22 @@ public class GroupsController extends AuthenticatedController {
       PaginatedGroupsResponse groupsResponse = groupsClientService.getAllGroupDetails();
       List<GroupDetailsResponse> groupsList = groupsResponse.getGroupsList();
       ArrayList<GroupContract> groups = new ArrayList<>();
-
       for (GroupDetailsResponse groupDetails : groupsList) {
-        var repoData = getRepoData(groupDetails.getGroupId());
+        GroupRepositoryContract groupRepoData = groupRepositoryService.getRepoByGroupId(groupDetails.getGroupId());
+
+        List<ResponseEntity> repoData = getRepoData(groupRepoData.repositoryId(), groupRepoData.token());
         groups.add(
             new GroupContract(
                 groupDetails.getGroupId(),
                 groupDetails.getShortName(),
                 groupDetails.getLongName(),
+                groupRepoData.alias(),
                 getUsers(groupDetails.getMembersList()),
-                repoData.get(0).getStatusCode().is2xxSuccessful() ? repoData.get(0).getBody() : new ArrayList<>(),
-                repoData.get(1).getStatusCode().is2xxSuccessful() ? repoData.get(1).getBody() : new ArrayList<>()
-                ));
+                repoData.get(0).getStatusCode().is2xxSuccessful() ? repoData.get(0).getBody()
+                    : new ArrayList<>(),
+                repoData.get(1).getStatusCode().is2xxSuccessful() ? repoData.get(1).getBody()
+                    : new ArrayList<>()
+            ));
       }
       return ResponseEntity.ok(groups);
     } catch (NoSuchElementException error) {
@@ -220,14 +224,18 @@ public class GroupsController extends AuthenticatedController {
     }
   }
 
-  public ArrayList<ResponseEntity> getRepoData(int groupId) {
+
+  public ArrayList<ResponseEntity> getRepoData(Integer repositoryId, String token) {
     var result = new ArrayList<ResponseEntity>();
-    String gitLabBranches = "https://eng-git.canterbury.ac.nz/api/v4/projects/12297/repository/branches";
-    String gitLabCommits = "https://eng-git.canterbury.ac.nz/api/v4/projects/12297/repository/commits";
+    String gitLabBranches =
+        "https://eng-git.canterbury.ac.nz/api/v4/projects/" + repositoryId
+            + "/repository/branches";
+    String gitLabCommits =
+        "https://eng-git.canterbury.ac.nz/api/v4/projects/" + repositoryId
+            + "/repository/commits";
 
     HttpHeaders headers = new HttpHeaders();
-    headers.add("PRIVATE-TOKEN", "cyc2UjjJswviFKwaDDQU");
-    //            groupRepositoryService.getRepoByGroupId(groupId);
+    headers.add("PRIVATE-TOKEN", token);
     HttpEntity<Object> entity = new HttpEntity<>(headers);
     RestTemplate getRepoData = new RestTemplate();
 
@@ -237,7 +245,6 @@ public class GroupsController extends AuthenticatedController {
       branches = getRepoData.exchange(gitLabBranches, HttpMethod.GET, entity, Object[].class);
       commits = getRepoData.exchange(gitLabCommits, HttpMethod.GET, entity, Object[].class);
     } catch (Exception e) {
-      e.printStackTrace();
       branches = ResponseEntity.badRequest().build();
       commits = ResponseEntity.badRequest().build();
     }
