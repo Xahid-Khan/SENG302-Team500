@@ -19,6 +19,6 @@ public record GroupContract(
     String longName,
     ArrayList<UserContract> users,
 //    GroupRepositoryContract repoInfo
-    Object[] branches,
-    Object[] commits
+    Object branches,
+    Object commits
 ) implements Contractable {}

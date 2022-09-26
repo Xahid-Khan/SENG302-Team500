@@ -78,10 +78,8 @@ public class GroupsController extends AuthenticatedController {
                 groupDetails.getShortName(),
                 groupDetails.getLongName(),
                 getUsers(groupDetails.getMembersList()),
-                repoData.get(0).getStatusCode().is2xxSuccessful() ? Arrays.stream(
-                    new Object[]{repoData.get(0).getBody()}).toArray() : new ArrayList<>().stream().toArray(),
-                repoData.get(1).getStatusCode().is2xxSuccessful() ? Arrays.stream(
-                    new Object[]{repoData.get(1).getBody()}).toArray() : new ArrayList<>().stream().toArray()
+                repoData.get(0).getStatusCode().is2xxSuccessful() ? repoData.get(0).getBody() : new ArrayList<>(),
+                repoData.get(1).getStatusCode().is2xxSuccessful() ? repoData.get(1).getBody() : new ArrayList<>()
                 ));
       }
       return ResponseEntity.ok(groups);
@@ -224,11 +222,11 @@ public class GroupsController extends AuthenticatedController {
 
   public ArrayList<ResponseEntity> getRepoData(int groupId) {
     var result = new ArrayList<ResponseEntity>();
-    String gitLabBranches = "https://eng-git.canterbury.ac.nz/api/v4/projects/13845/repository/branches";
-    String gitLabCommits = "https://eng-git.canterbury.ac.nz/api/v4/projects/13845/repository/commits";
+    String gitLabBranches = "https://eng-git.canterbury.ac.nz/api/v4/projects/12297/repository/branches";
+    String gitLabCommits = "https://eng-git.canterbury.ac.nz/api/v4/projects/12297/repository/commits";
 
     HttpHeaders headers = new HttpHeaders();
-    headers.add("PRIVATE-TOKEN", "ysewGuxG33Mzy4fixgjW");
+    headers.add("PRIVATE-TOKEN", "cyc2UjjJswviFKwaDDQU");
     //            groupRepositoryService.getRepoByGroupId(groupId);
     HttpEntity<Object> entity = new HttpEntity<>(headers);
     RestTemplate getRepoData = new RestTemplate();

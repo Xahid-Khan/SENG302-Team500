@@ -6,26 +6,7 @@ const getAllGroups = async ()  => {
     const allGroupsResponse = await fetch('api/v1/groups/all')
     return allGroupsResponse.json()
 }
-const commitRequest = new Request('https://eng-git.canterbury.ac.nz/api/v4/projects/13845/repository/commits', {
-    method: 'GET',
-    headers: new Headers({
-        'PRIVATE-TOKEN': 'ysewGuxG33Mzy4fixgjW',
-    })
-});
-const branchRequest = new Request('https://eng-git.canterbury.ac.nz/api/v4/projects/13845/repository/branches', {
-    method: 'GET',
-    headers: new Headers({
-        'PRIVATE-TOKEN': 'ysewGuxG33Mzy4fixgjW',
-    })
-});
-const getCommits = async () => {
-    const getCommitsResponse = await fetch(commitRequest)
-    return getCommitsResponse.json()
-}
-const getBranches = async () => {
-    const getBranchesResponse = await fetch(branchRequest)
-    return getBranchesResponse.json()
-}
+
 const deleteGroup = async (id: number, groups: any) => {
     let usersToRemoveIds: any = []
     groups.forEach((group: any) => {
@@ -111,12 +92,6 @@ export function ShowAllGroups({setViewGroupId}: any) {
         getSubscriptions().then((result) => {
             setSubscriptions(result)
         })
-        getCommits().then((result) => {
-            setCommits(result)
-        })
-        getBranches().then((result) => {
-            setBranches(result)
-        })
     }, [])
 
     const isTeacher = localStorage.getItem("isTeacher") === "true"
@@ -142,7 +117,7 @@ export function ShowAllGroups({setViewGroupId}: any) {
     }
 
     const subscribeUserToGroup = async (groupId: number) => {
-        const subscriptionResponse = await fetch(`api/v1/subscribe`, {
+        await fetch(`api/v1/subscribe`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -156,7 +131,7 @@ export function ShowAllGroups({setViewGroupId}: any) {
     }
 
     const unsubscribeUserToGroup = async (groupId: number) => {
-        const subscriptionResponse = await fetch(`api/v1/unsubscribe`, {
+        await fetch(`api/v1/unsubscribe`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'
@@ -241,10 +216,10 @@ export function ShowAllGroups({setViewGroupId}: any) {
                             <h3 className={'group-repository-title'}>Branches</h3>
                             <div className={"table"} id={"group-list-branches"}>
 
-                                {branches.map((branch: any) => (
+                                {group.branches.map((branch: any) => (
                                     <div className="tableRow">
                                         <div className="tableCell">
-                                            <a href={branch['web_url']} target="_blank">{branch['name']} ({Object.keys(branch['commit']).length} commits)</a> <br></br>
+                                            <a href={branch.web_url} target="_blank">{branch.name} ({group.commits.length} commits)</a> <br></br>
                                         </div>
                                     </div>
                                 ))}
@@ -252,7 +227,7 @@ export function ShowAllGroups({setViewGroupId}: any) {
                             <h3 className={'group-repository-title'}>Commits</h3>
                             <div className={"table"} id={"group-list-commits"}>
 
-                            {commits.map((commit: any) => (
+                            {group.commits.map((commit: any) => (
                                 <div className="tableRow">
                                     <div className="tableCell">
                                         <strong>Name:</strong>{commit['author_name']} <br></br>
@@ -261,8 +236,6 @@ export function ShowAllGroups({setViewGroupId}: any) {
                                         </div>
                                 </div>
                             ))}
-
-
                         </div>
                     </div>
                 </div>
