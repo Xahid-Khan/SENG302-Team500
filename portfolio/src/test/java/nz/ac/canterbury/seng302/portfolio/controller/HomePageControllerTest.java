@@ -128,21 +128,6 @@ public class HomePageControllerTest {
         Mockito.verify(service, Mockito.never()).subscribe(contract);
     }
 
-    /**
-     * Tests to ensure that a valid unsubscription can be posted successfully
-     * @throws Exception
-     */
-    @Test
-    void unsubscribeValidTest() throws Exception {
-        mockPerformWithJSON(delete("/api/v1/subscribe"),"""
-                {
-                    "userId": 1,
-                    "groupId": 1
-                }
-                """)
-                .andExpect(status().isOk());
-        Mockito.verify(service).unsubscribe(contract);
-    }
 
     /**
      * Tests to ensure that an invalid unsubscription cannot be posted
@@ -150,7 +135,7 @@ public class HomePageControllerTest {
      */
     @Test
     void unsubscribeInvalidParamTypeTest() throws Exception {
-        mockPerformWithJSON(delete("/api/v1/subscribe"),"""
+        mockPerformWithJSON(delete("/api/v1/unsubscribe"),"""
                 {
                     "userId": "one",
                     "groupId": 1
