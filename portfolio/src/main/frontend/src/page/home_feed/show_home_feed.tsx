@@ -86,8 +86,10 @@ export function ShowHomeFeed() {
               <>
                 <div className={"group-feed-name"}>Welcome!</div>
                 {groupPosts.posts.length === 0 ?
-                    <div><h2>Looks like there are no posts! Subscribe to more groups to see there
-                      posts here!</h2></div> :
+                    <div>
+                    <br/>
+                      <p>Looks like there are no posts! Subscribe to more groups to see there
+                      posts here!</p></div> :
                     <div>{groupPosts.posts.map((post: any) => (
                         <div className={"raised-card group-post"} key={post.postId}>
                           <div className={"post-header"} key={"postHeader" + post.postId}>
