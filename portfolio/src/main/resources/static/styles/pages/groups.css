@@ -124,12 +124,12 @@
 }
 
 .current-group {
-    width: 45%;
+    width: 50%;
     padding: 5px;
 }
 
 .other-group-users {
-    width: 100%;
+    width: 50%;
     padding: 5px;
 }
 

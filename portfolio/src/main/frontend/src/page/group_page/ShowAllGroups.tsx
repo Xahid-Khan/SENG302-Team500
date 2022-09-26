@@ -92,10 +92,15 @@ const getSubscriptions = async () => {
 
 export function ShowAllGroups({setViewGroupId}: any) {
 
-    const [groups, setGroups] = React.useState([])
-    const[commits, setCommits] = React.useState([])
-    const[branches, setBranches] = React.useState([])
-    const [subscriptions, setSubscriptions] = React.useState([])
+    const [groups, setGroups] = React.useState([]);
+    const[commits, setCommits] = React.useState([]);
+    const[branches, setBranches] = React.useState([]);
+    const [subscriptions, setSubscriptions] = React.useState([]);
+    const [editLongName, setEditLongName] = React.useState("");
+    const [editAlias, setEditAlias] = React.useState("");
+    const [editRepoId, setEditRepoId] = React.useState("");
+    const [editToken, setEditToken] = React.useState("");
+
 
     const userId = localStorage.getItem("userId")
 
@@ -217,8 +222,12 @@ export function ShowAllGroups({setViewGroupId}: any) {
                         </div>
                         <div>
                             <span className={"material-icons group-settings"} onClick={() => {
+                                setViewGroupId(group.id);
+                                setEditLongName(group.longName);
+                                console.log("group.repoInfo");
+                                console.log(group.branches);
+                                console.log(group.commits);
                                 document.getElementById("group-settings-modal-open").style.display='block';
-                                setViewGroupId(group.id)
                             }}>settings</span>
                         </div>
                         <div id={`toggle-group-details-${group['id']}`}>

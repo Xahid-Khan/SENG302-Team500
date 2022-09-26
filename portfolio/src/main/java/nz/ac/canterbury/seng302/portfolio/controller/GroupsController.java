@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
@@ -9,16 +10,19 @@ import nz.ac.canterbury.seng302.portfolio.model.contract.SubscriptionContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.UserContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseGroupContract;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
+import nz.ac.canterbury.seng302.portfolio.service.GroupRepositoryService;
 import nz.ac.canterbury.seng302.portfolio.service.GroupsClientService;
 import nz.ac.canterbury.seng302.portfolio.service.SubscriptionService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
-import nz.ac.canterbury.seng302.portfolio.service.GroupRepositoryService;
 import nz.ac.canterbury.seng302.shared.identityprovider.CreateGroupResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.DeleteGroupResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.GroupDetailsResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedGroupsResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -29,15 +33,23 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.client.RestTemplate;
 
-/** Handles the GET request on the /groups endpoint. */
+/**
+ * Handles the GET request on the /groups endpoint.
+ */
 @Controller
 @RequestMapping("/api/v1")
 public class GroupsController extends AuthenticatedController {
-  @Autowired private GroupsClientService groupsClientService;
-  @Autowired private SubscriptionService subscriptionService;
 
-  @Autowired private GroupRepositoryService groupsRepositoryService;
+  @Autowired
+  private GroupsClientService groupsClientService;
+  @Autowired
+  private SubscriptionService subscriptionService;
+  @Autowired
+  private GroupRepositoryService groupsRepositoryService;
+  @Autowired
+  private GroupRepositoryService groupRepositoryService;
 
   @Autowired
   public GroupsController(
@@ -57,13 +69,20 @@ public class GroupsController extends AuthenticatedController {
       PaginatedGroupsResponse groupsResponse = groupsClientService.getAllGroupDetails();
       List<GroupDetailsResponse> groupsList = groupsResponse.getGroupsList();
       ArrayList<GroupContract> groups = new ArrayList<>();
+
       for (GroupDetailsResponse groupDetails : groupsList) {
+        var repoData = getRepoData(groupDetails.getGroupId());
         groups.add(
             new GroupContract(
                 groupDetails.getGroupId(),
                 groupDetails.getShortName(),
                 groupDetails.getLongName(),
-                getUsers(groupDetails.getMembersList())));
+                getUsers(groupDetails.getMembersList()),
+                repoData.get(0).getStatusCode().is2xxSuccessful() ? Arrays.stream(
+                    new Object[]{repoData.get(0).getBody()}).toArray() : new ArrayList<>().stream().toArray(),
+                repoData.get(1).getStatusCode().is2xxSuccessful() ? Arrays.stream(
+                    new Object[]{repoData.get(1).getBody()}).toArray() : new ArrayList<>().stream().toArray()
+                ));
       }
       return ResponseEntity.ok(groups);
     } catch (NoSuchElementException error) {
@@ -73,6 +92,7 @@ public class GroupsController extends AuthenticatedController {
 
   /**
    * Helper method to convert a list of UserResponse objects into a list of UserContract objects.
+   *
    * @param userList
    * @return
    */
@@ -135,7 +155,8 @@ public class GroupsController extends AuthenticatedController {
     if (isTeacher(principal)) {
       try {
         groupsClientService.addGroupMembers(Integer.parseInt(groupId), members);
-        members.stream().forEach(member -> subscriptionService.subscribe(new SubscriptionContract(member, Integer.parseInt(groupId))));
+        members.stream().forEach(member -> subscriptionService.subscribe(
+            new SubscriptionContract(member, Integer.parseInt(groupId))));
         return ResponseEntity.ok().build();
       } catch (Exception error) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -200,4 +221,32 @@ public class GroupsController extends AuthenticatedController {
       return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
   }
+
+  public ArrayList<ResponseEntity> getRepoData(int groupId) {
+    var result = new ArrayList<ResponseEntity>();
+    String gitLabBranches = "https://eng-git.canterbury.ac.nz/api/v4/projects/13845/repository/branches";
+    String gitLabCommits = "https://eng-git.canterbury.ac.nz/api/v4/projects/13845/repository/commits";
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("PRIVATE-TOKEN", "ysewGuxG33Mzy4fixgjW");
+    //            groupRepositoryService.getRepoByGroupId(groupId);
+    HttpEntity<Object> entity = new HttpEntity<>(headers);
+    RestTemplate getRepoData = new RestTemplate();
+
+    ResponseEntity<Object[]> branches;
+    ResponseEntity<Object[]> commits;
+    try {
+      branches = getRepoData.exchange(gitLabBranches, HttpMethod.GET, entity, Object[].class);
+      commits = getRepoData.exchange(gitLabCommits, HttpMethod.GET, entity, Object[].class);
+    } catch (Exception e) {
+      e.printStackTrace();
+      branches = ResponseEntity.badRequest().build();
+      commits = ResponseEntity.badRequest().build();
+    }
+
+    result.add(branches);
+    result.add(commits);
+    return result;
+  }
+
 }

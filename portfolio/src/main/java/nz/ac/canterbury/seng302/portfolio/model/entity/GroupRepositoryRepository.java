@@ -8,4 +8,6 @@ import org.springframework.data.repository.CrudRepository;
  */
 public interface GroupRepositoryRepository extends CrudRepository<GroupRepositoryEntity, String> {
   boolean existsByGroupId (int groupId);
+
+  GroupRepositoryEntity getAllByGroupId(int groupId);
 }

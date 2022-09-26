@@ -7,7 +7,7 @@ const getRepository = async ()  => {
     const repositoryResponse = await fetch(`https://eng-git.canterbury.ac.nz/api/v4/projects/13845/repository/`, {
         method: 'GET',
         headers: {
-            'PRIVATE-TOKEN': 'YDuDmqxJrQzXPL9NNzAD'
+            'PRIVATE-TOKEN': 'ysewGuxG33Mzy4fixgjW'
         },
     })
     return repositoryResponse.json()

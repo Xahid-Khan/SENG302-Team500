@@ -38,6 +38,15 @@ public class GroupRepositoryService {
     return groupRepositoryMapper.toContract(groupRepository);
   }
 
+  public GroupRepositoryContract getRepoByGroupId(int groupId) {
+    var data = groupRepositoryRepository.getAllByGroupId(groupId);
+    if (data != null) {
+      return groupRepositoryMapper.toContract(data);
+    } else {
+      return new GroupRepositoryContract(-1, -1, "");
+    }
+  }
+
 
   /**
    * Retrieve all group repositories.
