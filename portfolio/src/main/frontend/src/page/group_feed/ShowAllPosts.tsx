@@ -203,7 +203,7 @@ export function ShowAllPosts() {
   return (
       <div>
         <div className={"group-feed-name"}>{groupPosts.shortName} Feed</div>
-        {Object.keys(groupPosts).length !== 0 && groupPosts.groupId !== -1 ?
+        {groupPosts.posts.length !== 0 && groupPosts.groupId !== -1 ?
             groupPosts.posts.map((post: any) => (
                 <div className={"raised-card group-post"} key={post.postId}>
                   <div className={"post-header"} key={"postHeader" + post.postId}>
