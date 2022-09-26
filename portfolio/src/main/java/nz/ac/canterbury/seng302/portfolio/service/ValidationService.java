@@ -38,9 +38,9 @@ public class ValidationService {
   
   private String projectIdDoesntExistMessage = "Project ID does not exist";
 
-  private String SprintString = "Sprint";
+  private String sprintString = "Sprint";
 
-    private String EventString = "Event";
+    private String eventString = "Event";
 
   /**
    * Checks the base input fields.
@@ -173,7 +173,7 @@ public class ValidationService {
       return projectIdDoesntExistMessage;
     }
     return checkBaseFields(
-        SprintString,
+            sprintString,
         sprintContract.name(),
         sprintContract.description(),
         sprintContract.startDate(),
@@ -193,7 +193,7 @@ public class ValidationService {
       return projectIdDoesntExistMessage;
     }
     return checkBaseFields(
-        EventString,
+            eventString,
         eventContract.name(),
         eventContract.description(),
         eventContract.startDate(),
@@ -219,7 +219,7 @@ public class ValidationService {
         }
         response =
             checkBaseFields(
-                SprintString,
+                    sprintString,
                 sprintContract.name(),
                 sprintContract.description(),
                 sprintContract.startDate(),
@@ -238,7 +238,7 @@ public class ValidationService {
     }
 
     return checkBaseFields(
-        SprintString,
+            sprintString,
         sprintContract.name(),
         sprintContract.description(),
         sprintContract.startDate(),
@@ -259,7 +259,7 @@ public class ValidationService {
         }
         response =
             checkBaseFields(
-                EventString,
+                    eventString,
                 eventContract.name(),
                 eventContract.description(),
                 eventContract.startDate(),
@@ -278,7 +278,7 @@ public class ValidationService {
     }
 
     return checkBaseFields(
-        EventString,
+            eventString,
         eventContract.name(),
         eventContract.description(),
         eventContract.startDate(),
