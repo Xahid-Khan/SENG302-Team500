@@ -64,21 +64,29 @@ public class GroupsController extends AuthenticatedController {
    * @return List of groups converted into project contract (JSON) type.
    */
   @GetMapping(value = "/groups/all", produces = "application/json")
-  public ResponseEntity<?> getAll() {
+  public ResponseEntity<?> getAll(@AuthenticationPrincipal PortfolioPrincipal principal) {
     try {
       PaginatedGroupsResponse groupsResponse = groupsClientService.getAllGroupDetails();
       List<GroupDetailsResponse> groupsList = groupsResponse.getGroupsList();
       ArrayList<GroupContract> groups = new ArrayList<>();
       for (GroupDetailsResponse groupDetails : groupsList) {
-        GroupRepositoryContract groupRepoData = groupRepositoryService.getRepoByGroupId(groupDetails.getGroupId());
+        boolean userCanEdit =
+            (groupsClientService.isMemberOfTheGroup(getUserId(principal), groupDetails.getGroupId())
+                || isTeacher(principal));
+        GroupRepositoryContract groupRepoData = groupRepositoryService.getRepoByGroupId(
+            groupDetails.getGroupId());
 
-        List<ResponseEntity> repoData = getRepoData(groupRepoData.repositoryId(), groupRepoData.token());
+        List<ResponseEntity> repoData = getRepoData(groupRepoData.repositoryId(),
+            groupRepoData.token());
         groups.add(
             new GroupContract(
                 groupDetails.getGroupId(),
                 groupDetails.getShortName(),
                 groupDetails.getLongName(),
                 groupRepoData.alias(),
+                groupRepoData.repositoryId(),
+                groupRepoData.token(),
+                userCanEdit,
                 getUsers(groupDetails.getMembersList()),
                 repoData.get(0).getStatusCode().is2xxSuccessful() ? repoData.get(0).getBody()
                     : new ArrayList<>(),

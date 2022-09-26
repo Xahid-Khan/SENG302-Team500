@@ -76,13 +76,7 @@ export function ShowAllGroups({setViewGroupId}: any) {
 
   const [groups, setGroups] = React.useState([]);
   const [subscriptions, setSubscriptions] = React.useState([]);
-  const [editGroupId, setEditGroupId] = React.useState(-1);
-  const [editLongName, setEditLongName] = React.useState("");
-  const [editAlias, setEditAlias] = React.useState("");
-  const [editRepoId, setEditRepoId] = React.useState("");
-  const [editToken, setEditToken] = React.useState("");
-
-
+  const [editGroup, setEditGroup] = React.useState({});
   const userId = localStorage.getItem("userId")
 
   useEffect(() => {
@@ -209,13 +203,8 @@ export function ShowAllGroups({setViewGroupId}: any) {
                     Feed
                   </button>
                 </div>
-                <div>
-                            <span className={"material-icons group-settings"} onClick={() => {
-                              setViewGroupId(group.id);
-                              setEditLongName(group.longName);
-                              setEditAlias(group.alias);
-                              setEditToken(group)
-                              setEditGroupId(group.id);
+                <div id={`groupSettingsIcon${group.id}`}>
+                            <span className={"material-icons group-settings"} id={`group${group.id}`} onClick={() => {
                               document.getElementById("group-settings-modal-open").style.display = 'block';
                             }}>settings</span>
                 </div>
@@ -259,8 +248,7 @@ export function ShowAllGroups({setViewGroupId}: any) {
               </div>
             </div>
         ))}
-        <GroupSettingsModal viewGroupId={editGroupId} editLongName={editLongName}
-                            editAlias={editAlias} editToken={editToken} editRepoId={editRepoId}/>
+        {editGroup != {} ?  <GroupSettingsModal editGroup={editGroup}/> : ""}
       </div>
 
   );

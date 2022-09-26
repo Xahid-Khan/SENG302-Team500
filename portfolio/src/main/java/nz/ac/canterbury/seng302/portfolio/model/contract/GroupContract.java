@@ -18,6 +18,9 @@ public record GroupContract(
     String shortName,
     String longName,
     String alia,
+    Integer repositoryId,
+    String token,
+    boolean canEdit,
     ArrayList<UserContract> users,
 //    GroupRepositoryContract repoInfo
     Object branches,

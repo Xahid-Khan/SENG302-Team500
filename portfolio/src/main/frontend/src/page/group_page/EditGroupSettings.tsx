@@ -2,25 +2,21 @@ import * as React from "react";
 import {FormEvent} from "react";
 
 export function EditGroupSettings(props: any) {
-
-  const userId = parseInt(window.localStorage.getItem("userId"))
-  const isStudent = window.localStorage.getItem("isStudent")
-  const [longName, setLongName] = React.useState('')
-  const [repositoryID, setRepositoryID] = React.useState('')
-  const [repositoryName, setRepositoryName] = React.useState('')
-  const [repositoryToken, setRepositoryToken] = React.useState('')
-  const [alias, setAlias] = React.useState('')
-  const [longCharCount, setLongCharCount] = React.useState(0)
-  const [myGroup, setMyGroup] = React.useState({
-    "id": -1,
-    "longName": "",
-    "shortName": "",
-    "users": []
-  })
+  if (props.editGroup.length == 0) {
+    return (<></>);
+  }
+  const [editGroup, setEditGroup] = React.useState(props.editGroup);
+  const [longName, setLongName] = React.useState(editGroup.longName);
+  const [repositoryID, setRepositoryID] = React.useState(editGroup.repositoryId);
+  const [repositoryToken, setRepositoryToken] = React.useState(editGroup.token);
+  const [alias, setAlias] = React.useState('');
+  const [longCharCount, setLongCharCount] = React.useState(0);
 
   const handleCancel = () => {
     document.getElementById("group-settings-modal-open").style.display = "none"
-    window.location.reload()
+    setEditGroup(null);
+    setLongCharCount(0);
+
   }
 
   const validateLongName = (e: FormEvent) => {
@@ -84,30 +80,32 @@ export function EditGroupSettings(props: any) {
     }
   }
 
-  const canEdit = (myGroup !== undefined ? myGroup.users.filter((user) => user.id === userId).length > 0 : false) || isStudent === "false"
-
+  console.log("EDIT GROUP SETTINGS")
+  console.log(editGroup);
+  console.log(editGroup.canEdit);
   return (
-      <div>{myGroup ?
+      <div>{editGroup.canEdit ?
           <div className={"edit-group-settings-container"}>
             <div className={"edit-group-settings"} style={{width: "100%"}}>
               <div className={"edit-group-form raised-card"}>
                 <h3>Group Settings</h3>
                 <div>
                   <label className={"settings-title"}>Short Name:</label>
-                  <label>  {myGroup.shortName}</label>
+                  <label>{editGroup.shortName}</label>
                 </div>
                 <br/>
                 <div className={"settings-long-name"}>
                   <label className={"settings-title"}>Long Name:</label>
-                  {canEdit ?
+                  {editGroup.canEdit ?
                       <input type="text" name="long-name" className="input-name" id={"long-name"}
                              defaultValue={longName}
-                             placeholder={myGroup.longName} maxLength={64} onChange={(e) => {
+                             placeholder={editGroup.longName} maxLength={64} onChange={(e) => {
                         setLongName(e.target.value);
                         setLongCharCount(e.target.value.length)
                       }}/>
-                      : <label>  {myGroup.longName}</label>}
-                  {canEdit ? <span className="input-length" id="long-name-length">{longCharCount} / 64</span> : ""}
+                      : <label>  {editGroup.longName}</label>}
+                  {editGroup.canEdit ? <span className="input-length"
+                                             id="long-name-length">{longCharCount} / 64</span> : ""}
                 </div>
                 <h3>Repo Settings</h3>
                 <form onSubmit={(e) => validateRepositoryInfo(e)}>
@@ -117,7 +115,7 @@ export function EditGroupSettings(props: any) {
                         <label className={"settings-title"}>Alias:</label>
                       </td>
                       <td>
-                        {canEdit ?
+                        {editGroup.canEdit ?
                             <input type="text" name="alias" className="input-name" required
                                    id={"alias"}
                                    defaultValue={alias}
@@ -132,7 +130,7 @@ export function EditGroupSettings(props: any) {
                         <label>Repository ID:</label>
                       </td>
                       <td>
-                        {canEdit ?
+                        {editGroup.canEdit ?
                             <input type="text" name="repository-id" className="input-name" required
                                    defaultValue={repositoryID}
                                    id={"repository-id"} maxLength={64} onChange={(e) => {
@@ -146,7 +144,7 @@ export function EditGroupSettings(props: any) {
                         <label>Token:</label>
                       </td>
                       <td>
-                        {canEdit ?
+                        {editGroup.canEdit ?
                             <input type="text" name="repository-token" className="input-name"
                                    required defaultValue={repositoryToken}
                                    id={"repository-token"} maxLength={64} onChange={(e) => {
@@ -157,7 +155,7 @@ export function EditGroupSettings(props: any) {
                     </tr>
                   </table>
                   <div className="form-error" id="edit-group-error"/>
-                  {canEdit ?
+                  {editGroup.canEdit ?
                       <div className="modal-buttons">
                         <button className="button" id="group-repository-save" type={"submit"}>Save
                         </button>
