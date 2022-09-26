@@ -310,7 +310,7 @@ class Editor {
         const oneYearAgo = new Date();
         oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
         if (startDate < oneYearAgo) {
-            this.setDateError("The start and end dates cannot occur more than one year ago from today");
+            this.setDateError("The selected date cannot occur more than one year ago from today");
             return false;
         }
     }
