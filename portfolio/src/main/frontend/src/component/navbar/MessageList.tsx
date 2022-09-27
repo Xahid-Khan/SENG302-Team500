@@ -17,7 +17,8 @@ import SendIcon from '@mui/icons-material/Send';
 interface IMessageListProps{
     open: boolean
     onClose: () => void
-    conversationId: string
+    //TODO use contract type
+    conversation: any
     backButtonCallback: (event: React.MouseEvent<HTMLElement>) => void
 }
 

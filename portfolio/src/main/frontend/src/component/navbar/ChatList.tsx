@@ -8,7 +8,7 @@ interface IChatListProps{
     open: boolean
     onClose: () => void
     addButtonCallback: (event: React.MouseEvent<HTMLElement>) => void
-    chatButtonCallback: (event: React.MouseEvent<HTMLElement>, id: string) => void
+    chatButtonCallback: (event: React.MouseEvent<HTMLElement>, contract: any) => void
 }
 
 export const ChatList: React.FC<IChatListProps> = observer((props: IChatListProps) => {
