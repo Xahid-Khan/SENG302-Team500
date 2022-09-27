@@ -71,18 +71,26 @@ public class PostService {
     entityCount = Math.max(entityCount, 0);
     // Calculate the new offset, which is the total number of entries in the database subtracted
     //  by the given offset, subtracted by the limit
-    int calculatedOffset = (int) entityCount - offset;
+    int calculatedOffset = (int) entityCount - (offset*20);
     // Ensure that can never go below zero
     calculatedOffset = Math.max(calculatedOffset, 0);
     Pageable request = PageRequest.of(calculatedOffset, limit);
+
     return postRepository.getPaginatedPostsByGroupId(groupId, request);
   }
 
+  public Page<PostModel> getPaginatedPostsForGroupReversed(int groupId, int offset, int limit) {
+   //get the paginated posts from the most recent to the oldest
+    Pageable request = PageRequest.of(offset, limit);
+    return postRepository.getPaginatedPostsByGroupIdOrderByCreatedDesc(groupId, request);
+  }
+
+
   /**
-   * This funciton will create new instance of the post and save it in the database.
+   * This function will create new instance of the post and save it in the database.
    *
    * @param newPost A post contract containing groupId and contents of the post.
-   * @param userId Integer (Id of the user who made the post)
+   * @param userId Integer (The id of the user who made the post)
    * @return True if successful false otherwise.
    */
   public boolean createPost(PostContract newPost, int userId) {

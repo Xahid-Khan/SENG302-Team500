@@ -18,6 +18,9 @@ public interface PostModelRepository extends CrudRepository<PostModel, Integer> 
 
     Page<PostModel> getPaginatedPostsByGroupId(int groupId, Pageable pageable);
 
+//    get the reversed paginated posts by group id
+    Page<PostModel> getPaginatedPostsByGroupIdOrderByCreatedDesc(int groupId, Pageable pageable);
+
     long count();
 
 }
