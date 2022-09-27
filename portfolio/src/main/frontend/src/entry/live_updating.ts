@@ -101,7 +101,6 @@ class PingPageStore {
     let store = this;
     let socket = new SockJS(this.path)
     store.stomp = Stomp.over(socket);
-
     store.stomp.connect({}, () => {
       console.log("Connected.")
       console.log("Subscribing...")
