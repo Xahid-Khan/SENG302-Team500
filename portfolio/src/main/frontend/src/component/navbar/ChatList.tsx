@@ -1,24 +1,88 @@
-import {Box, Divider, IconButton, ListItem, Menu, MenuItem, Typography} from "@mui/material";
+import {Box, Divider, IconButton, ListSubheader, Menu, MenuItem, Typography} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import React from "react";
+import React, {useEffect} from "react";
 import {observer} from "mobx-react-lite";
 import {ChatListItem} from "./ChatListItem";
 
 interface IChatListProps{
     open: boolean
     onClose: () => void
-    chats: any[]
+    addButtonCallback: (event: React.MouseEvent<HTMLElement>) => void
+    chatButtonCallback: (event: React.MouseEvent<HTMLElement>, id: string) => void
 }
 
 export const ChatList: React.FC<IChatListProps> = observer((props: IChatListProps) => {
 
+    const [chats, setChats] = React.useState([]);
+
+    const getChats = async () => {
+        //TODO fetch and sort by seen, see NotificationDropdown getNotifications
+        //mock data
+        return [
+            {
+                conversationId: "1",
+                userIds: ["3", "3"],
+                creationDate: new Date(),
+                seen: false,
+                mostRecentMessage: " wadfawdfaw dfwa fawf awf waf waf awf awf wa f",
+            },
+            {
+                conversationId: "2",
+                userIds: ["A", "1"],
+                creationDate: new Date(),
+                seen: true,
+                mostRecentMessage: " wadfawdfaw dfwa fawf awf waf waf awf awf wa f",
+            },
+            {
+                conversationId: "3",
+                userIds: ["Shay", "3"],
+                creationDate: new Date(),
+                seen: true,
+                mostRecentMessage: " wadfawdfaw dfwa fawf awf waf waf awf awf wa f",
+            },
+            {
+                conversationId: "3",
+                userIds: ["Shay", "3"],
+                creationDate: new Date(),
+                seen: true,
+                mostRecentMessage: " wadfawdfaw dfwa fawf awf waf waf awf awf wa f",
+            },
+            {
+                conversationId: "3",
+                userIds: ["Shay", "3"],
+                creationDate: new Date(),
+                seen: true,
+                mostRecentMessage: " wadfawdfaw dfwa fawf awf waf waf awf awf wa f",
+            },
+            {
+                conversationId: "3",
+                userIds: ["Shay", "3"],
+                creationDate: new Date(),
+                seen: true,
+                mostRecentMessage: " wadfawdfaw dfwa fawf awf waf waf awf awf wa f",
+            },
+            {
+                conversationId: "3",
+                userIds: ["Shay", "3"],
+                creationDate: new Date(),
+                seen: true,
+                mostRecentMessage: " wadfawdfaw dfwa fawf awf waf waf awf awf wa f",
+            },
+        ]
+    }
+
+    useEffect(() => {
+        getChats().then((result) => {
+            setChats(result)
+        })
+    }, [])
+
     const chats_items = () =>
-        props.chats.map((contract: any) =>
+        chats.map((contract: any) =>
             <ChatListItem
-                key={contract.userId}
-                userId={contract.userId}
-                name={contract.name}
-                seen={contract.seen}
+                key={contract.conversationId}
+                contract={contract}
+                clickCallback={props.chatButtonCallback}
             />
         )
 
@@ -30,30 +94,38 @@ export const ChatList: React.FC<IChatListProps> = observer((props: IChatListProp
         )
     }
 
-    return <Menu
-        anchorEl={document.body}
-        id="chat-menu"
-        open={props.open}
-        onClose={props.onClose}
-        PaperProps={{sx: {maxHeight: 0.4, maxWidth: 0.3, minWidth: "300px"}}}
-        transformOrigin={{horizontal: "right", vertical: "bottom"}}
-        anchorOrigin={{horizontal: "right", vertical: "bottom"}}
-    >
-        <ListItem style={{opacity: 1}}>
-            <Box sx={{
-                flexGrow: 1,
-                display: "flex",
-                alignItems: "center",
-                textAlign: "center",
-                justifyContent: "space-between"
-            }}>
-                <Typography>Chats</Typography>
-                <IconButton>
-                    <AddIcon></AddIcon>
-                </IconButton>
-            </Box>
-        </ListItem>
-        <Divider/>
-        {props.chats.length === 0 ? no_chats_item() : chats_items()}
-    </Menu>;
+    return (
+        <React.Fragment>
+            <Menu
+                anchorEl={document.body}
+                id="chat-menu"
+                open={props.open}
+                onClose={props.onClose}
+                PaperProps={{sx: {maxHeight: 0.5, maxWidth: 0.4, minWidth: "300px"}}}
+                transformOrigin={{horizontal: "right", vertical: "bottom"}}
+                anchorOrigin={{horizontal: "right", vertical: "bottom"}}
+            >
+                <ListSubheader>
+                    <Box sx={{
+                        flexGrow: 1,
+                        display: "flex",
+                        alignItems: "center",
+                        textAlign: "center",
+                        justifyContent: "space-between"
+                    }}>
+                        <Typography>Chats</Typography>
+                        <IconButton onClick={props.addButtonCallback}>
+                            <AddIcon></AddIcon>
+                        </IconButton>
+                    </Box>
+                </ListSubheader>
+                <Divider/>
+                {chats.length === 0 ? no_chats_item() : chats_items()}
+            </Menu>
+        </React.Fragment>
+
+    )
+
+
+
 })
