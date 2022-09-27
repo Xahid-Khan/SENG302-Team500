@@ -1,6 +1,7 @@
 import React from "react";
 import {observer} from "mobx-react-lite";
 import {Badge, Box, IconButton} from "@mui/material";
+import {ChatList} from "./ChatList";
 import MailIcon from '@mui/icons-material/Mail';
 
 export const MessageButton: React.FC = observer(() => {
@@ -53,6 +54,13 @@ export const MessageButton: React.FC = observer(() => {
                     </Badge>
                 </IconButton>
             </Box>
+
+            <ChatList
+                open={openChats}
+                onClose={handleClose}
+                addButtonCallback={handleClick}
+                chatButtonCallback={handleChatClick}
+            />
 
         </React.Fragment>
     )
