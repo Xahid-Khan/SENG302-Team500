@@ -20,7 +20,7 @@ export const ChatListItem: React.FC<IChatListItemProps> = observer((props: IChat
         <MenuItem id={`chat-button-${props.contract.conversationId}`} onClick={(event) => {props.clickCallback(event, props.contract.conversationId)}}>
             <Box sx={{flexGrow: 1, display: "flex", justifyContent: "space-between", maxWidth: '100%'}}>
                 {/*TODO user id->name and handle groups name?*/}
-                <Avatar sx={{mr: 2}} src={`//${globalImagePath}${props.contract.userIds[1]}`} loading="lazy"/>
+                <Avatar sx={{mr: 2}} src={`//${globalImagePath}${props.contract.userIds[1]}`}/>
                 <Box  sx={{flexGrow: 1, display: "flex", flexDirection: "column", maxWidth: '100%'}} style={{overflow:'hidden'}}>
                     <Typography variant="subtitle2" noWrap>{props.contract.userIds[1]}</Typography>
                     <Typography variant="body2" noWrap>{props.contract.mostRecentMessage}</Typography>
