@@ -108,6 +108,7 @@
 }
 .groups-page-repository{
     overflow-y: auto;
+    overflow-x: clip;
     max-height: 40vh;
 }
 

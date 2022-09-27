@@ -17,7 +17,7 @@ const deleteGroup = async (id: number, groups: any) => {
       })
     }
   })
-  const deleteResponse = await fetch(`api/v1/groups/${id}/delete-members`, {
+  await fetch(`api/v1/groups/${id}/delete-members`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -81,7 +81,7 @@ export function ShowAllGroups({setViewGroupId}: any) {
     "shortName": "",
     "longName": "",
     "alias": "",
-    "repositoryId":-1,
+    "repositoryId": -1,
     "token": "",
     "canEdit": false
   });
@@ -212,10 +212,9 @@ export function ShowAllGroups({setViewGroupId}: any) {
                   </button>
                 </div>
                 <div id={`groupSettingsIcon${group.id}`}>
-                            <span className={"material-icons group-settings"} id={`group${group.id}`} onClick={() => {
-                              console.log(group);
+                            <span className={"material-icons group-settings"}
+                                  id={`group${group.id}`} onClick={() => {
                               setEditGroup(group);
-                              setTimeout(() => {}, 500);
                               document.getElementById("group-settings-modal-open").style.display = 'block';
                             }}>settings</span>
                 </div>
@@ -229,33 +228,41 @@ export function ShowAllGroups({setViewGroupId}: any) {
               <h3 className={'group-name-long'}>{group['longName']}</h3>
               {groups_page_user_list(group)}
               <div className={"groups-page-repository"} id={`groups-repository-${group['id']}`}>
-                <h3 className={'group-repository-title'}>Branches</h3>
-                <div className={"table"} id={"group-list-branches"}>
-
-                  {group.branches.map((branch: any) => (
-                      <div className="tableRow">
-                        <div className="tableCell">
-                          <a href={branch.web_url}
-                             target="_blank">{branch.name} ({group.commits.length} commits)</a>
-                          <br></br>
-                        </div>
+                {group.branches.length > 0 ?
+                    <>
+                      <h2 className={'group-repository-title'}>{group.alias}</h2>
+                      <h3 className={'group-repository-title'} style={{margin: 0}}>Branches</h3>
+                      <div className={"table"} id={"group-list-branches"}
+                           style={{marginLeft: "20px"}}>
+                        {group.branches.map((branch: any) => (
+                            <div className="tableRow">
+                              <div className="tableCell">
+                                <a href={branch.web_url}
+                                   target="_blank">{branch.name} ({group.commits.length} commits)</a>
+                                <br></br>
+                              </div>
+                            </div>
+                        ))}
                       </div>
-                  ))}
-                </div>
-                <h3 className={'group-repository-title'}>Commits</h3>
-                <div className={"table"} id={"group-list-commits"}>
-
-                  {group.commits.map((commit: any) => (
-                      <div className="tableRow">
-                        <div className="tableCell">
-                          <strong>Name:</strong>{commit['author_name']} <br></br>
-                          <strong>Message:</strong> {commit['message']} <br></br>
-                          <strong>ID:</strong><a href={commit['web_url']}
-                                                 target="_blank">{commit['id']}</a> <br></br>
-                        </div>
+                      <h3 className={'group-repository-title'}
+                          style={{marginBottom: 0}}>Commits</h3>
+                      <div className={"table"} id={"group-list-commits"}
+                           style={{marginLeft: "20px"}}>
+                        {group.commits.map((commit: any) => (
+                            <div className="tableRow">
+                              <div className="tableCell">
+                                <strong>Name:</strong>{commit['author_name']} <br></br>
+                                <strong>Message:</strong> {commit['message']} <br></br>
+                                <strong>ID:</strong><a href={commit['web_url']}
+                                                       target="_blank">{commit['id']}</a> <br></br>
+                              </div>
+                            </div>
+                        ))}
                       </div>
-                  ))}
-                </div>
+                    </>
+                    :
+                    <></>
+                }
               </div>
             </div>
         ))}
