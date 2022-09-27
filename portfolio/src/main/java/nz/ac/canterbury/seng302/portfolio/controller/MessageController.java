@@ -1,12 +1,20 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
+import nz.ac.canterbury.seng302.portfolio.mapping.ConversationMapper;
+import nz.ac.canterbury.seng302.portfolio.mapping.MessageMapper;
 import nz.ac.canterbury.seng302.portfolio.model.contract.ConversationContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.MessageContract;
+import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseConversationContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseMessageContract;
+import nz.ac.canterbury.seng302.portfolio.model.entity.ConversationEntity;
+import nz.ac.canterbury.seng302.portfolio.model.entity.MessageEntity;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
+import nz.ac.canterbury.seng302.portfolio.service.ConversationService;
+import nz.ac.canterbury.seng302.portfolio.service.MessageService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,10 +28,16 @@ import java.util.Optional;
  * The controller for the message endpoints.
  */
 @RestController
-@RequestMapping("/api/v1/messages/")
+@RequestMapping("/api/v1/messages")
 public class MessageController extends AuthenticatedController{
 
     @Autowired private MessageService messageService;
+
+    @Autowired private ConversationService conversationService;
+
+    @Autowired private MessageMapper messageMapper;
+
+    @Autowired private ConversationMapper conversationMapper;
 
     /**
      * This is similar to autowiring, but apparently recommended more than field injection.
@@ -64,14 +78,14 @@ public class MessageController extends AuthenticatedController{
                 offsetValue = 0;
             }
 
-            Page<ConversationModel> conversationsPage = messageService.getPaginatedConversations(getUserId(principal), offsetValue,20);
+            Page<ConversationEntity> conversationsPage = messageService.getPaginatedConversations(getUserId(principal), offsetValue,20);
             // Convert page to list
-            List<ConversationModel> conversationModels = conversationsPage.getContent();
+            List<ConversationEntity> conversationModels = conversationsPage.getContent();
             // Convert list to list of contracts
-            List<ConversationContract> contracts = conversationModels.stream().map(ConversationModel::toContract).toList();
+            List<ConversationContract> contracts = conversationModels.stream().map(conversationMapper::toContract).toList();
 
 
-            return ResponseEntity.ok(data);
+            return ResponseEntity.ok(contracts);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.internalServerError().build();
@@ -113,11 +127,11 @@ public class MessageController extends AuthenticatedController{
                 offsetValue = 0;
             }
 
-            Page<MessageModel> messagesPage = messageService.getPaginatedMessages(conversationId, offsetValue, 20);
+            Page<MessageEntity> messagesPage = messageService.getPaginatedMessages(conversationId, offsetValue, 20);
             // Convert page to list
-            List<MessageModel> messageModels = messagesPage.getContent();
+            List<MessageEntity> messageEntities = messagesPage.getContent();
             // Convert list to list of contracts
-            List<MessageContract> contracts = messageModels.stream().map(MessageModel::toContract).toList();
+            List<MessageContract> contracts = messageEntities.stream().map(messageMapper::toContract).toList();
 
             return ResponseEntity.ok(contracts);
         } catch (Exception e) {
@@ -126,6 +140,70 @@ public class MessageController extends AuthenticatedController{
         }
     }
 
+    /**
+     * This is the endpoint for creating a new conversation.
+     *
+     * Send Message:
+     * - POST /api/v1/messages
+     * - Status 200 OK
+     * - Authentication: Student
+     * - Content Type: application/json
+     * - Body: userIds
+     *
+     * @param principal Authentication Principal
+     * @return Response Entity
+     */
+    @PostMapping(value = "", produces = "application/json")
+    public ResponseEntity<?> createConversation(@AuthenticationPrincipal PortfolioPrincipal principal, @RequestBody List<Integer> userIds) {
+        try {
+
+            boolean response = conversationService.createConversation(new BaseConversationContract(userIds));
+
+            //if false, message was not sent
+            if (!response) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }else {
+                return ResponseEntity.ok().build();
+            }
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
+
+    /**
+     * This is the endpoint for updating a conversation.
+     *
+     * Send Message:
+     * - DELETE /api/v1/messages/{conversationId}
+     * - Status 200 OK
+     * - Body: userIds
+     * - Authentication: Student
+     * - Content Type: application/json
+     *
+     * @param principal Authentication Principal
+     * @return Response Entity
+     */
+    @PatchMapping(value = "/{conversationId}", produces = "application/json")
+    public ResponseEntity<?> updateConversation(@AuthenticationPrincipal PortfolioPrincipal principal, @PathVariable String conversationId, @RequestBody List<Integer> userIds) {
+        try {
+            int userId = getUserId(principal);
+
+            //if the user is not in the conversation, they cannot send a message
+            if (!messageService.isInConversation(userId, Integer.parseInt(conversationId))) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+            boolean response = conversationService.updateConversation(new BaseConversationContract(userIds), conversationId);
+
+            //if false, message was not sent
+            if (!response) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }else {
+                return ResponseEntity.ok().build();
+            }
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
 
     /**
      * This is the endpoint for creating a new message.
@@ -175,10 +253,16 @@ public class MessageController extends AuthenticatedController{
      *
      */
     @DeleteMapping(value = "/{conversationId}", produces = "application/json")
-    public ResponseEntity<?> deleteMessage(@AuthenticationPrincipal PortfolioPrincipal principal, @RequestBody int conversationId, @PathVariable int recipientId) {
+    public ResponseEntity<?> deleteMessage(@AuthenticationPrincipal PortfolioPrincipal principal, @RequestBody int messageId, @PathVariable int conversationId) {
         try {
             int userId = getUserId(principal);
-            boolean response = messageService.deleteMessage(userId, recipientId, conversationId);
+
+            //if the user is not in the conversation, they cannot send a message
+            if (!messageService.isInConversation(userId, conversationId)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+
+            boolean response = messageService.deleteMessage(messageId, conversationId);
 
             //if false, message was not sent
             if (!response) {
