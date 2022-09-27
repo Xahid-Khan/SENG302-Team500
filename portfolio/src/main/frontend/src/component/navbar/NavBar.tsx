@@ -24,7 +24,7 @@ export const NavBar: React.FC = observer(() => {
                 <Toolbar>
                     <Box>
                         <Typography
-                            variant="h5">SENG302</Typography>
+                            variant="h5">SENG SPRINTR</Typography>
                     </Box>
 
                     <Box sx={{pl: 2, flexGrow: 1}}>

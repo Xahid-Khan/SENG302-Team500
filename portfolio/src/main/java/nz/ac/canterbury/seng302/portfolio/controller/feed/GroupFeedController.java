@@ -16,6 +16,7 @@ import nz.ac.canterbury.seng302.portfolio.service.CommentService;
 import nz.ac.canterbury.seng302.portfolio.service.GroupsClientService;
 import nz.ac.canterbury.seng302.portfolio.service.PostService;
 import nz.ac.canterbury.seng302.portfolio.service.ReactionService;
+import nz.ac.canterbury.seng302.portfolio.service.SubscriptionService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
 import nz.ac.canterbury.seng302.shared.identityprovider.GroupDetailsResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,8 @@ public class GroupFeedController extends AuthenticatedController {
   @Autowired private ReactionService reactionService;
 
   @Autowired private UserAccountService userAccountService;
+
+  @Autowired private SubscriptionService subscriptionService;
 
   public GroupFeedController(
       AuthStateService authStateService, UserAccountService userAccountService) {
@@ -81,7 +84,9 @@ public class GroupFeedController extends AuthenticatedController {
    */
   @GetMapping(value = "/feed_content/{groupId}", produces = "application/json")
   public ResponseEntity<Map<String, Object>> getPaginatedFeedContent(
-      @PathVariable Integer groupId, @RequestParam("offset") Optional<Integer> offset) {
+      @PathVariable Integer groupId,
+      @RequestParam("offset") Optional<Integer> offset,
+      @AuthenticationPrincipal PortfolioPrincipal principal) {
     try {
       GroupDetailsResponse groupDetailsResponse = groupsClientService.getGroupById(groupId);
       if (offset.isPresent() && offset.get().toString().equals("undefined")) {
@@ -96,12 +101,19 @@ public class GroupFeedController extends AuthenticatedController {
 
       Page<PostModel> postsPage = postService.getPaginatedPostsForGroup(groupId, offsetValue, 20);
       // Convert page to list
-      List<PostModel> allPosts = postsPage.getContent();
+      ArrayList<PostModel> allPosts = new ArrayList<>(postsPage.getContent());
 
       Collections.reverse(allPosts);
 
-      return ResponseEntity.ok(combineAndPrepareForFrontEnd(allPosts, groupDetailsResponse));
+      Map<String, Object> dataToSend = combineAndPrepareForFrontEnd(allPosts, groupDetailsResponse);
 
+      dataToSend.put(
+          "isSubscribed",
+          subscriptionService.getAllByGroupId(groupId).contains(getUserId(principal)));
+      dataToSend.put(
+          "isMember", groupsClientService.isMemberOfTheGroup(getUserId(principal), groupId));
+
+      return ResponseEntity.ok(dataToSend);
     } catch (NoSuchElementException e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }

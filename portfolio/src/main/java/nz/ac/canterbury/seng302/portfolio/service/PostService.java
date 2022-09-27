@@ -17,124 +17,141 @@ import org.springframework.stereotype.Service;
 @Service
 public class PostService {
 
-    @Autowired
-    private PostModelRepository postRepository;
+  @Autowired private PostModelRepository postRepository;
 
-    @Autowired
-    private GroupsClientService groupsClientService;
+  @Autowired private GroupsClientService groupsClientService;
 
-    @Autowired
-    private SubscriptionService subscriptionService;
+  @Autowired private SubscriptionService subscriptionService;
 
-    @Autowired
-    private CommentService commentService;
+  @Autowired private CommentService commentService;
 
-    @Autowired
-    private NotificationService notificationService;
+  @Autowired private NotificationService notificationService;
 
-    @Autowired
-    private UserAccountService userAccountService;
-
-    /**
-     * Gets all posts in the database.
-     * @return A list of all posts models
-     */
-    public List<PostModel> getAllPosts () {
-        try {
-            return (List<PostModel>) postRepository.findAll();
-        } catch (NoSuchElementException e) {
-            e.printStackTrace();
-            return new ArrayList<>();
-        }
-    }
-
-    /**
-     * Gets all posts for a given group
-     * @param groupId The group id
-     * @return A list of post models
-     */
-    public List<PostModel> getAllPostsForAGroup(int groupId) {
-        return postRepository.findPostModelByGroupId(groupId);
-    }
+  @Autowired private UserAccountService userAccountService;
 
   /**
-   * Gets the paginated posts for a group
+   * Gets all posts in the database.
+   *
+   * @return A list of all posts models
+   */
+  public List<PostModel> getAllPosts() {
+    try {
+      return (List<PostModel>) postRepository.findAll();
+    } catch (NoSuchElementException e) {
+      e.printStackTrace();
+      return new ArrayList<>();
+    }
+  }
+
+  /**
+   * Gets all posts for a given group
+   *
+   * @param groupId The group id
+   * @return A list of post models
+   */
+  public List<PostModel> getAllPostsForAGroup(int groupId) {
+    return postRepository.findPostModelByGroupId(groupId);
+  }
+
+  /**
+   * Gets the paginated posts for a group. For instance, an offset of 0 and a limit of 20 will get
+   *  posts (in order of most recent) from 0 to 20. If offset is larger than the number of posts in
+   *  the database, then the limit of posts from the end of the database will be gathered instead.
+   *  That is, if the database is larger than your limit, you will always receive specified limit
+   *  of posts back.
+   *
    * @param groupId The group id
    * @param offset post number to start retrieving
-   * @param limit post number to stop retrieving
-   * @return
+   * @param limit limit of posts to grab. Must be greater than 0
+   * @return the specified posts based on the parameters given
    */
-    public Page<PostModel> getPaginatedPostsForGroup(int groupId,int offset,int limit){
-      Pageable request = PageRequest.of(offset,limit);
-      return postRepository.getPaginatedPostsByGroupId(groupId,request);
+  public Page<PostModel> getPaginatedPostsForGroup(int groupId, int offset, int limit) {
+    long entityCount = postRepository.count() - limit;
+    // Ensure that the offset will never go below 0
+    entityCount = Math.max(entityCount, 0);
+    // Calculate the new offset, which is the total number of entries in the database subtracted
+    //  by the given offset, subtracted by the limit
+    int calculatedOffset = (int) entityCount - offset;
+    // Ensure that can never go below zero
+    calculatedOffset = Math.max(calculatedOffset, 0);
+    Pageable request = PageRequest.of(calculatedOffset, limit);
+    return postRepository.getPaginatedPostsByGroupId(groupId, request);
+  }
+
+  /**
+   * This funciton will create new instance of the post and save it in the database.
+   *
+   * @param newPost A post contract containing groupId and contents of the post.
+   * @param userId Integer (Id of the user who made the post)
+   * @return True if successful false otherwise.
+   */
+  public boolean createPost(PostContract newPost, int userId) {
+    if (newPost.postContent().length() == 0) {
+      return false;
     }
+    try {
+      PostModel postModel = new PostModel(newPost.groupId(), userId, newPost.postContent());
+      postRepository.save(postModel);
 
-    /**
-     * This funciton will create new instance of the post and save it in the database.
-     * @param newPost A post contract containing groupId and contents of the post.
-     * @param userId Integer (Id of the user who made the post)
-     * @return True if successful false otherwise.
-     */
-    public boolean createPost(PostContract newPost, int userId) {
-        if (newPost.postContent().length() == 0) {
-            return false;
+      // Gets details for notification
+      GroupDetailsResponse groupDetails = groupsClientService.getGroupById(newPost.groupId());
+
+      List<Integer> userIds = subscriptionService.getAllByGroupId(newPost.groupId());
+      String posterUsername = userAccountService.getUserById(userId).getUsername();
+      String groupName = groupDetails.getShortName();
+
+      // Send notification to all members of the group
+      for (Integer otherUserId : userIds) {
+        if (otherUserId != userId) {
+          notificationService.create(
+              new BaseNotificationContract(
+                  otherUserId,
+                  "Your Subscriptions",
+                  posterUsername + " created a post in " + groupName + "!"));
         }
-        try {
-            PostModel postModel = new PostModel(newPost.groupId(), userId, newPost.postContent());
-            postRepository.save(postModel);
+      }
 
-            //Gets details for notification
-            GroupDetailsResponse groupDetails = groupsClientService.getGroupById(newPost.groupId());
+      return true;
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return false;
+  }
 
-            List<Integer> userIds = subscriptionService.getAllByGroupId(newPost.groupId());
-            String posterUsername= userAccountService.getUserById(userId).getUsername();
-            String groupName = groupDetails.getShortName();
+  public List<PostModel> getAllPostsForAUser(int userId) {
+    return postRepository.findPostModelByUserId(userId);
+  }
 
-            // Send notification to all members of the group
-            for (Integer otherUserId : userIds) {
-                if (otherUserId != userId) {
-                    notificationService.create(new BaseNotificationContract(otherUserId, "Your Subscriptions", posterUsername + " created a post in "+groupName+"!"));
-                }
-            }
-
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
+  /**
+   * This function will delete the post by using the postId.
+   *
+   * @param postId Integer Post ID
+   * @return True if deletion is successful False otherwise
+   */
+  public boolean deletePost(int postId) {
+    try {
+      var postFound = postRepository.findById(postId);
+      if (postFound.isPresent()) {
+        var comments = commentService.getCommentsForGivenPost(postId);
+        postRepository.deleteById(postId);
+        if (!comments.isEmpty()) {
+          commentService.getCommentsForGivenPost(postId);
         }
+        return true;
+      } else {
         return false;
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+      return false;
     }
-
-    public List<PostModel> getAllPostsForAUser(int userId) { return postRepository.findPostModelByUserId(userId); }
-
-    /**
-     * This function will delete the post by using the postId.
-     * @param postId Integer Post ID
-     * @return True if deletion is successful False otherwise
-     */
-    public boolean deletePost(int postId) {
-        try {
-            var postFound = postRepository.findById(postId);
-            if (postFound.isPresent()) {
-                var comments = commentService.getCommentsForGivenPost(postId);
-                postRepository.deleteById(postId);
-                if (!comments.isEmpty()) {
-                    commentService.getCommentsForGivenPost(postId);
-                }
-                return true;
-            } else {
-                return false;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
+  }
 
   /**
    * This function will update the changes made to the post.
    *
    * @param updatedPost A PostContract
-   * @param postId      Integer ID of the Post
+   * @param postId Integer ID of the Post
    * @return True if update is successful False otherwise.
    */
   public boolean updatePost(PostContract updatedPost, int postId) {

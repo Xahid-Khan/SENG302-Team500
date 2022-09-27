@@ -18,4 +18,6 @@ public interface PostModelRepository extends CrudRepository<PostModel, Integer> 
 
     Page<PostModel> getPaginatedPostsByGroupId(int groupId, Pageable pageable);
 
+    long count();
+
 }

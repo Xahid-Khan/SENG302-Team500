@@ -35,6 +35,8 @@
     white-space: break-spaces;
     padding: 15px 0 10px 0;
     font-size: 17px;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
 }
 
 .post-info {
@@ -145,7 +147,7 @@
 .post-title{
     width: 50%;
 }
-.title-length {
+.content-length {
     white-space: nowrap;
     padding-left: 3px;
 }
@@ -263,6 +265,7 @@
     border-radius: 10px;
     display: inline-block;
     padding: 5px 10px;
+    overflow-wrap: anywhere;
 }
 
 .post-comments {
@@ -272,6 +275,7 @@
 
 .post-comment-container {
     margin: 10px;
+    white-space: pre-wrap;
 }
 
 .modal-edit-post {
@@ -350,7 +354,8 @@
 .post-title{
     width: 50%;
 }
-.title-length {
-    white-space: nowrap;
-    padding-left: 3px;
+
+.feed-Sub-Button {
+    float: right;
+    margin-top: -30px;
 }
