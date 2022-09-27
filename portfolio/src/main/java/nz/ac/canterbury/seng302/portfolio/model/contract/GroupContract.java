@@ -17,7 +17,7 @@ public record GroupContract(
     Integer id,
     String shortName,
     String longName,
-    String alia,
+    String alias,
     Integer repositoryId,
     String token,
     boolean canEdit,

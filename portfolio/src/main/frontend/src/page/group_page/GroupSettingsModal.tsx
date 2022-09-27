@@ -3,16 +3,12 @@ import {EditGroupSettings} from "./EditGroupSettings";
 
 
 
-export function GroupSettingsModal(props: any) {
+export function GroupSettingsModal({editGroup}: any) {
 
     const handleCancel = () => {
         document.getElementById("group-settings-modal-open").style.display = "none"
         window.location.reload()
     }
-
-    console.log("Group Settings Modal")
-    console.log(props.editGroup);
-    console.log(props.editGroup.canEdit);
 
     return (
         <div className={"modal-container"} id={"group-settings-modal-open"}>
@@ -25,7 +21,7 @@ export function GroupSettingsModal(props: any) {
                 </div>
                 <div className={"border-line"}/>
                 <div className="modal-body group-settings-body">
-                    <EditGroupSettings editGroup={props.editGroup}/>
+                    {editGroup.id != -1 ? <EditGroupSettings group={editGroup}/> : <></>}
                 </div>
             </div>
         </div>

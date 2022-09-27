@@ -26,6 +26,8 @@ import nz.ac.canterbury.seng302.shared.identityprovider.GetPaginatedGroupsReques
 import nz.ac.canterbury.seng302.shared.identityprovider.GetUserByIdRequest;
 import nz.ac.canterbury.seng302.shared.identityprovider.GroupDetailsResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.GroupsServiceGrpc;
+import nz.ac.canterbury.seng302.shared.identityprovider.ModifyGroupDetailsRequest;
+import nz.ac.canterbury.seng302.shared.identityprovider.ModifyGroupDetailsResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.ModifyRoleOfUserRequest;
 import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedGroupsResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.RemoveGroupMembersRequest;
@@ -362,6 +364,26 @@ public class GroupsServerService extends GroupsServiceGrpc.GroupsServiceImplBase
           .addAllMembers(groupMembers)
           .build());
     }
+    responseObserver.onCompleted();
+  }
+
+  @Override
+  public void modifyGroupDetails(ModifyGroupDetailsRequest request,
+      StreamObserver<ModifyGroupDetailsResponse> responseObserver) {
+    var groupInfo = groupRepository.findById(request.getGroupId());
+    if (groupInfo.isEmpty()) {
+      responseObserver.onNext(ModifyGroupDetailsResponse.newBuilder()
+          .setIsSuccess(false)
+          .setMessage("No Group with given ID is found")
+          .build());
+    } else {
+      groupInfo.get().setLongName(request.getLongName());
+      responseObserver.onNext(ModifyGroupDetailsResponse.newBuilder()
+          .setIsSuccess(true)
+          .setMessage("Long name updated")
+          .build());
+    }
+
     responseObserver.onCompleted();
   }
 }

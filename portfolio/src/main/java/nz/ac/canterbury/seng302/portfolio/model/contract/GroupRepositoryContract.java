@@ -13,5 +13,6 @@ public record GroupRepositoryContract(
         Integer groupId,
         Integer repositoryId,
         String token,
-        String alias
+        String alias,
+        String longName
 ) implements Contractable {}

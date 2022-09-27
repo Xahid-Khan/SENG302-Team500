@@ -34,6 +34,6 @@ public class GroupRepositoryMapper
   @Override
   public GroupRepositoryContract toContract(GroupRepositoryEntity entity) {
     return new GroupRepositoryContract(entity.getGroupId(), entity.getRepositoryID(),
-        entity.getToken(), entity.getAlis());
+        entity.getToken(), entity.getAlis(), "");
   }
 }

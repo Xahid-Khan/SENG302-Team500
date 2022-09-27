@@ -92,7 +92,7 @@ class GroupRepositoryControllerTest {
   @Test
   void getValidRepoAndExpectPass() throws Exception {
     Mockito.when(groupRepositoryService.get(requestedIDString))
-        .thenReturn(new GroupRepositoryContract(1, 1, "TOKEN", ""));
+        .thenReturn(new GroupRepositoryContract(1, 1, "TOKEN", "", ""));
 
     var result = mockMvc.perform(get("/groups/repository/" + requestedIDString + "/"))
         .andExpect(status().isOk())
@@ -127,7 +127,7 @@ class GroupRepositoryControllerTest {
   @Test
   void addValidRepoAndExpectPass() throws Exception {
     Mockito.when(groupRepositoryService.add(requestedID))
-        .thenReturn(new GroupRepositoryContract(1, -1, "No token", ""));
+        .thenReturn(new GroupRepositoryContract(1, -1, "No token", "", ""));
 
     mockMvc.perform(post("/groups/add_repository/")
             .contentType(MediaType.APPLICATION_JSON)
@@ -149,7 +149,7 @@ class GroupRepositoryControllerTest {
   @Test
   void addValidRepoTwiceAndExpectFail() throws Exception {
     Mockito.when(groupRepositoryService.add(requestedID))
-        .thenReturn(new GroupRepositoryContract(1, -1, "No token", "")).thenReturn(null);
+        .thenReturn(new GroupRepositoryContract(1, -1, "No token", "", "")).thenReturn(null);
 
     mockMvc.perform(post("/groups/add_repository/")
             .contentType(MediaType.APPLICATION_JSON)
@@ -183,7 +183,7 @@ class GroupRepositoryControllerTest {
   @Test
   void addInvalidRepoAndExpectFail() throws Exception {
     Mockito.when(groupRepositoryService.add(requestedID))
-        .thenReturn(new GroupRepositoryContract(1, -1, "No token", ""));
+        .thenReturn(new GroupRepositoryContract(1, -1, "No token", "", ""));
 
     mockMvc.perform(post("/groups/add_repository/")
             .contentType(MediaType.APPLICATION_JSON)
@@ -283,8 +283,8 @@ class GroupRepositoryControllerTest {
   @Test
   void getAllRepoInfoAndExpectPass() throws Exception {
     Mockito.when(groupRepositoryService.getAll()).thenReturn(
-        List.of(new GroupRepositoryContract(requestedID, 1, "TOKEN", ""),
-            new GroupRepositoryContract(2, 2, "TOKEN", "")));
+        List.of(new GroupRepositoryContract(requestedID, 1, "TOKEN", "", ""),
+            new GroupRepositoryContract(2, 2, "TOKEN", "", "")));
 
     var result = mockMvc.perform(get("/groups/all_repository/"))
         .andExpect(status().isOk())

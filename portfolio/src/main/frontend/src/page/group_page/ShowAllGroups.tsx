@@ -76,7 +76,15 @@ export function ShowAllGroups({setViewGroupId}: any) {
 
   const [groups, setGroups] = React.useState([]);
   const [subscriptions, setSubscriptions] = React.useState([]);
-  const [editGroup, setEditGroup] = React.useState({});
+  const [editGroup, setEditGroup] = React.useState({
+    "id": -1,
+    "shortName": "",
+    "longName": "",
+    "alias": "",
+    "repositoryId":-1,
+    "token": "",
+    "canEdit": false
+  });
   const userId = localStorage.getItem("userId")
 
   useEffect(() => {
@@ -205,6 +213,9 @@ export function ShowAllGroups({setViewGroupId}: any) {
                 </div>
                 <div id={`groupSettingsIcon${group.id}`}>
                             <span className={"material-icons group-settings"} id={`group${group.id}`} onClick={() => {
+                              console.log(group);
+                              setEditGroup(group);
+                              setTimeout(() => {}, 500);
                               document.getElementById("group-settings-modal-open").style.display = 'block';
                             }}>settings</span>
                 </div>
@@ -248,7 +259,7 @@ export function ShowAllGroups({setViewGroupId}: any) {
               </div>
             </div>
         ))}
-        {editGroup != {} ?  <GroupSettingsModal editGroup={editGroup}/> : ""}
+        <GroupSettingsModal editGroup={editGroup}/>
       </div>
 
   );

@@ -74,5 +74,9 @@ public class GroupRepositoryEntity extends PortfolioEntity {
     return this.alias;
   }
 
+  public void setAlias(String alias) {
+    this.alias = alias;
+  }
+
 
 }

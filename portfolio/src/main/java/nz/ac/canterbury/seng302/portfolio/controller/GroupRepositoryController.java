@@ -131,16 +131,16 @@ public class GroupRepositoryController extends AuthenticatedController {
   public ResponseEntity<Boolean> update(
       @RequestBody GroupRepositoryContract groupRepositoryContract) {
     try {
+      groupsClientService.updateGroupLongName(groupRepositoryContract.groupId(), groupRepositoryContract.longName());
       var result = groupRepositoryService.update(groupRepositoryContract.groupId(),
           groupRepositoryContract.repositoryId(), groupRepositoryContract.token(), groupRepositoryContract.alias());
 
       //if null return 404 else return ok
-      return result ? ResponseEntity.ok(result)
+      return result ? ResponseEntity.ok().build()
           : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 
     } catch (NoSuchElementException error) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
   }
-
 }

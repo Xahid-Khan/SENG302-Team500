@@ -39,4 +39,8 @@ public class GroupModel {
   public String getLongName() {
     return longName;
   }
+
+  public void setLongName(String longName) {
+    this.longName = longName;
+  }
 }
