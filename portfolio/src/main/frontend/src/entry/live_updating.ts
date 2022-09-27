@@ -1,13 +1,9 @@
 import * as polyfills from "../util/polyfill/socket_polyfill";
 import {action, computed, makeObservable, observable, runInAction} from "mobx";
-import {
-  LoadingDone,
-  LoadingNotYetAttempted,
-  LoadingPending,
-  LoadingStatus
-} from "../util/network/loading_status";
+import {LoadingDone, LoadingNotYetAttempted, LoadingPending, LoadingStatus} from "../util/network/loading_status";
 import SockJS from "sockjs-client";
 import {Client as StompClient, Message as StompMessage, Stomp} from "@stomp/stompjs";
+import {NotificationDropdown} from "../component/notifications/NotificationDropdown";
 
 /**
  * MobX-enabled store for the Ping/Socket Test page.
@@ -21,7 +17,6 @@ class PingPageStore {
   path = window.localStorage.getItem("relativePath") + "/socket"
   pongArray: string[] = observable.array()
   nextPingValue: string = ""
-  destination: string = ""
 
   constructor() {
     makeObservable(this, {
@@ -50,24 +45,6 @@ class PingPageStore {
   setNextPingValue(newValue: string) {
     this.nextPingValue = newValue
   }
-
-
-    notify(location: string) {
-        if (this.connected) {
-            console.log("Attempting to send ping...")
-            this.stomp.publish({
-                destination: "/app/" + this.destination,
-                body: location + "~"
-                // TODO: In here, a frontend NotificationContract (or relevant parts of it)
-                //  can be added and then parsed for later handling. The method of wiring up is left
-                //  to the task implementing the logic regarding how notifications are handled,
-                //  such as to avoid an overlap and having two conflicting systems again.
-                //
-                // TODO: Note that LiveUpdatesController will need to be updated to parse whatever
-                //  is decided in here. (File can be found with CTRL + SHIFT + N)
-            })
-        }
-    }
 
     showEdit(location: string) {
         if (this.connected) {
@@ -116,7 +93,6 @@ class PingPageStore {
   }
 
   connect(onConnected: VoidFunction, location: string, destination: string): void {
-    this.destination = destination
     if (this.connectStatus instanceof LoadingPending || this.connectStatus instanceof LoadingDone) {
       console.warn("Cannot connect twice.")
       onConnected()
@@ -130,14 +106,14 @@ class PingPageStore {
       console.log("Connected.")
       console.log("Subscribing...")
       store.connectStatus = new LoadingDone()
-      if (location === "alert") {
+      if (destination === "alert") {
         store.stomp.subscribe("/topic/" + location, (message: StompMessage) => {
           store.onReceiveEditAlert(message)
         })
       } else {
-        store.stomp.subscribe("/topic/" + location, (message: StompMessage) => {
-          store.onNotification(message)
-        })
+          store.stomp.subscribe("/topic/" + location, (message: StompMessage) => {
+              store.onNotification(message)
+          })
       }
 
       onConnected()
@@ -175,11 +151,9 @@ class PingPageStore {
         })
     }
     protected onNotification(frame: StompMessage) {
-        const message = JSON.parse(frame.body)
-        // TODO: Hook to frontend here. The message will be the contents of whatever is parsed in from
-        //  the `notify` function. Then, using whatever is decided for parsing, you can utilize the data
-        //  here. (This means toasts, adding a notification count to the notification icon,
-        //   updating states, etc.)
+      runInAction(() => {
+          window.dispatchEvent(new Event("notification"))
+      })
     }
 }
 
@@ -204,9 +178,10 @@ export class Socket {
     this.store.saveEdit(location);
   }
 
-  static isConnected(): boolean {
-    return this.store.connected;
-  }
+    static isConnected(): boolean {
+        return this.store.connected;
+    }
+
 }
 
 polyfills.polyfill()
