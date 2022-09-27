@@ -45,7 +45,7 @@ class Editor {
               <div class="name">
                 <label>Name*:</label>
                 <input type="text" name="project-name" class="input-name" id="edit-project-name-${this.entityId}" maxlength="32" oninput="displayCharactersRemaining(this, 32)" />
-                <span class="input-length" id="edit-name-length">0 / 32</span>
+                <span class="input-length" id="edit-name-length-${this.entityId}">0 / 32</span>
                 <br>
                 <div id="edit-project-name-error-${this.entityId}" class="form-error" style="display: none;"></div><br>
               </div>
@@ -53,7 +53,7 @@ class Editor {
               <div class="description">
                   <label>Description:</label>
                   <textarea name="description" id="edit-description-${this.entityId}" cols="50" rows="10" maxlength="1024" oninput="displayCharactersRemaining(this, 1024)"></textarea>
-                  <span class="input-length" id="edit-description-length">0 / 1024</span>
+                  <span class="input-length" id="edit-description-length-${this.entityId}">0 / 1024</span>
                   <br><br>
               </div>
               <label id="start-date-label-${this.entityId}">Start Date*:</label>
@@ -80,9 +80,10 @@ class Editor {
       </div>
     `
         document.getElementById(`edit-section-form-title-${this.entityId}`).innerText = this.title;
-
         this.nameInput = document.getElementById(`edit-project-name-${this.entityId}`);
+        this.nameLength = document.getElementById(`edit-name-length-${this.entityId}`);
         this.descriptionInput = document.getElementById(`edit-description-${this.entityId}`);
+        this.descriptionLength = document.getElementById(`edit-description-length-${this.entityId}`);
         this.startDateInput = document.getElementById(`edit-start-date-${this.entityId}`);
         this.endDateInput = document.getElementById(`edit-end-date-${this.entityId}`);
         this.startDateLabel  = document.getElementById(`start-date-label-${this.entityId}`);
@@ -148,9 +149,10 @@ class Editor {
      * Sets the initial defaults for the inputs.
      */
     fillDefaults() {
-
         this.nameInput.value = this.initialData.name ?? "";
+        this.nameLength.innerText = this.initialData.name ? this.initialData.name.length + " / 32" : "0 / 32"
         this.descriptionInput.value = this.initialData.description ?? "";
+        this.descriptionLength.innerText = this.initialData.description ? this.initialData.description.length + " / 1024" : "0 / 1024"
         if (this.initialData.startDate) {
             const inputLocalStartDate = new Date(this.initialData.startDate.valueOf());
             this.startDateInput.value = this.allowTimeInput ? DatetimeUtils.localToNetworkStringWithTimezone(inputLocalStartDate).slice(0, 19) : DatetimeUtils.toLocalYMD(this.initialData.startDate);
