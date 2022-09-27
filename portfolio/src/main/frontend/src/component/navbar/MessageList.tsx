@@ -182,6 +182,7 @@ export const MessageList: React.FC<IMessageListProps> = observer((props: IMessag
 
     return (
         <Popover
+            // Adapted from https://mui.com/material-ui/react-menu/
             anchorEl={document.body}
             id="messages-menu"
             open={props.open}
