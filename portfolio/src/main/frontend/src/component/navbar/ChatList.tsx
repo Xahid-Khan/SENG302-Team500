@@ -97,6 +97,8 @@ export const ChatList: React.FC<IChatListProps> = observer((props: IChatListProp
     return (
         <React.Fragment>
             <Menu
+
+                // Adapted from https://mui.com/material-ui/react-menu/
                 anchorEl={document.body}
                 id="chat-menu"
                 open={props.open}
