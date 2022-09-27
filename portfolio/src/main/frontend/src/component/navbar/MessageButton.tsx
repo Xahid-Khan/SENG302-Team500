@@ -2,6 +2,7 @@ import React from "react";
 import {observer} from "mobx-react-lite";
 import {Badge, Box, IconButton} from "@mui/material";
 import {ChatList} from "./ChatList";
+import {MessageList} from "./MessageList";
 import MailIcon from '@mui/icons-material/Mail';
 
 export const MessageButton: React.FC = observer(() => {
@@ -24,7 +25,7 @@ export const MessageButton: React.FC = observer(() => {
         setConversationId(id)
     };
 
-    const handleBackClick = (event: React.MouseEvent<HTMLElement>) => {
+    const handleBackClick = () => {
         setAnchorEl(document.getElementById('chats-list-button'));
     }
 
@@ -58,6 +59,13 @@ export const MessageButton: React.FC = observer(() => {
                 onClose={handleClose}
                 addButtonCallback={handleClick}
                 chatButtonCallback={handleChatClick}
+            />
+
+            <MessageList
+                open={openChat}
+                onClose={handleClose}
+                conversationId={conversationId}
+                backButtonCallback={handleBackClick}
             />
 
         </React.Fragment>
