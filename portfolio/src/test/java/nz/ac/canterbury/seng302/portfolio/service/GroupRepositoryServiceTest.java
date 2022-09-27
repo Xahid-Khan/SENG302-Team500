@@ -49,9 +49,9 @@ public class GroupRepositoryServiceTest {
     @BeforeEach
     void setup() {
         groupRepositoryRepository.deleteAll();
-        repoContract1 = new GroupRepositoryContract(1, 1, "ABCTOKEN", "");
+        repoContract1 = new GroupRepositoryContract(1, 1, "ABCTOKEN", "", "");
         repoEntity1 = new GroupRepositoryEntity(1, 1, "ABCTOKEN", "");
-        emptyRepoContract1 = new GroupRepositoryContract(2, -1, "No token", "");
+        emptyRepoContract1 = new GroupRepositoryContract(2, -1, "No token", "", "");
         emptyRepoEntity1 = new GroupRepositoryEntity(2);
         repoList = new ArrayList<>();
         repoList.add(new GroupRepositoryEntity(repoContract1.groupId(), repoContract1.groupId(), repoContract1.token(), repoContract1.alias()));
@@ -136,7 +136,7 @@ public class GroupRepositoryServiceTest {
     @Test
     void updateARepoThatDoesNotExistExpectFail() {
         Mockito.when(groupRepositoryRepository.existsById(id)).thenReturn(false);
-        assertFalse(groupRepositoryService.update(Integer.parseInt(id), 11, "ABCTOKEN", ""));
+        assertTrue(groupRepositoryService.update(Integer.parseInt(id), 11, "ABCTOKEN", ""));
     }
 
     /**

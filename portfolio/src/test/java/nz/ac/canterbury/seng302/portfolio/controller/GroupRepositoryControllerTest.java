@@ -102,7 +102,6 @@ class GroupRepositoryControllerTest {
     //Checks that the response id matches the requested id
     Assertions.assertNotNull(response);
     Assertions.assertEquals(requestedIDString, response.get("groupId").toString());
-
   }
 
   /**

@@ -378,6 +378,7 @@ public class GroupsServerService extends GroupsServiceGrpc.GroupsServiceImplBase
           .build());
     } else {
       groupInfo.get().setLongName(request.getLongName());
+      groupRepository.save(groupInfo.get());
       responseObserver.onNext(ModifyGroupDetailsResponse.newBuilder()
           .setIsSuccess(true)
           .setMessage("Long name updated")

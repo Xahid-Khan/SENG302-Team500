@@ -108,7 +108,7 @@ export function EditGroupSettings({group}: any) {
                       <td>
                         {group.canEdit ?
                             <input type="text" name="repository-id" className="input-name"
-                                   defaultValue={group.repositoryId}
+                                   defaultValue={group.repositoryId != -1 ? group.repositoryId : ""}
                                    id={"repository-id"} maxLength={64} onChange={(e) => {
                               setRepositoryID(e.target.value)
                             }}/>
