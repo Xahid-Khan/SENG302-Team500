@@ -15,6 +15,7 @@ public record MessageContract(
     String conversationId,
     String messageId,
     int sentBy,
+    String senderName,
     String messageContent,
     Timestamp timeSent
 ) implements Contractable {}

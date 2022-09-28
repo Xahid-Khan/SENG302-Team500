@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.model.entity;
 
 import java.sql.Timestamp;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
@@ -19,6 +20,9 @@ public class MessageEntity extends PortfolioEntity {
 
   @Column(nullable = false)
   private Integer sentBy;
+
+  @Column(nullable = false)
+  private String senderName;
 
   @Column(nullable = false, length = 4096)
   private String messageContent;
@@ -58,4 +62,6 @@ public class MessageEntity extends PortfolioEntity {
   public Timestamp getTimeSent() {
     return timeSent;
   }
+
+  public String getSenderName() {    return senderName; }
 }

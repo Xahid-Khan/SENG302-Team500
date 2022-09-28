@@ -33,6 +33,7 @@ public class MessageMapper
         entity.getConversation().getId(),
         entity.getId(),
         entity.getSentBy(),
+        entity.getSenderName(),
         entity.getMessageContent(),
         entity.getTimeSent());
   }
