@@ -1,23 +1,22 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import nz.ac.canterbury.seng302.portfolio.model.contract.PostContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseNotificationContract;
-import nz.ac.canterbury.seng302.portfolio.model.entity.PostModel;
-import nz.ac.canterbury.seng302.portfolio.repository.PostModelRepository;
+import nz.ac.canterbury.seng302.portfolio.model.entity.PostEntity;
+import nz.ac.canterbury.seng302.portfolio.repository.PostRepository;
 import nz.ac.canterbury.seng302.shared.identityprovider.GroupDetailsResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
 public class PostService {
 
-  @Autowired private PostModelRepository postRepository;
+  @Autowired private PostRepository postRepository;
 
   @Autowired private GroupsClientService groupsClientService;
 
@@ -30,52 +29,28 @@ public class PostService {
   @Autowired private UserAccountService userAccountService;
 
   /**
-   * Gets all posts in the database.
-   *
-   * @return A list of all posts models
-   */
-  public List<PostModel> getAllPosts() {
-    try {
-      return (List<PostModel>) postRepository.findAll();
-    } catch (NoSuchElementException e) {
-      e.printStackTrace();
-      return new ArrayList<>();
-    }
-  }
-
-  /**
-   * Gets all posts for a given group
+   * Handles pagination using PageRequest.of, taking into account a group ID.
    *
    * @param groupId The group id
-   * @return A list of post models
-   */
-  public List<PostModel> getAllPostsForAGroup(int groupId) {
-    return postRepository.findPostModelByGroupId(groupId);
-  }
-
-  /**
-   * Gets the paginated posts for a group. For instance, an offset of 0 and a limit of 20 will get
-   *  posts (in order of most recent) from 0 to 20. If offset is larger than the number of posts in
-   *  the database, then the limit of posts from the end of the database will be gathered instead.
-   *  That is, if the database is larger than your limit, you will always receive specified limit
-   *  of posts back.
-   *
-   * @param groupId The group id
-   * @param offset post number to start retrieving
+   * @param page which page of the data to load (I.E., 0 will load 0 - limit)
    * @param limit limit of posts to grab. Must be greater than 0
    * @return the specified posts based on the parameters given
    */
-  public Page<PostModel> getPaginatedPostsForGroup(int groupId, int offset, int limit) {
-    long entityCount = postRepository.count() - limit;
-    // Ensure that the offset will never go below 0
-    entityCount = Math.max(entityCount, 0);
-    // Calculate the new offset, which is the total number of entries in the database subtracted
-    //  by the given offset, subtracted by the limit
-    int calculatedOffset = (int) entityCount - offset;
-    // Ensure that can never go below zero
-    calculatedOffset = Math.max(calculatedOffset, 0);
-    Pageable request = PageRequest.of(calculatedOffset, limit);
+  public Page<PostEntity> getPaginatedPostsForGroup(int groupId, int page, int limit) {
+    Pageable request = PageRequest.of(page, limit, Sort.by("created").descending());
     return postRepository.getPaginatedPostsByGroupId(groupId, request);
+  }
+
+  /**
+   * Handles pagination using PageRequest.of.
+   *
+   * @param page which page of the data to load (I.E., 0 will load 0 - limit)
+   * @param limit limit of posts to grab. Must be greater than 0
+   * @return the specified posts based on the parameters given
+   */
+  public Page<PostEntity> getPaginatedPosts(int page, int limit) {
+    Pageable request = PageRequest.of(page, limit, Sort.by("created").descending());
+    return postRepository.findAll(request);
   }
 
   /**
@@ -90,8 +65,8 @@ public class PostService {
       return false;
     }
     try {
-      PostModel postModel = new PostModel(newPost.groupId(), userId, newPost.postContent());
-      postRepository.save(postModel);
+      PostEntity postEntity = new PostEntity(newPost.groupId(), userId, newPost.postContent());
+      postRepository.save(postEntity);
 
       // Gets details for notification
       GroupDetailsResponse groupDetails = groupsClientService.getGroupById(newPost.groupId());
@@ -116,10 +91,6 @@ public class PostService {
       e.printStackTrace();
     }
     return false;
-  }
-
-  public List<PostModel> getAllPostsForAUser(int userId) {
-    return postRepository.findPostModelByUserId(userId);
   }
 
   /**
@@ -170,9 +141,9 @@ public class PostService {
    * This function will get a specific post using Post ID and return it.
    *
    * @param postId Integer Post ID
-   * @return Returns PostModel if found, null otherwise.
+   * @return Returns PostEntity if found, null otherwise.
    */
-  public PostModel getPostById(int postId) {
+  public PostEntity getPostById(int postId) {
     try {
       return postRepository.findById(postId).orElseThrow();
     } catch (Exception e) {

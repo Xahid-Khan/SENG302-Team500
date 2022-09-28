@@ -6,12 +6,11 @@ import static org.mockito.Mockito.verify;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import nz.ac.canterbury.seng302.portfolio.model.contract.CommentReactionContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.PostReactionContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.ReactionModel;
-import nz.ac.canterbury.seng302.portfolio.repository.PostModelRepository;
+import nz.ac.canterbury.seng302.portfolio.repository.PostRepository;
 import nz.ac.canterbury.seng302.portfolio.repository.ReactionModelRepository;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.junit.jupiter.api.Assertions;
@@ -21,7 +20,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 @SpringBootTest
 class ReactionServiceTest {
@@ -33,7 +31,7 @@ class ReactionServiceTest {
   @Mock
   private UserAccountService userAccountService;
   @Mock
-  private PostModelRepository postModelRepository;
+  private PostRepository postRepository;
 
   private CommentReactionContract commentReactionContract1;
   private CommentReactionContract commentReactionContract2;

@@ -136,7 +136,7 @@ public class HomeFeedControllerTest {
      */
     @Test
     void unsubscribeInvalidParamTypeTest() throws Exception {
-        mockPerformWithJSON(delete("/api/v1/unsubscribe"),"""
+        mockPerformWithJSON(delete("/api/v1/subscribe"),"""
                 {
                     "userId": "one",
                     "groupId": 1

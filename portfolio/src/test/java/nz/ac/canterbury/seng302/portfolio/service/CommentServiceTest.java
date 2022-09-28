@@ -3,7 +3,7 @@ package nz.ac.canterbury.seng302.portfolio.service;
 import nz.ac.canterbury.seng302.portfolio.model.contract.CommentContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.CommentModel;
 import nz.ac.canterbury.seng302.portfolio.repository.CommentModelRepository;
-import nz.ac.canterbury.seng302.portfolio.repository.PostModelRepository;
+import nz.ac.canterbury.seng302.portfolio.repository.PostRepository;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,7 +29,7 @@ class CommentServiceTest {
     private CommentModelRepository mockCommentRepository;
 
     @Mock
-    private PostModelRepository postModelRepository;
+    private PostRepository postRepository;
 
     @Mock
     private UserAccountService userAccountService;

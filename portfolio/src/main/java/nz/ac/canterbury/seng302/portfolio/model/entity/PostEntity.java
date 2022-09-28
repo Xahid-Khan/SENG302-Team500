@@ -16,7 +16,7 @@ import org.hibernate.annotations.CreationTimestamp;
  * Database schema for a post
  */
 @Entity
-public class PostModel {
+public class PostEntity {
 
   @Id
   @Column(name = "id", nullable = false)
@@ -43,12 +43,12 @@ public class PostModel {
   @JoinColumn(name = "reaction_model_ID")
   private ReactionModel reactionModel;
 
-  protected PostModel() {
+  protected PostEntity() {
   }
 
   ;
 
-  public PostModel(int groupId, int userId, String postContent) {
+  public PostEntity(int groupId, int userId, String postContent) {
     this.groupId = groupId;
     this.userId = userId;
     this.postContent = postContent;

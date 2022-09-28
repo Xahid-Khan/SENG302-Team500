@@ -8,9 +8,9 @@ import java.util.Optional;
 import nz.ac.canterbury.seng302.portfolio.model.contract.CommentContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseNotificationContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.CommentModel;
-import nz.ac.canterbury.seng302.portfolio.model.entity.PostModel;
+import nz.ac.canterbury.seng302.portfolio.model.entity.PostEntity;
 import nz.ac.canterbury.seng302.portfolio.repository.CommentModelRepository;
-import nz.ac.canterbury.seng302.portfolio.repository.PostModelRepository;
+import nz.ac.canterbury.seng302.portfolio.repository.PostRepository;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,7 +31,7 @@ public class CommentService {
   private ReactionService reactionService;
 
   @Autowired
-  private PostModelRepository postModelRepository;
+  private PostRepository postRepository;
 
   @Autowired
   private NotificationService notificationService;
@@ -82,7 +82,7 @@ public class CommentService {
       CommentModel comment = new CommentModel(newComment.postId(), newComment.userId(),
           newComment.comment());
       commentRepository.save(comment);
-      Optional<PostModel> post = postModelRepository.findById(newComment.postId());
+      Optional<PostEntity> post = postRepository.findById(newComment.postId());
       UserResponse user = userAccountService.getUserById(newComment.userId());
       if (post.isPresent()) {
         notificationService.create(new BaseNotificationContract(post.get().getUserId(), "Your Posts", user.getUsername() + " commented on your post!"));

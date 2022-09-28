@@ -5,7 +5,7 @@ import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.portfolio.controller.feed.GroupFeedController;
 import nz.ac.canterbury.seng302.portfolio.model.contract.PostContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.CommentModel;
-import nz.ac.canterbury.seng302.portfolio.model.entity.PostModel;
+import nz.ac.canterbury.seng302.portfolio.model.entity.PostEntity;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.GroupDetailsResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
@@ -58,17 +58,17 @@ class GroupFeedControllerTest {
     private AuthStateService authStateService;
 
     private final int validUserId = 3;
-    private PostModel post1;
-    private PostModel post2;
-    private PostModel post3;
-    private PostModel post4;
+    private PostEntity post1;
+    private PostEntity post2;
+    private PostEntity post3;
+    private PostEntity post4;
 
     private CommentModel comment1;
     private CommentModel comment2;
     private CommentModel comment3;
     private CommentModel comment4;
 
-    private List<PostModel> allPosts;
+    private List<PostEntity> allPosts;
     private List<CommentModel> allComments;
 
     @BeforeEach
@@ -87,10 +87,10 @@ class GroupFeedControllerTest {
         Mockito.when(authStateService.getId(any(PortfolioPrincipal.class))).thenReturn(3);
         AuthorisationParamsHelper.setParams("role", UserRole.STUDENT);
 
-        post1 = new PostModel(1, validUserId, "This a new Post From Teachers");
-        post2 = new PostModel(2, validUserId, "This a Test Post From Other Group");
-        post3 = new PostModel(3, 4, "This a Test Post From Group 3");
-        post4 = new PostModel(1, 2, "This another post from teachers.");
+        post1 = new PostEntity(1, validUserId, "This a new Post From Teachers");
+        post2 = new PostEntity(2, validUserId, "This a Test Post From Other Group");
+        post3 = new PostEntity(3, 4, "This a Test Post From Group 3");
+        post4 = new PostEntity(1, 2, "This another post from teachers.");
 
         allPosts = new ArrayList<>();
         allPosts.add(post1);
@@ -284,13 +284,13 @@ class GroupFeedControllerTest {
      */
     @Test
     void getPostsWithPositiveGroupIdExpectPass() throws Exception{
-        PostModel post1 = new PostModel(1, 1, "Post 1");
-        PostModel post2 = new PostModel(2, 1, "Post 2");
-        ArrayList<PostModel> posts = new ArrayList<>();
+        PostEntity post1 = new PostEntity(1, 1, "Post 1");
+        PostEntity post2 = new PostEntity(2, 1, "Post 2");
+        ArrayList<PostEntity> posts = new ArrayList<>();
         posts.add(post1);
         posts.add(post2);
 
-        Page<PostModel> postModelPage = Mockito.mock(Page.class);
+        Page<PostEntity> postModelPage = Mockito.mock(Page.class);
 
         Mockito.when(postService.getPaginatedPostsForGroup(post4.getGroupId(), 0,20)).thenReturn(postModelPage);
         Mockito.when(postModelPage.getContent()).thenReturn(posts);
@@ -313,13 +313,13 @@ class GroupFeedControllerTest {
      */
     @Test
     void getPostsWithNoOffsetAndExpectOffsetToBeZero() throws Exception{
-        PostModel post1 = new PostModel(1, 1, "Post 1");
-        PostModel post2 = new PostModel(2, 1, "Post 2");
-        ArrayList<PostModel> posts = new ArrayList<>();
+        PostEntity post1 = new PostEntity(1, 1, "Post 1");
+        PostEntity post2 = new PostEntity(2, 1, "Post 2");
+        ArrayList<PostEntity> posts = new ArrayList<>();
         posts.add(post1);
         posts.add(post2);
 
-        Page<PostModel> postModelPage = Mockito.mock(Page.class);
+        Page<PostEntity> postModelPage = Mockito.mock(Page.class);
 
         Mockito.when(postService.getPaginatedPostsForGroup(post4.getGroupId(), 0,20)).thenReturn(postModelPage);
         Mockito.when(postModelPage.getContent()).thenReturn(posts);

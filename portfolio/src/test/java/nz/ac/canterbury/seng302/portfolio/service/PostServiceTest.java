@@ -2,11 +2,8 @@ package nz.ac.canterbury.seng302.portfolio.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.ArrayList;
-import java.util.List;
-import nz.ac.canterbury.seng302.portfolio.model.entity.GroupRepositoryRepository;
-import nz.ac.canterbury.seng302.portfolio.model.entity.PostModel;
-import nz.ac.canterbury.seng302.portfolio.repository.PostModelRepository;
+import nz.ac.canterbury.seng302.portfolio.model.entity.PostEntity;
+import nz.ac.canterbury.seng302.portfolio.repository.PostRepository;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -26,14 +23,14 @@ public class PostServiceTest {
   private PostService postService;
 
   @Mock
-  private PostModelRepository postModelRepository;
+  private PostRepository postRepository;
 
   private final int groupId = 1;
 
-  private final PostModel post1 = new PostModel(1, 1, "Post 1");
-  private final PostModel post2 = new PostModel(2, 1, "Post 2");
-  private final PostModel post3 = new PostModel(3, 1, "Post 3");
-  private final PostModel post4 = new PostModel(4, 1, "Post 4");
+  private final PostEntity post1 = new PostEntity(1, 1, "Post 1");
+  private final PostEntity post2 = new PostEntity(2, 1, "Post 2");
+  private final PostEntity post3 = new PostEntity(3, 1, "Post 3");
+  private final PostEntity post4 = new PostEntity(4, 1, "Post 4");
 
   /**
    * Tests getting paginated posts for a group
@@ -43,13 +40,13 @@ public class PostServiceTest {
     int offset = 0;
     int limit = 2;
 
-    Page<PostModel> postModelPage = Mockito.mock(Page.class);
+    Page<PostEntity> postModelPage = Mockito.mock(Page.class);
 
     Pageable buildRequest = PageRequest.of(offset,limit);
 
-    Mockito.when(postModelRepository.getPaginatedPostsByGroupId(groupId,buildRequest)).thenReturn(postModelPage);
+    Mockito.when(postRepository.getPaginatedPostsByGroupId(groupId,buildRequest)).thenReturn(postModelPage);
 
-    Page<PostModel> result = postService.getPaginatedPostsForGroup(groupId,offset,limit);
+    Page<PostEntity> result = postService.getPaginatedPostsForGroup(groupId,offset,limit);
 
     assertEquals(postModelPage,result);
   }

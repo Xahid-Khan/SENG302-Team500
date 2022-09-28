@@ -1,7 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.controller.feed;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +9,7 @@ import java.util.Optional;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.portfolio.controller.AuthenticatedController;
 import nz.ac.canterbury.seng302.portfolio.model.contract.PostContract;
-import nz.ac.canterbury.seng302.portfolio.model.entity.PostModel;
+import nz.ac.canterbury.seng302.portfolio.model.entity.PostEntity;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
 import nz.ac.canterbury.seng302.portfolio.service.CommentService;
 import nz.ac.canterbury.seng302.portfolio.service.GroupsClientService;
@@ -55,32 +54,13 @@ public class GroupFeedController extends AuthenticatedController {
       AuthStateService authStateService, UserAccountService userAccountService) {
     super(authStateService, userAccountService);
   }
-  //
-  //  @GetMapping(value = "/feed_content/{groupId}", produces = "application/json")
-  //  public ResponseEntity<?> getFeedContent(@PathVariable Integer groupId) {
-  //    try {
-  //
-  //      GroupDetailsResponse groupDetailsResponse = groupsClientService.getGroupById(groupId);
-  //      List<PostModel> allPosts = postService.getAllPostsForAGroup(
-  //          groupDetailsResponse.getGroupId());
-  //      Collections.reverse(allPosts);
-  //      if (allPosts.isEmpty()) {
-  //        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-  //      } else {
-  //        Map<String, Object> data = combineAndPrepareForFrontEnd(allPosts, groupDetailsResponse);
-  //        return ResponseEntity.ok(data);
-  //      }
-  //    } catch (NoSuchElementException e) {
-  //      return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-  //    }
-  //  }
 
   /**
-   * Returns a paginated list of posts for a group
+   * Returns a paginated list of posts for a group.
    *
-   * @param groupId The group id
-   * @param offset The page to start on (page size is 20 items)
-   * @return The posts for the page (20 items)
+   * @param groupId the group id
+   * @param offset the zero-indexed page to load (page size is 20 items)
+   * @return the posts for the page (20 items)
    */
   @GetMapping(value = "/feed_content/{groupId}", produces = "application/json")
   public ResponseEntity<Map<String, Object>> getPaginatedFeedContent(
@@ -99,11 +79,9 @@ public class GroupFeedController extends AuthenticatedController {
         offsetValue = 0;
       }
 
-      Page<PostModel> postsPage = postService.getPaginatedPostsForGroup(groupId, offsetValue, 20);
-      // Convert page to list
-      ArrayList<PostModel> allPosts = new ArrayList<>(postsPage.getContent());
+      Page<PostEntity> postsPage = postService.getPaginatedPostsForGroup(groupId, offsetValue, 20);
 
-      Collections.reverse(allPosts);
+      List<PostEntity> allPosts = postsPage == null ? List.of() : postsPage.getContent();
 
       Map<String, Object> dataToSend = combineAndPrepareForFrontEnd(allPosts, groupDetailsResponse);
 
@@ -140,7 +118,7 @@ public class GroupFeedController extends AuthenticatedController {
       @AuthenticationPrincipal PortfolioPrincipal principal, @PathVariable int postId) {
     try {
       int userId = getUserId(principal);
-      PostModel post = postService.getPostById(postId);
+      PostEntity post = postService.getPostById(postId);
       if (isTeacher(principal)
           || (groupsClientService.isMemberOfTheGroup(userId, post.getGroupId())
               && userId == post.getUserId())) {
@@ -161,7 +139,7 @@ public class GroupFeedController extends AuthenticatedController {
       @RequestBody PostContract updatedPost) {
     try {
       int userId = getUserId(principal);
-      PostModel post = postService.getPostById(postId);
+      PostEntity post = postService.getPostById(postId);
       if (groupsClientService.isMemberOfTheGroup(userId, post.getGroupId())
           && userId == post.getUserId()) {
         postService.updatePost(updatedPost, postId);
@@ -183,7 +161,7 @@ public class GroupFeedController extends AuthenticatedController {
    * @return A Hash Map where first element is string and second is an object.
    */
   private Map<String, Object> combineAndPrepareForFrontEnd(
-      List<PostModel> posts, GroupDetailsResponse groupDetailsResponse) {
+      List<PostEntity> posts, GroupDetailsResponse groupDetailsResponse) {
     try {
       Map<String, Object> postWithComments = new HashMap<>();
       postWithComments.put("groupId", groupDetailsResponse.getGroupId());

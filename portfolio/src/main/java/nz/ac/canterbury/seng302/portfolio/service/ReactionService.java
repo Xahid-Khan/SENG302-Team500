@@ -7,9 +7,9 @@ import java.util.Optional;
 import nz.ac.canterbury.seng302.portfolio.model.contract.CommentReactionContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.PostReactionContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseNotificationContract;
-import nz.ac.canterbury.seng302.portfolio.model.entity.PostModel;
+import nz.ac.canterbury.seng302.portfolio.model.entity.PostEntity;
 import nz.ac.canterbury.seng302.portfolio.model.entity.ReactionModel;
-import nz.ac.canterbury.seng302.portfolio.repository.PostModelRepository;
+import nz.ac.canterbury.seng302.portfolio.repository.PostRepository;
 import nz.ac.canterbury.seng302.portfolio.repository.ReactionModelRepository;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ public class ReactionService {
   private UserAccountService userAccountService;
 
   @Autowired
-  private PostModelRepository postModelRepository;
+  private PostRepository postRepository;
 
   @Autowired
   private NotificationService notificationService;
@@ -118,7 +118,7 @@ public class ReactionService {
       ReactionModel newReaction = new ReactionModel(postReactionContract.userId(),
           postReactionContract.postId());
       reactionRepository.save(newReaction);
-      Optional<PostModel> post = postModelRepository.findById(postReactionContract.postId());
+      Optional<PostEntity> post = postRepository.findById(postReactionContract.postId());
       UserResponse user = userAccountService.getUserById(postReactionContract.userId());
       if (post.isPresent()) {
         notificationService.create(new BaseNotificationContract(post.get().getUserId(), "Your Posts", user.getUsername() + " high-fived your post!"));
