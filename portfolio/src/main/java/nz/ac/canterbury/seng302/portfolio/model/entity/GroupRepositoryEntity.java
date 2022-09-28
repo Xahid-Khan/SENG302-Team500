@@ -18,7 +18,7 @@ public class GroupRepositoryEntity extends PortfolioEntity {
   private int repositoryId = -1;
 
   @Column(name = "token")
-  private String token = "No token";
+  private String token = "";
 
   @Column(name = "alias")
   private String alias;

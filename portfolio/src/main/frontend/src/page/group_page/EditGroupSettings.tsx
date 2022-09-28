@@ -62,7 +62,7 @@ export function EditGroupSettings({group}: any) {
   }
 
   return (
-      <div>{group.canEdit ?
+      <div>
           <div className={"edit-group-settings-container"}>
             <div className={"edit-group-settings"} style={{width: "100%"}}>
               <div className={"edit-group-form raised-card"}>
@@ -144,6 +144,6 @@ export function EditGroupSettings({group}: any) {
               </div>
             </div>
           </div>
-          : ""}</div>
+        </div>
   );
 }
