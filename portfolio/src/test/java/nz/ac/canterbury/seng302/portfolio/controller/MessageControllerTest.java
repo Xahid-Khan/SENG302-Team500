@@ -98,7 +98,7 @@ public class MessageControllerTest {
     @Test
     void getAllConversationsTestValidNoOffset() throws Exception {
         Mockito.when(messageService.getPaginatedConversations(3, 0, 20)).thenReturn(new PageImpl<>(List.of(new ConversationEntity(List.of(1)))));
-        Mockito.when(conversationMapper.toContract(any())).thenReturn(new ConversationContract("1", List.of(1), new Timestamp(new Date().getTime()), new MessageContract("1", "1", 3, "hey", new Timestamp(new Date().getTime()))));
+        Mockito.when(conversationMapper.toContract(any())).thenReturn(new ConversationContract("1", List.of(1), new Timestamp(new Date().getTime()), new MessageContract("1", "1", 3, "John", "hey", new Timestamp(new Date().getTime()))));
         mockMvc.perform(get("/api/v1/messages"))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -112,7 +112,7 @@ public class MessageControllerTest {
     @Test
     void getAllConversationsTestValidOffset() throws Exception {
         Mockito.when(messageService.getPaginatedConversations(3, 1, 20)).thenReturn(new PageImpl<>(List.of(new ConversationEntity(List.of(1)))));
-        Mockito.when(conversationMapper.toContract(any())).thenReturn(new ConversationContract("1", List.of(1), new Timestamp(new Date().getTime()), new MessageContract("1", "1", 3, "hey", new Timestamp(new Date().getTime()))));
+        Mockito.when(conversationMapper.toContract(any())).thenReturn(new ConversationContract("1", List.of(1), new Timestamp(new Date().getTime()), new MessageContract("1", "1", 3, "John", "hey", new Timestamp(new Date().getTime()))));
         mockMvc.perform(get("/api/v1/messages").param("offset", "1"))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -125,7 +125,7 @@ public class MessageControllerTest {
      */
     @Test
     void getAllMessagesTestValid() throws Exception {
-        Mockito.when(messageService.getPaginatedMessages(1, 0, 20)).thenReturn(new PageImpl<>(List.of(new MessageEntity("hey", 1))));
+        Mockito.when(messageService.getPaginatedMessages(1, 0, 20)).thenReturn(new PageImpl<>(List.of(new MessageEntity("hey", 1, "John"))));
         Mockito.when(messageService.isInConversation(3, 1)).thenReturn(true);
         mockMvc.perform(get("/api/v1/messages/1"))
                 .andExpect(status().isOk())

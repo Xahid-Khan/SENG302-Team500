@@ -34,9 +34,10 @@ public class MessageEntity extends PortfolioEntity {
 
   protected MessageEntity() {}
 
-  public MessageEntity(String messageContent, Integer sentBy) {
+  public MessageEntity(String messageContent, Integer sentBy, String senderName) {
     this.messageContent = messageContent;
     this.sentBy = sentBy;
+    this.senderName = senderName;
   }
 
   public ConversationEntity getConversation() {

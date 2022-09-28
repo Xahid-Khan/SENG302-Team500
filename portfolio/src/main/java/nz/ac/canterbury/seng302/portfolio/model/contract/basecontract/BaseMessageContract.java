@@ -20,5 +20,7 @@ public record BaseMessageContract(
     @Size(min = 1, max = 4096, message = "Message length should be between 1 - 4096 characters")
     String messageContent,
     @NotNull(message = "User who sent the message's ID is required")
-    Integer sentBy
+    Integer sentBy,
+    @NotNull(message = "User who sent the message's name is required")
+    String senderName
 ) implements Contractable {}

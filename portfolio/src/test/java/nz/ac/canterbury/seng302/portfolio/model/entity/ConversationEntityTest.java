@@ -31,7 +31,7 @@ class ConversationEntityTest {
     // Ensures that if there are no messages, null is returned
     assertNull(conversation.getMostRecentMessage());
 
-    MessageEntity message = new MessageEntity("Testing!", 1);
+    MessageEntity message = new MessageEntity("Testing!", 1, "John");
     conversation.addMessage(message);
     messageRepository.save(message);
 
@@ -39,7 +39,7 @@ class ConversationEntityTest {
     assertEquals(
         message.getMessageContent(), conversation.getMostRecentMessage().getMessageContent());
 
-    MessageEntity message2 = new MessageEntity("Testing: 2", 1);
+    MessageEntity message2 = new MessageEntity("Testing: 2", 1, "John");
     conversation.addMessage(message2);
     messageRepository.save(message2);
 
