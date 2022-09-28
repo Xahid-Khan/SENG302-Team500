@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useRef} from "react";
 import {DatetimeUtils} from "../../util/DatetimeUtils";
 
 const getSubscriptions = async () => {
@@ -10,14 +10,22 @@ const getSubscriptions = async () => {
 
 export function ShowHomeFeed() {
 
+  const [offset, setOffset] = React.useState(-1);
   const [newComment, setNewComment] = React.useState("");
+
+  const loadOptions: any = {
+    root: null,
+    rootMargin: "0px",
+    threshold: 1.0
+  }
 
   const username = localStorage.getItem("username")
 
   const userId = localStorage.getItem("userId")
 
-  const getAllPosts = async () => {
-    const currentGroupResponse = await fetch(`api/v1/posts`);
+  const getPosts = async () => {
+    setOffset(offset + 1)
+    const currentGroupResponse = await fetch(`api/v1/posts?offset=` + offset);
     return currentGroupResponse.json()
   }
 
@@ -47,7 +55,7 @@ export function ShowHomeFeed() {
   const [subscriptions, setSubscriptions] = React.useState([])
 
   useEffect(() => {
-    getAllPosts().then((result) => {
+    getPosts().then((result) => {
       setGroupPosts(result)
       console.log(result)
     })
@@ -55,6 +63,27 @@ export function ShowHomeFeed() {
       setSubscriptions(result)
     })
   }, [])
+
+  const loadRef = useRef(null)
+
+  // With regards to https://dev.to/producthackers/intersection-observer-using-react-49ko
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      const [ entry ] = entries
+      if(entry.isIntersecting) {
+        getPosts().then((result) => {
+          setGroupPosts(result)
+          console.log(result)
+        })
+      }
+    }, loadOptions)
+    if (loadRef.current) observer.observe(loadRef.current)
+
+    return () => {
+      if (loadRef.current) observer.unobserve(loadRef.current)
+    }
+
+  }, [loadRef, loadOptions])
 
   const isTeacher = localStorage.getItem("isTeacher") === "true";
 
@@ -71,7 +100,8 @@ export function ShowHomeFeed() {
         "postId": id
       })
     });
-    await getAllPosts().then((result) => {
+    // TODO: ??
+    await getPosts().then((result) => {
       setGroupPosts(result)
     })
   }
@@ -97,7 +127,8 @@ export function ShowHomeFeed() {
         })
       });
       setNewComment("");
-      await getAllPosts().then((result) => {
+      // TODO ??
+      await getPosts().then((result) => {
         setGroupPosts(result)
       })
       document.getElementById(`post-comments-${id}`).scrollTop = document.getElementById(`post-comments-${id}`).scrollHeight;
@@ -222,6 +253,7 @@ export function ShowHomeFeed() {
                   ))
                   }
                   </div>}
+              <div ref={loadRef}/>
             </>
             :
             <div>
