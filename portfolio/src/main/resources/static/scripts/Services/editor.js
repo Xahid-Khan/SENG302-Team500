@@ -66,19 +66,19 @@ class Editor {
               </div>
               <label id="start-date-label-${this.entityId}">Start Date*:</label>
               <input type=${this.allowTimeInput ? "datetime-local"
-        : "date"} name="start-date" class="date-input" id="edit-start-date-${this.entityId}" min=${this.title
+        : "date"} name="start-date" class="date-input" id="edit-start-date-${this.entityId}" min=${this.title === "Edit project details:" ? oneYearAgo : (this.title
     !== "New project details:" ? this.allowTimeInput ? DatetimeUtils.toLocalYMD(
         this.project.startDate) + "T00:00:00" : DatetimeUtils.toLocalYMD(
-        this.project.startDate) : oneYearAgo} max=${this.title
+        this.project.startDate) : oneYearAgo)} max=${this.title
     !== "New project details:" ? this.allowTimeInput ? DatetimeUtils.toLocalYMD(
             actualEndDate) + "T00:00:00" : DatetimeUtils.toLocalYMD(actualEndDate)
         : ""}>
                 <br/>
               <label id="end-date-label-${this.entityId}">End Date*:</label>
               <input type=${this.allowTimeInput ? "datetime-local"
-        : "date"} name="end-date" class="date-input" id="edit-end-date-${this.entityId}" min=${this.title
+        : "date"} name="end-date" class="date-input" id="edit-end-date-${this.entityId}" min=${this.title === "Edit project details:" ? oneYearAgo : (this.title
     !== "New project details:" ? DatetimeUtils.toLocalYMD(
-        this.project.startDate) + "T00:00:00" : ""} max=${this.title
+        this.project.startDate) + "T00:00:00" : "")} max=${this.title
     !== "New project details:" ? DatetimeUtils.toLocalYMD(actualEndDate)
         + "T00:00:00" : ""}>
                 <br/>
