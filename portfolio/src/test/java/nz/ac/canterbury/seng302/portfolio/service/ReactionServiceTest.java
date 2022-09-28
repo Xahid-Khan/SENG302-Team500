@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.service;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 
 import java.util.ArrayList;
@@ -34,6 +35,8 @@ class ReactionServiceTest {
   private UserAccountService userAccountService;
   @Mock
   private PostModelRepository postModelRepository;
+  @Mock
+  private NotificationService notificationService;
 
   private CommentReactionContract commentReactionContract1;
   private CommentReactionContract commentReactionContract2;
@@ -198,6 +201,7 @@ class ReactionServiceTest {
    */
   @Test
   void processAPostHighFiveThatUserHasNotReactedToExpectPass() {
+    Mockito.when(notificationService.create(any())).thenReturn(null);
     Mockito.when(mockReactionRepository.getReactionsByUserId(any(int.class)))
         .thenReturn(new ArrayList<>());
     Mockito.when(mockReactionRepository.save(any())).thenReturn(allReactionsPosts.get(1));
