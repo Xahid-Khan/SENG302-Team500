@@ -71,7 +71,6 @@ class PingPageStore {
     }
 
     saveEdit(location: string) {
-      console.log(this)
         if (this.connected) {
             console.log("Attempting to send ping...")
             this.stomp.publish({
@@ -102,13 +101,10 @@ class PingPageStore {
     let store = this;
     let socket = new SockJS(this.path)
     store.stomp = Stomp.over(socket);
-
     store.stomp.connect({}, () => {
       console.log("Connected.")
       console.log("Subscribing...")
       store.connectStatus = new LoadingDone()
-        console.log(destination)
-        console.log(location)
       if (destination === "alert") {
         store.stomp.subscribe("/topic/" + location, (message: StompMessage) => {
           store.onReceiveEditAlert(message)

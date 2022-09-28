@@ -41,8 +41,6 @@ public class LiveUpdatesController {
   @SendTo("/topic/notification")
   public String notify(
       @AuthenticationPrincipal PreAuthenticatedAuthenticationToken principal, String username) {
-    // TODO: Parse whatever message format is decided in live_updating.ts
-    System.err.println("We are in");
     return username;
   }
 }
