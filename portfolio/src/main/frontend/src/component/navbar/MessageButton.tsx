@@ -4,6 +4,7 @@ import {Badge, Box, IconButton} from "@mui/material";
 import {ChatList} from "./ChatList";
 import {MessageList} from "./MessageList";
 import MailIcon from '@mui/icons-material/Mail';
+import {AddChatPopover} from "./AddChatPopover";
 
 export const MessageButton: React.FC = observer(() => {
 
@@ -66,6 +67,12 @@ export const MessageButton: React.FC = observer(() => {
                 open={openChat}
                 onClose={handleClose}
                 conversation={conversation}
+                backButtonCallback={handleBackClick}
+            />
+
+            <AddChatPopover
+                open={openAdd}
+                onClose={handleClose}
                 backButtonCallback={handleBackClick}
             />
 

@@ -117,7 +117,7 @@ export const ChatList: React.FC<IChatListProps> = observer((props: IChatListProp
                         justifyContent: "space-between"
                     }}>
                         <Typography>Chats</Typography>
-                        <IconButton onClick={props.addButtonCallback}>
+                        <IconButton id='add-button' onClick={props.addButtonCallback}>
                             <AddIcon></AddIcon>
                         </IconButton>
                     </Box>
