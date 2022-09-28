@@ -54,10 +54,10 @@ public class PostService {
   }
 
   /**
-   * This funciton will create new instance of the post and save it in the database.
+   * This function will create new instance of the post and save it in the database.
    *
    * @param newPost A post contract containing groupId and contents of the post.
-   * @param userId Integer (Id of the user who made the post)
+   * @param userId Integer (The id of the user who made the post)
    * @return True if successful false otherwise.
    */
   public boolean createPost(PostContract newPost, int userId) {
