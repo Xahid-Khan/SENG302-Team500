@@ -4,18 +4,17 @@ import {Badge, Box, Divider, IconButton, Menu, MenuItem, Typography} from "@mui/
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import {NotificationContract} from "../../contract/NotificationContract";
 import {NotificationItem} from "./NotificationItem";
+import {getAPIAbsolutePath} from "../../util/RelativePathUtil";
 
 export const NotificationDropdown: React.FC = observer(() => {
 
     const userId = parseInt(window.localStorage.getItem("userId"))
     const globalUrlPathPrefix = localStorage.getItem("globalUrlPathPrefix");
-    const globalImagePath = localStorage.getItem("globalImagePath");
-    console.log(globalUrlPathPrefix)
-    console.log(globalImagePath)
 
     const [notifications, setNotifications] = React.useState([])
     const [numUnseen, setNumUnseen] = React.useState(0)
 
+    // Adapted from https://mui.com/material-ui/react-menu/
     //the element that was last clicked on
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -28,34 +27,36 @@ export const NotificationDropdown: React.FC = observer(() => {
     //uses the last clicked element to determine which menu to open
     const open = anchorEl?.id === 'notification-button';
 
-    const getNotifications = async () => {
-        const globalUrlPathPrefix = window.localStorage.getItem("globalUrlPathPrefix")
-        const path = location.protocol + '//' + location.host + globalUrlPathPrefix + '/' + `api/v1/notifications/${userId}`
-        const notifications = await fetch(path, {
+    const fetchNotifications = async () => {
+        const notifications = await fetch(getAPIAbsolutePath(globalUrlPathPrefix, `notifications/${userId}`), {
                 method: 'GET'
             }
         )
-        console.log(globalUrlPathPrefix)
-        console.log(globalImagePath)
         return notifications.json()
     }
 
-    const markAllAsSeen = async () => {
-        const globalUrlPathPrefix = window.localStorage.getItem("globalUrlPathPrefix")
-        const path = location.protocol + '//' + location.host + globalUrlPathPrefix + '/' + `api/v1/notifications/${userId}`
-        await fetch(path, {
-                method: 'POST'
-            }
-        )
-        getNotifications().then((result) => {
+    const fetchAndSetNotifications = () => {
+        fetchNotifications().then((result) => {
             setNotifications(result)
         })
     }
 
+    const markAllAsSeen = async () => {
+        await fetch(getAPIAbsolutePath(globalUrlPathPrefix, `notifications/seen/${userId}`), {
+                method: 'POST'
+            }
+        )
+        fetchAndSetNotifications();
+    }
+
     useEffect(() => {
-        getNotifications().then((result) => {
-            setNotifications(result)
-        })
+        fetchAndSetNotifications();
+
+        //add event listener for live updating
+        window.addEventListener('notification', fetchAndSetNotifications);
+        return () => {
+            window.removeEventListener('notification', fetchAndSetNotifications);
+        };
     }, [])
 
     useEffect(() => {
@@ -88,13 +89,13 @@ export const NotificationDropdown: React.FC = observer(() => {
         <React.Fragment>
             <Box sx={{display: 'flex', alignItems: 'center', textAlign: 'center'}}>
                 <IconButton
+                    // Adapted from https://mui.com/material-ui/react-menu/
                     id={'notification-button'}
                     onClick={(x) => {
                         handleClick(x);
                         markAllAsSeen();
                     }}
                     size="small"
-                    sx={{ml: 2}}
                     aria-controls={open ? 'notification-menu' : undefined}
                     aria-haspopup="true"
                     aria-expanded={open ? 'true' : undefined}
@@ -106,6 +107,7 @@ export const NotificationDropdown: React.FC = observer(() => {
 
             </Box>
             <Menu
+                // Adapted from https://mui.com/material-ui/react-menu/
                 anchorEl={anchorEl}
                 id="notification-menu"
                 open={open}

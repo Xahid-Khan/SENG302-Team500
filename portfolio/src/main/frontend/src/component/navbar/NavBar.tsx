@@ -9,10 +9,14 @@ import {
 } from "@mui/material";
 import {NotificationDropdown} from "../notifications/NotificationDropdown";
 import {AccountDropdown} from "./AccountDropdown";
+import {getAbsolutePath} from "../../util/RelativePathUtil";
+import {Message as StompMessage} from "@stomp/stompjs/esm6/i-message";
+import {Socket} from "../../entry/live_updating";
+import {MessageButton} from "./MessageButton";
 
 export const navigateTo = (page: string) => {
     const globalUrlPathPrefix = window.localStorage.getItem("globalUrlPathPrefix")
-    window.location.href = location.protocol + '//' + location.host + globalUrlPathPrefix + '/' + page
+    window.location.href = getAbsolutePath(globalUrlPathPrefix, page)
 }
 
 export const NavBar: React.FC = observer(() => {
@@ -23,7 +27,7 @@ export const NavBar: React.FC = observer(() => {
                 <Toolbar>
                     <Box>
                         <Typography
-                            variant="h5">SENG302</Typography>
+                            variant="h5">SENG SPRINTR</Typography>
                     </Box>
 
                     <Box sx={{pl: 2, flexGrow: 1}}>
@@ -41,6 +45,7 @@ export const NavBar: React.FC = observer(() => {
                         </Button>
                     </Box>
 
+                    <MessageButton></MessageButton>
                     <NotificationDropdown></NotificationDropdown>
                     <AccountDropdown></AccountDropdown>
 

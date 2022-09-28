@@ -151,7 +151,7 @@ export function ShowAllGroups({setViewGroupId}: any) {
     }
 
     const unsubscribeUserToGroup = async (groupId: number) => {
-        const subscriptionResponse = await fetch(`api/v1/subscribe`, {
+        const subscriptionResponse = await fetch(`api/v1/unsubscribe`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'
