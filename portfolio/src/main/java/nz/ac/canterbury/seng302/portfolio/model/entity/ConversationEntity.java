@@ -8,6 +8,7 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Fetch;
@@ -25,6 +26,7 @@ public class ConversationEntity extends PortfolioEntity {
   //  Read more:
   // https://sites.google.com/a/pintailconsultingllc.com/java/hibernate-extra-lazy-collection-fetching
   @LazyCollection(LazyCollectionOption.EXTRA)
+  @OrderBy(value = "timeSent desc")
   private final List<MessageEntity> messages = new ArrayList<>();
   // Eager since loading all IDs always is vital
   @ElementCollection(fetch = FetchType.EAGER)

@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import nz.ac.canterbury.seng302.portfolio.mapping.ConversationMapper;
 import nz.ac.canterbury.seng302.portfolio.model.contract.ConversationContract;
@@ -7,6 +8,10 @@ import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseConver
 import nz.ac.canterbury.seng302.portfolio.model.entity.ConversationEntity;
 import nz.ac.canterbury.seng302.portfolio.repository.ConversationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 /** This service handles interacting with the repository for conversations. */
@@ -30,12 +35,16 @@ public class ConversationService {
   }
 
   /**
-   * Deletes a conversation based on its ID.
+   * Gets paginated conversations using a PageRequest.
    *
-   * @param conversationId the conversation's ID
+   * @param userId the user ID to get paginated conversations for
+   * @param page which page of the data to load (I.E., 0 will load 0 - limit)
+   * @param limit the limit of posts to grab, must be greater than 0
+   * @return paginated conversations
    */
-  public void deleteConversation(String conversationId) {
-    conversationRepository.deleteById(conversationId);
+  public Page<ConversationEntity> getPaginatedConversations(int userId, int page, int limit) {
+    Pageable request = PageRequest.of(page, limit);//, Sort.by("creationDate").descending());
+    return conversationRepository.getPaginatedPostsByUserIdsIn(List.of(userId), request);
   }
 
   /**
