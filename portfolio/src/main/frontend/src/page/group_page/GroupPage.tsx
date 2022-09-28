@@ -39,7 +39,6 @@ export const GroupPage = () => {
         <DeleteGroupModal/>
         <EditGroupMembersModal viewGroupId={viewGroupId}/>
         <RemoveMemberModal/>
-        <GroupSettingsModal viewGroupId={viewGroupId}/>
       </ToasterRoot>
   )
 }
