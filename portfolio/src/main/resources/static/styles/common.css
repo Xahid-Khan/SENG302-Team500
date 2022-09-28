@@ -126,5 +126,16 @@ input, textarea {
 }
 .border-line{
   border-top: #666666 solid 1px;
-  margin: 10px 0px;
+  margin: 10px 0;
+}
+.commit-box {
+  float: right;
+  max-width: 49%;
+  overflow-wrap: anywhere;
+}
+
+.branch-box {
+  float: left;
+  max-width: 49%;
+  overflow-wrap: anywhere;
 }

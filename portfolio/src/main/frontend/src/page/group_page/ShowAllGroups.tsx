@@ -228,40 +228,46 @@ export function ShowAllGroups({setViewGroupId}: any) {
               <h3 className={'group-name-long'}>{group['longName']}</h3>
               {groups_page_user_list(group)}
               <div className={"groups-page-repository"} id={`groups-repository-${group['id']}`}>
-                {group.branches.length > 0 ?
-                    <>
-                      <h2 className={'group-repository-title'}>{group.alias}</h2>
-                      <h3 className={'group-repository-title'} style={{margin: 0}}>Branches</h3>
-                      <div className={"table"} id={"group-list-branches"}
-                           style={{marginLeft: "20px"}}>
-                        {group.branches.map((branch: any) => (
-                            <div className="tableRow">
-                              <div className="tableCell">
-                                <a href={branch.web_url}
-                                   target="_blank">{branch.name} ({group.commits.length} commits)</a>
-                                <br></br>
-                              </div>
-                            </div>
-                        ))}
-                      </div>
-                      <h3 className={'group-repository-title'}
-                          style={{marginBottom: 0}}>Commits</h3>
-                      <div className={"table"} id={"group-list-commits"}
-                           style={{marginLeft: "20px"}}>
-                        {group.commits.map((commit: any) => (
-                            <div className="tableRow">
-                              <div className="tableCell">
-                                <strong>Name:</strong>{commit['author_name']} <br></br>
-                                <strong>Message:</strong> {commit['message']} <br></br>
-                                <strong>ID:</strong><a href={commit['web_url']}
-                                                       target="_blank">{commit['id']}</a> <br></br>
-                              </div>
-                            </div>
-                        ))}
-                      </div>
-                    </>
+                <h2>Repository Information:</h2>
+                {group.token.length > 0 ?
+                    group.token === "INVALID" ?
+                      <p style={{color:"red"}}>The token provided is either expired or invalid</p>
+                      :
+                      <>
+                        <h2 className={'group-repository-title'}>{group.alias}</h2>
+                        <div className={"branch-box"}>
+                          <h3 className={'group-repository-title'} style={{margin: 0}}>Branches</h3>
+                          <div className={"table"} id={"group-list-branches"}>
+                            {group.branches.map((branch: any) => (
+                                <div className="tableRow" style={{display: "grid", minHeight: "40px"}}>
+                                  <div className="tableCell">
+                                    <a href={branch.web_url}
+                                       target="_blank">{branch.name} ({group.commits.length} commits)</a>
+                                    <br></br>
+                                  </div>
+                                </div>
+                            ))}
+                          </div>
+                        </div>
+                        <div className={"commit-box"}>
+                          <h3 className={'group-repository-title'}
+                              style={{marginBottom: 0}}>Commits</h3>
+                          <div className={"table"} id={"group-list-commits"}>
+                            {group.commits.map((commit: any) => (
+                                <div className="tableRow">
+                                  <div className="tableCell">
+                                    <strong>Name:</strong>{commit['author_name']} <br></br>
+                                    <strong>Message:</strong> {commit['message']} <br></br>
+                                    <strong>ID:</strong><a href={commit['web_url']}
+                                                           target="_blank">{commit['id']}</a> <br></br>
+                                  </div>
+                                </div>
+                            ))}
+                          </div>
+                        </div>
+                      </>
                     :
-                    <></>
+                    <p style={{color:"orange"}}>This group does not have any repository associated with it.</p>
                 }
               </div>
             </div>

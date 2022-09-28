@@ -85,7 +85,7 @@ public class GroupsController extends AuthenticatedController {
                 groupDetails.getLongName(),
                 groupRepoData.alias(),
                 groupRepoData.repositoryId(),
-                groupRepoData.token(),
+                groupRepoData.token() == "" ? "" : repoData.get(0).getStatusCode().is2xxSuccessful() ? groupRepoData.token() : "INVALID",
                 userCanEdit,
                 getUsers(groupDetails.getMembersList()),
                 repoData.get(0).getStatusCode().is2xxSuccessful() ? repoData.get(0).getBody()
