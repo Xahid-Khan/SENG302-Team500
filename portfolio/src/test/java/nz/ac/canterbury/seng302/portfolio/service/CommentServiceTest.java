@@ -2,7 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.service;
 
 import nz.ac.canterbury.seng302.portfolio.model.contract.CommentContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.CommentModel;
-import nz.ac.canterbury.seng302.portfolio.repository.CommentModelRepository;
+import nz.ac.canterbury.seng302.portfolio.repository.CommentRepository;
 import nz.ac.canterbury.seng302.portfolio.repository.PostRepository;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.junit.jupiter.api.Assertions;
@@ -26,7 +26,7 @@ class CommentServiceTest {
     private CommentService commentService;
 
     @Mock
-    private CommentModelRepository mockCommentRepository;
+    private CommentRepository mockCommentRepository;
 
     @Mock
     private PostRepository postRepository;

@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import nz.ac.canterbury.seng302.portfolio.model.contract.CommentReactionContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.PostReactionContract;
-import nz.ac.canterbury.seng302.portfolio.model.entity.ReactionModel;
+import nz.ac.canterbury.seng302.portfolio.model.entity.ReactionEntity;
 import nz.ac.canterbury.seng302.portfolio.repository.PostRepository;
-import nz.ac.canterbury.seng302.portfolio.repository.ReactionModelRepository;
+import nz.ac.canterbury.seng302.portfolio.repository.ReactionRepository;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,7 +27,7 @@ class ReactionServiceTest {
   @InjectMocks
   private ReactionService reactionService;
   @Mock
-  private ReactionModelRepository mockReactionRepository;
+  private ReactionRepository mockReactionRepository;
   @Mock
   private UserAccountService userAccountService;
   @Mock
@@ -41,8 +41,8 @@ class ReactionServiceTest {
   private PostReactionContract postReactionContract2;
   private PostReactionContract postReactionContract3;
 
-  private List<ReactionModel> allReactionsPosts;
-  private List<ReactionModel> allReactionsComments;
+  private List<ReactionEntity> allReactionsPosts;
+  private List<ReactionEntity> allReactionsComments;
   private UserResponse user;
   private UserResponse user1;
   private UserResponse user2;
@@ -56,11 +56,11 @@ class ReactionServiceTest {
     commentReactionContract1 = new CommentReactionContract(1, 1, 1);
     commentReactionContract2 = new CommentReactionContract(1, 2, 2);
     commentReactionContract3 = new CommentReactionContract(2, 3, 1);
-    ReactionModel comment1 = new ReactionModel(commentReactionContract1.userId(),
+    ReactionEntity comment1 = new ReactionEntity(commentReactionContract1.userId(),
         commentReactionContract1.postId(), commentReactionContract1.commentId());
-    ReactionModel comment2 = new ReactionModel(commentReactionContract2.userId(),
+    ReactionEntity comment2 = new ReactionEntity(commentReactionContract2.userId(),
         commentReactionContract2.postId(), commentReactionContract2.commentId());
-    ReactionModel comment3 = new ReactionModel(commentReactionContract3.userId(),
+    ReactionEntity comment3 = new ReactionEntity(commentReactionContract3.userId(),
         commentReactionContract3.postId(), commentReactionContract3.commentId());
     allReactionsComments.add(comment1);
     allReactionsComments.add(comment2);
@@ -69,11 +69,11 @@ class ReactionServiceTest {
     postReactionContract1 = new PostReactionContract(1, 1);
     postReactionContract2 = new PostReactionContract(2, 1);
     postReactionContract3 = new PostReactionContract(1, 3);
-    ReactionModel comment4 = new ReactionModel(postReactionContract1.userId(),
+    ReactionEntity comment4 = new ReactionEntity(postReactionContract1.userId(),
         postReactionContract1.postId());
-    ReactionModel comment5 = new ReactionModel(postReactionContract2.userId(),
+    ReactionEntity comment5 = new ReactionEntity(postReactionContract2.userId(),
         postReactionContract2.postId());
-    ReactionModel comment6 = new ReactionModel(postReactionContract3.userId(),
+    ReactionEntity comment6 = new ReactionEntity(postReactionContract3.userId(),
         postReactionContract3.postId());
     allReactionsPosts.add(comment4);
     allReactionsPosts.add(comment5);

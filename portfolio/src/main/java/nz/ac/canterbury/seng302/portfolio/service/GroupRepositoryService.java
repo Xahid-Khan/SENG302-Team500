@@ -6,7 +6,7 @@ import java.util.NoSuchElementException;
 import nz.ac.canterbury.seng302.portfolio.mapping.GroupRepositoryMapper;
 import nz.ac.canterbury.seng302.portfolio.model.contract.GroupRepositoryContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.GroupRepositoryEntity;
-import nz.ac.canterbury.seng302.portfolio.model.entity.GroupRepositoryRepository;
+import nz.ac.canterbury.seng302.portfolio.repository.GroupRepositoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

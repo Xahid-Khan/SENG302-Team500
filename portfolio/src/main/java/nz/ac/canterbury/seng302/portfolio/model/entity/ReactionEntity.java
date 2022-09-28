@@ -9,7 +9,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "reaction_model")
-public class ReactionModel {
+public class ReactionEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
@@ -25,15 +25,15 @@ public class ReactionModel {
   @Column(name = "comment_id")
   private int commentId;
 
-  protected ReactionModel() {
+  protected ReactionEntity() {
   }
 
-  public ReactionModel(int userId, int postId) {
+  public ReactionEntity(int userId, int postId) {
     this.userId = userId;
     this.postId = postId;
   }
 
-  public ReactionModel(int userId, int postId, int commentId) {
+  public ReactionEntity(int userId, int postId, int commentId) {
     this.userId = userId;
     this.postId = postId;
     this.commentId = commentId;

@@ -41,7 +41,7 @@ public class PostEntity {
 
   @ManyToOne
   @JoinColumn(name = "reaction_model_ID")
-  private ReactionModel reactionModel;
+  private ReactionEntity reactionEntity;
 
   protected PostEntity() {
   }
@@ -57,12 +57,12 @@ public class PostEntity {
     this.created = new Timestamp(date.getTime());
   }
 
-  public ReactionModel getReactionModel() {
-    return reactionModel;
+  public ReactionEntity getReactionModel() {
+    return reactionEntity;
   }
 
-  public void setReactionModel(ReactionModel reactionModel) {
-    this.reactionModel = reactionModel;
+  public void setReactionModel(ReactionEntity reactionEntity) {
+    this.reactionEntity = reactionEntity;
   }
 
   public Timestamp getCreated() {

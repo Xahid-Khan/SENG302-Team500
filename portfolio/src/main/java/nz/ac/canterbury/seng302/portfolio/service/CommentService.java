@@ -9,7 +9,7 @@ import nz.ac.canterbury.seng302.portfolio.model.contract.CommentContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseNotificationContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.CommentModel;
 import nz.ac.canterbury.seng302.portfolio.model.entity.PostEntity;
-import nz.ac.canterbury.seng302.portfolio.repository.CommentModelRepository;
+import nz.ac.canterbury.seng302.portfolio.repository.CommentRepository;
 import nz.ac.canterbury.seng302.portfolio.repository.PostRepository;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service;
 public class CommentService {
 
   @Autowired
-  private CommentModelRepository commentRepository;
+  private CommentRepository commentRepository;
 
   @Autowired
   private UserAccountService userAccountService;

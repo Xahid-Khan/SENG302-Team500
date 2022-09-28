@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * CRUD Repository for a comment on a post
  */
-public interface CommentModelRepository extends CrudRepository<CommentModel, Integer> {
+public interface CommentRepository extends CrudRepository<CommentModel, Integer> {
     boolean deleteById (int commentId);
 
     List<CommentModel> findAllCommentByPostId(int postId);

@@ -4,7 +4,7 @@ import nz.ac.canterbury.seng302.portfolio.mapping.GroupRepositoryMapper;
 import nz.ac.canterbury.seng302.portfolio.model.contract.GroupRepositoryContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseGroupRepositoryContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.GroupRepositoryEntity;
-import nz.ac.canterbury.seng302.portfolio.model.entity.GroupRepositoryRepository;
+import nz.ac.canterbury.seng302.portfolio.repository.GroupRepositoryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

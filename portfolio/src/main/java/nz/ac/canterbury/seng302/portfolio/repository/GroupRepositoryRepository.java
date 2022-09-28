@@ -1,5 +1,6 @@
-package nz.ac.canterbury.seng302.portfolio.model.entity;
+package nz.ac.canterbury.seng302.portfolio.repository;
 
+import nz.ac.canterbury.seng302.portfolio.model.entity.GroupRepositoryEntity;
 import org.springframework.data.repository.CrudRepository;
 
 /**

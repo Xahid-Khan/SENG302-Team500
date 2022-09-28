@@ -13,7 +13,9 @@ import nz.ac.canterbury.seng302.portfolio.model.contract.CommentContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.PostContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.PostReactionContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.PostEntity;
+import nz.ac.canterbury.seng302.portfolio.repository.CommentRepository;
 import nz.ac.canterbury.seng302.portfolio.repository.PostRepository;
+import nz.ac.canterbury.seng302.portfolio.repository.ReactionRepository;
 import nz.ac.canterbury.seng302.shared.identityprovider.GroupDetailsResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.junit.jupiter.api.Assertions;
@@ -35,6 +37,8 @@ class GroupFeedServiceTest {
   @InjectMocks private PostService postService;
   @InjectMocks private ReactionService reactionService;
   @Mock private PostRepository mockPostRepository;
+  @Mock private CommentRepository mockCommentRepository;
+  @Mock private ReactionRepository mockReactionRepository;
   @Mock private CommentService commentService;
 
   @InjectMocks private CommentService commentServiceMock;
@@ -247,6 +251,7 @@ class GroupFeedServiceTest {
   /** High five a post and notifications should be sent out as expected */
   @Test
   void highFivePostAndSendNotifications() {
+    Mockito.when(mockReactionRepository.save(any())).thenReturn(null);
     PostReactionContract postReactionContract =
         new PostReactionContract(newPost.getId(), newPost.getUserId());
     Mockito.when(mockPostRepository.findById(newPost.getId()))
@@ -262,6 +267,7 @@ class GroupFeedServiceTest {
   /** Comment on a post and notifications should be sent out as expected */
   @Test
   void commentOnPostAndSendNotifications() {
+    Mockito.when(mockCommentRepository.save(any())).thenReturn(null);
     CommentContract commentContract =
         new CommentContract(newPost.getUserId(), newPost.getId(), "test");
     Mockito.when(mockPostRepository.findById(newPost.getId()))

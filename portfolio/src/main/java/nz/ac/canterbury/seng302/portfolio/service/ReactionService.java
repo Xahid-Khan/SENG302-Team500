@@ -8,9 +8,9 @@ import nz.ac.canterbury.seng302.portfolio.model.contract.CommentReactionContract
 import nz.ac.canterbury.seng302.portfolio.model.contract.PostReactionContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseNotificationContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.PostEntity;
-import nz.ac.canterbury.seng302.portfolio.model.entity.ReactionModel;
+import nz.ac.canterbury.seng302.portfolio.model.entity.ReactionEntity;
 import nz.ac.canterbury.seng302.portfolio.repository.PostRepository;
-import nz.ac.canterbury.seng302.portfolio.repository.ReactionModelRepository;
+import nz.ac.canterbury.seng302.portfolio.repository.ReactionRepository;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service;
 public class ReactionService {
 
   @Autowired
-  private ReactionModelRepository reactionRepository;
+  private ReactionRepository reactionRepository;
 
   @Autowired
   private UserAccountService userAccountService;
@@ -37,9 +37,9 @@ public class ReactionService {
    * get all the reactions for a specific user, using the user id.
    *
    * @param userId integer
-   * @return List of ReactionModel
+   * @return List of ReactionEntity
    */
-  public List<ReactionModel> getReactionsByUserId(int userId) {
+  public List<ReactionEntity> getReactionsByUserId(int userId) {
     return reactionRepository.getReactionsByUserId(userId);
   }
 
@@ -47,9 +47,9 @@ public class ReactionService {
    * get all the reaction for a post, using the post id.
    *
    * @param postId integer
-   * @return List of ReactionModel
+   * @return List of ReactionEntity
    */
-  public List<ReactionModel> getReactionByPostId(int postId) {
+  public List<ReactionEntity> getReactionByPostId(int postId) {
     return reactionRepository.getReactionsByPostId(postId);
   }
 
@@ -57,9 +57,9 @@ public class ReactionService {
    * get all the reactions for a comment, using the comment id.
    *
    * @param commentId integer
-   * @return List of ReactionModel
+   * @return List of ReactionEntity
    */
-  public List<ReactionModel> getReactionByCommentId(int commentId) {
+  public List<ReactionEntity> getReactionByCommentId(int commentId) {
     return reactionRepository.getReactionsByCommentId(commentId);
   }
 
@@ -72,10 +72,10 @@ public class ReactionService {
    * @return True if successful else False.
    */
   public boolean processPostHighFive(PostReactionContract postReactionContract) {
-    List<ReactionModel> reactions = reactionRepository.getReactionsByUserId(
+    List<ReactionEntity> reactions = reactionRepository.getReactionsByUserId(
         postReactionContract.userId());
 
-    for (ReactionModel reaction : reactions) {
+    for (ReactionEntity reaction : reactions) {
       if (reaction.getPostId() == postReactionContract.postId()
           && reaction.getUserId() == postReactionContract.userId()) {
         return removeHighFive(reaction.getId());
@@ -94,10 +94,10 @@ public class ReactionService {
    * @return True if successful else False.
    */
   public boolean processCommentHighFive(CommentReactionContract commentReactionContract) {
-    List<ReactionModel> reactions = reactionRepository.getReactionsByUserId(
+    List<ReactionEntity> reactions = reactionRepository.getReactionsByUserId(
         commentReactionContract.userId());
 
-    for (ReactionModel reaction : reactions) {
+    for (ReactionEntity reaction : reactions) {
       if (reaction.getPostId() == commentReactionContract.postId()
           && reaction.getUserId() == commentReactionContract.userId()
           && reaction.getCommentId() == commentReactionContract.commentId()) {
@@ -115,7 +115,7 @@ public class ReactionService {
    */
   public boolean addHighFiveToPost(PostReactionContract postReactionContract) {
     try {
-      ReactionModel newReaction = new ReactionModel(postReactionContract.userId(),
+      ReactionEntity newReaction = new ReactionEntity(postReactionContract.userId(),
           postReactionContract.postId());
       reactionRepository.save(newReaction);
       Optional<PostEntity> post = postRepository.findById(postReactionContract.postId());
@@ -138,7 +138,7 @@ public class ReactionService {
    */
   public boolean addHighFiveToComment(CommentReactionContract commentReactionContract) {
     try {
-      ReactionModel newReaction = new ReactionModel(commentReactionContract.userId(),
+      ReactionEntity newReaction = new ReactionEntity(commentReactionContract.userId(),
           commentReactionContract.postId(), commentReactionContract.commentId());
       reactionRepository.save(newReaction);
       return true;
@@ -170,7 +170,7 @@ public class ReactionService {
    * @return A list of all the usernames.
    */
   public List<String> getUsernamesOfUsersWhoReactedToPost(int postId) {
-    List<ReactionModel> reactions = getReactionByPostId(postId);
+    List<ReactionEntity> reactions = getReactionByPostId(postId);
     List<String> userNames = new ArrayList<>();
     reactions.forEach(reaction -> userNames.add(
         userAccountService.getUserById(reaction.getUserId()).getUsername()));
@@ -185,7 +185,7 @@ public class ReactionService {
    * @return A list of all the usernames.
    */
   public List<String> getUsernamesOfUsersWhoReactedToComment(int commentId) {
-    List<ReactionModel> reactions = getReactionByCommentId(commentId);
+    List<ReactionEntity> reactions = getReactionByCommentId(commentId);
     List<String> userNames = new ArrayList<>();
     reactions.forEach(reaction -> userNames.add(
         userAccountService.getUserById(reaction.getUserId()).getUsername()));
