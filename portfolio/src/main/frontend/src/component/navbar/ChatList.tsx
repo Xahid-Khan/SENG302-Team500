@@ -79,11 +79,14 @@ export const ChatList: React.FC<IChatListProps> = observer((props: IChatListProp
 
     const chats_items = () =>
         chats.map((contract: any) =>
-            <ChatListItem
-                key={contract.conversationId}
-                contract={contract}
-                clickCallback={props.chatButtonCallback}
-            />
+            <>
+                <ChatListItem
+                    key={contract.conversationId}
+                    contract={contract}
+                    clickCallback={props.chatButtonCallback}
+                />
+                <Divider/>
+            </>
         )
 
     const no_chats_item = () => {

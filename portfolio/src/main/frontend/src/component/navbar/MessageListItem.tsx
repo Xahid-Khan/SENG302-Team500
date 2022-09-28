@@ -11,21 +11,21 @@ interface IMessageListItemProps {
 const theirBubbleStyle =
     {
         maxWidth: '100%',
-        padding: '4px',
-        borderRadius: '5px',
-        boxShadow: '0 6px 20px rgba(0,0,0,0.30)',
+        padding: '6px',
+        borderRadius: '0px 8px 8px 8px',
         color: '#f9f9f9',
         background: 'royalblue',
+        marginRight: '10%',
     };
 
 const myBubbleStyle =
     {
         maxWidth: '100%',
-        padding: '4px',
-        borderRadius: '5px',
-        boxShadow: '0 6px 20px rgba(0,0,0,0.30)',
+        padding: '6px',
+        borderRadius: '8px 0px 8px 8px',
         color: '#444444',
         background: '#eeeeee',
+        marginLeft: '10%',
     };
 
 
@@ -37,7 +37,7 @@ export const MessageListItem: React.FC<IMessageListItemProps> = observer((props:
     const bubbleStyle = sentByMe ? myBubbleStyle : theirBubbleStyle;
 
     return (
-        <ListItem sx={{maxWidth: '100%'}}>
+        <ListItem sx={{maxWidth: '100%', pt: '2px', pb: '2px'}}>
             <Box sx={{flexGrow: 1, display: "flex", justifyContent: alignment, maxWidth: '100%',}}>
                 <Box sx={bubbleStyle} onClick={(e) => { props.messageButtonCallback(e, props.contract.messageId)}}>
                     <Typography variant="body2">{props.contract.messageContent}</Typography>
