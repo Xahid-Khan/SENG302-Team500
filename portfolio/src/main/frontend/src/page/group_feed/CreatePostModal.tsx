@@ -1,5 +1,6 @@
 import * as React from "react";
 import {FormEvent} from "react";
+import {Socket} from "../../entry/live_updating";
 
 export function CreatePostModal({viewGroupId}: any) {
 
@@ -33,6 +34,7 @@ export function CreatePostModal({viewGroupId}: any) {
       }).catch((e) => {
         console.log("error ", e)
       })
+
     }
   }
 
