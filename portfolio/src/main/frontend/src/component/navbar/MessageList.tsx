@@ -17,7 +17,8 @@ import SendIcon from '@mui/icons-material/Send';
 interface IMessageListProps{
     open: boolean
     onClose: () => void
-    conversationId: string
+    //TODO use contract type
+    conversation: any
     backButtonCallback: (event: React.MouseEvent<HTMLElement>) => void
 }
 
@@ -190,7 +191,7 @@ export const MessageList: React.FC<IMessageListProps> = observer((props: IMessag
                 setSelectedMessageId("");
                 props.onClose()
             }}
-            PaperProps={{sx: {maxHeight: 0.5, maxWidth: 0.4, minWidth: "300px"}}}
+            PaperProps={{sx: {maxHeight: 0.5, maxWidth: 0.3, minWidth: "300px"}}}
             transformOrigin={{horizontal: "right", vertical: "bottom"}}
             anchorOrigin={{horizontal: "right", vertical: "bottom"}}
         >

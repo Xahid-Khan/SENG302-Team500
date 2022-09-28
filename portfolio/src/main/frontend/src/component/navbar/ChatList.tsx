@@ -8,7 +8,7 @@ interface IChatListProps{
     open: boolean
     onClose: () => void
     addButtonCallback: (event: React.MouseEvent<HTMLElement>) => void
-    chatButtonCallback: (event: React.MouseEvent<HTMLElement>, id: string) => void
+    chatButtonCallback: (event: React.MouseEvent<HTMLElement>, contract: any) => void
 }
 
 export const ChatList: React.FC<IChatListProps> = observer((props: IChatListProps) => {
@@ -79,11 +79,14 @@ export const ChatList: React.FC<IChatListProps> = observer((props: IChatListProp
 
     const chats_items = () =>
         chats.map((contract: any) =>
-            <ChatListItem
-                key={contract.conversationId}
-                contract={contract}
-                clickCallback={props.chatButtonCallback}
-            />
+            <>
+                <ChatListItem
+                    key={contract.conversationId}
+                    contract={contract}
+                    clickCallback={props.chatButtonCallback}
+                />
+                <Divider/>
+            </>
         )
 
     const no_chats_item = () => {
@@ -103,7 +106,7 @@ export const ChatList: React.FC<IChatListProps> = observer((props: IChatListProp
                 id="chat-menu"
                 open={props.open}
                 onClose={props.onClose}
-                PaperProps={{sx: {maxHeight: 0.5, maxWidth: 0.4, minWidth: "300px"}}}
+                PaperProps={{sx: {maxHeight: 0.5, maxWidth: 0.3, minWidth: "300px"}}}
                 transformOrigin={{horizontal: "right", vertical: "bottom"}}
                 anchorOrigin={{horizontal: "right", vertical: "bottom"}}
             >

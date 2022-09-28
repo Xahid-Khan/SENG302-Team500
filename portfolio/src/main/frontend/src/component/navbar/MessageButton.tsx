@@ -8,7 +8,7 @@ import MailIcon from '@mui/icons-material/Mail';
 export const MessageButton: React.FC = observer(() => {
 
     const [numUnseen, setNumUnseen] = React.useState(0)
-    const [conversationId, setConversationId] = React.useState("");
+    const [conversation, setConversation] = React.useState(undefined);
 
     // Adapted from https://mui.com/material-ui/react-menu/
     //the element that was last clicked on
@@ -21,13 +21,14 @@ export const MessageButton: React.FC = observer(() => {
         setAnchorEl(null);
     };
 
-    const handleChatClick = (event: React.MouseEvent<HTMLElement>, id: string) => {
+    const handleChatClick = (event: React.MouseEvent<HTMLElement>, contract: any) => {
         handleClick(event)
-        setConversationId(id)
+        setConversation(contract)
     };
 
     const handleBackClick = () => {
         setAnchorEl(document.getElementById('chats-list-button'));
+        setConversation(undefined)
     }
 
     //uses the last clicked element to determine which menu to open
@@ -66,7 +67,7 @@ export const MessageButton: React.FC = observer(() => {
             <MessageList
                 open={openChat}
                 onClose={handleClose}
-                conversationId={conversationId}
+                conversation={conversation}
                 backButtonCallback={handleBackClick}
             />
 
