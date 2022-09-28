@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 /**
  * Tests for the PostService class
@@ -27,11 +28,6 @@ public class PostServiceTest {
 
   private final int groupId = 1;
 
-  private final PostEntity post1 = new PostEntity(1, 1, "Post 1");
-  private final PostEntity post2 = new PostEntity(2, 1, "Post 2");
-  private final PostEntity post3 = new PostEntity(3, 1, "Post 3");
-  private final PostEntity post4 = new PostEntity(4, 1, "Post 4");
-
   /**
    * Tests getting paginated posts for a group
    */
@@ -42,7 +38,7 @@ public class PostServiceTest {
 
     Page<PostEntity> postModelPage = Mockito.mock(Page.class);
 
-    Pageable buildRequest = PageRequest.of(offset,limit);
+    Pageable buildRequest = PageRequest.of(offset,limit, Sort.by("created").descending());
 
     Mockito.when(postRepository.getPaginatedPostsByGroupId(groupId,buildRequest)).thenReturn(postModelPage);
 
