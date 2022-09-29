@@ -218,7 +218,6 @@ class Application {
       }
 
       const data = await result.json();
-      console.log(`Acquired ${data.length} projects...`);
       this.projects = new Map();
       data.map(project => this.appendProject(project));
       if (this.projects.size === 1) {

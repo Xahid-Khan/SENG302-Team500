@@ -14,6 +14,7 @@ export const NotificationDropdown: React.FC = observer(() => {
     const [notifications, setNotifications] = React.useState([])
     const [numUnseen, setNumUnseen] = React.useState(0)
 
+    // Adapted from https://mui.com/material-ui/react-menu/
     //the element that was last clicked on
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -26,7 +27,7 @@ export const NotificationDropdown: React.FC = observer(() => {
     //uses the last clicked element to determine which menu to open
     const open = anchorEl?.id === 'notification-button';
 
-    const getNotifications = async () => {
+    const fetchNotifications = async () => {
         const notifications = await fetch(getAPIAbsolutePath(globalUrlPathPrefix, `notifications/${userId}`), {
                 method: 'GET'
             }
@@ -34,20 +35,28 @@ export const NotificationDropdown: React.FC = observer(() => {
         return notifications.json()
     }
 
+    const fetchAndSetNotifications = () => {
+        fetchNotifications().then((result) => {
+            setNotifications(result)
+        })
+    }
+
     const markAllAsSeen = async () => {
         await fetch(getAPIAbsolutePath(globalUrlPathPrefix, `notifications/seen/${userId}`), {
                 method: 'POST'
             }
         )
-        getNotifications().then((result) => {
-            setNotifications(result)
-        })
+        fetchAndSetNotifications();
     }
 
     useEffect(() => {
-        getNotifications().then((result) => {
-            setNotifications(result)
-        })
+        fetchAndSetNotifications();
+
+        //add event listener for live updating
+        window.addEventListener('notification', fetchAndSetNotifications);
+        return () => {
+            window.removeEventListener('notification', fetchAndSetNotifications);
+        };
     }, [])
 
     useEffect(() => {
@@ -80,13 +89,13 @@ export const NotificationDropdown: React.FC = observer(() => {
         <React.Fragment>
             <Box sx={{display: 'flex', alignItems: 'center', textAlign: 'center'}}>
                 <IconButton
+                    // Adapted from https://mui.com/material-ui/react-menu/
                     id={'notification-button'}
                     onClick={(x) => {
                         handleClick(x);
                         markAllAsSeen();
                     }}
                     size="small"
-                    sx={{ml: 2}}
                     aria-controls={open ? 'notification-menu' : undefined}
                     aria-haspopup="true"
                     aria-expanded={open ? 'true' : undefined}
@@ -98,6 +107,7 @@ export const NotificationDropdown: React.FC = observer(() => {
 
             </Box>
             <Menu
+                // Adapted from https://mui.com/material-ui/react-menu/
                 anchorEl={anchorEl}
                 id="notification-menu"
                 open={open}

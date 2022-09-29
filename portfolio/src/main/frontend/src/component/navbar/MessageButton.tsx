@@ -9,6 +9,7 @@ export const MessageButton: React.FC = observer(() => {
     const [numUnseen, setNumUnseen] = React.useState(0)
     const [conversationId, setConversationId] = React.useState("");
 
+    // Adapted from https://mui.com/material-ui/react-menu/
     //the element that was last clicked on
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -39,6 +40,7 @@ export const MessageButton: React.FC = observer(() => {
         <React.Fragment>
             <Box sx={{display: 'flex', alignItems: 'center', textAlign: 'center'}}>
                 <IconButton
+                    // Adapted from https://mui.com/material-ui/react-menu/
                     id={'chats-list-button'}
                     onClick={handleClick}
                     size="small"
