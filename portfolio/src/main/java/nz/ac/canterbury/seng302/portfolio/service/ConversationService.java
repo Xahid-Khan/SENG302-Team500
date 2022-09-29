@@ -1,7 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import nz.ac.canterbury.seng302.portfolio.mapping.ConversationMapper;
 import nz.ac.canterbury.seng302.portfolio.model.contract.ConversationContract;
@@ -44,7 +43,8 @@ public class ConversationService {
    * @return paginated conversations
    */
   public Page<ConversationEntity> getPaginatedConversations(int userId, int page, int limit) {
-    Pageable request = PageRequest.of(page, limit, Sort.by("mostRecentMessageTimestamp").descending());
+    Pageable request =
+        PageRequest.of(page, limit, Sort.by("mostRecentMessageTimestamp").descending());
     return conversationRepository.getPaginatedPostsByUserIdsIn(List.of(userId), request);
   }
 
