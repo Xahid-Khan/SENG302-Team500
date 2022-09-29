@@ -14,7 +14,6 @@ export function EditGroupSettings({group}: any) {
 
   const handleCancel = () => {
     document.getElementById("group-settings-modal-open").style.display = "none"
-    window.location.reload();
   }
 
   const validateRepositoryInfo = async (e: FormEvent) => {
@@ -78,7 +77,7 @@ export function EditGroupSettings({group}: any) {
                   <label className={"settings-title"}>Long Name:</label>
                   {group.canEdit ?
                       <input type="text" name="long-name" className="input-name" id={"long-name"}
-                             defaultValue={group.longName} maxLength={64} onChange={(e) => {
+                             placeholder={group.longName} maxLength={64} onChange={(e) => {
                         setLongName(e.target.value);
                         setLongCharCount(e.target.value.length)
                       }}/>
