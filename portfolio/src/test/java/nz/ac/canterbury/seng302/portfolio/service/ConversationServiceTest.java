@@ -17,19 +17,21 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 @SpringBootTest
 class ConversationServiceTest {
   @InjectMocks private ConversationService conversationService;
   @Mock private ConversationRepository conversationRepository;
   @Mock private ConversationMapper conversationMapper;
+  @Mock private SimpMessagingTemplate template;
 
   @BeforeEach
   void beforeEach() {
     var conversation = new ConversationEntity(List.of(1, 2, 3));
     Mockito.when(conversationMapper.toEntity(any())).thenReturn(conversation);
     Mockito.when(conversationMapper.toContract(any()))
-        .thenReturn(new ConversationContract(conversation.getId(), null, null, null));
+        .thenReturn(new ConversationContract(conversation.getId(), null, null, null, null));
   }
 
   @Test
