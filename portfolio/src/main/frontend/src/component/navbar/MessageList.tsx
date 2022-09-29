@@ -14,6 +14,7 @@ import {MessageListItem} from "./MessageListItem";
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import SendIcon from '@mui/icons-material/Send';
 import {getAPIAbsolutePath} from "../../util/RelativePathUtil";
+import {GroupAvatar} from "./GroupAvatar";
 
 interface IMessageListProps{
     open: boolean
@@ -193,11 +194,8 @@ export const MessageList: React.FC<IMessageListProps> = observer((props: IMessag
                         <IconButton onClick={props.backButtonCallback}>
                             <ChevronLeftIcon></ChevronLeftIcon>
                         </IconButton>
-                        {/*TODO how to do groups -avatarGroup?*/}
-                        {/*TODO use other id*/}
-                        <Avatar sx={{mr: 2}} src={`//${globalImagePath}${3}`}/>
-                        {/*TODO name*/}
-                        <Typography>Name</Typography>
+                        <GroupAvatar userIds={props.conversation.userIds}/>
+                        <Typography>{props.conversation.mostRecentMessage}</Typography>
                     </Box>
                 </ListSubheader>
                 <Divider/>
