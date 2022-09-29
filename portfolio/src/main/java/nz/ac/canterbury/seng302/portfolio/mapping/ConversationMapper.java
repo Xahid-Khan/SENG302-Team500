@@ -1,5 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.mapping;
 
+import java.util.ArrayList;
+import java.util.List;
 import nz.ac.canterbury.seng302.portfolio.model.contract.ConversationContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.UserContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseConversationContract;
@@ -7,11 +9,6 @@ import nz.ac.canterbury.seng302.portfolio.model.entity.ConversationEntity;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /** Mapper for conversations from JSON to entity and vice versa. */
 @Component

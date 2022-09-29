@@ -31,7 +31,8 @@ public class ConversationEntity extends PortfolioEntity {
   // Eager since loading all IDs always is vital
   @ElementCollection(fetch = FetchType.EAGER)
   @Column(nullable = false)
-  // TODO: Extend this to add "seen" field OR new ConversationSeen entity tying userId, conversationId,
+  // TODO: Extend this to add "seen" field OR new ConversationSeen entity tying userId,
+  // conversationId,
   //  and seenCount together
   private List<Integer> userIds = new ArrayList<>();
   // Makes the database automatically create the timestamp when the user is inserted
@@ -70,9 +71,10 @@ public class ConversationEntity extends PortfolioEntity {
   }
 
   /**
-   * Adds a message into the conversation. This should be done before a message is saved (to get the conversation for the message)
-   *  After, the message needs to be saved into the MessageRepository. Once both are done, setMostRecentMessageTimestamp() needs to be called,
-   *  and finally a save to the ConversationRepository with this conversation.
+   * Adds a message into the conversation. This should be done before a message is saved (to get the
+   * conversation for the message) After, the message needs to be saved into the MessageRepository.
+   * Once both are done, setMostRecentMessageTimestamp() needs to be called, and finally a save to
+   * the ConversationRepository with this conversation.
    *
    * @param message the message to add to the conversation
    */
@@ -82,8 +84,9 @@ public class ConversationEntity extends PortfolioEntity {
   }
 
   /**
-   * Sets the most recent timestamp based on the last message sent. This *must* be done after the message is saved into
-   *  the message repository, since otherwise the timestamp of the message is not generated.
+   * Sets the most recent timestamp based on the last message sent. This *must* be done after the
+   * message is saved into the message repository, since otherwise the timestamp of the message is
+   * not generated.
    */
   public void setMostRecentMessageTimestamp() {
     MessageEntity mostRecentMessage = getMostRecentMessage();
@@ -106,5 +109,7 @@ public class ConversationEntity extends PortfolioEntity {
     return creationDate;
   }
 
-  public Timestamp getMostRecentMessageTimestamp() { return mostRecentMessageTimestamp; }
+  public Timestamp getMostRecentMessageTimestamp() {
+    return mostRecentMessageTimestamp;
+  }
 }

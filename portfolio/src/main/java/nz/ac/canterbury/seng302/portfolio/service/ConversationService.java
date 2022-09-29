@@ -1,7 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import nz.ac.canterbury.seng302.portfolio.mapping.ConversationMapper;
 import nz.ac.canterbury.seng302.portfolio.model.contract.ConversationContract;
