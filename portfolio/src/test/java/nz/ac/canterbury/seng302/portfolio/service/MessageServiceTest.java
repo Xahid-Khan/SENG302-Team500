@@ -18,7 +18,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 @SpringBootTest
 class MessageServiceTest {
@@ -27,15 +29,17 @@ class MessageServiceTest {
   @Mock private MessageRepository messageRepository;
   @Mock private ConversationRepository conversationRepository;
 
+  @Mock private SimpMessagingTemplate template;
+
   @BeforeEach
   void beforeEach() {
-    var message = new MessageEntity("Hello", 1);
+    var message = new MessageEntity("Hello", 1, "Jo");
 
     Mockito.when(messageMapper.toEntity(any())).thenReturn(message);
     Mockito.when(messageMapper.toContract(any()))
         .thenReturn(
             new MessageContract(
-                null, message.getId(), message.getSentBy(), message.getMessageContent(), null));
+                null, message.getId(), message.getSentBy(), message.getSenderName(), message.getMessageContent(), null));
   }
 
   @Test
@@ -43,7 +47,7 @@ class MessageServiceTest {
     var conversation = new ConversationEntity(List.of(1, 2, 3));
     Mockito.when(conversationRepository.findById(any())).thenReturn(Optional.of(conversation));
 
-    var response = messageService.createMessage("0", new BaseMessageContract("Hello world", 2));
+    var response = messageService.createMessage("0", new BaseMessageContract("Hello world", 2, "Jo"));
 
     // Ensure that the message contract is saved
     assertNotNull(response);
@@ -53,7 +57,7 @@ class MessageServiceTest {
 
   @Test
   void testDeleteMessage() {
-    var message = new MessageEntity("a", 1);
+    var message = new MessageEntity("a", 1, "Jo");
     message.setConversation(new ConversationEntity(List.of(1, 2, 3)));
     Mockito.when(messageRepository.findById(any())).thenReturn(Optional.of(message));
     messageService.deleteMessage(message.getId());

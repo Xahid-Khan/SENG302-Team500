@@ -57,7 +57,7 @@ class ConversationRepositoryTest {
 
   @Test
   void testEnsureMostRecentConversationIsDisplayedFirstWhenUpdated() {
-    var message = new MessageEntity("Hello world", 2);
+    var message = new MessageEntity("Hello world", 2, "Jo");
     conversation3.addMessage(message);
     messageRepository.save(message);
     conversation3.setMostRecentMessageTimestamp();

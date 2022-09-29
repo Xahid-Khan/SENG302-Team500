@@ -133,6 +133,7 @@ export const AddChatPopover: React.FC<IUserListProps> = observer((props: IUserLi
     }
 
     const handleCreateClick = async(e: React.MouseEvent<HTMLElement>) => {
+        setSearch("")
         if(groupAlreadyExists()){
             props.chatButtonCallback(e, conversation)
             return

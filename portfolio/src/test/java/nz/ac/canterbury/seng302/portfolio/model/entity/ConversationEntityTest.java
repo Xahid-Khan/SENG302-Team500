@@ -38,12 +38,5 @@ class ConversationEntityTest {
     // Ensure that the getting the most recent message works
     assertEquals(
         message.getMessageContent(), conversation.getMostRecentMessage().getMessageContent());
-
-    MessageEntity message2 = new MessageEntity("Testing: 2", 1, "John");
-    conversation.addMessage(message2);
-    messageRepository.save(message2);
-
-    assertEquals(
-        message2.getMessageContent(), conversation.getMostRecentMessage().getMessageContent());
   }
 }
