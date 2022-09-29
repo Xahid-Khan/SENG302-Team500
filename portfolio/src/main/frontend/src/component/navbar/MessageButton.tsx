@@ -109,6 +109,7 @@ export const MessageButton: React.FC = observer(() => {
                 open={openChat}
                 onClose={handleClose}
                 conversation={conversation}
+                chats={chats}
                 backButtonCallback={handleBackClick}
             />
 

@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -21,6 +22,7 @@ public class MessageService {
   @Autowired private ConversationRepository conversationRepository;
   @Autowired private MessageRepository messageRepository;
   @Autowired private MessageMapper messageMapper;
+  @Autowired private SimpMessagingTemplate template;
 
   /**
    * Creates a message, returning a message contract.
@@ -33,7 +35,7 @@ public class MessageService {
   public MessageContract createMessage(
       String conversationId, BaseMessageContract baseMessageContract) {
     ConversationEntity conversation = conversationRepository.findById(conversationId).orElseThrow();
-
+    template.convertAndSend("/topic/notification", conversation.getUserIds());
     MessageEntity message = messageMapper.toEntity(baseMessageContract);
     conversation.addMessage(message);
     messageRepository.save(message);
@@ -52,7 +54,7 @@ public class MessageService {
   public void deleteMessage(String messageId) {
     MessageEntity message = messageRepository.findById(messageId).orElseThrow();
     ConversationEntity conversation = message.getConversation();
-
+    template.convertAndSend("/topic/notification", conversation.getUserIds());
     conversation.removeMessage(message);
     messageRepository.delete(message);
     conversationRepository.save(conversation);

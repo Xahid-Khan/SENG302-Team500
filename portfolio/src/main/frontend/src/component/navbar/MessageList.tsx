@@ -6,7 +6,7 @@ import {
     IconButton, List,
     ListSubheader,
     MenuItem,
-    Popover, TextField,
+    Popover, TextField, Tooltip,
     Typography
 } from "@mui/material";
 import {MessageListItem} from "./MessageListItem";
@@ -20,6 +20,7 @@ interface IMessageListProps{
     onClose: () => void
     //TODO use contract type
     conversation: any
+    chats: any
     backButtonCallback: (event: React.MouseEvent<HTMLElement>) => void
 }
 
@@ -47,15 +48,17 @@ export const MessageList: React.FC<IMessageListProps> = observer((props: IMessag
 
     const fetchAndSetMessages = () => {
         console.log("messages onmount ")
-        getMessages().then((result) => {
-            console.log("messages, ", result)
-            setMessages(result)
-        })
+        if (props.conversation != undefined) {
+            getMessages().then((result) => {
+                console.log("messages, ", result)
+                setMessages(result)
+            })
+        }
     }
 
     useEffect(() => {
         fetchAndSetMessages();
-    }, [props.conversation])
+    }, [props.conversation, props.chats])
 
     const messages_items = () =>
         messages.map((contract: any) =>
@@ -95,6 +98,14 @@ export const MessageList: React.FC<IMessageListProps> = observer((props: IMessag
             setMessage("");
         }
     }
+
+    useEffect(() => {
+        //add event listener for live updating
+        window.addEventListener('messages', fetchAndSetMessages);
+        return () => {
+            window.removeEventListener('messages', fetchAndSetMessages);
+        };
+    }, [])
 
     const handleMessageChange = (event: React.ChangeEvent<HTMLInputElement>) =>{
         setMessage(event.target.value)
@@ -206,7 +217,9 @@ export const MessageList: React.FC<IMessageListProps> = observer((props: IMessag
                         {props.conversation ? (
                             <>
                                 <GroupAvatar users={props.conversation.users}/>
-                                <Typography>{getUserNamesList(props.conversation.users)}</Typography>
+                                <Tooltip title={getUserNamesList(props.conversation.users)}>
+                                <Typography noWrap>{getUserNamesList(props.conversation.users)}</Typography>
+                                </Tooltip>
                             </>
                             ) : ""}
                     </Box>

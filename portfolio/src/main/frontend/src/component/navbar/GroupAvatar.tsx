@@ -15,11 +15,11 @@ export const GroupAvatar: React.FC<IGroupAvatarProps> = observer((props: IGroupA
     const globalImagePath = localStorage.getItem("globalImagePath");
 
     return (
-        <AvatarGroup max={2} sx={{mr: 2}} spacing={20}>
+        <AvatarGroup max={2} sx={{mr: 2}} spacing={15}>
             {props.users
                 .filter((user) => user.username != username)
                 .map(
-                (user) => <Avatar src={`//${globalImagePath}${user.userId}`}/>
+                (user) => <Avatar src={`//${globalImagePath}${user.id}`}/>
             )}
         </AvatarGroup>
     )

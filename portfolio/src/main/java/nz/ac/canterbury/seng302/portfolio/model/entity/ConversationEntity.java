@@ -66,7 +66,7 @@ public class ConversationEntity extends PortfolioEntity {
    * @return the most recent message for previewing, or null if there are no messages
    */
   public MessageEntity getMostRecentMessage() {
-    return !messages.isEmpty() ? messages.get(messages.size() - 1) : null;
+    return !messages.isEmpty() ? messages.get(0) : null;
   }
 
   /**

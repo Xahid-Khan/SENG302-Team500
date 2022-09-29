@@ -14,7 +14,7 @@ class PingPageStore {
   stomp: any = null
 
   connectStatus: LoadingStatus = new LoadingNotYetAttempted()
-  path = window.localStorage.getItem("relativePath") + "/socket"
+  path = window.localStorage.getItem("globalUrlPathPrefix") + "/socket"
   pongArray: string[] = observable.array()
   nextPingValue: string = ""
 
@@ -157,13 +157,15 @@ class PingPageStore {
               const userId = window.localStorage.getItem("userId")
               const message = JSON.parse(frame.body)
               let affected = false
+              console.log(frame)
+              console.log(message)
               message.forEach((affectedId: number) => {
                   if (affectedId === parseInt(userId)) {
                     affected = true
                   }
               })
               if (affected) {
-                  window.dispatchEvent(new Event("message"))
+                  window.dispatchEvent(new Event("messages"))
               }
           }
       })
