@@ -132,6 +132,33 @@ public class GroupFeedController extends AuthenticatedController {
     }
   }
 
+  /**
+   * Get post by id.
+   * @param principal
+   * @param postId
+   * @return
+   */
+    @GetMapping(value = "/get_post/{postId}", produces = "application/json")
+    public ResponseEntity<?> getPostById(
+        @AuthenticationPrincipal PortfolioPrincipal principal, @PathVariable int postId) {
+      try {
+        PostEntity post = postService.getPostById(postId);
+        Map<String, Object> filteredPosts = new HashMap<>();
+        filteredPosts.put("postId", post.getId());
+        filteredPosts.put("userId", post.getUserId());
+        filteredPosts.put(
+                "username", userAccountService.getUserById(post.getUserId()).getUsername());
+        filteredPosts.put("time", post.getCreated());
+        filteredPosts.put("content", post.getPostContent());
+        filteredPosts.put(
+                "reactions", reactionService.getUsernamesOfUsersWhoReactedToPost(post.getId()));
+        filteredPosts.put("comments", commentService.getCommentsForThePostAsJson(post.getId()));
+        return ResponseEntity.ok(filteredPosts);
+      } catch (Exception e) {
+        return ResponseEntity.internalServerError().build();
+      }
+    }
+
   @PutMapping(value = "/update_feed/{postId}", produces = "application/json")
   public ResponseEntity<?> updatePost(
       @AuthenticationPrincipal PortfolioPrincipal principal,

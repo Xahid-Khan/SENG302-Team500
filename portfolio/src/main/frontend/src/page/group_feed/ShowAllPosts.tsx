@@ -21,6 +21,7 @@ export function ShowAllPosts() {
         "isSubscribed": false,
         "isMember": false,
         "posts": [{
+          "postId": -1,
           "reactions": [],
           "comments": []
         }]
@@ -37,31 +38,48 @@ export function ShowAllPosts() {
     const currentGroupResponse = await fetch(`feed_content/${viewGroupId}?offset=` + offset);
     return currentGroupResponse.json()
   }
+
+  const getPostById = async (editPostId: any) => {
+    const currentPostResponse = await fetch(`get_post/${editPostId}`);
+    return currentPostResponse.json()
+  }
+
   const loadRef = useRef(null)
+  const [wasLastList, setWasLastList] = React.useState(false);
+  const [dontIncrementOffset, setDontIncrementOffset] = React.useState(false);
 
   // With regards to https://dev.to/producthackers/intersection-observer-using-react-49ko
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
       const [ entry ] = entries
       if(entry.isIntersecting) {
-        getPosts().then((result) => {
-          if (groupPosts.groupId != -1 && groupPosts.posts.length > 0) {
-            const test = result.posts.concat(groupPosts.posts);
-            setGroupPosts({
-              "groupId": result.groupId,
-              "shortName": result.shortName,
-              "isSubscribed": result.isSubscribed,
-              "isMember": result.isMember,
-              "posts": test
+        if (!wasLastList) {
+          getPosts().then((result) => {
+            if (result.posts == 0) {
+              setWasLastList(true);
+              return;
+            }
+            if (groupPosts.groupId != -1 && groupPosts.posts.length > 0) {
+              const totalPosts = groupPosts.posts.concat(result.posts);
+              setGroupPosts({
+                "groupId": result.groupId,
+                "shortName": result.shortName,
+                "isSubscribed": result.isSubscribed,
+                "isMember": result.isMember,
+                "posts": totalPosts
               });
-            console.log(groupPosts);
-          } else {
-            console.log(result)
-            setGroupPosts(result);
-          }
-          console.log(groupPosts.posts.length);
-          setOffset((groupPosts.posts.length / 20) +1);
-        })
+              console.log(groupPosts);
+            } else {
+              console.log(result)
+              setGroupPosts(result);
+            }
+            console.log(groupPosts.posts.length);
+            if (!dontIncrementOffset) {
+              setOffset(offset + 1);
+            }
+            setDontIncrementOffset(true);
+          })
+        }
       }
     }, loadOptions)
     if (loadRef.current) observer.observe(loadRef.current)
@@ -70,7 +88,7 @@ export function ShowAllPosts() {
       if (loadRef.current) observer.unobserve(loadRef.current)
     }
 
-  }, [loadRef, loadOptions])
+  }, [loadRef, loadOptions, dontIncrementOffset])
 
 
   useEffect(() => {
@@ -78,6 +96,7 @@ export function ShowAllPosts() {
       getCurrentGroup().then((result: any) => {
         console.log(result);
         setGroupPosts(result)
+        setOffset(offset + 1);
       }).catch((error) => {
         console.log(error);
       })
@@ -93,6 +112,8 @@ export function ShowAllPosts() {
     })
     return currentGroupResponse.json()
   }
+
+
 
   const handleCancelEditPost = () => {
     setContent("");
@@ -166,10 +187,18 @@ export function ShowAllPosts() {
         "postId": id
       })
     });
-    await getCurrentGroup().then((result: any) => {
-      setGroupPosts(result)
+    let posts = groupPosts
+    await getPostById(id).then((result: any) => {
+      for (let i = 0; i < posts.posts.length; i++) {
+        if (posts.posts[i].postId == result.postId) {
+          posts.posts[i] = result;
+          break;
+        }
+      }
     })
-
+    setGroupPosts(posts)
+    setDontIncrementOffset(true);
+    setLongCharacterCount(1);
   }
 
   const toggleCommentDisplay = (id: number) => {
@@ -192,10 +221,21 @@ export function ShowAllPosts() {
           "comment": newComment
         })
       });
+
       setNewComment("");
-      await getCurrentGroup().then((result: any) => {
-        setGroupPosts(result)
+
+      let posts = groupPosts
+      await getPostById(id).then((result: any) => {
+        for (let i = 0; i < posts.posts.length; i++) {
+          if (posts.posts[i].postId == result.postId) {
+            posts.posts[i] = result;
+            break;
+          }
+        }
       })
+      setGroupPosts(posts)
+      setDontIncrementOffset(true);
+      setLongCharacterCount(5);
       document.getElementById(`post-comments-${id}`).scrollTop = document.getElementById(`post-comments-${id}`).scrollHeight;
     }
   }
@@ -211,6 +251,7 @@ export function ShowAllPosts() {
         "groupId": groupId
       })
     });
+    setDontIncrementOffset(true);
     getCurrentGroup().then((response) => {
       setGroupPosts(response);
     })
@@ -227,6 +268,7 @@ export function ShowAllPosts() {
         "groupId": groupId
       })
     });
+    setDontIncrementOffset(true);
     getCurrentGroup().then((response) => {
       setGroupPosts(response);
     })
@@ -262,7 +304,8 @@ export function ShowAllPosts() {
                 }
                 {
                   groupPosts.posts.length > 0 ?
-                      groupPosts.posts.map((post: any) => (
+                      <>
+                        {groupPosts.posts.map((post: any) => (
                           <>
                             <PostAndCommentContainer post={post} isTeacher={isTeacher}
                                                      setContent={setContent}
@@ -276,10 +319,10 @@ export function ShowAllPosts() {
                                                      setNewComment={setNewComment}
                                                      username={username}
                             />
-                            <div ref={loadRef}/>
                             </>)
-                      )
-
+                      )}
+                      <div ref={loadRef}/>
+                      </>
                       :
                       <div className={"raised-card group-post"} key={"-1"}>
                         <h3>There are no posts</h3>
