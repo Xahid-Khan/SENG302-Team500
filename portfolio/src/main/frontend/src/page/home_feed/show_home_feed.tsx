@@ -14,7 +14,10 @@ export function ShowHomeFeed() {
   const [newComment, setNewComment] = React.useState("");
   const username = localStorage.getItem("username");
   const userId = localStorage.getItem("userId");
-  const [groupPosts, setGroupPosts] = React.useState({"posts": []});
+  const [groupPosts, setGroupPosts] = React.useState({"posts": [{
+    "postId": -1,
+    "groupId": -1
+    }]});
   const loadRef = React.useRef(null);
   const [wasLastList, setWasLastList] = React.useState(false);
   const [updateState, setUpdateState] = React.useState(true);
@@ -142,7 +145,9 @@ export function ShowHomeFeed() {
       document.getElementById(`post-comments-${id}`).scrollTop = document.getElementById(`post-comments-${id}`).scrollHeight;
     }
   }
-
+  var i = 0;
+  console.log(groupPosts);
+  console.log(i++);
   return (
       <div>
         {

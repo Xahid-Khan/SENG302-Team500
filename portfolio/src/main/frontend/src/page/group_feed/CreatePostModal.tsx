@@ -4,8 +4,8 @@ import {Socket} from "../../entry/live_updating";
 
 export function CreatePostModal({viewGroupId}: any) {
 
-  const [post, setPost] = React.useState('')
-  const [longCharacterCount, setLongCharacterCount] = React.useState(0)
+  const [post, setPost] = React.useState('');
+  const [longCharacterCount, setLongCharacterCount] = React.useState(0);
 
   const validateCreateForm = async (formEvent: FormEvent) => {
     formEvent.preventDefault()
@@ -64,20 +64,14 @@ export function CreatePostModal({viewGroupId}: any) {
                         cols={50} rows={10} maxLength={4096} onChange={(e) => {
                 setPost(e.target.value.trim());
                 setLongCharacterCount(e.target.value.trim().length);
-                if (longCharacterCount > 0) {
-                  document.getElementById("create-post-save").removeAttribute("disabled");
-                } else {
-                  document.getElementById("create-post-save").setAttribute("disabled", "true");
-                }
               }}/>
               <span className="title-length" id="title-length">{longCharacterCount} / 4096</span>
               <br/>
             </div>
             <div className="form-error" id="create-post-error"/>
 
-
             <div className="modal-buttons">
-              <button className="button" id="create-post-save" disabled={true} type={"submit"}>Save</button>
+              <button className="button" id="create-post-save" type={"submit"}>Save</button>
               <button className="button" id="create-post-cancel" type={"reset"} onClick={handleCancel}>Cancel
               </button>
             </div>
