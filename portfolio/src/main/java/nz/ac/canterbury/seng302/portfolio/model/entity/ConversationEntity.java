@@ -42,6 +42,10 @@ public class ConversationEntity extends PortfolioEntity {
 
   private Timestamp mostRecentMessageTimestamp;
 
+  @ElementCollection(fetch = FetchType.LAZY)
+  @Column(nullable = false)
+  private List<Integer> userHasReadMessages = new ArrayList<>();
+
   protected ConversationEntity() {}
 
   /**
@@ -50,7 +54,9 @@ public class ConversationEntity extends PortfolioEntity {
    * @param userIds the user IDs to add to the conversation initially
    */
   public ConversationEntity(List<Integer> userIds) {
+
     this.userIds = userIds;
+
   }
 
   public List<Integer> getUserIds() {
@@ -111,5 +117,13 @@ public class ConversationEntity extends PortfolioEntity {
 
   public Timestamp getMostRecentMessageTimestamp() {
     return mostRecentMessageTimestamp;
+  }
+
+  public List<Integer> getUserHasReadMessages() {
+    return userHasReadMessages;
+  }
+
+  public void setUserHasReadMessages(List<Integer> userHasReadMessages) {
+    this.userHasReadMessages = userHasReadMessages;
   }
 }

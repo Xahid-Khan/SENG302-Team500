@@ -18,7 +18,6 @@ import {getUserNamesList, GroupAvatar} from "./GroupAvatar";
 interface IMessageListProps{
     open: boolean
     onClose: () => void
-    //TODO use contract type
     conversation: any
     chats: any
     backButtonCallback: (event: React.MouseEvent<HTMLElement>) => void
@@ -37,8 +36,6 @@ export const MessageList: React.FC<IMessageListProps> = observer((props: IMessag
     const openDeleteBox = Boolean(selectedMessageId)
 
     const getMessages = async () => {
-        //TODO fetch and sort by time, see NotificationDropdown getNotifications
-        console.log("messages fetch ", props.conversation)
         const messages = await fetch(getAPIAbsolutePath(globalUrlPathPrefix, `messages/${props.conversation.conversationId}`), {
                 method: 'GET'
             }
@@ -46,11 +43,19 @@ export const MessageList: React.FC<IMessageListProps> = observer((props: IMessag
         return messages.json()
     }
 
-    const fetchAndSetMessages = () => {
-        console.log("messages onmount ")
+    const fetchAndSetMessages = async() => {
+        await fetch(getAPIAbsolutePath(globalUrlPathPrefix, `messages/read/${props.conversation.conversationId}`), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        const conversations = await fetch(getAPIAbsolutePath(globalUrlPathPrefix, `messages`), {
+                method: 'GET'
+            }
+        )
         if (props.conversation != undefined) {
             getMessages().then((result) => {
-                console.log("messages, ", result)
                 setMessages(result)
             })
         }

@@ -279,4 +279,34 @@ public class MessageController extends AuthenticatedController{
         }
     }
 
+    /**
+     * This is the endpoint for a user reading all new messages.
+     *
+     * Send Message:
+     * - POST /api/v1/messages/read/{conversationId}
+     * - Status 200 OK
+     * - Authentication: Student
+     * - Content Type: application/json
+     *
+     * @param principal Authentication Principal
+     * @param conversationId The id of the conversation of the message
+     */
+    @PostMapping(value = "/read/{conversationId}")
+    public ResponseEntity<?> readMessage(@AuthenticationPrincipal PortfolioPrincipal principal, @PathVariable String conversationId) {
+        try {
+            int userId = getUserId(principal);
+
+            //if the user is not in the conversation, they cannot send a message
+            if (!conversationService.isInConversation(userId, conversationId)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+            conversationService.userReadMessages(userId, conversationId);
+
+            return ResponseEntity.ok().build();
+
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
+
 }

@@ -120,13 +120,10 @@ export const AddChatPopover: React.FC<IUserListProps> = observer((props: IUserLi
         const y = selectedUsers.map((user: any) => parseInt(user.userId))
         y.push(parseInt(userId))
         for(let chat of props.chats) {
-            console.log(chat)
             const x = chat.users.map((user: any) => user.id)
             if(x.every((item: number) => y.includes(item)) && y.every((item: number) => x.includes(item))){
                 alreadyExists = true;
-                console.log(chat)
                 conversation = chat
-                console.log(conversation)
             }
         }
         return alreadyExists

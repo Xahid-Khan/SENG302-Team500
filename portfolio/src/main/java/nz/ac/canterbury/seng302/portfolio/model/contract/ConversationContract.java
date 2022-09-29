@@ -15,5 +15,6 @@ public record ConversationContract(
     String conversationId,
     List<UserContract> users,
     Timestamp creationDate,
-    MessageContract mostRecentMessage
+    MessageContract mostRecentMessage,
+    List<Integer> userHasReadMessages
 ) implements Contractable {}

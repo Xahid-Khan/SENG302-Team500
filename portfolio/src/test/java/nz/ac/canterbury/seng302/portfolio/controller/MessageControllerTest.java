@@ -99,7 +99,7 @@ public class MessageControllerTest {
     @Test
     void getAllConversationsTestValidNoOffset() throws Exception {
         Mockito.when(conversationService.getPaginatedConversations(3, 0, 20)).thenReturn(new PageImpl<>(List.of(new ConversationEntity(List.of(1)))));
-        Mockito.when(conversationMapper.toContract(any())).thenReturn(new ConversationContract("1", null, new Timestamp(new Date().getTime()), new MessageContract("1", "1", 3, "John", "hey", new Timestamp(new Date().getTime()))));
+        Mockito.when(conversationMapper.toContract(any())).thenReturn(new ConversationContract("1", null, new Timestamp(new Date().getTime()), new MessageContract("1", "1", 3, "John", "hey", new Timestamp(new Date().getTime())), null));
         mockMvc.perform(get("/api/v1/messages"))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -113,7 +113,7 @@ public class MessageControllerTest {
     @Test
     void getAllConversationsTestValidOffset() throws Exception {
         Mockito.when(conversationService.getPaginatedConversations(3, 1, 20)).thenReturn(new PageImpl<>(List.of(new ConversationEntity(List.of(1)))));
-        Mockito.when(conversationMapper.toContract(any())).thenReturn(new ConversationContract("1", null, new Timestamp(new Date().getTime()), new MessageContract("1", "1", 3, "John", "hey", new Timestamp(new Date().getTime()))));
+        Mockito.when(conversationMapper.toContract(any())).thenReturn(new ConversationContract("1", null, new Timestamp(new Date().getTime()), new MessageContract("1", "1", 3, "John", "hey", new Timestamp(new Date().getTime())), null));
         mockMvc.perform(get("/api/v1/messages").param("offset", "1"))
                 .andExpect(status().isOk())
                 .andReturn();

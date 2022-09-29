@@ -3,7 +3,6 @@ import {observer} from "mobx-react-lite";
 import {Box, ListItem, Typography} from "@mui/material";
 
 interface IMessageListItemProps {
-    //TODO use contract type
     contract: any
     isGroupChat: boolean
     messageButtonCallback: (event: React.MouseEvent<HTMLElement>, id: string) => void

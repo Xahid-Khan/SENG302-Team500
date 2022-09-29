@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 /** This service handles interacting with the repository for conversations. */
@@ -20,6 +21,8 @@ public class ConversationService {
   @Autowired private ConversationRepository conversationRepository;
 
   @Autowired private ConversationMapper conversationMapper;
+
+  @Autowired private SimpMessagingTemplate template;
 
   /**
    * Creates a new conversation based on a base contract.
@@ -30,6 +33,8 @@ public class ConversationService {
   public ConversationContract createConversation(
       BaseConversationContract baseConversationContract) {
     ConversationEntity conversation = conversationMapper.toEntity(baseConversationContract);
+    template.convertAndSend("/topic/notification", conversation.getUserIds());
+    conversation.getUserHasReadMessages().addAll(conversation.getUserIds());
     conversationRepository.save(conversation);
     return conversationMapper.toContract(conversation);
   }
@@ -66,5 +71,15 @@ public class ConversationService {
   public boolean isInConversation(Integer userId, String conversationId) {
     ConversationEntity conversation = conversationRepository.findById(conversationId).orElseThrow();
     return conversation.getUserIds().contains(userId);
+  }
+
+  public void userReadMessages(int userId, String conversationId) {
+    ConversationEntity conversation = conversationRepository.findById(conversationId).orElseThrow();
+    if(conversation.getUserHasReadMessages().contains(userId)){
+      return;
+    }
+    conversation.getUserHasReadMessages().add(userId);
+    conversationRepository.save(conversation);
+
   }
 }
