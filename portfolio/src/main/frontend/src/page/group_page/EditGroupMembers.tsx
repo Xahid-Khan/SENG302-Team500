@@ -47,9 +47,7 @@ export function EditGroupMembers({viewGroupId}: any) {
     const [otherGroupViewingUpdate, setOtherGroupViewingUpdate] = React.useState(false)
 
     useEffect(() => {
-        if (myGroup === undefined || myGroup.id === -1) {
-            setMyGroup(allGroups.filter((item) => item.id === viewGroupId)[0])
-        }
+        setMyGroup(allGroups.filter((item) => item.id === viewGroupId)[0])
     }, [viewGroupId, myGroupUpdate])
 
     useEffect(() => {
@@ -512,7 +510,6 @@ export function EditGroupMembers({viewGroupId}: any) {
 
     const handleCancel = async () => {
         document.getElementById("modal-edit-group-members-open").style.display = "none";
-        window.location.reload();
     }
 
     if (document.getElementById("group-edit-members-confirm")) {
