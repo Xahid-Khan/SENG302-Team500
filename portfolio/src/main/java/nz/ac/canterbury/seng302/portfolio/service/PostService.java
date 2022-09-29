@@ -36,8 +36,8 @@ public class PostService {
   @Autowired
   private UserAccountService userAccountService;
 
-    @Autowired
-    private SimpMessagingTemplate template;
+  @Autowired
+  private SimpMessagingTemplate template;
 
 
   /**
@@ -90,51 +90,26 @@ public class PostService {
       PostModel postModel = new PostModel(newPost.groupId(), userId, newPost.postContent());
       postRepository.save(postModel);
 
-    /**
-     * This funciton will create new instance of the post and save it in the database.
-     * @param newPost A post contract containing groupId and contents of the post.
-     * @param userId Integer (Id of the user who made the post)
-     * @return True if successful false otherwise.
-     */
-    public boolean createPost(PostContract newPost, int userId) {
-        if (newPost.postContent().length() == 0) {
-            return false;
-        }
-        try {
-            PostModel postModel = new PostModel(newPost.groupId(), userId, newPost.postContent());
-            postRepository.save(postModel);
+        //Gets details for notification
+        GroupDetailsResponse groupDetails = groupsClientService.getGroupById(newPost.groupId());
 
-            //Gets details for notification
-            GroupDetailsResponse groupDetails = groupsClientService.getGroupById(newPost.groupId());
+        List<Integer> userIds = subscriptionService.getAllByGroupId(newPost.groupId());
+        String posterUsername= userAccountService.getUserById(userId).getUsername();
+        String groupName = groupDetails.getShortName();
 
-            List<Integer> userIds = subscriptionService.getAllByGroupId(newPost.groupId());
-            String posterUsername= userAccountService.getUserById(userId).getUsername();
-            String groupName = groupDetails.getShortName();
+        template.convertAndSend("/topic/posts", userIds);
 
-            template.convertAndSend("/topic/posts", userIds);
-
-            // Send notification to all members of the group
-            for (Integer otherUserId : userIds) {
-                if (otherUserId != userId) {
-                    notificationService.create(new BaseNotificationContract(otherUserId, "Your Subscriptions", posterUsername + " created a post in "+groupName+"!"));
-                }
+        // Send notification to all members of the group
+        for (Integer otherUserId : userIds) {
+            if (otherUserId != userId) {
+                notificationService.create(new BaseNotificationContract(otherUserId, "Your Subscriptions", posterUsername + " created a post in "+groupName+"!"));
             }
-
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-      }
-
-      return true;
+        return true;
     } catch (Exception e) {
-      e.printStackTrace();
+        e.printStackTrace();
     }
     return false;
-  }
-
-  public List<PostModel> getAllPostsForAUser(int userId) {
-    return postRepository.findPostModelByUserId(userId);
   }
 
   /**

@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -121,12 +122,50 @@ public class HomePageController extends AuthenticatedController {
       Integer userId = getUserId(principal);
       List<Integer> subscriptions = subscriptionService.getAllByUserId(userId);
       List<PostModel> posts = postService.getAllPostForMultipleGroups(subscriptions);
-      Map<String, Object> data = combineAndPrepareForFrontEnd(posts, userId);
+
+      var offsetValue = offset.orElse(0);
+      var postSubset = posts.subList(Math.min((offsetValue) * 20, posts.size()), Math.min((offsetValue + 1) * 20, posts.size()));
+
+      Map<String, Object> data = combineAndPrepareForFrontEnd(postSubset, userId);
       return ResponseEntity.ok(data);
     } catch (Exception e) {
       return ResponseEntity.internalServerError().build();
     }
   }
+
+
+  /**
+   * Get post by id.
+   * @param principal
+   * @param postId
+   * @return
+   */
+  @GetMapping(value = "/get_post/{postId}", produces = "application/json")
+  public ResponseEntity<?> getPostById(
+          @AuthenticationPrincipal PortfolioPrincipal principal, @PathVariable int postId) {
+    try {
+      PostModel post = postService.getPostById(postId);
+      Map<String, Object> filteredPosts = new HashMap<>();
+      filteredPosts.put("postId", post.getId());
+      filteredPosts.put("userId", post.getUserId());
+      filteredPosts.put("username", userAccountService.getUserById(post.getUserId()).getUsername());
+      filteredPosts.put("time", post.getCreated());
+      filteredPosts.put("content", post.getPostContent());
+      filteredPosts.put("reactions", reactionService.getUsernamesOfUsersWhoReactedToPost(
+              post.getId()));
+      filteredPosts.put("groupId", post.getGroupId());
+      filteredPosts.put("comments", commentService.getCommentsForThePostAsJson(post.getId()));
+      filteredPosts.put("groupName",
+              groupsClientService.getGroupById(post.getGroupId()).getShortName());
+      filteredPosts.put("isMember",
+              groupsClientService.isMemberOfTheGroup(getUserId(principal), post.getGroupId()));
+
+      return ResponseEntity.ok(filteredPosts);
+    } catch (Exception e) {
+      return ResponseEntity.internalServerError().build();
+    }
+  }
+
 
   /**
    * This function creates a Map from posts to send it to the front end as JSON object.
