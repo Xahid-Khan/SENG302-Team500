@@ -17,7 +17,7 @@ export function EditGroupSettings( {viewGroupId}: any ) {
     }, [])
 
     const userId = parseInt(window.localStorage.getItem("userId"))
-    const isStudent = window.localStorage.getItem("isStudent")
+    const isTeacher = window.localStorage.getItem("isTeacher")
 
     const [myGroup, setMyGroup] = React.useState({
         "id": -1,
@@ -60,7 +60,7 @@ export function EditGroupSettings( {viewGroupId}: any ) {
             window.location.reload()
         }
     }
-    const canEdit = (myGroup !== undefined ? myGroup.users.filter((user) => user.id === userId).length > 0 : false) || isStudent === "false"
+    const canEdit = (myGroup !== undefined ? myGroup.users.filter((user) => user.id === userId).length > 0 : false) || isTeacher === "true"
 
     return (
         <div>{myGroup ?
