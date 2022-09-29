@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.portfolio.model.contract.SubscriptionContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.PostModel;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * Handles the post and delete requests on the /subscribe endpoint.
@@ -111,7 +113,8 @@ public class HomePageController extends AuthenticatedController {
   }
 
   @GetMapping(value = "/posts", produces = "application/json")
-  public ResponseEntity<?> getAllPosts(@AuthenticationPrincipal PortfolioPrincipal principal) {
+  public ResponseEntity<?> getAllPosts(@AuthenticationPrincipal PortfolioPrincipal principal, @RequestParam("offset")
+      Optional<Integer> offset) {
     try {
       List<PostModel> posts = postService.getAllPosts();
       Collections.reverse(posts);
