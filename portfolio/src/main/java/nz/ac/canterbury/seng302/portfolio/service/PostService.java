@@ -11,29 +11,38 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
 public class PostService {
 
-  @Autowired private PostRepository postRepository;
+  @Autowired
+  private PostRepository postRepository;
 
-  @Autowired private GroupsClientService groupsClientService;
+  @Autowired
+  private GroupsClientService groupsClientService;
 
-  @Autowired private SubscriptionService subscriptionService;
+  @Autowired
+  private SubscriptionService subscriptionService;
 
-  @Autowired private CommentService commentService;
+  @Autowired
+  private CommentService commentService;
 
-  @Autowired private NotificationService notificationService;
+  @Autowired
+  private NotificationService notificationService;
 
-  @Autowired private UserAccountService userAccountService;
+  @Autowired
+  private UserAccountService userAccountService;
+  @Autowired
+  private SimpMessagingTemplate template;
 
   /**
    * Handles pagination using PageRequest.of, taking into account a group ID.
    *
    * @param groupId The group id
-   * @param page which page of the data to load (I.E., 0 will load 0 - limit)
-   * @param limit limit of posts to grab. Must be greater than 0
+   * @param page    which page of the data to load (I.E., 0 will load 0 - limit)
+   * @param limit   limit of posts to grab. Must be greater than 0
    * @return the specified posts based on the parameters given
    */
   public Page<PostEntity> getPaginatedPostsForGroup(int groupId, int page, int limit) {
@@ -44,7 +53,7 @@ public class PostService {
   /**
    * Handles pagination using PageRequest.of.
    *
-   * @param page which page of the data to load (I.E., 0 will load 0 - limit)
+   * @param page  which page of the data to load (I.E., 0 will load 0 - limit)
    * @param limit limit of posts to grab. Must be greater than 0
    * @return the specified posts based on the parameters given
    */
@@ -54,10 +63,10 @@ public class PostService {
   }
 
   /**
-   * This function will create new instance of the post and save it in the database.
+   * This funciton will create new instance of the post and save it in the database.
    *
    * @param newPost A post contract containing groupId and contents of the post.
-   * @param userId Integer (The id of the user who made the post)
+   * @param userId  Integer (Id of the user who made the post)
    * @return True if successful false otherwise.
    */
   public boolean createPost(PostContract newPost, int userId) {
@@ -65,24 +74,23 @@ public class PostService {
       return false;
     }
     try {
-      PostEntity postEntity = new PostEntity(newPost.groupId(), userId, newPost.postContent());
-      postRepository.save(postEntity);
+      PostEntity PostEntity = new PostEntity(newPost.groupId(), userId, newPost.postContent());
+      postRepository.save(PostEntity);
 
-      // Gets details for notification
+      //Gets details for notification
       GroupDetailsResponse groupDetails = groupsClientService.getGroupById(newPost.groupId());
 
       List<Integer> userIds = subscriptionService.getAllByGroupId(newPost.groupId());
       String posterUsername = userAccountService.getUserById(userId).getUsername();
       String groupName = groupDetails.getShortName();
 
+      template.convertAndSend("/topic/posts", userIds);
+
       // Send notification to all members of the group
       for (Integer otherUserId : userIds) {
         if (otherUserId != userId) {
-          notificationService.create(
-              new BaseNotificationContract(
-                  otherUserId,
-                  "Your Subscriptions",
-                  posterUsername + " created a post in " + groupName + "!"));
+          notificationService.create(new BaseNotificationContract(otherUserId, "Your Subscriptions",
+              posterUsername + " created a post in " + groupName + "!"));
         }
       }
 
@@ -122,7 +130,7 @@ public class PostService {
    * This function will update the changes made to the post.
    *
    * @param updatedPost A PostContract
-   * @param postId Integer ID of the Post
+   * @param postId      Integer ID of the Post
    * @return True if update is successful False otherwise.
    */
   public boolean updatePost(PostContract updatedPost, int postId) {

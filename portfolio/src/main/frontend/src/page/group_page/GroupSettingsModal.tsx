@@ -1,6 +1,5 @@
 import * as React from "react";
 import {EditGroupSettings} from "./EditGroupSettings";
-import {useEffect} from "react";
 
 export function GroupSettingsModal({viewGroupId}: any) {
 

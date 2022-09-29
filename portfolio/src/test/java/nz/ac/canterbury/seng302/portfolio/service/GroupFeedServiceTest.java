@@ -24,7 +24,25 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
@@ -42,6 +60,9 @@ class GroupFeedServiceTest {
   @Mock private CommentService commentService;
 
   @InjectMocks private CommentService commentServiceMock;
+
+  @Mock
+  private SimpMessagingTemplate template;
 
   private PostEntity newPost;
   private PostEntity newPost1;
@@ -94,8 +115,8 @@ class GroupFeedServiceTest {
     var newPostList =
         postList.stream()
             .filter(
-                postModel -> {
-                  return postModel.getGroupId() == groupId;
+                PostEntity -> {
+                  return PostEntity.getGroupId() == groupId;
                 })
             .collect(Collectors.toList());
     Mockito.when(mockPostRepository.getPaginatedPostsByGroupId(eq(groupId), any()))
@@ -107,32 +128,29 @@ class GroupFeedServiceTest {
       Assertions.assertEquals(newPostList.get(i).getId(), result.get(i).getId());
       Assertions.assertEquals(newPostList.get(i).getGroupId(), result.get(i).getGroupId());
       Assertions.assertEquals(newPostList.get(i).getPostContent(), result.get(i).getPostContent());
-    }
-    ;
+    };
   }
 
   /**
    * If there is no post with the given ID, the function will rerun null.
-   *
    * @throws Exception
    */
   @Test
-  void getAPostWithPostIdThatDoesNotExistExpectFail() throws Exception {
+  void getAPostWithPostIdThatDoesNotExistExpectFail () throws Exception {
     int postId = 100;
     Mockito.when(mockPostRepository.findById(postId)).thenThrow(new NoSuchElementException());
     var result = postService.getPostById(postId);
     Assertions.assertNull(result);
+
   }
 
   /**
    * Delete a post with a given ID, if it passes it will return true and false otherwise.
-   *
    * @throws Exception
    */
   @Test
-  void deleteAPostWithAValidPostIdExpectPass() throws Exception {
-    Mockito.when(mockPostRepository.findById(newPost1.getId()))
-        .thenReturn(Optional.ofNullable(newPost1));
+  void deleteAPostWithAValidPostIdExpectPass () throws Exception {
+    Mockito.when(mockPostRepository.findById(newPost1.getId())).thenReturn(Optional.ofNullable(newPost1));
     Mockito.when(commentService.deleteAllCommentByPostId(newPost1.getId())).thenReturn(true);
     var result = postService.deletePost(newPost1.getId());
     Assertions.assertTrue(result);
@@ -140,43 +158,44 @@ class GroupFeedServiceTest {
 
   /**
    * Delete a post with the given ID that doesn't exist, method will return false.
-   *
    * @throws Exception
    */
   @Test
-  void deleteAPostThatDoesNotExistExpectFail() throws Exception {
+  void deleteAPostThatDoesNotExistExpectFail () throws Exception {
     Assertions.assertFalse(postService.deletePost(1000));
   }
 
   /**
    * create a new post with all the valid data for the fields, and it passes the test as expected.
-   *
    * @throws Exception
    */
   @Test
-  void createANewPostWithValidParamsExpectPass() throws Exception {
+  void createANewPostWithValidParamsExpectPass () throws Exception {
     Mockito.when(mockPostRepository.save(newPost)).thenReturn(newPost);
     PostContract postContract = new PostContract(newPost.getGroupId(), newPost.getPostContent());
 
-    // build a new GroupDetailsResponse
-    GroupDetailsResponse groupDetailsResponse =
-        GroupDetailsResponse.newBuilder()
-            .setGroupId(newPost.getGroupId())
-            .setShortName("Test")
-            .setLongName("Test")
-            .build();
+    //build a new GroupDetailsResponse
+    GroupDetailsResponse groupDetailsResponse = GroupDetailsResponse.newBuilder()
+        .setGroupId(newPost.getGroupId())
+        .setShortName("Test")
+        .setLongName("Test")
+        .build();
 
-    UserResponse userResponse = UserResponse.newBuilder().setUsername("Test").build();
+    UserResponse userResponse = UserResponse.newBuilder()
+        .setUsername("Test")
+        .build();
 
     List<Integer> userIds = new ArrayList<>();
     userIds.add(1);
     userIds.add(2);
     userIds.add(3);
 
-    Mockito.when(groupsClientService.getGroupById(newPost.getGroupId()))
-        .thenReturn(groupDetailsResponse);
-    Mockito.when(subscriptionService.getAllByGroupId(anyInt())).thenReturn(List.of(7, 8, 9));
+    Mockito.when(groupsClientService.getGroupById(newPost.getGroupId())).thenReturn(groupDetailsResponse);
+    Mockito.when(subscriptionService.getAllByGroupId(anyInt())).thenReturn(List.of(7,8,9));
     Mockito.when(userAccountService.getUserById(newPost.getUserId())).thenReturn(userResponse);
+
+
+
 
     Boolean result = postService.createPost(postContract, newPost.getUserId());
 
@@ -186,33 +205,35 @@ class GroupFeedServiceTest {
 
   /**
    * Verify the notification service is called when a new post is created.
-   *
    * @throws Exception
    */
   @Test
-  void createANewPostWithValidParamsExpectNotificationCall() throws Exception {
+  void createANewPostWithValidParamsExpectNotificationCall () throws Exception {
     Mockito.when(mockPostRepository.save(newPost)).thenReturn(newPost);
     PostContract postContract = new PostContract(newPost.getGroupId(), newPost.getPostContent());
 
-    // build a new GroupDetailsResponse
-    GroupDetailsResponse groupDetailsResponse =
-        GroupDetailsResponse.newBuilder()
-            .setGroupId(newPost.getGroupId())
-            .setShortName("Test")
-            .setLongName("Test")
-            .build();
+    //build a new GroupDetailsResponse
+    GroupDetailsResponse groupDetailsResponse = GroupDetailsResponse.newBuilder()
+        .setGroupId(newPost.getGroupId())
+        .setShortName("Test")
+        .setLongName("Test")
+        .build();
 
-    UserResponse userResponse = UserResponse.newBuilder().setUsername("Test").build();
+    UserResponse userResponse = UserResponse.newBuilder()
+        .setUsername("Test")
+        .build();
 
     List<Integer> userIds = new ArrayList<>();
     userIds.add(1);
     userIds.add(2);
     userIds.add(3);
 
-    Mockito.when(groupsClientService.getGroupById(newPost.getGroupId()))
-        .thenReturn(groupDetailsResponse);
-    Mockito.when(subscriptionService.getAllByGroupId(anyInt())).thenReturn(List.of(7, 8, 9));
+    Mockito.when(groupsClientService.getGroupById(newPost.getGroupId())).thenReturn(groupDetailsResponse);
+    Mockito.when(subscriptionService.getAllByGroupId(anyInt())).thenReturn(List.of(7,8,9));
     Mockito.when(userAccountService.getUserById(newPost.getUserId())).thenReturn(userResponse);
+
+
+
 
     Boolean result = postService.createPost(postContract, newPost.getUserId());
 
@@ -220,60 +241,56 @@ class GroupFeedServiceTest {
   }
 
   /**
-   * create a post where the post content is empty, it should fail because post content is
-   * mandatory.
-   *
+   * create a post where the post content is empty, it should fail because post content is mandatory.
    * @throws Exception
    */
   @Test
-  void createANewPostWithInvalidParamsExpectFail() throws Exception {
+  void createANewPostWithInvalidParamsExpectFail () throws Exception {
     PostContract postContract = new PostContract(newPost.getGroupId(), "");
     var result = postService.createPost(postContract, 1);
     Assertions.assertFalse(result);
   }
 
   /**
-   * Update a post content, it's the same user who made the post so he can update it successfully,
-   * hence it passes as expected.
-   *
+   * Update a post content, it's the same user who made the post so he can update it successfully, hence it passes as
+   * expected.
    * @throws Exception
    */
   @Test
-  void updateAPostExpectPass() throws Exception {
-    Mockito.when(mockPostRepository.findById(newPost.getId()))
-        .thenReturn(Optional.ofNullable(newPost));
+  void updateAPostExpectPass () throws Exception {
+    Mockito.when(mockPostRepository.findById(newPost.getId())).thenReturn(Optional.ofNullable(newPost));
     PostContract postUpdate = new PostContract(1, "This is An UPDATED post");
     newPost.setPostContent(postUpdate.postContent());
     Mockito.when(mockPostRepository.save(newPost)).thenReturn(newPost);
     Assertions.assertTrue(postService.updatePost(postUpdate, newPost.getId()));
   }
 
-  /** High five a post and notifications should be sent out as expected */
+  /**
+   * High five a post and notifications should be sent out as expected
+   */
   @Test
   void highFivePostAndSendNotifications() {
-    Mockito.when(mockReactionRepository.save(any())).thenReturn(null);
-    PostReactionContract postReactionContract =
-        new PostReactionContract(newPost.getId(), newPost.getUserId());
-    Mockito.when(mockPostRepository.findById(newPost.getId()))
-        .thenReturn(Optional.ofNullable(newPost));
-    Mockito.when(userAccountService.getUserById(newPost.getUserId()))
-        .thenReturn(UserResponse.newBuilder().setId(newPost.getUserId()).build());
+    //reacted by a different user
+    int userId = newPost.getUserId() + 1;
+    PostReactionContract postReactionContract = new PostReactionContract(newPost.getId(),userId);
+    Mockito.when(mockPostRepository.findById(newPost.getId())).thenReturn(Optional.ofNullable(newPost));
+    Mockito.when(userAccountService.getUserById(userId)).thenReturn(UserResponse.newBuilder().setId(userId).build());
 
     reactionService.addHighFiveToPost(postReactionContract);
 
     Mockito.verify(notificationService, Mockito.times(1)).create(any());
   }
 
-  /** Comment on a post and notifications should be sent out as expected */
+  /**
+   * Comment on a post and notifications should be sent out as expected
+   */
   @Test
   void commentOnPostAndSendNotifications() {
-    Mockito.when(mockCommentRepository.save(any())).thenReturn(null);
-    CommentContract commentContract =
-        new CommentContract(newPost.getUserId(), newPost.getId(), "test");
-    Mockito.when(mockPostRepository.findById(newPost.getId()))
-        .thenReturn(Optional.ofNullable(newPost));
-    Mockito.when(userAccountService.getUserById(newPost.getUserId()))
-        .thenReturn(UserResponse.newBuilder().setId(newPost.getUserId()).build());
+    //Comment by a different user
+    int userId = newPost.getUserId() + 1;
+    CommentContract commentContract = new CommentContract(userId, newPost.getId(), "test");
+    Mockito.when(mockPostRepository.findById(newPost.getId())).thenReturn(Optional.ofNullable(newPost));
+    Mockito.when(userAccountService.getUserById(userId)).thenReturn(UserResponse.newBuilder().setId(userId).build());
 
     commentServiceMock.addNewCommentsToPost(commentContract);
 
@@ -281,7 +298,7 @@ class GroupFeedServiceTest {
   }
 
   @Test
-  void checkTimeStampOnUpdatedPosts() throws Exception {
+  void checkTimeStampOnUpdatedPosts () throws Exception {
     PostContract testPost1 = new PostContract(1, "this is a post");
     PostEntity post1Model = new PostEntity(testPost1.groupId(), 3, testPost1.postContent());
 
@@ -298,5 +315,8 @@ class GroupFeedServiceTest {
 
     Assertions.assertNotNull(post1Model.getUpdated());
     Assertions.assertTrue(post1Model.isPostUpdated());
+
+    }
+    ;
   }
-}
+

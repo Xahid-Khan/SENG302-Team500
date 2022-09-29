@@ -166,6 +166,11 @@ export function ShowAllPosts() {
 
   const clickHighFive = async (id: number) => {
     const button = document.getElementById(`high-five-${id}`)
+    if(button.style.backgroundSize === "100% 100%") {
+      button.style.backgroundSize = "0% 100%";
+    } else {
+      button.style.backgroundSize = "100% 100%";
+    }
     button.style.backgroundSize = button.style.backgroundSize === "100% 100%" ? "0 100%" : "100% 100%"
 
     await fetch('post_high_five', {

@@ -1,5 +1,6 @@
 import React, {useEffect, useRef} from "react";
 import {DatetimeUtils} from "../../util/DatetimeUtils";
+import {Socket} from "../../entry/live_updating";
 
 const getSubscriptions = async () => {
   const userId = localStorage.getItem("userId")
@@ -88,9 +89,13 @@ export function ShowHomeFeed() {
 
   const isTeacher = localStorage.getItem("isTeacher") === "true";
 
-  const clickHighFive = async (id: number) => {
-    const button = document.getElementById(`high-five-${id}`)
-    button.style.backgroundSize = button.style.backgroundSize === "100% 100%" ? "0 100%" : "100% 100%"
+    const clickHighFive = async (id: number) => {
+        const button = document.getElementById(`high-five-${id}`)
+        if(button.style.backgroundSize === "100% 100%") {
+            button.style.backgroundSize = "0% 100%";
+        } else {
+            button.style.backgroundSize = "100% 100%";
+        }
 
     await fetch('group_feed/post_high_five', {
       method: 'POST',

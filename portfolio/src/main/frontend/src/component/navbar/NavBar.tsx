@@ -10,6 +10,9 @@ import {
 import {NotificationDropdown} from "../notifications/NotificationDropdown";
 import {AccountDropdown} from "./AccountDropdown";
 import {getAbsolutePath} from "../../util/RelativePathUtil";
+import {Message as StompMessage} from "@stomp/stompjs/esm6/i-message";
+import {Socket} from "../../entry/live_updating";
+import {MessageButton} from "./MessageButton";
 
 export const navigateTo = (page: string) => {
     const globalUrlPathPrefix = window.localStorage.getItem("globalUrlPathPrefix")
@@ -42,6 +45,7 @@ export const NavBar: React.FC = observer(() => {
                         </Button>
                     </Box>
 
+                    <MessageButton></MessageButton>
                     <NotificationDropdown></NotificationDropdown>
                     <AccountDropdown></AccountDropdown>
 

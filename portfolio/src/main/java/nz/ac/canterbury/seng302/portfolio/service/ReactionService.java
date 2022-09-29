@@ -120,8 +120,12 @@ public class ReactionService {
       reactionRepository.save(newReaction);
       Optional<PostEntity> post = postRepository.findById(postReactionContract.postId());
       UserResponse user = userAccountService.getUserById(postReactionContract.userId());
-      if (post.isPresent()) {
-        notificationService.create(new BaseNotificationContract(post.get().getUserId(), "Your Posts", user.getUsername() + " high-fived your post!"));
+      if (post.isPresent()){
+        int posterId = post.get().getUserId();
+        int highFiverId = postReactionContract.userId();
+        if( posterId != highFiverId) {
+          notificationService.create(new BaseNotificationContract(posterId, "Your Posts", user.getUsername() + " high-fived your post!"));
+        }
       }
       return true;
     } catch (Exception e) {

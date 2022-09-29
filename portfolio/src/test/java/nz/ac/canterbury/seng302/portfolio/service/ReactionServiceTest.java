@@ -32,6 +32,8 @@ class ReactionServiceTest {
   private UserAccountService userAccountService;
   @Mock
   private PostRepository postRepository;
+  @Mock
+  private NotificationService notificationService;
 
   private CommentReactionContract commentReactionContract1;
   private CommentReactionContract commentReactionContract2;
@@ -196,10 +198,12 @@ class ReactionServiceTest {
    */
   @Test
   void processAPostHighFiveThatUserHasNotReactedToExpectPass() {
+    Mockito.when(notificationService.create(any())).thenReturn(null);
     Mockito.when(mockReactionRepository.getReactionsByUserId(any(int.class)))
         .thenReturn(new ArrayList<>());
     Mockito.when(mockReactionRepository.save(any())).thenReturn(allReactionsPosts.get(1));
-    Mockito.when(userAccountService.getUserById(anyInt())).thenReturn(UserResponse.newBuilder().build());
+    Mockito.when(userAccountService.getUserById(anyInt()))
+        .thenReturn(UserResponse.newBuilder().build());
 
     var result = reactionService.processPostHighFive(postReactionContract1);
     Assertions.assertTrue(result);
@@ -280,7 +284,8 @@ class ReactionServiceTest {
 
 
   /**
-   * This function will test that a list of usernames of users who reacted to a comment is returned.
+   * This function will test that a list of usernames of users who reacted to a comment is
+   * returned.
    */
   @Test
   void getAListOfUsersNamesForCommentExpectPass() {
