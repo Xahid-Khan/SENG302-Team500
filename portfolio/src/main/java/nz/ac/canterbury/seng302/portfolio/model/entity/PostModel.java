@@ -9,6 +9,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OrderColumn;
+import javax.persistence.Table;
 import org.hibernate.annotations.CreationTimestamp;
 
 
@@ -16,6 +18,7 @@ import org.hibernate.annotations.CreationTimestamp;
  * Database schema for a post
  */
 @Entity
+@Table(name = "POSTMODEL")
 public class PostModel {
 
   @Id
@@ -34,6 +37,8 @@ public class PostModel {
 
   // Makes the database automatically create the timestamp when the user is inserted
   @CreationTimestamp
+  @OrderColumn
+  @Column(updatable = false, name = "created")
   private Timestamp created;
 
   @CreationTimestamp
@@ -45,8 +50,6 @@ public class PostModel {
 
   protected PostModel() {
   }
-
-  ;
 
   public PostModel(int groupId, int userId, String postContent) {
     this.groupId = groupId;
