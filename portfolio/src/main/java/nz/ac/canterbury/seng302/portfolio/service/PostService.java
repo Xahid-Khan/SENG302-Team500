@@ -138,8 +138,6 @@ public class PostService {
     } catch (Exception e) {
         e.printStackTrace();
     }
-    return false;
-  }
 
   /**
    * This function will delete the post by using the postId.
