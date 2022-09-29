@@ -24,6 +24,7 @@ export function ShowHomeFeed() {
   const userId = localStorage.getItem("userId")
 
   const getPosts = async () => {
+    console.log("New posts")
     setOffset(offset + 1)
     const currentGroupResponse = await fetch(`api/v1/posts?offset=` + offset);
     return currentGroupResponse.json()
@@ -150,7 +151,7 @@ export function ShowHomeFeed() {
       setSubscriptions(result);
     })
   }
-
+console.log(subscriptions)
   return (
       <div>
         {groupPosts.groupId != -1 ?

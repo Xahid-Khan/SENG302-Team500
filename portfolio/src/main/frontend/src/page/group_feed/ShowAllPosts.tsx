@@ -1,4 +1,4 @@
-import React, {FormEvent, useEffect} from "react";
+import React, {FormEvent, useEffect, useRef} from "react";
 import {PostAndCommentContainer} from "./PostAndCommentContainer";
 import {EditPostDataModal} from "./EditPostDataModal";
 import {Tooltip} from "@mui/material";
@@ -26,6 +26,52 @@ export function ShowAllPosts() {
         }]
       }
   )
+
+  const [offset, setOffset] = React.useState(0);
+  const loadOptions: any = {
+    root: null,
+    rootMargin: "0px",
+    threshold: 1.0
+  }
+  const getPosts = async () => {
+    const currentGroupResponse = await fetch(`feed_content/${viewGroupId}?offset=` + offset);
+    return currentGroupResponse.json()
+  }
+  const loadRef = useRef(null)
+
+  // With regards to https://dev.to/producthackers/intersection-observer-using-react-49ko
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      const [ entry ] = entries
+      if(entry.isIntersecting) {
+        getPosts().then((result) => {
+          if (groupPosts.groupId != -1 && groupPosts.posts.length > 0) {
+            const test = result.posts.concat(groupPosts.posts);
+            setGroupPosts({
+              "groupId": result.groupId,
+              "shortName": result.shortName,
+              "isSubscribed": result.isSubscribed,
+              "isMember": result.isMember,
+              "posts": test
+              });
+            console.log(groupPosts);
+          } else {
+            console.log(result)
+            setGroupPosts(result);
+          }
+          console.log(groupPosts.posts.length);
+          setOffset((groupPosts.posts.length / 20) +1);
+        })
+      }
+    }, loadOptions)
+    if (loadRef.current) observer.observe(loadRef.current)
+
+    return () => {
+      if (loadRef.current) observer.unobserve(loadRef.current)
+    }
+
+  }, [loadRef, loadOptions])
+
 
   useEffect(() => {
     if (!isNaN(Number(viewGroupId))) {
@@ -217,18 +263,23 @@ export function ShowAllPosts() {
                 {
                   groupPosts.posts.length > 0 ?
                       groupPosts.posts.map((post: any) => (
-                          <PostAndCommentContainer post={post} isTeacher={isTeacher}
-                                                   setContent={setContent}
-                                                   setLongCharacterCount={setLongCharacterCount}
-                                                   setTitle={setTitle}
-                                                   setEditPostId={setEditPostId}
-                                                   clickHighFive={clickHighFive}
-                                                   openConfirmationModal={openConfirmationModal}
-                                                   toggleCommentDisplay={toggleCommentDisplay}
-                                                   makeComment={makeComment}
-                                                   setNewComment={setNewComment}
-                                                   username={username}
-                          />))
+                          <>
+                            <PostAndCommentContainer post={post} isTeacher={isTeacher}
+                                                     setContent={setContent}
+                                                     setLongCharacterCount={setLongCharacterCount}
+                                                     setTitle={setTitle}
+                                                     setEditPostId={setEditPostId}
+                                                     clickHighFive={clickHighFive}
+                                                     openConfirmationModal={openConfirmationModal}
+                                                     toggleCommentDisplay={toggleCommentDisplay}
+                                                     makeComment={makeComment}
+                                                     setNewComment={setNewComment}
+                                                     username={username}
+                            />
+                            <div ref={loadRef}/>
+                            </>)
+                      )
+
                       :
                       <div className={"raised-card group-post"} key={"-1"}>
                         <h3>There are no posts</h3>
@@ -243,6 +294,7 @@ export function ShowAllPosts() {
                                    setLongCharacterCount={setLongCharacterCount}
 
                 />
+
               </>
               :
               <div>
@@ -250,5 +302,6 @@ export function ShowAllPosts() {
               </div>
         }
       </div>
+
   )
 }

@@ -38,7 +38,7 @@ public class SprintEntity extends PortfolioEntity {
 
   protected SprintEntity() {}
 
-  /**
+  /**TODO
    * Creates a new Sprint entity.
    *
    * @param name the name of the sprint
