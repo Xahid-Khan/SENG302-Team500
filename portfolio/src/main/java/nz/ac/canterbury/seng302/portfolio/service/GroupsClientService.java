@@ -78,6 +78,7 @@ public class GroupsClientService {
    * @return a AddGroupMembersResponse with either a success or errors(s)
    */
   public RemoveGroupMembersResponse removeGroupMembers(int groupId, List<Integer> userIds) {
+    template.convertAndSend("/topic/groups", userIds);
     return groupBlockingStub.removeGroupMembers(
         RemoveGroupMembersRequest.newBuilder()
             .setGroupId(groupId)
