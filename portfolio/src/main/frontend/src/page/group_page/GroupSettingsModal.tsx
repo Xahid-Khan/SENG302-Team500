@@ -1,7 +1,9 @@
 import * as React from "react";
 import {EditGroupSettings} from "./EditGroupSettings";
 
-export function GroupSettingsModal({viewGroupId}: any) {
+
+
+export function GroupSettingsModal({editGroup}: any) {
 
     const handleCancel = () => {
         document.getElementById("group-settings-modal-open").style.display = "none"
@@ -18,7 +20,7 @@ export function GroupSettingsModal({viewGroupId}: any) {
                 </div>
                 <div className={"border-line"}/>
                 <div className="modal-body group-settings-body">
-                    <EditGroupSettings viewGroupId={viewGroupId}/>
+                    {editGroup.id != -1 ? <EditGroupSettings group={editGroup}/> : <></>}
                 </div>
             </div>
         </div>
