@@ -18,7 +18,7 @@ public class MessageMapper
    */
   @Override
   public MessageEntity toEntity(BaseMessageContract contract) {
-    return new MessageEntity(contract.messageContent(), contract.sentBy());
+    return new MessageEntity(contract.messageContent(), contract.sentBy(), contract.senderName());
   }
 
   /**
@@ -33,6 +33,7 @@ public class MessageMapper
         entity.getConversation().getId(),
         entity.getId(),
         entity.getSentBy(),
+        entity.getSenderName(),
         entity.getMessageContent(),
         entity.getTimeSent());
   }
