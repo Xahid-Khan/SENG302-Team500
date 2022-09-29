@@ -27,9 +27,7 @@ export function EditGroupSettings( {viewGroupId}: any ) {
     })
 
     useEffect(() => {
-        if (myGroup === undefined || myGroup.id === -1) {
-            setMyGroup(groups.filter((item) => item.id === viewGroupId)[0])
-        }
+        setMyGroup(groups.filter((item) => item.id === viewGroupId)[0])
     }, [viewGroupId])
 
     const [longName, setLongName] = React.useState('')
@@ -40,7 +38,6 @@ export function EditGroupSettings( {viewGroupId}: any ) {
 
     const handleCancel = () => {
         document.getElementById("group-settings-modal-open").style.display = "none"
-        window.location.reload()
     }
 
     const validateEditForm = (e: FormEvent) => {

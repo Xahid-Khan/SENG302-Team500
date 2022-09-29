@@ -118,12 +118,8 @@ export class DatetimeUtils {
   }
 
   static timeStringToTimeSince(timeStamp: string) {
-    const [date, time] = timeStamp.split('T');
-    const [year, month, day] = date.split('-');
-    const [hour, minute, seconds] = time.split(".")[0].split(":");
 
-    const timestampDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day), parseInt(hour), parseInt(minute), parseInt(seconds));
-    timestampDate.setHours(timestampDate.getHours() - (timestampDate.getTimezoneOffset() / 60)) // Offsets date to nullify offset caused by toISOString(), leaving date in local time
+    const timestampDate = new Date(timeStamp);
     const currentDate = new Date();
 
     const secondsSince = (currentDate.getTime() - timestampDate.getTime()) / 1000;

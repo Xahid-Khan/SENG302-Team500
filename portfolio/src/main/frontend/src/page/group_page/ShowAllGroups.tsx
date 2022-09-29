@@ -209,8 +209,8 @@ export function ShowAllGroups({setViewGroupId}: any) {
                         <button className="button edit-group-button" id="edit-group" data-privilege="teacher" onClick={() => {document.getElementById("modal-edit-group-members-open").style.display = "block"; setViewGroupId(group.id)}}> Manage Group Members</button>
                         : ""}
                         <div>
-                            {subscriptions.includes(group.id) ? <button className={"button subscribe-button"} onClick={() => unsubscribeUserToGroup(group.id)}>Unsubscribe</button> :
-                            <button className={"button subscribe-button"} onClick={() => subscribeUserToGroup(group.id)}>Subscribe</button>}
+                            {group.users.filter((groupUser: any) => groupUser.id !== userId).length === 0 ? (subscriptions.includes(group.id) ? <button className={"button subscribe-button"} onClick={() => unsubscribeUserToGroup(group.id)}>Unsubscribe</button> :
+                            <button className={"button subscribe-button"} onClick={() => subscribeUserToGroup(group.id)}>Subscribe</button>): ""}
                         </div>
                         <div>
                             <button className={"button show-group-feed-button"} onClick={() => window.location.href=`group_feed/${group['id']}`}>View Feed</button>
@@ -233,7 +233,7 @@ export function ShowAllGroups({setViewGroupId}: any) {
                             <div className={"table"} id={"group-list-branches"}>
 
                                 {branches.map((branch: any) => (
-                                    <div className="tableRow">
+                                    <div className="tableRow" key={branch}>
                                         <div className="tableCell">
                                             <a href={branch['web_url']} target="_blank">{branch['name']} ({Object.keys(branch['commit']).length} commits)</a> <br></br>
                                         </div>
@@ -244,7 +244,7 @@ export function ShowAllGroups({setViewGroupId}: any) {
                             <div className={"table"} id={"group-list-commits"}>
 
                             {commits.map((commit: any) => (
-                                <div className="tableRow">
+                                <div className="tableRow" key={commit.id}>
                                     <div className="tableCell">
                                         <strong>Name:</strong>{commit['author_name']} <br></br>
                                         <strong>Message:</strong> {commit['message']} <br></br>
