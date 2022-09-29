@@ -76,7 +76,11 @@ const wireModal = (id: number, groups: any[]) => {
 }
 
 const toggleGroupView = (id: number) => {
-    document.getElementById(`groups-user-list-${id}`).style.display = document.getElementById(`groups-user-list-${id}`).style.display === "none" ? "block" : "none"
+    if (document.getElementById(`groups-user-list-${id}`) != null) {
+        document.getElementById(`groups-user-list-${id}`).style.display = document.getElementById(`groups-user-list-${id}`).style.display === "none" ? "block" : "none"
+    } else {
+        document.getElementById(`groups-no-member-message-${id}`).style.display = document.getElementById(`groups-no-member-message-${id}`).style.display === "none" ? "block" : "none"
+    }
     document.getElementById(`groups-repository-${id}`).style.display = document.getElementById(`groups-repository-${id}`).style.display === "none" ? "block" : "none"
 
     document.getElementById(`group-toggle-button-${id}`).innerText = document.getElementById(`group-toggle-button-${id}`).innerText === "visibility" ? "visibility_off" : "visibility"
@@ -167,7 +171,7 @@ export function ShowAllGroups({setViewGroupId}: any) {
     function groups_page_user_list(group: any) {
         if(group['users'].length === 0){
             return (
-                <div style={{paddingTop: '1em', paddingBottom: '1em'}}>
+                <div style={{paddingTop: '1em', paddingBottom: '1em'}} id={`groups-no-member-message-${group['id']}`}>
                     This group has no members
                 </div>
             )
