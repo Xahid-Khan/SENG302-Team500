@@ -14,7 +14,7 @@ class PingPageStore {
   stomp: any = null
 
   connectStatus: LoadingStatus = new LoadingNotYetAttempted()
-  path = window.localStorage.getItem("relativePath") + "/socket"
+  path = window.localStorage.getItem("globalUrlPathPrefix") + "/socket"
   pongArray: string[] = observable.array()
   nextPingValue: string = ""
 

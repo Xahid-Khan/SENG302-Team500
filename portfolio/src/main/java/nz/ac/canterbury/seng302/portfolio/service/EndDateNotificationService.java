@@ -25,8 +25,10 @@ public class EndDateNotificationService {
     @Autowired private NotificationService notificationService;
 
     public void addNotifications(Instant endDate, String eventType, String name, String id) {
-
         long timeUntilEndDate = ChronoUnit.MILLIS.between(Instant.now(), endDate);
+        if (timeUntilEndDate < 0L ) {
+            timeUntilEndDate = 0L;
+        }
         PaginatedUsersResponse users = userAccountService.getPaginatedUsers(0, Integer.MAX_VALUE, GetPaginatedUsersOrderingElement.NAME, true);
         Timer endTimer = new Timer("endTimer");
         endTimer.schedule(new TimerTask() {

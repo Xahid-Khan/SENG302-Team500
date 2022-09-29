@@ -1,4 +1,4 @@
-class Event {
+class EventObject {
     constructor(containerElement, data, project, deleteCallback, eventUpdateSavedCallback) {
         this.containerElement = containerElement;
         this.project = project;
