@@ -113,6 +113,10 @@ class PingPageStore {
           store.stomp.subscribe("/topic/" + location, (message: StompMessage) => {
               store.onNotification(message)
           })
+      } else if (destination === "groups") {
+          store.stomp.subscribe("/topic/" + location, (message: StompMessage) => {
+              store.onGroupAlert(message)
+          })
       } else if (destination === "posts") {
           store.stomp.subscribe("/topic/" + location, (message: StompMessage) => {
               store.onPost(message)
@@ -157,6 +161,14 @@ class PingPageStore {
       runInAction(() => {
           window.dispatchEvent(new Event("notification"))
       })
+    }
+
+    protected onGroupAlert(frame: StompMessage) {
+        runInAction(() => {
+            if (frame.body === "create" || frame.body === "update") {
+                window.location.reload()
+            }
+        })
     }
 
     protected onPost(frame: StompMessage) {

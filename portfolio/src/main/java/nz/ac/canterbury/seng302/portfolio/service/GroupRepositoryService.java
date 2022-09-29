@@ -8,6 +8,7 @@ import nz.ac.canterbury.seng302.portfolio.model.contract.GroupRepositoryContract
 import nz.ac.canterbury.seng302.portfolio.model.entity.GroupRepositoryEntity;
 import nz.ac.canterbury.seng302.portfolio.model.entity.GroupRepositoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 /**
@@ -21,6 +22,9 @@ public class GroupRepositoryService {
 
   @Autowired
   private GroupRepositoryMapper groupRepositoryMapper;
+
+  @Autowired
+  private SimpMessagingTemplate template;
 
   @Autowired
   private PostService postService;
@@ -87,6 +91,7 @@ public class GroupRepositoryService {
     }
     var groupRepository = new GroupRepositoryEntity(id);
     groupRepositoryRepository.save(groupRepository);
+    template.convertAndSend("/topic/groups", "update");
 
     return groupRepositoryMapper.toContract(groupRepository);
   }
@@ -101,6 +106,7 @@ public class GroupRepositoryService {
     }
     groupRepositoryRepository.deleteById(Integer.toString(id));
     postService.deleteAllPostWithGroupId(id);
+    template.convertAndSend("/topic/groups", "update");
     return true;
   }
 
@@ -126,6 +132,7 @@ public class GroupRepositoryService {
       groupRepository.setRepositoryID(repositoryID);
       groupRepository.setToken(token);
       groupRepositoryRepository.save(groupRepository);
+      template.convertAndSend("/topic/groups", "update");
       return true;
     } catch (Exception e) {
       e.printStackTrace();

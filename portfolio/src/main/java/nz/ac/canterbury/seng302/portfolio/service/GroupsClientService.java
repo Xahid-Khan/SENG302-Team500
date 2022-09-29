@@ -7,6 +7,8 @@ import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseGroupC
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import nz.ac.canterbury.seng302.shared.util.PaginationRequestOptions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,6 +25,9 @@ public class GroupsClientService {
   private GroupsServiceGrpc.GroupsServiceBlockingStub groupBlockingStub;
 
   @Autowired
+  private SimpMessagingTemplate template;
+
+  @Autowired
   private SubscriptionService subscriptionService;
 
   /**
@@ -32,6 +37,7 @@ public class GroupsClientService {
    * @return a CreateGroupResponse with either a success or error(s)
    */
   public CreateGroupResponse createGroup(BaseGroupContract groupContract) {
+    template.convertAndSend("/topic/groups", "create");
     CreateGroupRequest groupRequest =
         CreateGroupRequest.newBuilder()
             .setLongName(groupContract.longName())
@@ -60,6 +66,7 @@ public class GroupsClientService {
    * @return a AddGroupMembersResponse with either a success or errors(s)
    */
   public AddGroupMembersResponse addGroupMembers(int groupId, List<Integer> userIds) {
+    template.convertAndSend("/topic/groups", "update");
     return groupBlockingStub.addGroupMembers(
         AddGroupMembersRequest.newBuilder()
             .setGroupId(groupId)
@@ -76,6 +83,7 @@ public class GroupsClientService {
    * @return a AddGroupMembersResponse with either a success or errors(s)
    */
   public RemoveGroupMembersResponse removeGroupMembers(int groupId, List<Integer> userIds) {
+    template.convertAndSend("/topic/groups", "update");
     return groupBlockingStub.removeGroupMembers(
         RemoveGroupMembersRequest.newBuilder()
             .setGroupId(groupId)
