@@ -17,7 +17,7 @@ export function EditGroupSettings( {viewGroupId}: any ) {
     }, [])
 
     const userId = parseInt(window.localStorage.getItem("userId"))
-    const isStudent = window.localStorage.getItem("isStudent")
+    const isTeacher = window.localStorage.getItem("isTeacher")
 
     const [myGroup, setMyGroup] = React.useState({
         "id": -1,
@@ -27,9 +27,7 @@ export function EditGroupSettings( {viewGroupId}: any ) {
     })
 
     useEffect(() => {
-        if (myGroup === undefined || myGroup.id === -1) {
-            setMyGroup(groups.filter((item) => item.id === viewGroupId)[0])
-        }
+        setMyGroup(groups.filter((item) => item.id === viewGroupId)[0])
     }, [viewGroupId])
 
     const [longName, setLongName] = React.useState('')
@@ -40,7 +38,6 @@ export function EditGroupSettings( {viewGroupId}: any ) {
 
     const handleCancel = () => {
         document.getElementById("group-settings-modal-open").style.display = "none"
-        window.location.reload()
     }
 
     const validateEditForm = (e: FormEvent) => {
@@ -60,7 +57,7 @@ export function EditGroupSettings( {viewGroupId}: any ) {
             window.location.reload()
         }
     }
-    const canEdit = (myGroup !== undefined ? myGroup.users.filter((user) => user.id === userId).length > 0 : false) || isStudent === "false"
+    const canEdit = (myGroup !== undefined ? myGroup.users.filter((user) => user.id === userId).length > 0 : false) || isTeacher === "true"
 
     return (
         <div>{myGroup ?

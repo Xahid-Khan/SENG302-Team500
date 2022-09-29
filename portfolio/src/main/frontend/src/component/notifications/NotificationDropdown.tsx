@@ -14,6 +14,7 @@ export const NotificationDropdown: React.FC = observer(() => {
     const [notifications, setNotifications] = React.useState([])
     const [numUnseen, setNumUnseen] = React.useState(0)
 
+    // Adapted from https://mui.com/material-ui/react-menu/
     //the element that was last clicked on
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -88,6 +89,7 @@ export const NotificationDropdown: React.FC = observer(() => {
         <React.Fragment>
             <Box sx={{display: 'flex', alignItems: 'center', textAlign: 'center'}}>
                 <IconButton
+                    // Adapted from https://mui.com/material-ui/react-menu/
                     id={'notification-button'}
                     onClick={(x) => {
                         handleClick(x);
@@ -105,6 +107,7 @@ export const NotificationDropdown: React.FC = observer(() => {
 
             </Box>
             <Menu
+                // Adapted from https://mui.com/material-ui/react-menu/
                 anchorEl={anchorEl}
                 id="notification-menu"
                 open={open}

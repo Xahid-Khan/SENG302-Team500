@@ -10,6 +10,7 @@ import nz.ac.canterbury.seng302.portfolio.repository.PostModelRepository;
 import nz.ac.canterbury.seng302.shared.identityprovider.GroupDetailsResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -37,6 +38,9 @@ public class PostService {
 
     @Autowired
     private UserAccountService userAccountService;
+
+    @Autowired
+    private SimpMessagingTemplate template;
 
 
     public List<PostModel> getAllPosts () {
@@ -71,6 +75,8 @@ public class PostService {
             List<Integer> userIds = subscriptionService.getAllByGroupId(newPost.groupId());
             String posterUsername= userAccountService.getUserById(userId).getUsername();
             String groupName = groupDetails.getShortName();
+
+            template.convertAndSend("/topic/posts", userIds);
 
             // Send notification to all members of the group
             for (Integer otherUserId : userIds) {

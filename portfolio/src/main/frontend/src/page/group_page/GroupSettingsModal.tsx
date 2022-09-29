@@ -1,12 +1,10 @@
 import * as React from "react";
 import {EditGroupSettings} from "./EditGroupSettings";
-import {useEffect} from "react";
 
 export function GroupSettingsModal({viewGroupId}: any) {
 
     const handleCancel = () => {
         document.getElementById("group-settings-modal-open").style.display = "none"
-        window.location.reload()
     }
 
     return (

@@ -1,6 +1,4 @@
 import React, {FormEvent, useEffect} from "react";
-import {DatetimeUtils} from "../../util/DatetimeUtils";
-import {Socket} from "../../entry/live_updating";
 import {PostAndCommentContainer} from "./PostAndCommentContainer";
 import {EditPostDataModal} from "./EditPostDataModal";
 import {Tooltip} from "@mui/material";
