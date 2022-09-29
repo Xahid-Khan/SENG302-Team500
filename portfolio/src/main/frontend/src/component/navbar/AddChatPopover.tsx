@@ -19,6 +19,11 @@ interface IUserListProps{
     backButtonCallback: () => void
 }
 
+/**
+ * A popover component for adding conversations.
+ * Contains a list of users, a search bar to filter the list and a create button.
+ * Also contains a series of deletable chips for each selected user.
+ */
 export const AddChatPopover: React.FC<IUserListProps> = observer((props: IUserListProps) => {
 
     const globalUrlPathPrefix = localStorage.getItem("globalUrlPathPrefix");
@@ -145,7 +150,6 @@ export const AddChatPopover: React.FC<IUserListProps> = observer((props: IUserLi
                         <Box sx={{pt: 1, display: 'flex', justifyContent: 'flex-end'}}>
                             <Button disabled={!Boolean(selectedUsers)} size="small" variant="contained" color={"success"} onClick={handleCreateClick}>Create</Button>
                         </Box>
-
                     </Box>
                 </ListSubheader>
                 <Divider/>
@@ -153,4 +157,4 @@ export const AddChatPopover: React.FC<IUserListProps> = observer((props: IUserLi
             </List>
         </Popover>
     )
-    })
+})

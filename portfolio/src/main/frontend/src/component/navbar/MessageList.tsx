@@ -1,7 +1,6 @@
 import React, {useEffect} from "react";
 import {observer} from "mobx-react-lite";
 import {
-    Avatar,
     Box, Button,
     Divider,
     IconButton, List,
@@ -27,7 +26,6 @@ interface IMessageListProps{
 export const MessageList: React.FC<IMessageListProps> = observer((props: IMessageListProps) => {
 
     const globalUrlPathPrefix = localStorage.getItem("globalUrlPathPrefix");
-    const globalImagePath = localStorage.getItem("globalImagePath");
     const userId = localStorage.getItem("userId");
     const username = localStorage.getItem("username");
 
@@ -69,7 +67,6 @@ export const MessageList: React.FC<IMessageListProps> = observer((props: IMessag
         )
     }
 
-    //TODO validate further maybe?
     const validMessage = (message: string): boolean => {
         return message != null && message.trim() !== ''
     }

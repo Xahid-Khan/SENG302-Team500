@@ -7,14 +7,14 @@ interface IGroupAvatarProps {
 }
 
 /**
- * A ListItem component for a clickable contact
+ * A Group of avatar images that overlap, and is limited to showing 2 avatars
  */
 export const GroupAvatar: React.FC<IGroupAvatarProps> = observer((props: IGroupAvatarProps) => {
 
     const globalImagePath = localStorage.getItem("globalImagePath");
 
     return (
-        <AvatarGroup max={2} sx={{mr: 2}}>
+        <AvatarGroup max={2} sx={{mr: 2}} spacing={20}>
             {props.userIds.map(
                 (userId) => {
                     <Avatar src={`//${globalImagePath}${userId}`}/>
@@ -24,6 +24,10 @@ export const GroupAvatar: React.FC<IGroupAvatarProps> = observer((props: IGroupA
     )
 })
 
+/**
+ * Returns a comma separated list of the users names
+ * @param usernames a list of usernames
+ */
 export const getUserNamesList = (usernames: any[]) => {
     return usernames.join(', ')
 }

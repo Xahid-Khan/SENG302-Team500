@@ -7,6 +7,9 @@ import MailIcon from '@mui/icons-material/Mail';
 import {AddChatPopover} from "./AddChatPopover";
 import {getAPIAbsolutePath} from "../../util/RelativePathUtil";
 
+/**
+ * A button that accesses message UIs. Is the parent component for all chat/message related popovers.
+ */
 export const MessageButton: React.FC = observer(() => {
 
     const globalUrlPathPrefix = localStorage.getItem("globalUrlPathPrefix");
@@ -30,7 +33,6 @@ export const MessageButton: React.FC = observer(() => {
     useEffect(() => {
         fetchAndSetChats();
     }, [])
-
 
 
     const [numUnseen, setNumUnseen] = React.useState(0)

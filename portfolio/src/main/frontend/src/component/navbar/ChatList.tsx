@@ -1,9 +1,8 @@
 import {Box, Divider, IconButton, ListSubheader, Menu, MenuItem, Typography} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import React, {useEffect} from "react";
+import React from "react";
 import {observer} from "mobx-react-lite";
 import {ChatListItem} from "./ChatListItem";
-import {getAPIAbsolutePath} from "../../util/RelativePathUtil";
 
 interface IChatListProps{
     open: boolean
@@ -13,6 +12,9 @@ interface IChatListProps{
     chatButtonCallback: (event: React.MouseEvent<HTMLElement>, contract: any) => void
 }
 
+/**
+ * A list of ChatListItems. Contains a plus button to link to AddChatPopover
+ */
 export const ChatList: React.FC<IChatListProps> = observer((props: IChatListProps) => {
 
     const chats_items = () =>
@@ -68,9 +70,5 @@ export const ChatList: React.FC<IChatListProps> = observer((props: IChatListProp
                 {props.chats.length === 0 ? no_chats_item() : chats_items()}
             </Menu>
         </React.Fragment>
-
     )
-
-
-
 })
