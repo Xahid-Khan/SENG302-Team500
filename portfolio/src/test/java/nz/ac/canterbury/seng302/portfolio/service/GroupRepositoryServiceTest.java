@@ -11,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -33,6 +34,12 @@ public class GroupRepositoryServiceTest {
 
     @Mock
     private GroupRepositoryMapper groupRepositoryMapper;
+
+    @Mock
+    private SimpMessagingTemplate template;
+
+    @Mock
+    private PostService postService;
 
     private GroupRepositoryContract repoContract1;
     private GroupRepositoryEntity repoEntity1;

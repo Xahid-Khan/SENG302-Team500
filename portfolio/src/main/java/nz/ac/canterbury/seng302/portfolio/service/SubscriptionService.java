@@ -36,6 +36,7 @@ public class SubscriptionService {
    * @param subscription SubscriptionContract containing the user and group
    */
   public void unsubscribe(SubscriptionContract subscription) {
+
     var data = subscriptionRepository.findByUserIdAndGroupId(subscription.userId(),
         subscription.groupId());
     subscriptionRepository.deleteById(data.getId());

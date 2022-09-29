@@ -140,7 +140,7 @@ const CroppingImage = () => {
             >
                 Crop Image
             </button>
-            <div style={{display: "flex", marginTop:"10px", justifyContent: "space-between"}}>
+            <div style={{display: "flex", marginTop:"10px", justifyContent: "right"}}>
                 <button onClick={() => sendImageData()} type="button" disabled={enableSaveImage} style={{margin:0}}>
                     Save Photo
                 </button>

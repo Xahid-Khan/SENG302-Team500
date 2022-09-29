@@ -7,38 +7,39 @@ export function EditGroupSettings({group}: any) {
   }
 
   const [longName, setLongName] = React.useState(group.longName);
-  const [repositoryID, setRepositoryID] = React.useState(group.repositoryId);
-  const [repositoryToken, setRepositoryToken] = React.useState(group.token);
-  const [alias, setAlias] = React.useState(group.alias);
+  const [repositoryID, setRepositoryID] = React.useState(group.repositoryId == -1? "" : group.repositoryId);
+  const [repositoryToken, setRepositoryToken] = React.useState(group.token || "");
+  const [alias, setAlias] = React.useState(group.alias || "");
   const [longCharCount, setLongCharCount] = React.useState(group.longName.length);
 
   const handleCancel = () => {
     document.getElementById("group-settings-modal-open").style.display = "none"
-    window.location.reload();
   }
 
   const validateRepositoryInfo = async (e: FormEvent) => {
-    if (longName.length == 0) {
+    if (longName.length === 0) {
       document.getElementById("edit-group-error").innerText = "Please provide a long name for the group";
       return;
     }
 
-    if (alias.length == 0) {
-      document.getElementById("edit-group-error").innerText = "Please provide an Alias name for the repository";
-      return;
+    if (!(alias.length == 0 && repositoryID.length == 0 && repositoryToken.length == 0)) {
+      if (alias.length === 0) {
+        document.getElementById("edit-group-error").innerText = "Please provide an Alias name for the repository";
+        return;
+      }
+
+      if (isNaN(parseInt(repositoryID)) && repositoryID <= 0) {
+        document.getElementById("edit-group-error").innerText = "Repository ID must be a number."
+        return;
+      }
+
+      if (!repositoryToken.match("[0-9a-zA-Z-]{20}")) {
+        document.getElementById("edit-group-error").innerText = "Please enter a valid Token"
+        return;
+      }
     }
 
-    if (isNaN(parseInt(repositoryID)) && repositoryID <= 0) {
-      document.getElementById("edit-group-error").innerText = "Repository ID must be a number."
-      return;
-    }
-
-    if (!repositoryToken.match("[0-9a-zA-Z-]{20}")) {
-      document.getElementById("edit-group-error").innerText = "Please enter a valid Token"
-      return;
-    }
-
-    await fetch(`groups/update_repository/`, {
+    await fetch(`groups/update_repository`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
@@ -76,7 +77,7 @@ export function EditGroupSettings({group}: any) {
                   <label className={"settings-title"}>Long Name:</label>
                   {group.canEdit ?
                       <input type="text" name="long-name" className="input-name" id={"long-name"}
-                             defaultValue={group.longName} maxLength={64} onChange={(e) => {
+                             placeholder={group.longName} maxLength={64} onChange={(e) => {
                         setLongName(e.target.value);
                         setLongCharCount(e.target.value.length)
                       }}/>
