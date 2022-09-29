@@ -63,4 +63,9 @@ public class ConversationService {
     conversationRepository.save(conversation);
     return conversationMapper.toContract(conversation);
   }
+
+  public boolean isInConversation(Integer userId, String conversationId) {
+    ConversationEntity conversation = conversationRepository.findById(conversationId).orElseThrow();
+    return conversation.getUserIds().contains(userId);
+  }
 }

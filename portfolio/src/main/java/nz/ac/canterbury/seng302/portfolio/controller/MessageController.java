@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.portfolio.mapping.ConversationMapper;
 import nz.ac.canterbury.seng302.portfolio.mapping.MessageMapper;
+import nz.ac.canterbury.seng302.portfolio.model.GetPaginatedUsersOrderingElement;
 import nz.ac.canterbury.seng302.portfolio.model.contract.ConversationContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.MessageContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseConversationContract;
@@ -13,6 +14,7 @@ import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
 import nz.ac.canterbury.seng302.portfolio.service.ConversationService;
 import nz.ac.canterbury.seng302.portfolio.service.MessageService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -38,6 +41,8 @@ public class MessageController extends AuthenticatedController{
     @Autowired private MessageMapper messageMapper;
 
     @Autowired private ConversationMapper conversationMapper;
+
+    @Autowired private UserAccountService userAccountService;
 
     /**
      * This is similar to autowiring, but apparently recommended more than field injection.
@@ -78,7 +83,7 @@ public class MessageController extends AuthenticatedController{
                 offsetValue = 0;
             }
 
-            Page<ConversationEntity> conversationsPage = messageService.getPaginatedConversations(getUserId(principal), offsetValue,20);
+            Page<ConversationEntity> conversationsPage = conversationService.getPaginatedConversations(getUserId(principal), offsetValue,20);
             // Convert page to list
             List<ConversationEntity> conversationModels = conversationsPage.getContent();
             // Convert list to list of contracts
@@ -110,10 +115,10 @@ public class MessageController extends AuthenticatedController{
      * @return
      */
     @GetMapping(value = "/{conversationId}", produces = "application/json")
-    public ResponseEntity<List<MessageContract>> getPaginatedMessages(@AuthenticationPrincipal PortfolioPrincipal principal, @PathVariable("conversationId") int conversationId, @RequestParam("offset") Optional<Integer> offset) {
+    public ResponseEntity<List<MessageContract>> getPaginatedMessages(@AuthenticationPrincipal PortfolioPrincipal principal, @PathVariable("conversationId") String conversationId, @RequestParam("offset") Optional<Integer> offset) {
         try {
             //Authenticates that the user is a member of the conversation
-            if (!messageService.isInConversation(getUserId(principal), conversationId)) {
+            if (!conversationService.isInConversation(getUserId(principal), conversationId)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
 
@@ -157,14 +162,9 @@ public class MessageController extends AuthenticatedController{
     public ResponseEntity<?> createConversation(@AuthenticationPrincipal PortfolioPrincipal principal, @RequestBody List<Integer> userIds) {
         try {
 
-            boolean response = conversationService.createConversation(new BaseConversationContract(userIds));
+            ConversationContract response = conversationService.createConversation(new BaseConversationContract(userIds));
+            return ResponseEntity.ok().build();
 
-            //if false, message was not sent
-            if (!response) {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            }else {
-                return ResponseEntity.ok().build();
-            }
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
@@ -189,17 +189,12 @@ public class MessageController extends AuthenticatedController{
             int userId = getUserId(principal);
 
             //if the user is not in the conversation, they cannot send a message
-            if (!messageService.isInConversation(userId, Integer.parseInt(conversationId))) {
+            if (!conversationService.isInConversation(userId, conversationId)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
-            boolean response = conversationService.updateConversation(new BaseConversationContract(userIds), conversationId);
+            ConversationContract response = conversationService.updateConversation(new BaseConversationContract(userIds), conversationId);
 
-            //if false, message was not sent
-            if (!response) {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            }else {
-                return ResponseEntity.ok().build();
-            }
+            return ResponseEntity.ok().build();
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
@@ -221,23 +216,18 @@ public class MessageController extends AuthenticatedController{
      * @return The created message
      */
     @PostMapping(value = "/{conversationId}", produces = "application/json")
-    public ResponseEntity<?> sendMessage(@AuthenticationPrincipal PortfolioPrincipal principal, @RequestBody BaseMessageContract messageContract, @PathVariable int conversationId) {
+    public ResponseEntity<?> sendMessage(@AuthenticationPrincipal PortfolioPrincipal principal, @RequestBody BaseMessageContract messageContract, @PathVariable String conversationId) {
         try {
             int userId = getUserId(principal);
 
             //if the user is not in the conversation, they cannot send a message
-            if (!messageService.isInConversation(userId, conversationId)) {
+            if (!conversationService.isInConversation(userId, conversationId)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
+            MessageContract response = messageService.createMessage(conversationId, messageContract);
 
-            boolean response = messageService.sendMessage(userId, conversationId, messageContract);
+            return ResponseEntity.ok().build();
 
-            //if false, message was not sent
-            if (!response) {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            }else {
-                return ResponseEntity.ok().build();
-            }
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
@@ -253,26 +243,44 @@ public class MessageController extends AuthenticatedController{
      *
      */
     @DeleteMapping(value = "/{conversationId}", produces = "application/json")
-    public ResponseEntity<?> deleteMessage(@AuthenticationPrincipal PortfolioPrincipal principal, @RequestBody int messageId, @PathVariable int conversationId) {
+    public ResponseEntity<?> deleteMessage(@AuthenticationPrincipal PortfolioPrincipal principal, @RequestBody String messageId, @PathVariable String conversationId) {
         try {
             int userId = getUserId(principal);
 
             //if the user is not in the conversation, they cannot send a message
-            if (!messageService.isInConversation(userId, conversationId)) {
+            if (!conversationService.isInConversation(userId, conversationId)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
 
-            boolean response = messageService.deleteMessage(messageId, conversationId);
+            messageService.deleteMessage(messageId);
+            return ResponseEntity.ok().build();
 
-            //if false, message was not sent
-            if (!response) {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            }else {
-                return ResponseEntity.ok().build();
-            }
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+    }
+
+    @GetMapping("/all-users")
+    public ResponseEntity<?> getAllUsers(){
+        var response = userAccountService.getPaginatedUsers(
+                0,
+                20,
+                GetPaginatedUsersOrderingElement.USERNAME,
+                true
+        );
+        List<UserResponse> allUser = new ArrayList<>();
+        allUser.addAll(response.getUsersList());
+        int totalUserCount = response.getPaginationResponseOptions().getResultSetSize();
+        for (int i = 20; i > totalUserCount; i += 20){
+            response = userAccountService.getPaginatedUsers(
+                    i,
+                    20,
+                    GetPaginatedUsersOrderingElement.USERNAME,
+                    true
+            );
+            allUser.addAll(response.getUsersList());
+        }
+        return ResponseEntity.ok(allUser);
     }
 
 }

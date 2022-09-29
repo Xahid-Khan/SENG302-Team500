@@ -139,28 +139,7 @@ public class UserListController extends AuthenticatedController {
     return "user_list";
   }
 
-  @GetMapping("/all-users")
-  public List<UserResponse> getAllUsers(){
-    var response = userAccountService.getPaginatedUsers(
-            0,
-            PAGE_SIZE,
-            GetPaginatedUsersOrderingElement.USERNAME,
-            true
-    );
-    List<UserResponse> allUser = new ArrayList<>();
-    allUser.addAll(response.getUsersList());
-    int totalUserCount = response.getPaginationResponseOptions().getResultSetSize();
-    for (int i = 20; i > totalUserCount; i += 20){
-      response = userAccountService.getPaginatedUsers(
-              i,
-              PAGE_SIZE,
-              GetPaginatedUsersOrderingElement.USERNAME,
-              true
-      );
-      allUser.addAll(response.getUsersList());
-    }
-    return allUser;
-  }
+
 
   /**
    * Helper function to assist with modifying roles on the user list page.

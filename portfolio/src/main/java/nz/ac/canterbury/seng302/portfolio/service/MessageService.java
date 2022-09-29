@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import nz.ac.canterbury.seng302.portfolio.mapping.MessageMapper;
 import nz.ac.canterbury.seng302.portfolio.model.contract.MessageContract;
@@ -9,6 +10,10 @@ import nz.ac.canterbury.seng302.portfolio.model.entity.MessageEntity;
 import nz.ac.canterbury.seng302.portfolio.repository.ConversationRepository;
 import nz.ac.canterbury.seng302.portfolio.repository.MessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -51,5 +56,10 @@ public class MessageService {
     conversation.removeMessage(message);
     messageRepository.delete(message);
     conversationRepository.save(conversation);
+  }
+
+  public Page<MessageEntity> getPaginatedMessages(String conversationId, int page, int limit) {
+    Pageable request = PageRequest.of(page, limit, Sort.by("timeSent").descending());
+    return messageRepository.getPaginatedMessagesByConversationId(conversationId, request);
   }
 }

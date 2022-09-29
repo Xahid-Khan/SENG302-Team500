@@ -26,6 +26,7 @@ export const MessageButton: React.FC = observer(() => {
 
     const fetchAndSetChats = () => {
         fetchChats().then((result) => {
+            console.log("here, ", result)
             setChats(result)
         })
     }

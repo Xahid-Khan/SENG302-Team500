@@ -35,7 +35,7 @@ export const AddChatPopover: React.FC<IUserListProps> = observer((props: IUserLi
     const [selectedUsers, setSelectedUsers] = React.useState([]);
 
     const fetchUsers = async () => {
-        const messages = await fetch(getAPIAbsolutePath(globalUrlPathPrefix, `all-users`), {
+        const messages = await fetch(getAPIAbsolutePath(globalUrlPathPrefix, `messages/all-users`), {
                 method: 'GET'
             }
         )

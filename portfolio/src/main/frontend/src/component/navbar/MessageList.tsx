@@ -46,6 +46,7 @@ export const MessageList: React.FC<IMessageListProps> = observer((props: IMessag
 
     useEffect(() => {
         getMessages().then((result) => {
+            console.log("here, ", result)
             setMessages(result)
         })
     }, [])
@@ -191,8 +192,12 @@ export const MessageList: React.FC<IMessageListProps> = observer((props: IMessag
                         <IconButton onClick={props.backButtonCallback}>
                             <ChevronLeftIcon/>
                         </IconButton>
-                        <GroupAvatar userIds={props.conversation.userIds}/>
-                        <Typography>{props.conversation.mostRecentMessage}</Typography>
+                        {props.conversation ? (
+                            <>
+                                <GroupAvatar userIds={props.conversation.userIds}/>
+                                <Typography>{props.conversation.mostRecentMessage}</Typography>
+                            </>
+                            ) : ""}
                     </Box>
                 </ListSubheader>
                 <Divider/>
