@@ -3,7 +3,7 @@ import {observer} from "mobx-react-lite";
 import {Avatar, AvatarGroup} from "@mui/material";
 
 interface IGroupAvatarProps {
-    userIds: any[]
+    users: any[]
 }
 
 /**
@@ -11,14 +11,15 @@ interface IGroupAvatarProps {
  */
 export const GroupAvatar: React.FC<IGroupAvatarProps> = observer((props: IGroupAvatarProps) => {
 
+    const username = localStorage.getItem("username");
     const globalImagePath = localStorage.getItem("globalImagePath");
 
     return (
         <AvatarGroup max={2} sx={{mr: 2}} spacing={20}>
-            {props.userIds.map(
-                (userId) => {
-                    <Avatar src={`//${globalImagePath}${userId}`}/>
-                }
+            {props.users
+                .filter((user) => user.username != username)
+                .map(
+                (user) => <Avatar src={`//${globalImagePath}${user.userId}`}/>
             )}
         </AvatarGroup>
     )
@@ -28,6 +29,10 @@ export const GroupAvatar: React.FC<IGroupAvatarProps> = observer((props: IGroupA
  * Returns a comma separated list of the users names
  * @param usernames a list of usernames
  */
-export const getUserNamesList = (usernames: any[]) => {
-    return usernames.join(', ')
+export const getUserNamesList = (users: any[]) => {
+    const username = localStorage.getItem("username");
+    return users
+        .filter((user) => user.username != username)
+        .map((user) => user.username)
+        .join(', ')
 }

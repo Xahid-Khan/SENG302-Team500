@@ -18,11 +18,7 @@ interface IChatListProps{
 export const ChatList: React.FC<IChatListProps> = observer((props: IChatListProps) => {
 
     const chats_items = () =>
-        props.chats
-            .sort((x: any, y: any) => {
-                return x.time < y.time ? 1 : -1
-            })
-            .map((contract: any) =>
+        props.chats.map((contract: any) =>
             <>
                 <ChatListItem
                     key={contract.conversationId}
@@ -48,7 +44,7 @@ export const ChatList: React.FC<IChatListProps> = observer((props: IChatListProp
                 id="chat-menu"
                 open={props.open}
                 onClose={props.onClose}
-                PaperProps={{sx: {maxHeight: 0.5, maxWidth: 0.3, minWidth: "300px"}}}
+                PaperProps={{sx: {maxHeight: 0.5, maxWidth: 0.3, minWidth: "300px", minHeight: 0.4}}}
                 transformOrigin={{horizontal: "right", vertical: "top"}}
                 anchorOrigin={{horizontal: "right", vertical: "bottom"}}
             >

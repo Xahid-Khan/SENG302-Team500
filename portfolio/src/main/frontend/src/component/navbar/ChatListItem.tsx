@@ -15,12 +15,12 @@ interface IChatListItemProps {
  */
 export const ChatListItem: React.FC<IChatListItemProps> = observer((props: IChatListItemProps) => {
     return (
-        <MenuItem id={`chat-button-${props.contract.conversationId}`} onClick={(event) => {props.clickCallback(event, props.contract)}}>
+        <MenuItem id={`chat-button-${props.contract.conversationId}`} onClick={(event) => {console.log("clicked");props.clickCallback(event, props.contract)}}>
             <Box sx={{flexGrow: 1, display: "flex", justifyContent: "space-between", maxWidth: '100%'}}>
-                <GroupAvatar userIds={props.contract.userIds}/>
+                <GroupAvatar users={props.contract.users}/>
                 <Box  sx={{flexGrow: 1, display: "flex", flexDirection: "column", maxWidth: '100%'}} style={{overflow:'hidden'}}>
-                    <Typography variant="subtitle2" noWrap>{getUserNamesList(props.contract.usernames)}</Typography>
-                    <Typography variant="body2" noWrap>{props.contract.mostRecentMessage}</Typography>
+                    <Typography variant="subtitle2" noWrap>{getUserNamesList(props.contract.users)}</Typography>
+                    <Typography variant="body2" noWrap>{props.contract.mostRecentMessage?.messageContent}</Typography>
                 </Box>
                 {props.contract.seen ? "" : <FiberManualRecordIcon fontSize={'small'} color="primary"></FiberManualRecordIcon>}
             </Box>

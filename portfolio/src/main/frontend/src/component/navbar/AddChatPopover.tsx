@@ -16,7 +16,9 @@ import {getAPIAbsolutePath} from "../../util/RelativePathUtil";
 interface IUserListProps{
     open: boolean
     onClose: () => void
+    chats: any[]
     backButtonCallback: () => void
+    chatButtonCallback: (event: React.MouseEvent<HTMLElement>, contract: any) => void
 }
 
 /**
@@ -29,27 +31,29 @@ export const AddChatPopover: React.FC<IUserListProps> = observer((props: IUserLi
     const globalUrlPathPrefix = localStorage.getItem("globalUrlPathPrefix");
     const globalImagePath = localStorage.getItem("globalImagePath");
 
-    const userId = localStorage.getItem("userId")
+    const userId = localStorage.getItem("userId");
 
     const [search, setSearch] = React.useState("");
 
     const [users, setUsers] = React.useState([]);
     const [selectedUsers, setSelectedUsers] = React.useState([]);
 
+    let conversation: any = undefined;
+
     const fetchUsers = async () => {
-        const messages = await fetch(getAPIAbsolutePath(globalUrlPathPrefix, "messages/all-users"))
-        return messages.json()
+        const messages = await fetch(getAPIAbsolutePath(globalUrlPathPrefix, "messages/all-users"));
+        return messages.json();
     }
 
     useEffect(() => {
         fetchUsers().then((result) => {
-            let users = []
+            let users = [];
             if (result['userIds'] !== undefined) {
                 for (let i = 0; i < result.userIds.length; i++) {
                     users.push({"userId": result.userIds[i], "username": result.usernames[i]})
                 }
             }
-            setUsers(users)
+            setUsers(users);
         })
     }, [])
 
@@ -81,7 +85,7 @@ export const AddChatPopover: React.FC<IUserListProps> = observer((props: IUserLi
     }
 
     const handleChipDelete = (id: number) => {
-        setSelectedUsers(selectedUsers.filter((user) => {user.id !== id}))
+        setSelectedUsers(selectedUsers.filter((user) => {user.id !== id}));
     }
 
     const chips = () =>
@@ -101,17 +105,47 @@ export const AddChatPopover: React.FC<IUserListProps> = observer((props: IUserLi
         }
     }
 
-    const handleCreateClick = async() => {
+    const newConversation = () => {
+        const ids = selectedUsers.map((user) => parseInt(user.userId));
+        ids.push(parseInt(userId));
+        return ids;
+    }
+
+    const groupAlreadyExists = () => {
+        conversation = undefined
+        let alreadyExists = false
+        const y = selectedUsers.map((user: any) => parseInt(user.userId))
+        y.push(parseInt(userId))
+        for(let chat of props.chats) {
+            console.log(chat)
+            const x = chat.users.map((user: any) => user.id)
+            if(x.every((item: number) => y.includes(item)) && y.every((item: number) => x.includes(item))){
+                alreadyExists = true;
+                console.log(chat)
+                conversation = chat
+                console.log(conversation)
+            }
+        }
+        return alreadyExists
+    }
+
+    const handleCreateClick = async(e: React.MouseEvent<HTMLElement>) => {
+        if(groupAlreadyExists()){
+            props.chatButtonCallback(e, conversation)
+            return
+        }
+
         await fetch(getAPIAbsolutePath(globalUrlPathPrefix, `messages`), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-                "userIds": selectedUsers
-            })
+            body: JSON.stringify(
+                newConversation()
+            )
         });
-        props.backButtonCallback()
+        props.backButtonCallback();
+        setSelectedUsers([])
     }
 
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) =>{
@@ -127,7 +161,7 @@ export const AddChatPopover: React.FC<IUserListProps> = observer((props: IUserLi
             onClose={() =>{
                 props.onClose()
             }}
-            PaperProps={{sx: {maxHeight: 0.8, maxWidth: 0.3, minWidth: "300px"}}}
+            PaperProps={{sx: {maxHeight: 0.8, maxWidth: 0.3, minWidth: "300px", minHeight: 0.4}}}
             transformOrigin={{horizontal: "right", vertical: "top"}}
             anchorOrigin={{horizontal: "right", vertical: "bottom"}}
         >
@@ -153,7 +187,14 @@ export const AddChatPopover: React.FC<IUserListProps> = observer((props: IUserLi
                         </Box>
                         <Box sx={{display: 'flex', flexWrap: 'wrap'}}>{chips()}</Box>
                         <Box sx={{pt: 1, display: 'flex', justifyContent: 'flex-end'}}>
-                            <Button disabled={!Boolean(selectedUsers)} size="small" variant="contained" color={"success"} onClick={handleCreateClick}>Create</Button>
+                            <Button
+                                id={'create-group-button'}
+                                disabled={!Boolean(selectedUsers)}
+                                size="small"
+                                variant="contained"
+                                color={"success"}
+                                onClick={handleCreateClick}>{'Open'}
+                            </Button>
                         </Box>
                     </Box>
                 </ListSubheader>

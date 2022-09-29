@@ -13,7 +13,7 @@ import {MessageListItem} from "./MessageListItem";
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import SendIcon from '@mui/icons-material/Send';
 import {getAPIAbsolutePath} from "../../util/RelativePathUtil";
-import {GroupAvatar} from "./GroupAvatar";
+import {getUserNamesList, GroupAvatar} from "./GroupAvatar";
 
 interface IMessageListProps{
     open: boolean
@@ -37,6 +37,7 @@ export const MessageList: React.FC<IMessageListProps> = observer((props: IMessag
 
     const getMessages = async () => {
         //TODO fetch and sort by time, see NotificationDropdown getNotifications
+        console.log("messages fetch ", props.conversation)
         const messages = await fetch(getAPIAbsolutePath(globalUrlPathPrefix, `messages/${props.conversation.conversationId}`), {
                 method: 'GET'
             }
@@ -44,12 +45,17 @@ export const MessageList: React.FC<IMessageListProps> = observer((props: IMessag
         return messages.json()
     }
 
-    useEffect(() => {
+    const fetchAndSetMessages = () => {
+        console.log("messages onmount ")
         getMessages().then((result) => {
-            console.log("here, ", result)
+            console.log("messages, ", result)
             setMessages(result)
         })
-    }, [])
+    }
+
+    useEffect(() => {
+        fetchAndSetMessages();
+    }, [props.conversation])
 
     const messages_items = () =>
         messages.map((contract: any) =>
@@ -81,10 +87,12 @@ export const MessageList: React.FC<IMessageListProps> = observer((props: IMessag
                 },
                 body: JSON.stringify({
                     "messageContent": message,
-                    "sentBy": userId,
+                    "sentBy": parseInt(userId),
                     "senderName": username
                 })
             });
+            fetchAndSetMessages();
+            setMessage("");
         }
     }
 
@@ -111,6 +119,7 @@ export const MessageList: React.FC<IMessageListProps> = observer((props: IMessag
             body: selectedMessageId
         });
         setSelectedMessageId("");
+        fetchAndSetMessages();
     }
 
     const handleCancelMessageClick = () =>{
@@ -132,6 +141,7 @@ export const MessageList: React.FC<IMessageListProps> = observer((props: IMessag
             backgroundColor: 'white',
         }}>
             <TextField
+                value={message}
                 multiline
                 maxRows={3}
                 label={"message"}
@@ -141,6 +151,7 @@ export const MessageList: React.FC<IMessageListProps> = observer((props: IMessag
                 onChange={handleMessageChange}
                 onKeyDown={handleMessageKeyDown}
                 sx={{flexGrow: 1}}/>
+
             <IconButton onClick={handleSendClick} disabled={!validMessage(message)}>
                 <SendIcon color={"primary"}/>
             </IconButton>
@@ -181,7 +192,7 @@ export const MessageList: React.FC<IMessageListProps> = observer((props: IMessag
             transformOrigin={{horizontal: "right", vertical: "top"}}
             anchorOrigin={{horizontal: "right", vertical: "bottom"}}
         >
-            <List>
+            <List sx={{minHeight: 300}}>
                 <ListSubheader sx={{pt: 1, pb: 1, pr: 0, pl: 0}}>
                     <Box sx={{
                         flexGrow: 1,
@@ -194,8 +205,8 @@ export const MessageList: React.FC<IMessageListProps> = observer((props: IMessag
                         </IconButton>
                         {props.conversation ? (
                             <>
-                                <GroupAvatar userIds={props.conversation.userIds}/>
-                                <Typography>{props.conversation.mostRecentMessage}</Typography>
+                                <GroupAvatar users={props.conversation.users}/>
+                                <Typography>{getUserNamesList(props.conversation.users)}</Typography>
                             </>
                             ) : ""}
                     </Box>

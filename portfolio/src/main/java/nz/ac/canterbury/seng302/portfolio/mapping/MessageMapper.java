@@ -29,6 +29,9 @@ public class MessageMapper
    */
   @Override
   public MessageContract toContract(MessageEntity entity) {
+    if(entity == null){
+      return null;
+    }
     return new MessageContract(
         entity.getConversation().getId(),
         entity.getId(),

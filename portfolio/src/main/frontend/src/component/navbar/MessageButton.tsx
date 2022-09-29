@@ -52,18 +52,20 @@ export const MessageButton: React.FC = observer(() => {
 
     const handleChatClick = (event: React.MouseEvent<HTMLElement>, contract: any) => {
         handleClick(event)
+        console.log(contract)
         setConversation(contract)
     };
 
     const handleBackClick = () => {
         setAnchorEl(document.getElementById('chats-list-button'));
         setConversation(undefined)
+        fetchAndSetChats();
     }
 
     //uses the last clicked element to determine which menu to open
     const openChats = anchorEl?.id === 'chats-list-button';
     const openAdd = anchorEl?.id === 'add-button';
-    const openChat = anchorEl?.id.startsWith('chat-button');
+    const openChat = anchorEl?.id.startsWith('chat-button') || anchorEl?.id === 'create-group-button';
 
     //TODO fetch num unseen messages
 
@@ -113,7 +115,9 @@ export const MessageButton: React.FC = observer(() => {
             <AddChatPopover
                 open={openAdd}
                 onClose={handleClose}
+                chats={chats}
                 backButtonCallback={handleBackClick}
+                chatButtonCallback={handleChatClick}
             />
 
         </React.Fragment>
