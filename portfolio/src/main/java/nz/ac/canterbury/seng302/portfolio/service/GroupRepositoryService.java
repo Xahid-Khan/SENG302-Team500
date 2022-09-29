@@ -26,6 +26,9 @@ public class GroupRepositoryService {
   @Autowired
   private SimpMessagingTemplate template;
 
+  @Autowired
+  private PostService postService;
+
 
   /**
    * Retrieve the group repository with the given ID.
@@ -102,6 +105,7 @@ public class GroupRepositoryService {
       return false;
     }
     groupRepositoryRepository.deleteById(Integer.toString(id));
+    postService.deleteAllPostWithGroupId(id);
     template.convertAndSend("/topic/groups", "update");
     return true;
   }

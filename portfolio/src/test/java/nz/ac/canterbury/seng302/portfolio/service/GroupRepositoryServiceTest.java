@@ -34,6 +34,9 @@ public class GroupRepositoryServiceTest {
     @Mock
     private GroupRepositoryMapper groupRepositoryMapper;
 
+    @Mock
+    private PostService postService;
+
     private GroupRepositoryContract repoContract1;
     private GroupRepositoryEntity repoEntity1;
     private GroupRepositoryContract emptyRepoContract1;

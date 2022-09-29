@@ -10,5 +10,6 @@ export const entryPointPaths = [
   "./src/entry/navbar.tsx",
   "./src/entry/home_feed.tsx",
     "./src/entry/navbar_entry.js",
+    "./src/entry/feed_pages_entry.js",
     "./src/entry/groups_entry.js"
 ]

@@ -234,14 +234,15 @@ class GroupRepositoryControllerTest {
     Mockito.when(groupRepositoryService.update(anyInt(), anyInt(), anyString(), anyString()))
         .thenReturn(true);
 
-    mockMvc.perform(put("/groups/update_repository/")
+    mockMvc.perform(put("/groups/update_repository")
             .contentType(MediaType.APPLICATION_JSON)
             .content("""
                 {
                     "groupId" : "1",
                     "repositoryId" : "1",
                     "token" : "TOKEN",
-                    "alias" : ""
+                    "alias" : "a",
+                    "longName" : ""
                 }
                 """)
             .accept(MediaType.APPLICATION_JSON))
@@ -261,13 +262,15 @@ class GroupRepositoryControllerTest {
             groupRepositoryService.update(requestedID, requestedRepositoryID, requestedToken, ""))
         .thenReturn(false);
 
-    mockMvc.perform(put("/groups/update_repository/")
+    mockMvc.perform(put("/groups/update_repository")
             .contentType(MediaType.APPLICATION_JSON)
             .content("""
                 {
                     "groupId" : "1",
                     "repositoryId" : "1",
-                    "token" : "TOKEN"
+                    "token" : "TOKEN",
+                    "alias" : "",
+                    "longName" : ""
                 }
                 """)
             .accept(MediaType.APPLICATION_JSON))

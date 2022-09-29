@@ -2,11 +2,13 @@ package nz.ac.canterbury.seng302.portfolio.service;
 
 import javax.persistence.criteria.CriteriaBuilder.In;
 import net.devh.boot.grpc.client.inject.GrpcClient;
+import nz.ac.canterbury.seng302.portfolio.model.contract.SubscriptionContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseGroupContract;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import nz.ac.canterbury.seng302.shared.util.PaginationRequestOptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,6 +26,9 @@ public class GroupsClientService {
 
   @Autowired
   private SimpMessagingTemplate template;
+
+  @Autowired
+  private SubscriptionService subscriptionService;
 
   /**
    * Handles creating a group when given a BaseGroupContract.

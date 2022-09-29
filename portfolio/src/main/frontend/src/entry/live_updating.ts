@@ -117,6 +117,10 @@ class PingPageStore {
           store.stomp.subscribe("/topic/" + location, (message: StompMessage) => {
               store.onGroupAlert(message)
           })
+      } else if (destination === "posts") {
+          store.stomp.subscribe("/topic/" + location, (message: StompMessage) => {
+              store.onPost(message)
+          })
       }
 
       onConnected()
@@ -162,6 +166,22 @@ class PingPageStore {
     protected onGroupAlert(frame: StompMessage) {
         runInAction(() => {
             if (frame.body === "create" || frame.body === "update") {
+                window.location.reload()
+            }
+        })
+    }
+
+    protected onPost(frame: StompMessage) {
+        runInAction(() => {
+            const userId = window.localStorage.getItem("userId")
+            let affected = false
+            const message = JSON.parse(frame.body)
+            message.forEach((affectedId: number) => {
+                if (affectedId === parseInt(userId)) {
+                    affected = true;
+                }
+            })
+            if (affected) {
                 window.location.reload()
             }
         })

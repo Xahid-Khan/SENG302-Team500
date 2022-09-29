@@ -84,7 +84,7 @@ public class GroupRepositoryController extends AuthenticatedController {
    * @return
    */
   @PostMapping
-  @RequestMapping(value = "/groups/add_repository/", produces = "application/json")
+  @RequestMapping(value = "/groups/add_repository", produces = "application/json")
   public ResponseEntity<GroupRepositoryContract> create(
       @RequestBody BaseGroupRepositoryContract groupRepositoryContract) {
     try {
@@ -127,13 +127,25 @@ public class GroupRepositoryController extends AuthenticatedController {
    * @return
    */
   @PutMapping
-  @RequestMapping(value = "/groups/update_repository/", produces = "application/json")
+  @RequestMapping(value = "/groups/update_repository", produces = "application/json")
   public ResponseEntity<Boolean> update(
       @RequestBody GroupRepositoryContract groupRepositoryContract) {
     try {
-      groupsClientService.updateGroupLongName(groupRepositoryContract.groupId(), groupRepositoryContract.longName());
-      var result = groupRepositoryService.update(groupRepositoryContract.groupId(),
-          groupRepositoryContract.repositoryId(), groupRepositoryContract.token(), groupRepositoryContract.alias());
+      var result = false;
+      if (groupRepositoryContract.longName().length() > 0 && groupRepositoryContract.longName().length() < 64) {
+        groupsClientService.updateGroupLongName(groupRepositoryContract.groupId(),
+            groupRepositoryContract.longName());
+        result = true;
+      }
+      if (groupRepositoryContract.repositoryId() != null  &&
+          groupRepositoryContract.repositoryId() > 0  &&
+          groupRepositoryContract.token().length() > 0 &&
+          groupRepositoryContract.token().length() < 64 &&
+          groupRepositoryContract.alias(). length() > 0) {
+        result = groupRepositoryService.update(groupRepositoryContract.groupId(),
+            groupRepositoryContract.repositoryId(), groupRepositoryContract.token(),
+            groupRepositoryContract.alias());
+      }
 
       //if null return 404 else return ok
       return result ? ResponseEntity.ok().build()
