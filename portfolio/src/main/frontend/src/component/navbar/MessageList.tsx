@@ -184,7 +184,7 @@ export const MessageList: React.FC<IMessageListProps> = observer((props: IMessag
     return (
         <Popover
             // Adapted from https://mui.com/material-ui/react-menu/
-            anchorEl={document.body}
+            anchorEl={document.getElementById('chats-list-button')}
             id="messages-menu"
             open={props.open}
             onClose={() =>{
@@ -192,7 +192,7 @@ export const MessageList: React.FC<IMessageListProps> = observer((props: IMessag
                 props.onClose()
             }}
             PaperProps={{sx: {maxHeight: 0.5, maxWidth: 0.3, minWidth: "300px"}}}
-            transformOrigin={{horizontal: "right", vertical: "bottom"}}
+            transformOrigin={{horizontal: "right", vertical: "top"}}
             anchorOrigin={{horizontal: "right", vertical: "bottom"}}
         >
             <List>

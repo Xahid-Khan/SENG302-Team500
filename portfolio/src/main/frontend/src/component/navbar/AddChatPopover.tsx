@@ -26,6 +26,8 @@ export const AddChatPopover: React.FC<IUserListProps> = observer((props: IUserLi
 
     const globalImagePath = localStorage.getItem("globalImagePath");
 
+    const [search, setSearch] = React.useState("");
+
     const [users, setUsers] = React.useState([]);
     const [selectedUsers, setSelectedUsers] = React.useState([]);
 
@@ -71,7 +73,9 @@ export const AddChatPopover: React.FC<IUserListProps> = observer((props: IUserLi
     }, [])
 
     const users_items = () =>
-        users.map((user: any) =>
+        users
+            .filter((user: any) => user.fullName.toLowerCase().includes(search.toLowerCase()))
+            .map((user: any) =>
             <MenuItem onClick={(event) => handleContactAdd(user)}>
                 <Box
                     key={user.id}
@@ -121,17 +125,21 @@ export const AddChatPopover: React.FC<IUserListProps> = observer((props: IUserLi
         props.backButtonCallback()
     }
 
+    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) =>{
+        setSearch(event.target.value)
+    }
+
     return (
         <Popover
             // Adapted from https://mui.com/material-ui/react-menu/
-            anchorEl={document.body}
+            anchorEl={document.getElementById('chats-list-button')}
             id="messages-menu"
             open={props.open}
             onClose={() =>{
                 props.onClose()
             }}
             PaperProps={{sx: {maxHeight: 0.8, maxWidth: 0.3, minWidth: "300px"}}}
-            transformOrigin={{horizontal: "right", vertical: "bottom"}}
+            transformOrigin={{horizontal: "right", vertical: "top"}}
             anchorOrigin={{horizontal: "right", vertical: "bottom"}}
         >
             <List>
@@ -152,7 +160,7 @@ export const AddChatPopover: React.FC<IUserListProps> = observer((props: IUserLi
                             <IconButton onClick={props.backButtonCallback}>
                                 <ChevronLeftIcon></ChevronLeftIcon>
                             </IconButton>
-                            <TextField label="Search" variant="standard" />
+                            <TextField label="Search" variant="standard" onChange={handleSearchChange}/>
                         </Box>
                         <Box sx={{display: 'flex', flexWrap: 'wrap'}}>{chips()}</Box>
                         <Box sx={{pt: 1, display: 'flex', justifyContent: 'flex-end'}}>

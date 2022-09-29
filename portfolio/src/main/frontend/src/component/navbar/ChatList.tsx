@@ -100,12 +100,12 @@ export const ChatList: React.FC<IChatListProps> = observer((props: IChatListProp
     return (
         <React.Fragment>
             <Menu
-                anchorEl={document.body}
+                anchorEl={document.getElementById('chats-list-button')}
                 id="chat-menu"
                 open={props.open}
                 onClose={props.onClose}
                 PaperProps={{sx: {maxHeight: 0.5, maxWidth: 0.3, minWidth: "300px"}}}
-                transformOrigin={{horizontal: "right", vertical: "bottom"}}
+                transformOrigin={{horizontal: "right", vertical: "top"}}
                 anchorOrigin={{horizontal: "right", vertical: "bottom"}}
             >
                 <ListSubheader>
