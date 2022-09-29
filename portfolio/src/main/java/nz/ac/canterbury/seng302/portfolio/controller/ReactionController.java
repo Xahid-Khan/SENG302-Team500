@@ -29,8 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/group_feed")
 public class ReactionController extends AuthenticatedController {
 
-  @Autowired
-  private ReactionService reactionService;
+  @Autowired private ReactionService reactionService;
 
   public ReactionController(AuthStateService authStateService,
       UserAccountService userAccountService) {

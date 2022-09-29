@@ -16,7 +16,7 @@ export function RemoveMemberModal() {
                     Are you sure you want to remove this user from the group?
                 </div>
                 <div className="modal-buttons">
-                    <button className="button dangerous-button" id="modal-delete-confirm">Delete</button>
+                    <button className="button dangerous-button" id="modal-delete-confirm">Remove</button>
                     <button className="button" id="modal-delete-cancel">Cancel</button>
                 </div>
             </div>
