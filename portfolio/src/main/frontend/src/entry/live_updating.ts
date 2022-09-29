@@ -113,6 +113,10 @@ class PingPageStore {
           store.stomp.subscribe("/topic/" + location, (message: StompMessage) => {
               store.onNavbarAlert(message)
           })
+      } else if (destination === "groups") {
+          store.stomp.subscribe("/topic/" + location, (message: StompMessage) => {
+              store.onGroupAlert(message)
+          })
       } else if (destination === "posts") {
           store.stomp.subscribe("/topic/" + location, (message: StompMessage) => {
               store.onPost(message)
@@ -173,6 +177,14 @@ class PingPageStore {
               }
           }
       })
+    }
+
+    protected onGroupAlert(frame: StompMessage) {
+        runInAction(() => {
+            if (frame.body === "create" || frame.body === "update" || frame.body === "name_change") {
+                window.location.reload()
+            }
+        })
     }
 
     protected onPost(frame: StompMessage) {
