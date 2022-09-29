@@ -50,30 +50,5 @@ public class ConversationServiceTest {
     Mockito.when(messageRepository.save(any())).thenReturn(null);
   }
 
-  @Test
-  void testGetPaginatedConversationsAndExpectMostRecentMessageFirst() {
-    // Get all 3 conversations (since user 2 is in all 3)
-    var result = conversationService.getPaginatedConversations(2, 0, 3);
-    Pageable request = PageRequest.of(0, 3);//, Sort.by("creationDate").descending());
-    result = conversationRepository.getPaginatedPostsByUserIdsIn(List.of(2), request);
-    System.err.println(result);
-    System.err.println(conversationRepository.getPaginatedPostsByUserIdsIn(List.of(2, 3), request));
-    System.err.println(conversationRepository.findAll());
-    assertSame(result.getContent().get(0).getId(), conversation1.getId());
 
-    // Add message to see if conversation 3 becomes the topmost one now
-    MessageEntity message = new MessageEntity("Hello world!", 2);
-    Mockito.when(messageMapper.toEntity(any())).thenReturn(message);
-    Mockito.when(conversationRepository.findById(any())).thenReturn(
-        Optional.ofNullable(conversation3));
-    messageService.createMessage(conversation3.getId(), new BaseMessageContract("Hello World!", 2));
-
-    //result = conversationService.getPaginatedConversations(2, 0, 3);
-
-    result = conversationRepository.getPaginatedPostsByUserIdsIn(List.of(2), request);
-
-    System.err.println(result);
-
-    assertSame(result.getContent().get(0).getId(), conversation3.getId());
-  }
 }

@@ -32,6 +32,7 @@ public class MessageService {
     MessageEntity message = messageMapper.toEntity(baseMessageContract);
     conversation.addMessage(message);
     messageRepository.save(message);
+    conversation.setMostRecentMessageTimestamp();
     conversationRepository.save(conversation);
 
     return messageMapper.toContract(message);
