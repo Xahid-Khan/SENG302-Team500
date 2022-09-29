@@ -12,8 +12,10 @@
 <body>
 
 <form id='form' th:action="@{register}" th:object="${user}" method="post" class="raised-card form">
-    <h1 class="title">Sign Up</h1>
-
+    <div style="display: flex">
+        <img src="../static/images/SprintrLogo.png" alt="Sprintr Logo"/>
+        <h2 class="title">Welcome to SENG Sprintr! Start your journey as a Track Star...</h2>
+    </div>
     <!--    Submits a populated UserDTO to endpoint register -->
     <div class="form-row">
         <label th:for="username">Username *</label>
@@ -77,11 +79,11 @@
     </div>
 
     <div class="form-error" th:if="${registerMessage != null}" th:text="${registerMessage}"></div>
-    <div id="field-error" class="form-error" ></div><br>
+    <div id="field-error" class="form-error" ></div>
 
-    <br/>* = Required field.<br/>
+    * = Required field.<br/>
     <button id='submit' class="button" name="register" type="Submit" value="0">Register</button>
-    <a href="login">Have an account? Login</a>
+    <a href="login">Already a track star? Login</a>
 </form>
 </body>
 
