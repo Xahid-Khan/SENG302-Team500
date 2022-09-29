@@ -109,9 +109,13 @@ class PingPageStore {
         store.stomp.subscribe("/topic/" + location, (message: StompMessage) => {
           store.onReceiveEditAlert(message)
         })
-      } else {
+      } else if (destination === "notification") {
           store.stomp.subscribe("/topic/" + location, (message: StompMessage) => {
               store.onNotification(message)
+          })
+      } else if (destination === "posts") {
+          store.stomp.subscribe("/topic/" + location, (message: StompMessage) => {
+              store.onPost(message)
           })
       }
 
@@ -153,6 +157,22 @@ class PingPageStore {
       runInAction(() => {
           window.dispatchEvent(new Event("notification"))
       })
+    }
+
+    protected onPost(frame: StompMessage) {
+        runInAction(() => {
+            const userId = window.localStorage.getItem("userId")
+            let affected = false
+            const message = JSON.parse(frame.body)
+            message.forEach((affectedId: number) => {
+                if (affectedId === parseInt(userId)) {
+                    affected = true;
+                }
+            })
+            if (affected) {
+                window.location.reload()
+            }
+        })
     }
 }
 
