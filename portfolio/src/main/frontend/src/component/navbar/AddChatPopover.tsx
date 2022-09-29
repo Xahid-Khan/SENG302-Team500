@@ -29,28 +29,33 @@ export const AddChatPopover: React.FC<IUserListProps> = observer((props: IUserLi
     const globalUrlPathPrefix = localStorage.getItem("globalUrlPathPrefix");
     const globalImagePath = localStorage.getItem("globalImagePath");
 
+    const userId = localStorage.getItem("userId")
+
     const [search, setSearch] = React.useState("");
 
     const [users, setUsers] = React.useState([]);
     const [selectedUsers, setSelectedUsers] = React.useState([]);
 
     const fetchUsers = async () => {
-        const messages = await fetch(getAPIAbsolutePath(globalUrlPathPrefix, `messages/all-users`), {
-                method: 'GET'
-            }
-        )
+        const messages = await fetch(getAPIAbsolutePath(globalUrlPathPrefix, "messages/all-users"))
         return messages.json()
     }
 
     useEffect(() => {
         fetchUsers().then((result) => {
-            setUsers(result)
+            let users = []
+            if (result['userIds'] !== undefined) {
+                for (let i = 0; i < result.userIds.length; i++) {
+                    users.push({"userId": result.userIds[i], "username": result.usernames[i]})
+                }
+            }
+            setUsers(users)
         })
     }, [])
 
     const users_items = () =>
         users
-            .filter((user: any) => user.fullName.toLowerCase().includes(search.toLowerCase()))
+            .filter((user: any) => user.username.toLowerCase().includes(search.toLowerCase()) && user.userId !== userId && !selectedUsers.includes(user))
             .map((user: any) =>
             <MenuItem onClick={(event) => handleContactAdd(user)}>
                 <Box
@@ -62,7 +67,7 @@ export const AddChatPopover: React.FC<IUserListProps> = observer((props: IUserLi
                     }}
                 >
                     <Avatar sx={{mr: 2}} src={`//${globalImagePath}${user.id}`}/>
-                    <Typography>{user.fullName}</Typography>
+                    <Typography>{user.username}</Typography>
                 </Box>
             </MenuItem>
         )
@@ -86,7 +91,7 @@ export const AddChatPopover: React.FC<IUserListProps> = observer((props: IUserLi
                 size="small"
                 onDelete={() => handleChipDelete(user.id)}
                 avatar={<Avatar src={`//${globalImagePath}${user.id}`} />}
-                label={user.fullName}
+                label={user.username}
             />
         )
 

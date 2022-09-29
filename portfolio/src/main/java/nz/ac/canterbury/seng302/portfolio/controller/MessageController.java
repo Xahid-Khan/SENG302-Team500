@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import nz.ac.canterbury.seng302.portfolio.DTO.User;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.portfolio.mapping.ConversationMapper;
 import nz.ac.canterbury.seng302.portfolio.mapping.MessageMapper;
@@ -8,12 +9,14 @@ import nz.ac.canterbury.seng302.portfolio.model.contract.ConversationContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.MessageContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseConversationContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseMessageContract;
+import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseNotificationContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.ConversationEntity;
 import nz.ac.canterbury.seng302.portfolio.model.entity.MessageEntity;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
 import nz.ac.canterbury.seng302.portfolio.service.ConversationService;
 import nz.ac.canterbury.seng302.portfolio.service.MessageService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
+import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedUsersResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,10 +25,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * The controller for the message endpoints.
@@ -260,27 +260,23 @@ public class MessageController extends AuthenticatedController{
         }
     }
 
-    @GetMapping("/all-users")
+    @GetMapping(value = "/all-users", produces = "application/json")
     public ResponseEntity<?> getAllUsers(){
-        var response = userAccountService.getPaginatedUsers(
-                0,
-                20,
-                GetPaginatedUsersOrderingElement.USERNAME,
-                true
-        );
-        List<UserResponse> allUser = new ArrayList<>();
-        allUser.addAll(response.getUsersList());
-        int totalUserCount = response.getPaginationResponseOptions().getResultSetSize();
-        for (int i = 20; i > totalUserCount; i += 20){
-            response = userAccountService.getPaginatedUsers(
-                    i,
-                    20,
-                    GetPaginatedUsersOrderingElement.USERNAME,
-                    true
-            );
-            allUser.addAll(response.getUsersList());
+        try {
+            PaginatedUsersResponse paginatedUsers = userAccountService.getPaginatedUsers(0, Integer.MAX_VALUE, GetPaginatedUsersOrderingElement.USERNAME, true);
+            List<String> usernames = new ArrayList<>();
+            List<String> userIds = new ArrayList<>();
+            for (UserResponse user: paginatedUsers.getUsersList()) {
+                usernames.add(user.getUsername());
+                userIds.add(user.getId() + "");
+            }
+            Map<String, List<String>> result = new HashMap<>();
+            result.put("usernames", usernames);
+            result.put("userIds", userIds);
+            return ResponseEntity.ok().body(result);
+        } catch (NoSuchElementException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        return ResponseEntity.ok(allUser);
     }
 
 }
