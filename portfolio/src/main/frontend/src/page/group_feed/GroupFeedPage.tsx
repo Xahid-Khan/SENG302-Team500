@@ -3,12 +3,12 @@ import {ToasterRoot} from "../../component/toast/ToasterRoot";
 import {ShowAllPosts} from "./ShowAllPosts";
 import {EditGroupMembersModal} from "../group_page/EditGroupMembersModal";
 import {CreatePostModal} from "./CreatePostModal";
+import {Socket} from "../../entry/live_updating";
 
 export function GroupFeedPage() {
 
     const [viewGroupId, setViewGroupId] = React.useState(-1)
     const isMember = localStorage.getItem("isMember") === "true"
-
 
     return (
         <ToasterRoot>
