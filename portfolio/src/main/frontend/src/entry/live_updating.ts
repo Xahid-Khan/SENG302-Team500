@@ -161,20 +161,8 @@ class PingPageStore {
 
     protected onGroupAlert(frame: StompMessage) {
         runInAction(() => {
-            if (frame.body === "create") {
+            if (frame.body === "create" || frame.body === "update") {
                 window.location.reload()
-            } else {
-                const userId = window.localStorage.getItem("userId")
-                const message = JSON.parse(frame.body)
-                let affected = false
-                message.forEach((affectedId: number) => {
-                    if (affectedId === parseInt(userId)) {
-                        affected = true
-                    }
-                })
-                if (affected) {
-                    window.location.reload()
-                }
             }
         })
     }

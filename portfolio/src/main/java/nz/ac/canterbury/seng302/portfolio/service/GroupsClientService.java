@@ -61,7 +61,7 @@ public class GroupsClientService {
    * @return a AddGroupMembersResponse with either a success or errors(s)
    */
   public AddGroupMembersResponse addGroupMembers(int groupId, List<Integer> userIds) {
-    template.convertAndSend("/topic/groups", userIds);
+    template.convertAndSend("/topic/groups", "update");
     return groupBlockingStub.addGroupMembers(
         AddGroupMembersRequest.newBuilder()
             .setGroupId(groupId)
@@ -78,7 +78,7 @@ public class GroupsClientService {
    * @return a AddGroupMembersResponse with either a success or errors(s)
    */
   public RemoveGroupMembersResponse removeGroupMembers(int groupId, List<Integer> userIds) {
-    template.convertAndSend("/topic/groups", userIds);
+    template.convertAndSend("/topic/groups", "update");
     return groupBlockingStub.removeGroupMembers(
         RemoveGroupMembersRequest.newBuilder()
             .setGroupId(groupId)
