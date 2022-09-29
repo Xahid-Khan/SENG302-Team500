@@ -12,5 +12,7 @@ import java.time.Instant;
 public record GroupRepositoryContract(
         Integer groupId,
         Integer repositoryId,
-        String token
+        String token,
+        String alias,
+        String longName
 ) implements Contractable {}
