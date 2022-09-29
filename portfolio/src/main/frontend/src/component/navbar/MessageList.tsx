@@ -164,7 +164,7 @@ export const MessageList: React.FC<IMessageListProps> = observer((props: IMessag
                 sx={{flexGrow: 1}}/>
 
             <IconButton onClick={handleSendClick} disabled={!validMessage(message)}>
-                <SendIcon color={"primary"}/>
+                <SendIcon color={validMessage(message) ? "primary" : 'disabled'}/>
             </IconButton>
         </Box>;
     }

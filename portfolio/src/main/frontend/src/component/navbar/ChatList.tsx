@@ -32,7 +32,7 @@ export const ChatList: React.FC<IChatListProps> = observer((props: IChatListProp
     const no_chats_item = () => {
         return (
             <MenuItem disabled style={{whiteSpace: 'normal', opacity: 1}} sx={{pt: 10, pb: 10}}>
-                <Typography variant="body1">Looks like you have no notifications.</Typography>
+                <Typography variant="body1">Looks like you have no chats.</Typography>
             </MenuItem>
         )
     }

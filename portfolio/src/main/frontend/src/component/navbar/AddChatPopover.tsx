@@ -57,9 +57,12 @@ export const AddChatPopover: React.FC<IUserListProps> = observer((props: IUserLi
         })
     }, [])
 
+    const filteredUsers = () => {
+        return users.filter((user: any) => user.username.toLowerCase().includes(search.toLowerCase()) && user.userId !== userId && !selectedUsers.includes(user))
+    }
+
     const users_items = () =>
-        users
-            .filter((user: any) => user.username.toLowerCase().includes(search.toLowerCase()) && user.userId !== userId && !selectedUsers.includes(user))
+        filteredUsers()
             .map((user: any) =>
             <MenuItem onClick={(event) => handleContactAdd(user)}>
                 <Box
@@ -78,8 +81,8 @@ export const AddChatPopover: React.FC<IUserListProps> = observer((props: IUserLi
 
     const no_users_item = () => {
         return (
-            <MenuItem disabled style={{whiteSpace: 'normal', opacity: 1}} sx={{pt: 10, pb: 10}}>
-                <Typography variant="body1">Looks like you have no notifications.</Typography>
+            <MenuItem disabled style={{whiteSpace: 'normal', opacity: 1}} sx={{pt: 5, pb: 5}}>
+                <Typography variant="body1">No available users.</Typography>
             </MenuItem>
         )
     }
@@ -172,9 +175,7 @@ export const AddChatPopover: React.FC<IUserListProps> = observer((props: IUserLi
                         display: "flex",
                         flexDirection: 'column'
                     }}>
-                        <Typography>Add Conversation</Typography>
                         <Box sx={{
-                            pb:1,
                             flexGrow: 1,
                             display: "flex",
                             alignItems: "center",
@@ -183,23 +184,25 @@ export const AddChatPopover: React.FC<IUserListProps> = observer((props: IUserLi
                             <IconButton onClick={props.backButtonCallback}>
                                 <ChevronLeftIcon></ChevronLeftIcon>
                             </IconButton>
-                            <TextField label="Search" variant="standard" onChange={handleSearchChange}/>
+                            <Typography>Add Conversation</Typography>
                         </Box>
-                        <Box sx={{display: 'flex', flexWrap: 'wrap'}}>{chips()}</Box>
-                        <Box sx={{pt: 1, display: 'flex', justifyContent: 'flex-end'}}>
+                        <TextField label="Search" variant="standard" onChange={handleSearchChange}/>
+                        <Box sx={{display: 'flex', flexWrap: 'wrap', mt:1}}>{chips()}</Box>
+                        <Box sx={{pt: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end'}}>
+                            <Typography sx={{color: 'red', fontSize: '0.8em', mr: 1}} display={groupAlreadyExists() ? 'block' : 'none'}>Chat already exists. Open it?</Typography>
                             <Button
                                 id={'create-group-button'}
-                                disabled={!Boolean(selectedUsers)}
+                                disabled={selectedUsers?.length == 0}
                                 size="small"
                                 variant="contained"
                                 color={"success"}
-                                onClick={handleCreateClick}>{'Open'}
+                                onClick={handleCreateClick}>{groupAlreadyExists() ? 'Open' : 'Create'}
                             </Button>
                         </Box>
                     </Box>
                 </ListSubheader>
                 <Divider/>
-                {users.length === 0 ? no_users_item() : users_items()}
+                {filteredUsers().length === 0 ? no_users_item() : users_items()}
             </List>
         </Popover>
     )
