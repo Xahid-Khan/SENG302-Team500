@@ -21,7 +21,7 @@ import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-public class MessageServiceTest {
+class MessageServiceTest {
   @InjectMocks private MessageService messageService;
   @Mock private MessageMapper messageMapper;
   @Mock private MessageRepository messageRepository;

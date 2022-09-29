@@ -4,12 +4,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import nz.ac.canterbury.seng302.portfolio.mapping.ConversationMapper;
 import nz.ac.canterbury.seng302.portfolio.model.contract.ConversationContract;
-import nz.ac.canterbury.seng302.portfolio.model.contract.UserContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseConversationContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.ConversationEntity;
 import nz.ac.canterbury.seng302.portfolio.repository.ConversationRepository;
