@@ -6,7 +6,7 @@ import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 interface IChatListItemProps {
     //TODO use contract type
     contract: any
-    clickCallback: (event: React.MouseEvent<HTMLElement>, id: string) => void
+    clickCallback: (event: React.MouseEvent<HTMLElement>, contract: any) => void
 }
 
 /**
@@ -17,7 +17,7 @@ export const ChatListItem: React.FC<IChatListItemProps> = observer((props: IChat
     const globalImagePath = localStorage.getItem("globalImagePath");
 
     return (
-        <MenuItem id={`chat-button-${props.contract.conversationId}`} onClick={(event) => {props.clickCallback(event, props.contract.conversationId)}}>
+        <MenuItem id={`chat-button-${props.contract.conversationId}`} onClick={(event) => {props.clickCallback(event, props.contract)}}>
             <Box sx={{flexGrow: 1, display: "flex", justifyContent: "space-between", maxWidth: '100%'}}>
                 {/*TODO user id->name and handle groups name?*/}
                 <Avatar sx={{mr: 2}} src={`//${globalImagePath}${props.contract.userIds[1]}`}/>
