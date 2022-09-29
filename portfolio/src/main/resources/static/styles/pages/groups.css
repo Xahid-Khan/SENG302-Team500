@@ -5,7 +5,7 @@
 }
 
 .add-group-button {
-    margin: 15px 5px;
+    margin-bottom: 13px;
 }
 
 .groups {
@@ -108,6 +108,7 @@
 }
 .groups-page-repository{
     overflow-y: auto;
+    overflow-x: clip;
     max-height: 40vh;
 }
 
@@ -124,12 +125,12 @@
 }
 
 .current-group {
-    width: 100%;
+    width: 50%;
     padding: 5px;
 }
 
 .other-group-users {
-    width: 100%;
+    width: 50%;
     padding: 5px;
 }
 
@@ -239,12 +240,15 @@
     padding: 20px 20px 50px 20px;
 }
 
+
 .edit-group-settings-container {
     display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
 }
 
 .edit-group-settings {
-    width: 100%;
+    width: 45%;
 }
 
 .edit-group-form {

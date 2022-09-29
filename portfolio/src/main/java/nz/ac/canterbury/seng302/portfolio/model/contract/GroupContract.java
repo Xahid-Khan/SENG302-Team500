@@ -17,5 +17,12 @@ public record GroupContract(
     Integer id,
     String shortName,
     String longName,
-    ArrayList<UserContract> users
+    String alias,
+    Integer repositoryId,
+    String token,
+    boolean canEdit,
+    ArrayList<UserContract> users,
+//    GroupRepositoryContract repoInfo
+    Object branches,
+    Object commits
 ) implements Contractable {}
