@@ -1,12 +1,37 @@
-import React from "react";
+import React, {useEffect} from "react";
 import {observer} from "mobx-react-lite";
 import {Badge, Box, IconButton} from "@mui/material";
 import {ChatList} from "./ChatList";
 import {MessageList} from "./MessageList";
 import MailIcon from '@mui/icons-material/Mail';
 import {AddChatPopover} from "./AddChatPopover";
+import {getAPIAbsolutePath} from "../../util/RelativePathUtil";
 
 export const MessageButton: React.FC = observer(() => {
+
+    const globalUrlPathPrefix = localStorage.getItem("globalUrlPathPrefix");
+
+    const [chats, setChats] = React.useState([]);
+
+    const fetchChats = async () => {
+        const conversations = await fetch(getAPIAbsolutePath(globalUrlPathPrefix, `messages`), {
+                method: 'GET'
+            }
+        )
+        return conversations.json()
+    }
+
+    const fetchAndSetChats = () => {
+        fetchChats().then((result) => {
+            setChats(result)
+        })
+    }
+
+    useEffect(() => {
+        fetchAndSetChats();
+    }, [])
+
+
 
     const [numUnseen, setNumUnseen] = React.useState(0)
     const [conversation, setConversation] = React.useState(undefined);
@@ -39,6 +64,15 @@ export const MessageButton: React.FC = observer(() => {
 
     //TODO fetch num unseen messages
 
+
+    useEffect(() => {
+        //add event listener for live updating
+        window.addEventListener('messages', fetchAndSetChats);
+        return () => {
+            window.removeEventListener('messages', fetchAndSetChats);
+        };
+    }, [])
+
     return (
         <React.Fragment>
             <Box sx={{display: 'flex', alignItems: 'center', textAlign: 'center'}}>
@@ -61,6 +95,7 @@ export const MessageButton: React.FC = observer(() => {
             <ChatList
                 open={openChats}
                 onClose={handleClose}
+                chats={chats}
                 addButtonCallback={handleClick}
                 chatButtonCallback={handleChatClick}
             />

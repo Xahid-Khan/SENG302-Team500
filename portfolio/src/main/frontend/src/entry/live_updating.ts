@@ -111,7 +111,7 @@ class PingPageStore {
         })
       } else {
           store.stomp.subscribe("/topic/" + location, (message: StompMessage) => {
-              store.onNotification(message)
+              store.onNavbarAlert(message)
           })
       }
 
@@ -149,9 +149,23 @@ class PingPageStore {
             }
         })
     }
-    protected onNotification(frame: StompMessage) {
+    protected onNavbarAlert(frame: StompMessage) {
       runInAction(() => {
-          window.dispatchEvent(new Event("notification"))
+          if (frame.body === "notification") {
+              window.dispatchEvent(new Event("notification"))
+          } else {
+              const userId = window.localStorage.getItem("userId")
+              const message = JSON.parse(frame.body)
+              let affected = false
+              message.forEach((affectedId: number) => {
+                  if (affectedId === parseInt(userId)) {
+                    affected = true
+                  }
+              })
+              if (affected) {
+                  window.dispatchEvent(new Event("message"))
+              }
+          }
       })
     }
 }

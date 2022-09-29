@@ -8,32 +8,15 @@ import {getAPIAbsolutePath} from "../../util/RelativePathUtil";
 interface IChatListProps{
     open: boolean
     onClose: () => void
+    chats: any[]
     addButtonCallback: (event: React.MouseEvent<HTMLElement>) => void
     chatButtonCallback: (event: React.MouseEvent<HTMLElement>, contract: any) => void
 }
 
 export const ChatList: React.FC<IChatListProps> = observer((props: IChatListProps) => {
 
-    const globalUrlPathPrefix = localStorage.getItem("globalUrlPathPrefix");
-
-    const [chats, setChats] = React.useState([]);
-
-    const getChats = async () => {
-        const conversations = await fetch(getAPIAbsolutePath(globalUrlPathPrefix, `messages`), {
-                method: 'GET'
-            }
-        )
-        return conversations.json()
-    }
-
-    useEffect(() => {
-        getChats().then((result) => {
-            setChats(result)
-        })
-    }, [])
-
     const chats_items = () =>
-        chats
+        props.chats
             .sort((x: any, y: any) => {
                 return x.time < y.time ? 1 : -1
             })
@@ -82,7 +65,7 @@ export const ChatList: React.FC<IChatListProps> = observer((props: IChatListProp
                     </Box>
                 </ListSubheader>
                 <Divider/>
-                {chats.length === 0 ? no_chats_item() : chats_items()}
+                {props.chats.length === 0 ? no_chats_item() : chats_items()}
             </Menu>
         </React.Fragment>
 

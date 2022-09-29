@@ -192,7 +192,7 @@ export const MessageList: React.FC<IMessageListProps> = observer((props: IMessag
                         textAlign: "center",
                     }}>
                         <IconButton onClick={props.backButtonCallback}>
-                            <ChevronLeftIcon></ChevronLeftIcon>
+                            <ChevronLeftIcon/>
                         </IconButton>
                         <GroupAvatar userIds={props.conversation.userIds}/>
                         <Typography>{props.conversation.mostRecentMessage}</Typography>
