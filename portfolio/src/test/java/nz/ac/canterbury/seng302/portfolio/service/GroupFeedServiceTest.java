@@ -28,6 +28,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 
 @SpringBootTest
 class GroupFeedServiceTest {
@@ -267,9 +268,11 @@ class GroupFeedServiceTest {
      */
     @Test
     void highFivePostAndSendNotifications() {
-        PostReactionContract postReactionContract = new PostReactionContract(newPost.getId(), newPost.getUserId());
+        //reacted by a different user
+        int userId = newPost.getUserId() + 1;
+        PostReactionContract postReactionContract = new PostReactionContract(newPost.getId(),userId);
         Mockito.when(mockPostModelRepository.findById(newPost.getId())).thenReturn(Optional.ofNullable(newPost));
-        Mockito.when(userAccountService.getUserById(newPost.getUserId())).thenReturn(UserResponse.newBuilder().setId(newPost.getUserId()).build());
+        Mockito.when(userAccountService.getUserById(userId)).thenReturn(UserResponse.newBuilder().setId(userId).build());
 
         reactionService.addHighFiveToPost(postReactionContract);
 
@@ -281,9 +284,11 @@ class GroupFeedServiceTest {
      */
     @Test
     void commentOnPostAndSendNotifications() {
-        CommentContract commentContract = new CommentContract(newPost.getUserId(), newPost.getId(), "test");
+        //Comment by a different user
+        int userId = newPost.getUserId() + 1;
+        CommentContract commentContract = new CommentContract(userId, newPost.getId(), "test");
         Mockito.when(mockPostModelRepository.findById(newPost.getId())).thenReturn(Optional.ofNullable(newPost));
-        Mockito.when(userAccountService.getUserById(newPost.getUserId())).thenReturn(UserResponse.newBuilder().setId(newPost.getUserId()).build());
+        Mockito.when(userAccountService.getUserById(userId)).thenReturn(UserResponse.newBuilder().setId(userId).build());
 
         commentServiceMock.addNewCommentsToPost(commentContract);
 
