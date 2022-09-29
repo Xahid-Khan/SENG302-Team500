@@ -64,8 +64,9 @@ export const MessageList: React.FC<IMessageListProps> = observer((props: IMessag
         messages.map((contract: any) =>
             <MessageListItem
                 key={contract.messageId}
-                messageButtonCallback={handleMessageClick}
                 contract={contract}
+                isGroupChat={props.conversation?.users.length > 2}
+                messageButtonCallback={handleMessageClick}
             />
         )
 
@@ -218,7 +219,7 @@ export const MessageList: React.FC<IMessageListProps> = observer((props: IMessag
                             <>
                                 <GroupAvatar users={props.conversation.users}/>
                                 <Tooltip title={getUserNamesList(props.conversation.users)}>
-                                <Typography noWrap>{getUserNamesList(props.conversation.users)}</Typography>
+                                    <Typography noWrap>{getUserNamesList(props.conversation.users)}</Typography>
                                 </Tooltip>
                             </>
                             ) : ""}

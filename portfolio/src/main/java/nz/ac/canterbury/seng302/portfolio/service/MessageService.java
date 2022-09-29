@@ -61,7 +61,7 @@ public class MessageService {
   }
 
   public Page<MessageEntity> getPaginatedMessages(String conversationId, int page, int limit) {
-    Pageable request = PageRequest.of(page, limit, Sort.by("timeSent").ascending());
+    Pageable request = PageRequest.of(page, Integer.MAX_VALUE, Sort.by("timeSent").ascending());
     return messageRepository.getPaginatedMessagesByConversationId(conversationId, request);
   }
 }

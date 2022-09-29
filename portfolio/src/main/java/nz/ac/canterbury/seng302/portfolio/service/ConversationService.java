@@ -44,7 +44,7 @@ public class ConversationService {
    * @return paginated conversations
    */
   public Page<ConversationEntity> getPaginatedConversations(int userId, int page, int limit) {
-    Pageable request = PageRequest.of(page, limit, Sort.by("mostRecentMessageTimestamp").descending());
+    Pageable request = PageRequest.of(page, Integer.MAX_VALUE, Sort.by("mostRecentMessageTimestamp").descending());
     return conversationRepository.getPaginatedPostsByUserIdsIn(List.of(userId), request);
   }
 
