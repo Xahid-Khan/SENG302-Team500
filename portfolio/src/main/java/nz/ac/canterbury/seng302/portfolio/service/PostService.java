@@ -9,6 +9,7 @@ import nz.ac.canterbury.seng302.portfolio.model.entity.PostModel;
 import nz.ac.canterbury.seng302.portfolio.repository.PostModelRepository;
 import nz.ac.canterbury.seng302.shared.identityprovider.GroupDetailsResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 /**
@@ -34,6 +35,9 @@ public class PostService {
 
   @Autowired
   private UserAccountService userAccountService;
+
+    @Autowired
+    private SimpMessagingTemplate template;
 
 
   /**
@@ -86,18 +90,39 @@ public class PostService {
       PostModel postModel = new PostModel(newPost.groupId(), userId, newPost.postContent());
       postRepository.save(postModel);
 
-      //Gets details for notification
-      GroupDetailsResponse groupDetails = groupsClientService.getGroupById(newPost.groupId());
+    /**
+     * This funciton will create new instance of the post and save it in the database.
+     * @param newPost A post contract containing groupId and contents of the post.
+     * @param userId Integer (Id of the user who made the post)
+     * @return True if successful false otherwise.
+     */
+    public boolean createPost(PostContract newPost, int userId) {
+        if (newPost.postContent().length() == 0) {
+            return false;
+        }
+        try {
+            PostModel postModel = new PostModel(newPost.groupId(), userId, newPost.postContent());
+            postRepository.save(postModel);
 
-      List<Integer> userIds = subscriptionService.getAllByGroupId(newPost.groupId());
-      String posterUsername = userAccountService.getUserById(userId).getUsername();
-      String groupName = groupDetails.getShortName();
+            //Gets details for notification
+            GroupDetailsResponse groupDetails = groupsClientService.getGroupById(newPost.groupId());
 
-      // Send notification to all members of the group
-      for (Integer otherUserId : userIds) {
-        if (otherUserId != userId) {
-          notificationService.create(new BaseNotificationContract(otherUserId, "Your Subscriptions",
-              posterUsername + " created a post in " + groupName + "!"));
+            List<Integer> userIds = subscriptionService.getAllByGroupId(newPost.groupId());
+            String posterUsername= userAccountService.getUserById(userId).getUsername();
+            String groupName = groupDetails.getShortName();
+
+            template.convertAndSend("/topic/posts", userIds);
+
+            // Send notification to all members of the group
+            for (Integer otherUserId : userIds) {
+                if (otherUserId != userId) {
+                    notificationService.create(new BaseNotificationContract(otherUserId, "Your Subscriptions", posterUsername + " created a post in "+groupName+"!"));
+                }
+            }
+
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
       }
 

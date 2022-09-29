@@ -16,7 +16,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,6 +67,9 @@ class GroupFeedServiceTest {
 
     @InjectMocks
     private CommentService commentServiceMock;
+
+    @Mock
+    private SimpMessagingTemplate template;
 
     private PostModel newPost;
     private PostModel newPost1;
