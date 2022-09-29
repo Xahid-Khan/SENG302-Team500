@@ -60,7 +60,6 @@ const wireModal = (id: number, groups: any[]) => {
 const toggleGroupView = (id: number) => {
   document.getElementById(`groups-user-list-${id}`).style.display = document.getElementById(`groups-user-list-${id}`).style.display === "none" ? "block" : "none"
   document.getElementById(`groups-repository-${id}`).style.display = document.getElementById(`groups-repository-${id}`).style.display === "none" ? "block" : "none"
-
   document.getElementById(`group-toggle-button-${id}`).innerText = document.getElementById(`group-toggle-button-${id}`).innerText === "visibility" ? "visibility_off" : "visibility"
 
 }
@@ -150,35 +149,35 @@ export function ShowAllGroups({setViewGroupId}: any) {
     })
   }
 
-  function groups_page_user_list(group: any) {
-    if (group['users'].length === 0) {
-      return (
-          <div style={{paddingTop: '1em', paddingBottom: '1em'}}>
-            This group has no members
-          </div>
-      )
-    }
-    return (
-        <div className={"groups-page-user-list"} id={`groups-user-list-${group['id']}`}>
-          <div className={"table"} id={"group-list"}>
-            <div className={"groups-header"}>
-              <div className="tableCell"><b>Name</b></div>
-              <div className="tableCell"><b>Username</b></div>
-              <div className="tableCell"><b>Alias</b></div>
-              <div className="tableCell"><b>Roles</b></div>
-            </div>
-            {group['users'].map((user: any) => (
-                <div className="tableRow" id={`group-${group['id']}-user-${user.id}`} key={user.id}>
-                  <div className="tableCell">{user['firstName']} {user['lastName']}</div>
-                  <div className="tableCell">{user['username']}</div>
-                  <div className="tableCell">{user['nickName']}</div>
-                  <div className="tableCell">{formatRoles(user['roles'])}</div>
+    function groups_page_user_list(group: any) {
+        if(group['users'].length === 0){
+            return (
+                <div style={{paddingTop: '1em', paddingBottom: '1em'}} id={`groups-no-member-message-${group['id']}`}>
+                    This group has no members
                 </div>
-            ))}
-          </div>
-        </div>
-    )
-  }
+            )
+        }
+        return (
+            <div className={"groups-page-user-list"} id={`groups-user-list-${group['id']}`}>
+                <div className={"table"} id={"group-list"}>
+                    <div className={"groups-header"}>
+                        <div className="tableCell"><b>Name</b></div>
+                        <div className="tableCell"><b>Username</b></div>
+                        <div className="tableCell"><b>Alias</b></div>
+                        <div className="tableCell"><b>Roles</b></div>
+                    </div>
+                    {group['users'].map((user: any) => (
+                        <div className="tableRow" id={`group-${group['id']}-user-${user.id}`} key={user.id}>
+                            <div className="tableCell">{user['firstName']} {user['lastName']}</div>
+                            <div className="tableCell">{user['username']}</div>
+                            <div className="tableCell">{user['nickName']}</div>
+                            <div className="tableCell">{formatRoles(user['roles'])}</div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        )
+    }
 
 
   return (

@@ -22,9 +22,7 @@ export function EditGroupSettings({group}: any) {
       document.getElementById("edit-group-error").innerText = "Please provide a long name for the group";
       return;
     }
-    console.log(alias);
-    console.log(repositoryToken);
-    console.log(repositoryID);
+
     if (!(alias.length == 0 && repositoryID.length == 0 && repositoryToken.length == 0)) {
       if (alias.length === 0) {
         document.getElementById("edit-group-error").innerText = "Please provide an Alias name for the repository";
