@@ -165,7 +165,7 @@ class PingPageStore {
 
     protected onGroupAlert(frame: StompMessage) {
         runInAction(() => {
-            if (frame.body === "create" || frame.body === "update") {
+            if (frame.body === "create" || frame.body === "update" || frame.body === "name_change") {
                 window.location.reload()
             }
         })
