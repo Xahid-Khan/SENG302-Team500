@@ -14,7 +14,7 @@ class PingPageStore {
   stomp: any = null
 
   connectStatus: LoadingStatus = new LoadingNotYetAttempted()
-  path = window.localStorage.getItem("relativePath") + "/socket"
+  path = window.localStorage.getItem("globalUrlPathPrefix") + "/socket"
   pongArray: string[] = observable.array()
   nextPingValue: string = ""
 
@@ -111,7 +111,7 @@ class PingPageStore {
         })
       } else if (destination === "notification") {
           store.stomp.subscribe("/topic/" + location, (message: StompMessage) => {
-              store.onNotification(message)
+              store.onNavbarAlert(message)
           })
       } else if (destination === "groups") {
           store.stomp.subscribe("/topic/" + location, (message: StompMessage) => {
@@ -157,9 +157,25 @@ class PingPageStore {
             }
         })
     }
-    protected onNotification(frame: StompMessage) {
+    protected onNavbarAlert(frame: StompMessage) {
       runInAction(() => {
-          window.dispatchEvent(new Event("notification"))
+          if (frame.body === "notification") {
+              window.dispatchEvent(new Event("notification"))
+          } else {
+              const userId = window.localStorage.getItem("userId")
+              const message = JSON.parse(frame.body)
+              let affected = false
+              console.log(frame)
+              console.log(message)
+              message.forEach((affectedId: number) => {
+                  if (affectedId === parseInt(userId)) {
+                    affected = true
+                  }
+              })
+              if (affected) {
+                  window.dispatchEvent(new Event("messages"))
+              }
+          }
       })
     }
 

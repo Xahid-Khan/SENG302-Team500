@@ -1,30 +1,35 @@
 import React, {useEffect} from "react";
 import {observer} from "mobx-react-lite";
 import {
-    Avatar,
     Box, Button,
     Divider,
     IconButton, List,
     ListSubheader,
     MenuItem,
-    Popover, TextField,
+    Popover, TextField, Tooltip,
     Typography
 } from "@mui/material";
 import {MessageListItem} from "./MessageListItem";
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import SendIcon from '@mui/icons-material/Send';
+import {getAPIAbsolutePath} from "../../util/RelativePathUtil";
+import {getUserNamesList, GroupAvatar} from "./GroupAvatar";
 
 interface IMessageListProps{
     open: boolean
     onClose: () => void
     //TODO use contract type
     conversation: any
+    chats: any
     backButtonCallback: (event: React.MouseEvent<HTMLElement>) => void
 }
 
 export const MessageList: React.FC<IMessageListProps> = observer((props: IMessageListProps) => {
 
-    const globalImagePath = localStorage.getItem("globalImagePath");
+    const globalUrlPathPrefix = localStorage.getItem("globalUrlPathPrefix");
+    const userId = localStorage.getItem("userId");
+    const username = localStorage.getItem("username");
+
     const [messages, setMessages] = React.useState([]);
     const [message, setMessage] = React.useState("");
     const [selectedMessageId, setSelectedMessageId] = React.useState("");
@@ -33,58 +38,35 @@ export const MessageList: React.FC<IMessageListProps> = observer((props: IMessag
 
     const getMessages = async () => {
         //TODO fetch and sort by time, see NotificationDropdown getNotifications
-        //mock data
-        return [
-            {
-                conversationId: "1",
-                messageId: "1",
-                sentBy: 1,
-                messageContent: " 23452 3523 523 5",
-                timeSent: new Date(),
-            },
-            {
-                conversationId: "1",
-                messageId: "2",
-                sentBy: 3,
-                messageContent: "1212hw dw 523 5",
-                timeSent: new Date(),
-            },
-            {
-                conversationId: "1",
-                messageId: "3",
-                sentBy: 3,
-                messageContent: "1212hw dw 523 5",
-                timeSent: new Date(),
-            },
-            {
-                conversationId: "1",
-                messageId: "4",
-                sentBy: 1,
-                messageContent: " 23452 3523 523 5",
-                timeSent: new Date(),
-            },
-            {
-                conversationId: "1",
-                messageId: "5",
-                sentBy: 1,
-                messageContent: " 23452 3523 523 5 23452 3523 523 5 23452 3523 523 5 23452 3523 523 5 23452 3523 523 5 23452 3523 523 5 23452 3523 523 5 23452 3523 523 5 23452 3523 523 5 23452 3523 523 5",
-                timeSent: new Date(),
-            },
-        ]
+        console.log("messages fetch ", props.conversation)
+        const messages = await fetch(getAPIAbsolutePath(globalUrlPathPrefix, `messages/${props.conversation.conversationId}`), {
+                method: 'GET'
+            }
+        )
+        return messages.json()
+    }
+
+    const fetchAndSetMessages = () => {
+        console.log("messages onmount ")
+        if (props.conversation != undefined) {
+            getMessages().then((result) => {
+                console.log("messages, ", result)
+                setMessages(result)
+            })
+        }
     }
 
     useEffect(() => {
-        getMessages().then((result) => {
-            setMessages(result)
-        })
-    }, [])
+        fetchAndSetMessages();
+    }, [props.conversation, props.chats])
 
     const messages_items = () =>
         messages.map((contract: any) =>
             <MessageListItem
                 key={contract.messageId}
-                messageButtonCallback={handleMessageClick}
                 contract={contract}
+                isGroupChat={props.conversation?.users.length > 2}
+                messageButtonCallback={handleMessageClick}
             />
         )
 
@@ -96,17 +78,35 @@ export const MessageList: React.FC<IMessageListProps> = observer((props: IMessag
         )
     }
 
-    //TODO validate further maybe?
     const validMessage = (message: string): boolean => {
         return message != null && message.trim() !== ''
     }
 
-    const handleSendClick = () =>{
-        //TODO post message state
+    const handleSendClick = async() =>{
         if(validMessage(message)) {
-            console.log('send: ', message)
+            await fetch(getAPIAbsolutePath(globalUrlPathPrefix, `messages/${props.conversation.conversationId}`), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    "messageContent": message,
+                    "sentBy": parseInt(userId),
+                    "senderName": username
+                })
+            });
+            fetchAndSetMessages();
+            setMessage("");
         }
     }
+
+    useEffect(() => {
+        //add event listener for live updating
+        window.addEventListener('messages', fetchAndSetMessages);
+        return () => {
+            window.removeEventListener('messages', fetchAndSetMessages);
+        };
+    }, [])
 
     const handleMessageChange = (event: React.ChangeEvent<HTMLInputElement>) =>{
         setMessage(event.target.value)
@@ -122,9 +122,16 @@ export const MessageList: React.FC<IMessageListProps> = observer((props: IMessag
         setSelectedMessageId(id);
     }
 
-    const handleDeleteMessageClick = () =>{
-        //TODO fetch delete message
+    const handleDeleteMessageClick = async() =>{
+        await fetch(getAPIAbsolutePath(globalUrlPathPrefix, `messages/${props.conversation.conversationId}`), {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: selectedMessageId
+        });
         setSelectedMessageId("");
+        fetchAndSetMessages();
     }
 
     const handleCancelMessageClick = () =>{
@@ -146,6 +153,7 @@ export const MessageList: React.FC<IMessageListProps> = observer((props: IMessag
             backgroundColor: 'white',
         }}>
             <TextField
+                value={message}
                 multiline
                 maxRows={3}
                 label={"message"}
@@ -155,8 +163,9 @@ export const MessageList: React.FC<IMessageListProps> = observer((props: IMessag
                 onChange={handleMessageChange}
                 onKeyDown={handleMessageKeyDown}
                 sx={{flexGrow: 1}}/>
+
             <IconButton onClick={handleSendClick} disabled={!validMessage(message)}>
-                <SendIcon color={"primary"}/>
+                <SendIcon color={validMessage(message) ? "primary" : 'disabled'}/>
             </IconButton>
         </Box>;
     }
@@ -184,7 +193,7 @@ export const MessageList: React.FC<IMessageListProps> = observer((props: IMessag
     return (
         <Popover
             // Adapted from https://mui.com/material-ui/react-menu/
-            anchorEl={document.body}
+            anchorEl={document.getElementById('chats-list-button')}
             id="messages-menu"
             open={props.open}
             onClose={() =>{
@@ -192,10 +201,10 @@ export const MessageList: React.FC<IMessageListProps> = observer((props: IMessag
                 props.onClose()
             }}
             PaperProps={{sx: {maxHeight: 0.5, maxWidth: 0.3, minWidth: "300px"}}}
-            transformOrigin={{horizontal: "right", vertical: "bottom"}}
+            transformOrigin={{horizontal: "right", vertical: "top"}}
             anchorOrigin={{horizontal: "right", vertical: "bottom"}}
         >
-            <List>
+            <List sx={{minHeight: 300}}>
                 <ListSubheader sx={{pt: 1, pb: 1, pr: 0, pl: 0}}>
                     <Box sx={{
                         flexGrow: 1,
@@ -204,13 +213,16 @@ export const MessageList: React.FC<IMessageListProps> = observer((props: IMessag
                         textAlign: "center",
                     }}>
                         <IconButton onClick={props.backButtonCallback}>
-                            <ChevronLeftIcon></ChevronLeftIcon>
+                            <ChevronLeftIcon/>
                         </IconButton>
-                        {/*TODO how to do groups -avatarGroup?*/}
-                        {/*TODO use other id*/}
-                        <Avatar sx={{mr: 2}} src={`//${globalImagePath}${3}`}/>
-                        {/*TODO name*/}
-                        <Typography>Name</Typography>
+                        {props.conversation ? (
+                            <>
+                                <GroupAvatar users={props.conversation.users}/>
+                                <Tooltip title={getUserNamesList(props.conversation.users)}>
+                                    <Typography noWrap>{getUserNamesList(props.conversation.users)}</Typography>
+                                </Tooltip>
+                            </>
+                            ) : ""}
                     </Box>
                 </ListSubheader>
                 <Divider/>
