@@ -15,6 +15,9 @@ export function ShowAllPosts() {
   const [editPostId, setEditPostId] = React.useState(-1);
   const [longCharacterCount, setLongCharacterCount] = React.useState(0);
   const isTeacher = localStorage.getItem("isTeacher") === "true";
+  const loadRef = useRef(null)
+  const [wasLastList, setWasLastList] = React.useState(false);
+  const [updateState, setUpdateState] = React.useState(true);
   const [groupPosts, setGroupPosts] = React.useState({
         "groupId": -1,
         "shortName": "",
@@ -44,10 +47,6 @@ export function ShowAllPosts() {
     return currentPostResponse.json()
   }
 
-  const loadRef = useRef(null)
-  const [wasLastList, setWasLastList] = React.useState(false);
-  const [dontIncrementOffset, setDontIncrementOffset] = React.useState(false);
-
   // With regards to https://dev.to/producthackers/intersection-observer-using-react-49ko
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
@@ -55,7 +54,7 @@ export function ShowAllPosts() {
       if(entry.isIntersecting) {
         if (!wasLastList) {
           getPosts().then((result) => {
-            if (result.posts == 0) {
+            if (result.posts.length == 0) {
               setWasLastList(true);
               return;
             }
@@ -68,16 +67,10 @@ export function ShowAllPosts() {
                 "isMember": result.isMember,
                 "posts": totalPosts
               });
-              console.log(groupPosts);
             } else {
-              console.log(result)
               setGroupPosts(result);
             }
-            console.log(groupPosts.posts.length);
-            if (!dontIncrementOffset) {
               setOffset(offset + 1);
-            }
-            setDontIncrementOffset(true);
           })
         }
       }
@@ -88,13 +81,12 @@ export function ShowAllPosts() {
       if (loadRef.current) observer.unobserve(loadRef.current)
     }
 
-  }, [loadRef, loadOptions, dontIncrementOffset])
+  }, [loadRef, loadOptions, updateState])
 
 
   useEffect(() => {
     if (!isNaN(Number(viewGroupId))) {
       getCurrentGroup().then((result: any) => {
-        console.log(result);
         setGroupPosts(result)
         setOffset(offset + 1);
       }).catch((error) => {
@@ -112,8 +104,6 @@ export function ShowAllPosts() {
     })
     return currentGroupResponse.json()
   }
-
-
 
   const handleCancelEditPost = () => {
     setContent("");
@@ -197,8 +187,7 @@ export function ShowAllPosts() {
       }
     })
     setGroupPosts(posts)
-    setDontIncrementOffset(true);
-    setLongCharacterCount(1);
+    setUpdateState(!updateState);
   }
 
   const toggleCommentDisplay = (id: number) => {
@@ -234,8 +223,7 @@ export function ShowAllPosts() {
         }
       })
       setGroupPosts(posts)
-      setDontIncrementOffset(true);
-      setLongCharacterCount(5);
+      setUpdateState(!updateState);
       document.getElementById(`post-comments-${id}`).scrollTop = document.getElementById(`post-comments-${id}`).scrollHeight;
     }
   }
@@ -251,7 +239,7 @@ export function ShowAllPosts() {
         "groupId": groupId
       })
     });
-    setDontIncrementOffset(true);
+    setUpdateState(!updateState);
     getCurrentGroup().then((response) => {
       setGroupPosts(response);
     })
@@ -268,7 +256,7 @@ export function ShowAllPosts() {
         "groupId": groupId
       })
     });
-    setDontIncrementOffset(true);
+    setUpdateState(!updateState);
     getCurrentGroup().then((response) => {
       setGroupPosts(response);
     })
@@ -318,6 +306,7 @@ export function ShowAllPosts() {
                                                      makeComment={makeComment}
                                                      setNewComment={setNewComment}
                                                      username={username}
+                                                     updateState={updateState}
                             />
                             </>)
                       )}
