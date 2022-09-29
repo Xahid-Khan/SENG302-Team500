@@ -8,8 +8,10 @@ import nz.ac.canterbury.seng302.portfolio.mapping.UserMapper;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,6 +32,7 @@ public class EditAccountController extends AuthenticatedController {
 
   @Autowired private UserMapper userMapper;
   @Autowired private RegisterClientService registerClientService;
+  @Autowired private SimpMessagingTemplate template;
 
   @Autowired
   public EditAccountController(
@@ -84,7 +87,11 @@ public class EditAccountController extends AuthenticatedController {
     }
     try {
       // Update details using the new submitted user, and the current ID based on the token
-      registerClientService.updateDetails(submittingUser, getUser(principal).getId());
+      UserResponse currentUser = getUser(principal);
+      if (!currentUser.getFirstName().equals(submittingUser.firstName()) || !currentUser.getLastName().equals(submittingUser.lastName()) || !currentUser.getNickname().equals(submittingUser.nickname())) {
+        template.convertAndSend("/topic/groups", "name_change");
+      }
+      registerClientService.updateDetails(submittingUser, currentUser.getId());
     } catch (StatusRuntimeException e) {
       model.addAttribute("error", "Error connecting to Identity Provider...");
       return "edit_account";
