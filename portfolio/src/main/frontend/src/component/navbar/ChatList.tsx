@@ -3,6 +3,7 @@ import AddIcon from "@mui/icons-material/Add";
 import React, {useEffect} from "react";
 import {observer} from "mobx-react-lite";
 import {ChatListItem} from "./ChatListItem";
+import {getAPIAbsolutePath} from "../../util/RelativePathUtil";
 
 interface IChatListProps{
     open: boolean
@@ -13,62 +14,16 @@ interface IChatListProps{
 
 export const ChatList: React.FC<IChatListProps> = observer((props: IChatListProps) => {
 
+    const globalUrlPathPrefix = localStorage.getItem("globalUrlPathPrefix");
+
     const [chats, setChats] = React.useState([]);
 
     const getChats = async () => {
-        //TODO fetch and sort by seen, see NotificationDropdown getNotifications
-        //mock data
-        return [
-            {
-                conversationId: "1",
-                userIds: ["3", "3"],
-                creationDate: new Date(),
-                seen: false,
-                mostRecentMessage: " wadfawdfaw dfwa fawf awf waf waf awf awf wa f",
-            },
-            {
-                conversationId: "2",
-                userIds: ["A", "1"],
-                creationDate: new Date(),
-                seen: true,
-                mostRecentMessage: " wadfawdfaw dfwa fawf awf waf waf awf awf wa f",
-            },
-            {
-                conversationId: "3",
-                userIds: ["Shay", "3"],
-                creationDate: new Date(),
-                seen: true,
-                mostRecentMessage: " wadfawdfaw dfwa fawf awf waf waf awf awf wa f",
-            },
-            {
-                conversationId: "3",
-                userIds: ["Shay", "3"],
-                creationDate: new Date(),
-                seen: true,
-                mostRecentMessage: " wadfawdfaw dfwa fawf awf waf waf awf awf wa f",
-            },
-            {
-                conversationId: "3",
-                userIds: ["Shay", "3"],
-                creationDate: new Date(),
-                seen: true,
-                mostRecentMessage: " wadfawdfaw dfwa fawf awf waf waf awf awf wa f",
-            },
-            {
-                conversationId: "3",
-                userIds: ["Shay", "3"],
-                creationDate: new Date(),
-                seen: true,
-                mostRecentMessage: " wadfawdfaw dfwa fawf awf waf waf awf awf wa f",
-            },
-            {
-                conversationId: "3",
-                userIds: ["Shay", "3"],
-                creationDate: new Date(),
-                seen: true,
-                mostRecentMessage: " wadfawdfaw dfwa fawf awf waf waf awf awf wa f",
-            },
-        ]
+        const conversations = await fetch(getAPIAbsolutePath(globalUrlPathPrefix, `messages`), {
+                method: 'GET'
+            }
+        )
+        return conversations.json()
     }
 
     useEffect(() => {
@@ -78,7 +33,11 @@ export const ChatList: React.FC<IChatListProps> = observer((props: IChatListProp
     }, [])
 
     const chats_items = () =>
-        chats.map((contract: any) =>
+        chats
+            .sort((x: any, y: any) => {
+                return x.time < y.time ? 1 : -1
+            })
+            .map((contract: any) =>
             <>
                 <ChatListItem
                     key={contract.conversationId}

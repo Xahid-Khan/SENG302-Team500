@@ -13,6 +13,7 @@ import {
 import {MessageListItem} from "./MessageListItem";
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import SendIcon from '@mui/icons-material/Send';
+import {getAPIAbsolutePath} from "../../util/RelativePathUtil";
 
 interface IMessageListProps{
     open: boolean
@@ -24,7 +25,11 @@ interface IMessageListProps{
 
 export const MessageList: React.FC<IMessageListProps> = observer((props: IMessageListProps) => {
 
+    const globalUrlPathPrefix = localStorage.getItem("globalUrlPathPrefix");
     const globalImagePath = localStorage.getItem("globalImagePath");
+    const userId = localStorage.getItem("userId");
+    const username = localStorage.getItem("username");
+
     const [messages, setMessages] = React.useState([]);
     const [message, setMessage] = React.useState("");
     const [selectedMessageId, setSelectedMessageId] = React.useState("");
@@ -33,44 +38,11 @@ export const MessageList: React.FC<IMessageListProps> = observer((props: IMessag
 
     const getMessages = async () => {
         //TODO fetch and sort by time, see NotificationDropdown getNotifications
-        //mock data
-        return [
-            {
-                conversationId: "1",
-                messageId: "1",
-                sentBy: 1,
-                messageContent: " 23452 3523 523 5",
-                timeSent: new Date(),
-            },
-            {
-                conversationId: "1",
-                messageId: "2",
-                sentBy: 3,
-                messageContent: "1212hw dw 523 5",
-                timeSent: new Date(),
-            },
-            {
-                conversationId: "1",
-                messageId: "3",
-                sentBy: 3,
-                messageContent: "1212hw dw 523 5",
-                timeSent: new Date(),
-            },
-            {
-                conversationId: "1",
-                messageId: "4",
-                sentBy: 1,
-                messageContent: " 23452 3523 523 5",
-                timeSent: new Date(),
-            },
-            {
-                conversationId: "1",
-                messageId: "5",
-                sentBy: 1,
-                messageContent: " 23452 3523 523 5 23452 3523 523 5 23452 3523 523 5 23452 3523 523 5 23452 3523 523 5 23452 3523 523 5 23452 3523 523 5 23452 3523 523 5 23452 3523 523 5 23452 3523 523 5",
-                timeSent: new Date(),
-            },
-        ]
+        const messages = await fetch(getAPIAbsolutePath(globalUrlPathPrefix, `messages/${props.conversation.conversationId}`), {
+                method: 'GET'
+            }
+        )
+        return messages.json()
     }
 
     useEffect(() => {
@@ -101,10 +73,19 @@ export const MessageList: React.FC<IMessageListProps> = observer((props: IMessag
         return message != null && message.trim() !== ''
     }
 
-    const handleSendClick = () =>{
-        //TODO post message state
+    const handleSendClick = async() =>{
         if(validMessage(message)) {
-            console.log('send: ', message)
+            await fetch(getAPIAbsolutePath(globalUrlPathPrefix, `messages/${props.conversation.conversationId}`), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    "messageContent": message,
+                    "sentBy": userId,
+                    "senderName": username
+                })
+            });
         }
     }
 
@@ -122,8 +103,14 @@ export const MessageList: React.FC<IMessageListProps> = observer((props: IMessag
         setSelectedMessageId(id);
     }
 
-    const handleDeleteMessageClick = () =>{
-        //TODO fetch delete message
+    const handleDeleteMessageClick = async() =>{
+        await fetch(getAPIAbsolutePath(globalUrlPathPrefix, `messages/${props.conversation.conversationId}`), {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: selectedMessageId
+        });
         setSelectedMessageId("");
     }
 

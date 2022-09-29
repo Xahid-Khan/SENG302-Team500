@@ -1,7 +1,5 @@
 import {
-    Autocomplete,
-    Avatar,
-    Box, Button, Chip,
+    Avatar, Box, Button, Chip,
     Divider,
     IconButton,
     List,
@@ -13,8 +11,7 @@ import {
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import React, {useEffect} from "react";
 import {observer} from "mobx-react-lite";
-import SearchIcon from '@mui/icons-material/Search';
-import {ChatListItem} from "./ChatListItem";
+import {getAPIAbsolutePath} from "../../util/RelativePathUtil";
 
 interface IUserListProps{
     open: boolean
@@ -24,6 +21,7 @@ interface IUserListProps{
 
 export const AddChatPopover: React.FC<IUserListProps> = observer((props: IUserListProps) => {
 
+    const globalUrlPathPrefix = localStorage.getItem("globalUrlPathPrefix");
     const globalImagePath = localStorage.getItem("globalImagePath");
 
     const [search, setSearch] = React.useState("");
@@ -32,38 +30,11 @@ export const AddChatPopover: React.FC<IUserListProps> = observer((props: IUserLi
     const [selectedUsers, setSelectedUsers] = React.useState([]);
 
     const fetchUsers = async () => {
-        //TODO fetch and sort by seen, see NotificationDropdown getNotifications
-        //mock data
-        return [
-            {
-                userIds: "1",
-                fullName: "Dracula"
-            },
-            {
-                userIds: "2",
-                fullName: "Sherlock"
-            },
-            {
-                userIds: "3",
-                fullName: "Spongebob"
-            },
-            {
-                userIds: "4",
-                fullName: "Spongebob"
-            },
-            {
-                userIds: "5",
-                fullName: "Spongebob"
-            },
-            {
-                userIds: "6",
-                fullName: "Spongebob"
-            },
-            {
-                userIds: "57",
-                fullName: "Spongebob"
-            },
-        ]
+        const messages = await fetch(getAPIAbsolutePath(globalUrlPathPrefix, `all-users`), {
+                method: 'GET'
+            }
+        )
+        return messages.json()
     }
 
     useEffect(() => {
@@ -120,8 +91,16 @@ export const AddChatPopover: React.FC<IUserListProps> = observer((props: IUserLi
         }
     }
 
-    const handleCreateClick = () => {
-        console.log("create", users)
+    const handleCreateClick = async() => {
+        await fetch(getAPIAbsolutePath(globalUrlPathPrefix, `messages`), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                "userIds": selectedUsers
+            })
+        });
         props.backButtonCallback()
     }
 
