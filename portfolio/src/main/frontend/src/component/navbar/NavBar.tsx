@@ -21,13 +21,14 @@ export const navigateTo = (page: string) => {
 
 export const NavBar: React.FC = observer(() => {
 
-    
+    const globalUrlPathPrefix = window.localStorage.getItem("globalUrlPathPrefix")
+
     return (
         <React.Fragment>
             <AppBar position="fixed" sx={{ bgcolor: "#788" }}>
                 <Toolbar>
                     <Box style={{display: "flex", paddingTop: 8}}>
-                        <img src={"images/SprintrLogoTransparent.png"} style={{maxWidth: 30}} alt={"Sprintr Logo"}/>
+                        <img src={`${globalUrlPathPrefix}/images/SprintrLogoTransparent.png`} style={{maxWidth: 30}} alt={"Sprintr Logo"}/>
                         <Typography
                             variant="h5">ENG SPRINTR</Typography>
                     </Box>
