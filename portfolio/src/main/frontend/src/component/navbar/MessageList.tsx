@@ -21,6 +21,8 @@ interface IMessageListProps{
     conversation: any
     chats: any
     backButtonCallback: (event: React.MouseEvent<HTMLElement>) => void
+    messages: any
+    setMessages: (messages: any) => any
 }
 
 export const MessageList: React.FC<IMessageListProps> = observer((props: IMessageListProps) => {
@@ -29,7 +31,6 @@ export const MessageList: React.FC<IMessageListProps> = observer((props: IMessag
     const userId = localStorage.getItem("userId");
     const username = localStorage.getItem("username");
 
-    const [messages, setMessages] = React.useState([]);
     const [message, setMessage] = React.useState("");
     const [selectedMessageId, setSelectedMessageId] = React.useState("");
 
@@ -56,7 +57,7 @@ export const MessageList: React.FC<IMessageListProps> = observer((props: IMessag
         )
         if (props.conversation != undefined) {
             getMessages().then((result) => {
-                setMessages(result)
+                props.setMessages(result)
             })
         }
     }
@@ -66,7 +67,7 @@ export const MessageList: React.FC<IMessageListProps> = observer((props: IMessag
     }, [props.conversation, props.chats])
 
     const messages_items = () =>
-        messages.map((contract: any) =>
+        props.messages.map((contract: any) =>
             <MessageListItem
                 key={contract.messageId}
                 contract={contract}
@@ -231,7 +232,7 @@ export const MessageList: React.FC<IMessageListProps> = observer((props: IMessag
                     </Box>
                 </ListSubheader>
                 <Divider/>
-                {messages.length === 0 ? no_messages_item() : messages_items()}
+                {props.messages.length === 0 ? no_messages_item() : messages_items()}
             </List>
             <Divider/>
             {openDeleteBox ? deleteMessageBox() : sendMessageBox()}

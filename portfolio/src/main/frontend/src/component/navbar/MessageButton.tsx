@@ -17,6 +17,9 @@ export const MessageButton: React.FC = observer(() => {
 
     const [chats, setChats] = React.useState([]);
 
+
+    const [messages, setMessages] = React.useState([]);
+
     const fetchChats = async () => {
         const conversations = await fetch(getAPIAbsolutePath(globalUrlPathPrefix, `messages`), {
                 method: 'GET'
@@ -58,6 +61,7 @@ export const MessageButton: React.FC = observer(() => {
         setAnchorEl(document.getElementById('chats-list-button'));
         setConversation(undefined)
         fetchAndSetChats();
+        setMessages([])
     }
 
     const getNumUnreadChats = () => {
@@ -118,6 +122,8 @@ export const MessageButton: React.FC = observer(() => {
                 conversation={conversation}
                 chats={chats}
                 backButtonCallback={handleBackClick}
+                setMessages={setMessages}
+                messages={messages}
             />
 
             <AddChatPopover
