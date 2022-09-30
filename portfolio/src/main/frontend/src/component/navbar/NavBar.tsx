@@ -21,13 +21,15 @@ export const navigateTo = (page: string) => {
 
 export const NavBar: React.FC = observer(() => {
 
+    
     return (
         <React.Fragment>
             <AppBar position="fixed" sx={{ bgcolor: "#788" }}>
                 <Toolbar>
-                    <Box>
+                    <Box style={{display: "flex", paddingTop: 8}}>
+                        <img src={"images/SprintrLogoTransparent.png"} style={{maxWidth: 30}} alt={"Sprintr Logo"}/>
                         <Typography
-                            variant="h5">SENG SPRINTR</Typography>
+                            variant="h5">ENG SPRINTR</Typography>
                     </Box>
 
                     <Box sx={{pl: 2, flexGrow: 1}}>
