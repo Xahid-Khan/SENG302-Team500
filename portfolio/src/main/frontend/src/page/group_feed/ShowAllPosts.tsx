@@ -1,4 +1,4 @@
-import React, {FormEvent, useEffect} from "react";
+import React, {FormEvent, useEffect, useRef} from "react";
 import {PostAndCommentContainer} from "./PostAndCommentContainer";
 import {EditPostDataModal} from "./EditPostDataModal";
 import {Tooltip} from "@mui/material";
@@ -15,23 +15,80 @@ export function ShowAllPosts() {
   const [editPostId, setEditPostId] = React.useState(-1);
   const [longCharacterCount, setLongCharacterCount] = React.useState(0);
   const isTeacher = localStorage.getItem("isTeacher") === "true";
+  const loadRef = useRef(null)
+  const [wasLastList, setWasLastList] = React.useState(false);
+  const [updateState, setUpdateState] = React.useState(true);
   const [groupPosts, setGroupPosts] = React.useState({
         "groupId": -1,
         "shortName": "",
         "isSubscribed": false,
         "isMember": false,
         "posts": [{
+          "postId": -1,
           "reactions": [],
           "comments": []
         }]
       }
   )
 
+  const [offset, setOffset] = React.useState(0);
+  const loadOptions: any = {
+    root: null,
+    rootMargin: "0px",
+    threshold: 1.0
+  }
+  const getPosts = async () => {
+    const currentGroupResponse = await fetch(`feed_content/${viewGroupId}?offset=` + offset);
+    return currentGroupResponse.json()
+  }
+
+  const getPostById = async (editPostId: any) => {
+    const currentPostResponse = await fetch(`get_post/${editPostId}`);
+    return currentPostResponse.json()
+  }
+
+  // With regards to https://dev.to/producthackers/intersection-observer-using-react-49ko
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      const [ entry ] = entries
+      if(entry.isIntersecting) {
+        if (!wasLastList) {
+          getPosts().then((result) => {
+            if (result.posts.length == 0) {
+              setWasLastList(true);
+              return;
+            }
+            if (groupPosts.groupId != -1 && groupPosts.posts.length > 0) {
+              const totalPosts = groupPosts.posts.concat(result.posts);
+              setGroupPosts({
+                "groupId": result.groupId,
+                "shortName": result.shortName,
+                "isSubscribed": result.isSubscribed,
+                "isMember": result.isMember,
+                "posts": totalPosts
+              });
+            } else {
+              setGroupPosts(result);
+            }
+            setOffset(offset + 1);
+          })
+        }
+      }
+    }, loadOptions)
+    if (loadRef.current) observer.observe(loadRef.current)
+
+    return () => {
+      if (loadRef.current) observer.unobserve(loadRef.current)
+    }
+
+  }, [loadRef, loadOptions, updateState])
+
+
   useEffect(() => {
     if (!isNaN(Number(viewGroupId))) {
       getCurrentGroup().then((result: any) => {
-        console.log(result);
         setGroupPosts(result)
+        setOffset(offset + 1);
       }).catch((error) => {
         console.log(error);
       })
@@ -125,10 +182,17 @@ export function ShowAllPosts() {
         "postId": id
       })
     });
-    await getCurrentGroup().then((result: any) => {
-      setGroupPosts(result)
+    let posts = groupPosts
+    await getPostById(id).then((result: any) => {
+      for (let i = 0; i < posts.posts.length; i++) {
+        if (posts.posts[i].postId == result.postId) {
+          posts.posts[i] = result;
+          break;
+        }
+      }
     })
-
+    setGroupPosts(posts)
+    setUpdateState(!updateState);
   }
 
   const toggleCommentDisplay = (id: number) => {
@@ -151,10 +215,20 @@ export function ShowAllPosts() {
           "comment": newComment
         })
       });
+
       setNewComment("");
-      await getCurrentGroup().then((result: any) => {
-        setGroupPosts(result)
+
+      let posts = groupPosts
+      await getPostById(id).then((result: any) => {
+        for (let i = 0; i < posts.posts.length; i++) {
+          if (posts.posts[i].postId == result.postId) {
+            posts.posts[i] = result;
+            break;
+          }
+        }
       })
+      setGroupPosts(posts)
+      setUpdateState(!updateState);
       document.getElementById(`post-comments-${id}`).scrollTop = document.getElementById(`post-comments-${id}`).scrollHeight;
     }
   }
@@ -165,9 +239,12 @@ export function ShowAllPosts() {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({"userId": userId,
-        "groupId": groupId})
+      body: JSON.stringify({
+        "userId": userId,
+        "groupId": groupId
+      })
     });
+    setUpdateState(!updateState);
     getCurrentGroup().then((response) => {
       setGroupPosts(response);
     })
@@ -179,9 +256,12 @@ export function ShowAllPosts() {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({"userId": userId,
-        "groupId": groupId})
+      body: JSON.stringify({
+        "userId": userId,
+        "groupId": groupId
+      })
     });
+    setUpdateState(!updateState);
     getCurrentGroup().then((response) => {
       setGroupPosts(response);
     })
@@ -191,22 +271,25 @@ export function ShowAllPosts() {
   return (
       <div>
         {
-          groupPosts.groupId != -1 ?
+          groupPosts.groupId !== -1 ?
               <>
                 <div className={"group-feed-name"}>{groupPosts.shortName} Feed</div>
                 {!groupPosts.isMember ?
-                  <>
-                    {
-                      groupPosts.isSubscribed ?
-                          <button className={"feed-Sub-Button"} onClick={() => unsubscribeUserToGroup(groupPosts.groupId)} >Unsubscribe</button>
-                          :
-                          <button className={"feed-Sub-Button"} onClick={() => subscribeUserToGroup(groupPosts.groupId)}>Subscribe</button>
-                    }
-                  </>
-                  :
                     <>
-                      <Tooltip title={"You cannot unsubscribe if you're member of the group."}>
-                        <span className={"feed-Sub-Button"} style={{padding:"5px", marginTop:"-35px"}}>
+                      {
+                        groupPosts.isSubscribed ?
+                            <button className={"feed-Sub-Button"}
+                                    onClick={() => unsubscribeUserToGroup(groupPosts.groupId)}>Unsubscribe</button>
+                            :
+                            <button className={"feed-Sub-Button"}
+                                    onClick={() => subscribeUserToGroup(groupPosts.groupId)}>Subscribe</button>
+                      }
+                    </>
+                    :
+                    <>
+                      <Tooltip title={"You cannot unsubscribe if you're a member of the group."}>
+                        <span className={"feed-Sub-Button"}
+                              style={{padding: "5px", marginTop: "-35px"}}>
                           <button disabled={true}>Unsubscribe</button>
                         </span>
                       </Tooltip>
@@ -214,19 +297,26 @@ export function ShowAllPosts() {
                 }
                 {
                   groupPosts.posts.length > 0 ?
-                      groupPosts.posts.map((post: any) => (
-                          <PostAndCommentContainer post={post} isTeacher={isTeacher}
-                                                   setContent={setContent}
-                                                   setLongCharacterCount={setLongCharacterCount}
-                                                   setTitle={setTitle}
-                                                   setEditPostId={setEditPostId}
-                                                   clickHighFive={clickHighFive}
-                                                   openConfirmationModal={openConfirmationModal}
-                                                   toggleCommentDisplay={toggleCommentDisplay}
-                                                   makeComment={makeComment}
-                                                   setNewComment={setNewComment}
-                                                   username={username}
-                          />))
+                      <>
+                        {groupPosts.posts.map((post: any) => (
+                            <>
+                              <PostAndCommentContainer post={post} isTeacher={isTeacher}
+                                                       setContent={setContent}
+                                                       setLongCharacterCount={setLongCharacterCount}
+                                                       setTitle={setTitle}
+                                                       setEditPostId={setEditPostId}
+                                                       clickHighFive={clickHighFive}
+                                                       openConfirmationModal={openConfirmationModal}
+                                                       toggleCommentDisplay={toggleCommentDisplay}
+                                                       makeComment={makeComment}
+                                                       setNewComment={setNewComment}
+                                                       username={username}
+                                                       updateState={updateState}
+                              />
+                            </>)
+                        )}
+                        <div ref={loadRef}/>
+                      </>
                       :
                       <div className={"raised-card group-post"} key={"-1"}>
                         <h3>There are no posts</h3>
@@ -241,6 +331,7 @@ export function ShowAllPosts() {
                                    setLongCharacterCount={setLongCharacterCount}
 
                 />
+
               </>
               :
               <div>
@@ -248,5 +339,6 @@ export function ShowAllPosts() {
               </div>
         }
       </div>
+
   )
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.portfolio.model.contract.SubscriptionContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.PostModel;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * Handles the post and delete requests on the /subscribe endpoint.
@@ -113,17 +115,59 @@ public class HomePageController extends AuthenticatedController {
   }
 
   @GetMapping(value = "/posts", produces = "application/json")
-  public ResponseEntity<?> getAllPosts(@AuthenticationPrincipal PortfolioPrincipal principal) {
+  public ResponseEntity<?> getAllPosts(@AuthenticationPrincipal PortfolioPrincipal principal,
+      @RequestParam("offset")
+      Optional<Integer> offset) {
     try {
       Integer userId = getUserId(principal);
+
       List<Integer> subscriptions = subscriptionService.getAllByUserId(userId);
       List<PostModel> posts = postService.getAllPostForMultipleGroups(subscriptions);
-      Map<String, Object> data = combineAndPrepareForFrontEnd(posts, userId);
+
+      var offsetValue = offset.orElse(0);
+      var postSubset = posts.subList(Math.min((offsetValue) * 20, posts.size()),
+          Math.min((offsetValue + 1) * 20, posts.size()));
+
+      Map<String, Object> data = combineAndPrepareForFrontEnd(postSubset, userId);
       return ResponseEntity.ok(data);
     } catch (Exception e) {
       return ResponseEntity.internalServerError().build();
     }
   }
+
+  /**
+   * Get post by id.
+   *
+   * @param principal
+   * @param postId
+   * @return
+   */
+  @GetMapping(value = "/get_post/{postId}", produces = "application/json")
+  public ResponseEntity<?> getPostById(
+      @AuthenticationPrincipal PortfolioPrincipal principal, @PathVariable int postId) {
+    try {
+      PostModel post = postService.getPostById(postId);
+      Map<String, Object> filteredPosts = new HashMap<>();
+      filteredPosts.put("postId", post.getId());
+      filteredPosts.put("userId", post.getUserId());
+      filteredPosts.put("username", userAccountService.getUserById(post.getUserId()).getUsername());
+      filteredPosts.put("time", post.getCreated());
+      filteredPosts.put("content", post.getPostContent());
+      filteredPosts.put("reactions", reactionService.getUsernamesOfUsersWhoReactedToPost(
+          post.getId()));
+      filteredPosts.put("groupId", post.getGroupId());
+      filteredPosts.put("comments", commentService.getCommentsForThePostAsJson(post.getId()));
+      filteredPosts.put("groupName",
+          groupsClientService.getGroupById(post.getGroupId()).getShortName());
+      filteredPosts.put("isMember",
+          groupsClientService.isMemberOfTheGroup(getUserId(principal), post.getGroupId()));
+
+      return ResponseEntity.ok(filteredPosts);
+    } catch (Exception e) {
+      return ResponseEntity.internalServerError().build();
+    }
+  }
+
 
   /**
    * This function creates a Map from posts to send it to the front end as JSON object.
