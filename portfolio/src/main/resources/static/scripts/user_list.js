@@ -39,7 +39,6 @@ const goToPage = (maxPage) => {
     } else {
       baseUrl = `?page=${page}`;
     }
-    console.log(baseUrl)
     // If we need to sort by or change ascension order, add them here
     if (lastParameters) {
       if (lastParameters.sortBy)

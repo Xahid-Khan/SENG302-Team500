@@ -143,7 +143,6 @@ class Application {
    */
   appendProject(projectData, options) {
     const {prepend, scrollIntoView} = options ?? {};
-    console.log(`${prepend ? 'Prepending' : 'Appending'} project with id: ${projectData.id}...`);
 
     // Post-process the projectData
     projectData.startDate = DatetimeUtils.networkStringToLocalDate(projectData.startDate);
@@ -185,10 +184,7 @@ class Application {
       this.containerElement.appendChild(projectElement);
     }
 
-    console.log("Binding project");
     this.projects.set(projectData.id, new Project(projectElement, projectData, this.deleteProject.bind(this), this.submitAddProjectForm.bind(this)));
-
-    console.log("Project bound");
 
     if (scrollIntoView) {
       projectElement.scrollIntoView({

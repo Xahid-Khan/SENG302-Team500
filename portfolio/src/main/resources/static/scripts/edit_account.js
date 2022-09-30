@@ -171,7 +171,6 @@ const IMAGE_SIZE = 150;
             }
             catch (e) {
                 if (e instanceof DOMException && e.name === 'AbortError') {
-                    console.log("Aborted fetch.")
                 }
                 else {
                     hideImagePreview();
