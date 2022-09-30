@@ -28,7 +28,6 @@ const myBubbleStyle =
         marginLeft: '10%',
     };
 
-
 export const MessageListItem: React.FC<IMessageListItemProps> = observer((props: IMessageListItemProps) => {
 
     const userId = parseInt(window.localStorage.getItem("userId"));
@@ -36,11 +35,17 @@ export const MessageListItem: React.FC<IMessageListItemProps> = observer((props:
     const alignment = sentByMe ? "flex-end" : "flex-start";
     const bubbleStyle = sentByMe ? myBubbleStyle : theirBubbleStyle;
 
+    const deleteMessage = (e) => {
+        if(sentByMe){
+            props.messageButtonCallback(e, props.contract.messageId)
+        }
+    }
+
     return (
         <ListItem sx={{maxWidth: '100%', pt: '2px', pb: '2px'}}>
             <Box sx={{flexGrow: 1, display: "flex", alignItems: alignment, maxWidth: '100%', flexDirection: 'column'}}>
                 {props.isGroupChat && props.contract.sentBy != userId ? <Typography sx={{fontSize: "0.7em"}} variant="subtitle2">{props.contract.senderName}</Typography> : ""}
-                <Box sx={bubbleStyle} onClick={(e) => { props.messageButtonCallback(e, props.contract.messageId)}}>
+                <Box sx={bubbleStyle} onClick={deleteMessage}>
                     <Typography variant="body2">{props.contract.messageContent}</Typography>
                 </Box>
             </Box>
