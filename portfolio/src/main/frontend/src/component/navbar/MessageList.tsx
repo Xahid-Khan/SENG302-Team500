@@ -60,6 +60,10 @@ export const MessageList: React.FC<IMessageListProps> = observer((props: IMessag
         fetchAndSetMessages();
     }, [props.conversation, props.chats])
 
+    useEffect(() => {
+        fetchAndSetMessages();
+    }, [])
+
     const messages_items = () =>
         messages.map((contract: any) =>
             <MessageListItem
