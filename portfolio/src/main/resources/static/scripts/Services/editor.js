@@ -23,8 +23,6 @@ class Editor {
       return null;
     };
 
-    console.log(this.containerElement)
-
     if (this.entityId && !this.title.includes("New")) {
       Socket.showEdit(this.entityId)
       window.addEventListener('beforeunload',
@@ -139,9 +137,6 @@ class Editor {
       this.startDateLabel.innerText = "Date*:";
       this.endDateLabel.outerHTML = "";
     }
-
-    console.log(this.containerElement);
-    console.log(this.initialData)
 
     this.saveButton = document.getElementById(
         `edit-save-button-${this.entityId}`);
@@ -332,7 +327,6 @@ class Editor {
       this.validateDates()
     ].indexOf(false) !== -1;
 
-    console.log(`hasErrors: ${hasErrors}`);
     if (!hasErrors) {
       try {
         this.saveButton.innerText = "loading...";

@@ -28,8 +28,6 @@ class Project {
      * @param sprint to update or insert
      */
     onSprintUpdate(sprint) {
-        console.log(`Project notified of update to sprint: `, sprint);
-
         // Delete the outdated sprint from the sprints array.
         // NB: Since this method is sometimes called with new sprints, a deletion is not guaranteed to occur here.
         for (let i=0; i < this.project.sprints.length; i++) {
@@ -67,8 +65,6 @@ class Project {
     }
 
     onEventUpdate(event) {
-        console.log(`Project notified of update to event: `, event);
-
         // Delete the outdated event from the events array.
         // NB: Since this method is sometimes called with new events, a deletion is not guaranteed to occur here.
         for (let j=0; j < this.project.events.length; j++) {
@@ -105,8 +101,6 @@ class Project {
     }
 
     onMilestoneUpdate(milestone) {
-        console.log(`Project notified of update to milestone: `, milestone);
-
         // Delete the outdated event from the milestones array.
         // NB: Since this method is sometimes called with new milestones, a deletion is not guaranteed to occur here.
         for (let j=0; j < this.project.milestones.length; j++) {
@@ -142,8 +136,6 @@ class Project {
     }
 
     onDeadlineUpdate(deadline) {
-        console.log(`Project notified of update to deadline: `, deadline);
-
         // Delete the outdated event from the events array.
         // NB: Since this method is sometimes called with new events, a deletion is not guaranteed to occur here.
         for (let j=0; j < this.project.deadlines.length; j++) {

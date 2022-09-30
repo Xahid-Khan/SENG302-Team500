@@ -78,13 +78,7 @@ class ProjectView {
         sprintElement.style.margin='15px 0 15px 0';
         this.sprintContainer.appendChild(sprintElement);
 
-        console.log("Binding sprint");
-
-        console.log(sprintData.startDate);
         this.sprints.set(sprintData.sprintId, new Sprint(sprintElement, sprintData, this.project, this.sprintDeleteCallback, this.sprintUpdateCallback));
-
-        console.log("Sprint bound");
-
     }
 
     appendEvent(eventData) {
@@ -93,11 +87,7 @@ class ProjectView {
         eventElement.style.margin='15px 0 15px 0';
         this.eventContainer.appendChild(eventElement);
 
-        console.log("Binding event");
-
         this.events.set(eventData.eventId, new EventObject(eventElement, eventData, this.project, this.eventDeleteCallback, this.eventUpdateCallback, this.eventEditCallback));
-
-        console.log("Event bound");
     }
 
     appendMilestone(milestoneData) {
@@ -106,11 +96,7 @@ class ProjectView {
         milestoneElement.style.margin='15px 0 15px 0';
         this.milestoneContainer.appendChild(milestoneElement);
 
-        console.log("Binding milestone");
-
         this.milestones.set(milestoneData.milestoneId, new Milestone(milestoneElement, milestoneData, this.project, this.milestoneDeleteCallback, this.milestoneUpdateCallback, this.milestoneEditCallback));
-
-        console.log("Milestone bound");
     }
 
     appendDeadline(deadlineData) {
@@ -119,11 +105,7 @@ class ProjectView {
         deadlineElement.style.margin='15px 0 15px 0';
         this.deadlineContainer.appendChild(deadlineElement);
 
-        console.log("Binding deadline");
-
         this.deadlines.set(deadlineData.deadlineId, new Deadline(deadlineElement, deadlineData, this.project, this.deadlineDeleteCallback, this.deadlineUpdateCallback, this.deadlineEditCallback));
-
-        console.log("Deadline bound");
     }
     handleModalClose(){
         document.getElementById('modal-open').style.display='none'
