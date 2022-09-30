@@ -18,7 +18,7 @@ import org.hibernate.annotations.CreationTimestamp;
  * Database schema for a post
  */
 @Entity
-@Table(name = "POSTMODEL")
+@Table(name = "postmodel")
 public class PostModel {
 
   @Id
