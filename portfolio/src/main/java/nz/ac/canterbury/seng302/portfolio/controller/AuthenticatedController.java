@@ -120,6 +120,8 @@ public abstract class AuthenticatedController {
    */
   @ModelAttribute("tokenInSync")
   public boolean tokenInSync(@AuthenticationPrincipal PortfolioPrincipal principal) {
+    var x = getUser(principal).getRolesList();
+    var y = getRoles(principal);
     return getUser(principal).getRolesList().equals(getRoles(principal));
   }
 

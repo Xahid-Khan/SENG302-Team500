@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import {observer} from "mobx-react-lite";
 import {AppBar, Box, Button, Toolbar, Typography} from "@mui/material";
 import {NotificationDropdown} from "../notifications/NotificationDropdown";
@@ -14,6 +14,16 @@ export const navigateTo = (page: string) => {
 export const NavBar: React.FC = observer(() => {
 
   const globalUrlPathPrefix = window.localStorage.getItem("globalUrlPathPrefix")
+
+  useEffect(() => {
+    setInterval(async function sync() {
+      const res = await fetch(`${globalUrlPathPrefix}/api/v1/validate_token`)
+      if (!res.ok) {
+        alert("Your roles have changed. Please login again.")
+        window.location.replace("logout");
+      }
+    }, 5000)
+  }, []);
 
   return (
       <React.Fragment>
@@ -48,8 +58,6 @@ export const NavBar: React.FC = observer(() => {
           </Toolbar>
         </AppBar>
         <Toolbar sx={{mb: 3}}/>
-        <script type="text/javascript"
-                src={`${globalUrlPathPrefix}/scripts/token_validator.js`}></script>
       </React.Fragment>
   )
 })
