@@ -7,13 +7,14 @@ import java.util.List;
  * A contract for a conversation. The most recent message only is included for previewing.
  *
  * @param conversationId the conversation's ID
- * @param userIds the users in the conversation
+ * @param users the users in the conversation, all represented with a UserContract
  * @param creationDate the creation date of the conversation
  * @param mostRecentMessage the most recent message in the conversation for previewing
  */
 public record ConversationContract(
     String conversationId,
-    List<Integer> userIds,
+    List<UserContract> users,
     Timestamp creationDate,
-    MessageContract mostRecentMessage
+    MessageContract mostRecentMessage,
+    List<Integer> userHasReadMessages
 ) implements Contractable {}

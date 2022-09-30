@@ -3,8 +3,8 @@ import {observer} from "mobx-react-lite";
 import {Box, ListItem, Typography} from "@mui/material";
 
 interface IMessageListItemProps {
-    //TODO use contract type
     contract: any
+    isGroupChat: boolean
     messageButtonCallback: (event: React.MouseEvent<HTMLElement>, id: string) => void
 }
 
@@ -38,7 +38,8 @@ export const MessageListItem: React.FC<IMessageListItemProps> = observer((props:
 
     return (
         <ListItem sx={{maxWidth: '100%', pt: '2px', pb: '2px'}}>
-            <Box sx={{flexGrow: 1, display: "flex", justifyContent: alignment, maxWidth: '100%',}}>
+            <Box sx={{flexGrow: 1, display: "flex", alignItems: alignment, maxWidth: '100%', flexDirection: 'column'}}>
+                {props.isGroupChat && props.contract.sentBy != userId ? <Typography sx={{fontSize: "0.7em"}} variant="subtitle2">{props.contract.senderName}</Typography> : ""}
                 <Box sx={bubbleStyle} onClick={(e) => { props.messageButtonCallback(e, props.contract.messageId)}}>
                     <Typography variant="body2">{props.contract.messageContent}</Typography>
                 </Box>

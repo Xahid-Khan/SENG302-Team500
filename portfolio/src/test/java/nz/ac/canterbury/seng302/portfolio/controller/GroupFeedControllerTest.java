@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import nz.ac.canterbury.seng302.portfolio.AuthorisationParamsHelper;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
+import nz.ac.canterbury.seng302.portfolio.controller.feed.GroupFeedController;
 import nz.ac.canterbury.seng302.portfolio.model.contract.PostContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.CommentModel;
 import nz.ac.canterbury.seng302.portfolio.model.entity.PostModel;
@@ -274,16 +275,16 @@ class GroupFeedControllerTest {
         Mockito.when(postService.getPostById(any(int.class))).thenReturn(post4);
         Mockito.when(postService.updatePost(any(PostContract.class), any(int.class))).thenReturn(true);
 
-        mockMvc.perform(put("/update_feed/" + post4.getId())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {
-                                    "groupId" : "1",
-                                    "postContent" : "This a test dummy post Changed From Teachers"
-                                }
-                                """)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().is4xxClientError())
-                .andReturn();
-    }
+    mockMvc.perform(put("/update_feed/" + post4.getId())
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                    "groupId" : "1",
+                    "postContent" : "This a test dummy post Changed From Teachers"
+                }
+                """)
+            .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().is4xxClientError())
+        .andReturn();
+  }
 }

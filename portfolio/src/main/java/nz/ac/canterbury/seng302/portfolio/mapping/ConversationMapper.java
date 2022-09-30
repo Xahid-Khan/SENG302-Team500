@@ -1,8 +1,12 @@
 package nz.ac.canterbury.seng302.portfolio.mapping;
 
+import java.util.ArrayList;
+import java.util.List;
 import nz.ac.canterbury.seng302.portfolio.model.contract.ConversationContract;
+import nz.ac.canterbury.seng302.portfolio.model.contract.UserContract;
 import nz.ac.canterbury.seng302.portfolio.model.contract.basecontract.BaseConversationContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.ConversationEntity;
+import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -10,8 +14,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class ConversationMapper
     implements Mappable<ConversationEntity, BaseConversationContract, ConversationContract> {
-
   @Autowired private MessageMapper messageMapper;
+  @Autowired private UserMapper userMapper;
+  @Autowired private UserAccountService userAccountService;
 
   /**
    * Maps a contract to an entity.
@@ -32,10 +37,17 @@ public class ConversationMapper
    */
   @Override
   public ConversationContract toContract(ConversationEntity entity) {
+    List<UserContract> userContracts = new ArrayList<>();
+    for (Integer userId : entity.getUserIds()) {
+      System.out.println(userId);
+      userContracts.add(userMapper.toContract(userAccountService.getUserById(userId)));
+    }
     return new ConversationContract(
         entity.getId(),
-        entity.getUserIds(),
+        userContracts,
         entity.getCreationDate(),
-        messageMapper.toContract(entity.getMostRecentMessage()));
+        messageMapper.toContract(entity.getMostRecentMessage()),
+        entity.getUserHasReadMessages()
+    );
   }
 }

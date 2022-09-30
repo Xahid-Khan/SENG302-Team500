@@ -39,7 +39,7 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
     if (sprint !== undefined) {
       sprint.setDates(evt.event.start, evt.event.end)
       .then(
-          () => toaster.dismiss(toastId),
+          () => setTimeout(() => toaster.dismiss(toastId), 600),
           (err) => toaster.replace(toastId, () => (
               <ToastBase themes={[defaultToastTheme]}>
                 <LoadingErrorPresenter loadingStatus={err} onRetry={() => {
@@ -220,12 +220,11 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
       )
     } else {
       return (
-          <div className={"toolTipData"} style={{display: "grid"}}>
+          <div className={"toolTipData"} style={{display: "grid", margin: sprintDates.has(eventInfo.event.id) ? "3px 0 3px 0" : "60px 0 3px 0",}}>
             {
               eventDictionary.has(eventInfo.event.id) ?
                   <>
                     <div style={{
-                      margin: sprintDates.has(eventInfo.event.id) ? "3px 0 3px 0" : "60px 0 3px 0",
                       width: "fit-content"
                     }} data-tip data-for={"events" + eventInfo.event.id.toString()}>
                       <span className="material-icons" style={{float: "left"}}>event</span>

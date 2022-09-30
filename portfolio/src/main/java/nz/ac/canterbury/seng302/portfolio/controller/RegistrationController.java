@@ -1,13 +1,17 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import io.grpc.StatusRuntimeException;
+import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import nz.ac.canterbury.seng302.portfolio.DTO.RegisteredUserValidation;
 import nz.ac.canterbury.seng302.portfolio.DTO.User;
 import nz.ac.canterbury.seng302.portfolio.authentication.CookieUtil;
+import nz.ac.canterbury.seng302.portfolio.model.contract.SubscriptionContract;
 import nz.ac.canterbury.seng302.portfolio.service.AuthenticateClientService;
+import nz.ac.canterbury.seng302.portfolio.service.GroupsClientService;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
+import nz.ac.canterbury.seng302.portfolio.service.SubscriptionService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticateResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +30,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 /** Handles the /register endpoint for either GET requests or POST requests. */
 @Controller
 public class RegistrationController {
+  @Autowired
+  private GroupsClientService groupsClientService;
+
+  @Autowired
+  private SubscriptionService subscriptionService;
 
   @InitBinder
   public void initBinder(WebDataBinder binder) {
@@ -113,6 +122,15 @@ public class RegistrationController {
           domain.startsWith("localhost") ? null : domain);
       // Redirect user if login succeeds
       // redirectAttributes.addFlashAttribute("message", "Successfully logged in.");
+
+      var group = groupsClientService.getGroupById(2);
+      var userList = group.getMembersList().stream().map(member -> member.getId()).collect(
+          Collectors.toList());
+      var userId = (int) loginReply.getUserId();
+      if (userList.contains(userId)) {
+        subscriptionService.subscribe(new SubscriptionContract(userId, group.getGroupId()));
+      }
+
       return "redirect:my_account";
     }
 

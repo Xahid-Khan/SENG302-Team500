@@ -9,6 +9,10 @@ import nz.ac.canterbury.seng302.portfolio.model.entity.PostModel;
 import nz.ac.canterbury.seng302.portfolio.repository.PostModelRepository;
 import nz.ac.canterbury.seng302.shared.identityprovider.GroupDetailsResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
@@ -64,6 +68,32 @@ public class PostService {
     return postRepository.findPostModelByGroupId(groupId);
   }
 
+
+  /**
+   * Handles pagination using PageRequest.of, taking into account a group ID.
+   *
+   * @param groupId The group id
+   * @param page    which page of the data to load (I.E., 0 will load 0 - limit)
+   * @param limit   limit of posts to grab. Must be greater than 0
+   * @return the specified posts based on the parameters given
+   */
+  public Page<PostModel> getPaginatedPostsForGroup(int groupId, int page, int limit) {
+    Pageable request = PageRequest.of(page, limit, Sort.by("created").descending());
+    return postRepository.getPaginatedPostsByGroupId(groupId, request);
+  }
+
+  /**
+   * Handles pagination using PageRequest.of.
+   *
+   * @param page  which page of the data to load (I.E., 0 will load 0 - limit)
+   * @param limit limit of posts to grab. Must be greater than 0
+   * @return the specified posts based on the parameters given
+   */
+  public Page<PostModel> getPaginatedPosts(int page, int limit) {
+    Pageable request = PageRequest.of(page, limit, Sort.by("created").descending());
+    return postRepository.findAll(request);
+  }
+
   /**
    * This method/function will return the posts user has subscribed to. All teh posts are in
    * descending order by created time.
@@ -106,13 +136,11 @@ public class PostService {
               posterUsername + " created a post in " + groupName + "!"));
         }
       }
-
       return true;
     } catch (Exception e) {
       e.printStackTrace();
     }
-
-    return false;
+    return true;
   }
 
   /**
