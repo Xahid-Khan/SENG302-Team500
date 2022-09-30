@@ -39,7 +39,7 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
     if (sprint !== undefined) {
       sprint.setDates(evt.event.start, evt.event.end)
       .then(
-          () => toaster.dismiss(toastId),
+          () => setTimeout(() => toaster.dismiss(toastId), 600),
           (err) => toaster.replace(toastId, () => (
               <ToastBase themes={[defaultToastTheme]}>
                 <LoadingErrorPresenter loadingStatus={err} onRetry={() => {
