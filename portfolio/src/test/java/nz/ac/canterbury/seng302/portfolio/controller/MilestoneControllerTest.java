@@ -1,7 +1,19 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.Instant;
+import java.util.ArrayList;
 import nz.ac.canterbury.seng302.portfolio.AuthorisationParamsHelper;
 import nz.ac.canterbury.seng302.portfolio.model.GetPaginatedUsersOrderingElement;
 import nz.ac.canterbury.seng302.portfolio.model.contract.MilestoneContract;
@@ -22,16 +34,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-
-import java.time.Instant;
-import java.util.ArrayList;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Class to test the MilestoneController.class
@@ -69,6 +71,7 @@ public class MilestoneControllerTest {
             UserResponse.newBuilder()
                 .setId(-100)
                 .setUsername("testing")
+                .addRoles(UserRole.TEACHER)
                 .build()
         );
 
@@ -375,7 +378,13 @@ public class MilestoneControllerTest {
     @Test
     public void tryCreateNewAsStudent() throws Exception {
         AuthorisationParamsHelper.setParams("role", UserRole.STUDENT);
-
+        Mockito.when(userAccountService.getUserById(any(int.class))).thenReturn(
+          UserResponse.newBuilder()
+              .setId(-100)
+              .setUsername("testing")
+              .addRoles(UserRole.STUDENT)
+              .build()
+        );
         var project = new ProjectEntity("test project", null, Instant.parse("2022-12-01T10:15:30.00Z"), Instant.parse("2023-01-20T10:15:30.00Z"));
         projectRepository.save(project);
 
@@ -403,7 +412,13 @@ public class MilestoneControllerTest {
     @Test
     public void tryUpdateValidMilestoneAsStudent() throws Exception {
         AuthorisationParamsHelper.setParams("role", UserRole.STUDENT);
-
+        Mockito.when(userAccountService.getUserById(any(int.class))).thenReturn(
+          UserResponse.newBuilder()
+              .setId(-100)
+              .setUsername("testing")
+              .addRoles(UserRole.STUDENT)
+              .build()
+        );
         var project = new ProjectEntity("test project", null, Instant.parse("2022-12-01T10:15:30.00Z"), Instant.parse("2023-01-20T10:15:30.00Z"));
         var milestone = new MilestoneEntity("preedittestmilestone", "pre-test description", Instant.parse("2023-01-03T10:15:30.00Z"));
         project.addMilestone(milestone);
@@ -437,6 +452,13 @@ public class MilestoneControllerTest {
     @Test
     public void tryDeleteMilestoneAsStudent() throws Exception {
         AuthorisationParamsHelper.setParams("role", UserRole.STUDENT);
+      Mockito.when(userAccountService.getUserById(any(int.class))).thenReturn(
+          UserResponse.newBuilder()
+              .setId(-100)
+              .setUsername("testing")
+              .addRoles(UserRole.STUDENT)
+              .build()
+      );
         var project = new ProjectEntity("test project", null, Instant.EPOCH, Instant.parse("2007-12-03T10:15:30.00Z"));
         var milestone = new MilestoneEntity("preedittestmilestone", "pre-test description", Instant.parse("2007-12-03T10:15:30.00Z"));
         project.addMilestone(milestone);

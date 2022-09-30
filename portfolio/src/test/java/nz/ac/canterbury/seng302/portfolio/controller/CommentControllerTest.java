@@ -56,6 +56,7 @@ class CommentControllerTest {
         UserResponse.newBuilder()
             .setId(validUserId)
             .setUsername("NewTestUser")
+            .addAllRoles(List.of(UserRole.STUDENT))
             .build()
     );
     Mockito.when(authStateService.getId(any(PortfolioPrincipal.class))).thenReturn(validUserId);
@@ -212,6 +213,13 @@ class CommentControllerTest {
   @Test
   void deleteACommentUsingCommentIdUserIsTeacherExpectPass() throws Exception {
     AuthorisationParamsHelper.setParams("role", UserRole.TEACHER);
+    Mockito.when(userAccountService.getUserById(any(int.class))).thenReturn(
+        UserResponse.newBuilder()
+            .setId(validUserId)
+            .setUsername("NewTestUser")
+            .addAllRoles(List.of(UserRole.TEACHER))
+            .build()
+    );
     CommentModel comment = new CommentModel(1, 5, "This is a new Test Comment");
     Mockito.when(commentService.getCommentById(any(int.class))).thenReturn(Optional.of(comment));
 
@@ -230,6 +238,13 @@ class CommentControllerTest {
   @Test
   void deleteACommentUsingCommentIdUserIsAdminExpectPass() throws Exception {
     AuthorisationParamsHelper.setParams("role", UserRole.COURSE_ADMINISTRATOR);
+    Mockito.when(userAccountService.getUserById(any(int.class))).thenReturn(
+        UserResponse.newBuilder()
+            .setId(validUserId)
+            .setUsername("NewTestUser")
+            .addAllRoles(List.of(UserRole.COURSE_ADMINISTRATOR))
+            .build()
+    );
     CommentModel comment = new CommentModel(1, 5, "This is a new Test Comment");
     Mockito.when(commentService.getCommentById(any(int.class))).thenReturn(Optional.of(comment));
 

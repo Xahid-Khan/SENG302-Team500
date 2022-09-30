@@ -91,7 +91,8 @@ public abstract class AuthenticatedController {
 
   /**
    * Returns the highest role that a user has. I.E., (STUDENT, TEACHER) returns TEACHER, etc. This
-   * is according to the UserRole enum.
+   * is according to the UserRole enum. This is pulled from the IDP database to ensure it is always
+   * up-to-date.
    *
    * <p>Note that this probably shouldn't be accessed from controllers for authentication, as
    * isTeacher or isCourseAdmin handle effectively the same request whilst making the code look
@@ -102,13 +103,24 @@ public abstract class AuthenticatedController {
    */
   private UserRole getHighestRole(PortfolioPrincipal principal) {
     UserRole currentHighestRole = UserRole.STUDENT;
-    List<UserRole> roles = getRoles(principal);
+    List<UserRole> roles = getUser(principal).getRolesList();
     for (UserRole role : roles) {
       if (role.compareTo(currentHighestRole) > 0) {
         currentHighestRole = role;
       }
     }
     return currentHighestRole;
+  }
+
+  /**
+   * Registers when the roles in the token are out of sync.
+   *
+   * @param principal the user's token
+   * @return if the token is in sync or not
+   */
+  @ModelAttribute("tokenInSync")
+  public boolean tokenInSync(@AuthenticationPrincipal PortfolioPrincipal principal) {
+    return getUser(principal).getRolesList().equals(getRoles(principal));
   }
 
   /**

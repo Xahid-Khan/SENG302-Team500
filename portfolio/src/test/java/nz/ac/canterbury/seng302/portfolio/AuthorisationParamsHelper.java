@@ -1,16 +1,12 @@
 package nz.ac.canterbury.seng302.portfolio;
 
-import static org.mockito.ArgumentMatchers.any;
-
 import java.util.List;
 import java.util.stream.Collectors;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
-import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
 import org.mockito.Mockito;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,9 +16,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
  * It can build a claim around given UserRoles, and can build a claim for one or more UserRole.
  */
 public class AuthorisationParamsHelper {
-
-  @MockBean
-  private static UserAccountService userAccountService;
 
   /**
    * Helper function to build the claim together and configure correctly.
