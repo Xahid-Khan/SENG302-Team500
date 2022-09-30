@@ -76,6 +76,7 @@ public class ProjectControllerTest {
             UserResponse.newBuilder()
                 .setId(-100)
                 .setUsername("testing")
+                .addRoles(UserRole.TEACHER)
                 .build()
         );
 

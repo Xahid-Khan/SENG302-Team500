@@ -60,6 +60,7 @@ public class SprintControllerTest {
             UserResponse.newBuilder()
                 .setId(-100)
                 .setUsername("testing")
+                .addRoles(UserRole.TEACHER)
                 .build()
         );
 
@@ -330,6 +331,13 @@ public class SprintControllerTest {
     @Test
     public void tryCreateNewAsStudent() throws Exception {
         AuthorisationParamsHelper.setParams("role", UserRole.STUDENT);
+        Mockito.when(userAccountService.getUserById(any(int.class))).thenReturn(
+            UserResponse.newBuilder()
+                .setId(-100)
+                .setUsername("testing")
+                .addRoles(UserRole.STUDENT)
+                .build()
+        );
 
         var project = new ProjectEntity("test project", null, Instant.parse("2022-12-01T10:15:30.00Z"), Instant.parse("2023-01-20T10:15:30.00Z"));
         projectRepository.save(project);
@@ -355,7 +363,13 @@ public class SprintControllerTest {
     @Test
     public void tryUpdateValidSprintAsStudent() throws Exception {
         AuthorisationParamsHelper.setParams("role", UserRole.STUDENT);
-
+        Mockito.when(userAccountService.getUserById(any(int.class))).thenReturn(
+            UserResponse.newBuilder()
+                .setId(-100)
+                .setUsername("testing")
+                .addRoles(UserRole.STUDENT)
+                .build()
+        );
         var project = new ProjectEntity("test project", null, Instant.parse("2022-12-01T10:15:30.00Z"), Instant.parse("2023-01-20T10:15:30.00Z"));
         var sprint = new SprintEntity("pre-edit test sprint", "pre-test description", Instant.parse("2023-01-01T10:15:30.00Z"), Instant.parse("2023-01-03T10:15:30.00Z"), "#fff");
         project.addSprint(sprint);
@@ -386,6 +400,13 @@ public class SprintControllerTest {
     @Test
     public void tryDeleteSprintAsStudent() throws Exception {
         AuthorisationParamsHelper.setParams("role", UserRole.STUDENT);
+        Mockito.when(userAccountService.getUserById(any(int.class))).thenReturn(
+            UserResponse.newBuilder()
+                .setId(-100)
+                .setUsername("testing")
+                .addRoles(UserRole.STUDENT)
+                .build()
+        );
         var project = new ProjectEntity("test project", null, Instant.EPOCH, Instant.parse("2007-12-03T10:15:30.00Z"));
         var sprint = new SprintEntity("pre-edit test sprint", "pre-test description", Instant.EPOCH, Instant.parse("2007-12-03T10:15:30.00Z"), "#fff");
         project.addSprint(sprint);

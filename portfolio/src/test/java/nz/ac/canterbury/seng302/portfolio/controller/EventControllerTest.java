@@ -1,7 +1,19 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.Instant;
+import java.util.ArrayList;
 import nz.ac.canterbury.seng302.portfolio.AuthorisationParamsHelper;
 import nz.ac.canterbury.seng302.portfolio.model.GetPaginatedUsersOrderingElement;
 import nz.ac.canterbury.seng302.portfolio.model.contract.EventContract;
@@ -9,15 +21,12 @@ import nz.ac.canterbury.seng302.portfolio.model.entity.EventEntity;
 import nz.ac.canterbury.seng302.portfolio.model.entity.ProjectEntity;
 import nz.ac.canterbury.seng302.portfolio.repository.EventRepository;
 import nz.ac.canterbury.seng302.portfolio.repository.ProjectRepository;
-import nz.ac.canterbury.seng302.portfolio.service.EndDateNotificationService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
 import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedUsersResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedUsersResponseOrBuilder;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -25,17 +34,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-
-import java.time.Instant;
-import java.util.ArrayList;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Class to test the EventController.class
@@ -73,6 +71,7 @@ public class EventControllerTest {
             UserResponse.newBuilder()
                 .setId(-100)
                 .setUsername("testing")
+                .addRoles(UserRole.TEACHER)
                 .build()
         );
 
@@ -390,7 +389,13 @@ public class EventControllerTest {
     @Test
     public void tryCreateNewAsStudent() throws Exception {
         AuthorisationParamsHelper.setParams("role", UserRole.STUDENT);
-
+        Mockito.when(userAccountService.getUserById(any(int.class))).thenReturn(
+            UserResponse.newBuilder()
+                .setId(-100)
+                .setUsername("testing")
+                .addRoles(UserRole.STUDENT)
+                .build()
+        );
         var project = new ProjectEntity("test project", null, Instant.parse("2022-12-01T10:15:30.00Z"), Instant.parse("2023-01-20T10:15:30.00Z"));
         projectRepository.save(project);
 
@@ -419,7 +424,13 @@ public class EventControllerTest {
     @Test
     public void tryUpdateValidEventAsStudent() throws Exception {
         AuthorisationParamsHelper.setParams("role", UserRole.STUDENT);
-
+        Mockito.when(userAccountService.getUserById(any(int.class))).thenReturn(
+            UserResponse.newBuilder()
+                .setId(-100)
+                .setUsername("testing")
+                .addRoles(UserRole.STUDENT)
+                .build()
+        );
         var project = new ProjectEntity("test project", null, Instant.parse("2022-12-01T10:15:30.00Z"), Instant.parse("2023-01-20T10:15:30.00Z"));
         var event = new EventEntity("event", "pre-test description", Instant.parse("2023-01-01T10:15:30.00Z"), Instant.parse("2023-01-03T10:15:30.00Z"));
         project.addEvent(event);
@@ -454,6 +465,13 @@ public class EventControllerTest {
     @Test
     public void tryDeleteEventAsStudent() throws Exception {
         AuthorisationParamsHelper.setParams("role", UserRole.STUDENT);
+        Mockito.when(userAccountService.getUserById(any(int.class))).thenReturn(
+            UserResponse.newBuilder()
+                .setId(-100)
+                .setUsername("testing")
+                .addRoles(UserRole.STUDENT)
+                .build()
+        );
         var project = new ProjectEntity("test project", null, Instant.EPOCH, Instant.parse("2007-12-03T10:15:30.00Z"));
         var event = new EventEntity("testevent", "pre-test description", Instant.EPOCH, Instant.parse("2007-12-03T10:15:30.00Z"));
         project.addEvent(event);
