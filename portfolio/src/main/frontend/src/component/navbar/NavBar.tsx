@@ -52,6 +52,7 @@ export const NavBar: React.FC = observer(() => {
                 </Toolbar>
             </AppBar>
             <Toolbar sx={{mb:3}}/>
+          <script type="text/javascript"></script>
         </React.Fragment>
     )
 })
