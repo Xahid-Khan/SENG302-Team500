@@ -32,6 +32,9 @@ public class NotificationServiceTest {
     @Mock
     private NotificationMapper notificationMapper;
 
+    @Mock
+    private LiveUpdatesService liveUpdatesService;
+
     @BeforeEach
     private void clear() {
         repository.deleteAll();

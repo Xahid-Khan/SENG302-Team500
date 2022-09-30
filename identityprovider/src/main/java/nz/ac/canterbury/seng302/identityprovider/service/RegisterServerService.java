@@ -18,26 +18,32 @@ import nz.ac.canterbury.seng302.shared.util.ValidationError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-/** This service handles the server side registration of a user. */
+/**
+ * This service handles the server side registration of a user.
+ */
 @Service
 public class RegisterServerService {
 
-  @Autowired private UserRepository repository;
+  @Autowired
+  private UserRepository repository;
 
-  @Autowired private PasswordService passwordService;
+  @Autowired
+  private PasswordService passwordService;
 
-  @Autowired private GroupRepository groupRepository;
+  @Autowired
+  private GroupRepository groupRepository;
 
-  @Autowired private GroupMemberRepository groupMemberRepository;
+  @Autowired
+  private GroupMemberRepository groupMemberRepository;
 
   /**
    * Registers a new user, including hashing their password and saving the current timestamp.
    *
    * @param request the UserRegisterRequest to parse
    * @return a UserRegisterResponse reply containing either a success or failure, and validation
-   *     errors in the case of a failure
+   * errors in the case of a failure
    * @throws NoSuchAlgorithmException if password hashing fails
-   * @throws InvalidKeySpecException if password hashing fails
+   * @throws InvalidKeySpecException  if password hashing fails
    */
   public UserRegisterResponse register(UserRegisterRequest request)
       throws NoSuchAlgorithmException, InvalidKeySpecException {

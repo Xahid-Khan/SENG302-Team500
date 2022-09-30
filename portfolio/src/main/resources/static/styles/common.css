@@ -16,6 +16,13 @@ body {
 /* Raised Card */
 .raised-card {
   border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.30);
+  background: white;
+}
+
+raised-card-half {
+  width: 45%;
+  border-radius: 12px;
   box-shadow: 0 6px 20px rgba(0,0,0,0.30);
   background: white;
 }
@@ -30,6 +37,7 @@ button {
   margin: 0 3px;
   transition-duration: 0.4s;
   font-size: 14px;
+  border-radius: 0.2rem;
 }
 
 .dangerous-button{
@@ -119,5 +127,16 @@ input, textarea {
 }
 .border-line{
   border-top: #666666 solid 1px;
-  margin: 10px 0px;
+  margin: 10px 0;
+}
+.commit-box {
+  float: right;
+  max-width: 49%;
+  overflow-wrap: anywhere;
+}
+
+.branch-box {
+  float: left;
+  max-width: 49%;
+  overflow-wrap: anywhere;
 }

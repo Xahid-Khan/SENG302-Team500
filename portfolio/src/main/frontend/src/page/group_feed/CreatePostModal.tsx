@@ -1,10 +1,11 @@
 import * as React from "react";
 import {FormEvent} from "react";
+import {Socket} from "../../entry/live_updating";
 
 export function CreatePostModal({viewGroupId}: any) {
 
-  const [post, setPost] = React.useState('')
-  const [longCharacterCount, setLongCharacterCount] = React.useState(0)
+  const [post, setPost] = React.useState('');
+  const [longCharacterCount, setLongCharacterCount] = React.useState(0);
 
   const validateCreateForm = async (formEvent: FormEvent) => {
     formEvent.preventDefault()
@@ -33,12 +34,13 @@ export function CreatePostModal({viewGroupId}: any) {
       }).catch((e) => {
         console.log("error ", e)
       })
+
     }
   }
 
   const handleCancel = () => {
-    document.getElementById("create-post-modal-open").style.display = "none"
-    window.location.reload()
+    setPost("");
+    document.getElementById("create-post-modal-open").style.display = "none";
   }
 
   return (
@@ -54,24 +56,23 @@ export function CreatePostModal({viewGroupId}: any) {
           <div className={"border-line"}/>
 
 
-          <form onSubmit={(e) => validateCreateForm(e)}>
+          <form onSubmit={(e) =>  {if (longCharacterCount > 0) validateCreateForm(e)}}>
             <div className={"post-description"}>
               <label className={"settings-description"}>Content:</label>
               <br/>
               <textarea className={"text-area"} id={"long-name"} placeholder={post} required
                         cols={50} rows={10} maxLength={4096} onChange={(e) => {
-                setPost(e.target.value);
-                setLongCharacterCount(e.target.value.length)
+                setPost(e.target.value.trim());
+                setLongCharacterCount(e.target.value.trim().length);
               }}/>
               <span className="title-length" id="title-length">{longCharacterCount} / 4096</span>
               <br/>
             </div>
             <div className="form-error" id="create-post-error"/>
 
-
             <div className="modal-buttons">
               <button className="button" id="create-post-save" type={"submit"}>Save</button>
-              <button className="button" id="create-post-cancel" onClick={handleCancel}>Cancel
+              <button className="button" id="create-post-cancel" type={"reset"} onClick={handleCancel}>Cancel
               </button>
             </div>
           </form>

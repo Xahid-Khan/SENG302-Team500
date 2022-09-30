@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>My Account</title>
+    <title>Edit Photo</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <link rel="stylesheet" th:href="@{styles/common.css}"/>
     <link rel="stylesheet" th:href="@{styles/pages/account_details.css}"/>
@@ -18,6 +18,8 @@
     </script>
     <script type="text/javascript" th:src="@{frontend/navbar.js}" defer></script>
     <script type="text/javascript" th:src="@{frontend/cropping_image.js}" defer></script>
+    <script type="text/javascript" th:src="@{frontend/navbar_entry.js}"></script>
+    <script type="text/javascript" th:src="@{scripts/navbar.js}"></script>
 </head>
 <body>
 <div id="navbar-react-root"></div>
@@ -64,18 +66,18 @@
 
 <div class="modal-delete-container" id="modal-delete-open">
     <div class="modal-delete">
-        <div class="modal-delete-header">
-            <div class="modal-delete-title">
+        <div class="modal-header">
+            <div class="modal-title">
                 Delete Profile Picture Confirmation
             </div>
 
-            <div class="modal-delete-close-button" id="modal-delete-x">&times;</div>
+            <div class="modal-close-button" id="modal-delete-x">&times;</div>
         </div>
         <div class="border-line"></div>
-        <div class="modal-delete-body">
+        <div class="modal-body">
             Are you sure you want to delete your profile picture?
         </div>
-        <div class="modal-delete-buttons">
+        <div class="modal-buttons">
             <button class="button" id="modal-delete-cancel">Cancel</button>
             <button class="button dangerous-button" id="modal-delete-confirm">Delete</button>
         </div>

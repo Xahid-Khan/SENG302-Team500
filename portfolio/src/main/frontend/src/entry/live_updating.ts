@@ -1,13 +1,9 @@
 import * as polyfills from "../util/polyfill/socket_polyfill";
 import {action, computed, makeObservable, observable, runInAction} from "mobx";
-import {
-  LoadingDone,
-  LoadingNotYetAttempted,
-  LoadingPending,
-  LoadingStatus
-} from "../util/network/loading_status";
+import {LoadingDone, LoadingNotYetAttempted, LoadingPending, LoadingStatus} from "../util/network/loading_status";
 import SockJS from "sockjs-client";
 import {Client as StompClient, Message as StompMessage, Stomp} from "@stomp/stompjs";
+import {NotificationDropdown} from "../component/notifications/NotificationDropdown";
 
 /**
  * MobX-enabled store for the Ping/Socket Test page.
@@ -18,10 +14,9 @@ class PingPageStore {
   stomp: any = null
 
   connectStatus: LoadingStatus = new LoadingNotYetAttempted()
-  path = window.localStorage.getItem("relativePath") + "/socket"
+  path = window.localStorage.getItem("globalUrlPathPrefix") + "/socket"
   pongArray: string[] = observable.array()
   nextPingValue: string = ""
-  destination: string = ""
 
   constructor() {
     makeObservable(this, {
@@ -51,41 +46,41 @@ class PingPageStore {
     this.nextPingValue = newValue
   }
 
-  showEdit(location: string) {
-    if (this.connected) {
-      console.log("Attempting to send ping...")
-      this.stomp.publish({
-        destination: "/app/" + this.destination,
-        body: location + "~show~" + localStorage.getItem("username")
-      })
-    } else {
-      console.log("Not connected")
+    showEdit(location: string) {
+        if (this.connected) {
+            console.log("Attempting to send ping...")
+            this.stomp.publish({
+                destination: "/app/alert",
+                body: location + "~show~" + localStorage.getItem("username")
+            })
+        } else {
+            console.log("Not connected")
+        }
     }
-  }
 
-  cancelEdit(location: string) {
-    if (this.connected) {
-      console.log("Attempting to send ping...")
-      this.stomp.publish({
-        destination: "/app/" + this.destination,
-        body: location + "~cancel~" + localStorage.getItem("username")
-      })
-    } else {
-      console.log("Not connected")
+    cancelEdit(location: string) {
+        if (this.connected) {
+            console.log("Attempting to send ping...")
+            this.stomp.publish({
+                destination: "/app/alert",
+                body: location + "~cancel~" + localStorage.getItem("username")
+            })
+        } else {
+            console.log("Not connected")
+        }
     }
-  }
 
-  saveEdit(location: string) {
-    if (this.connected) {
-      console.log("Attempting to send ping...")
-      this.stomp.publish({
-        destination: "/app/" + this.destination,
-        body: location + "~save~" + localStorage.getItem("username")
-      })
-    } else {
-      console.log("Not connected")
+    saveEdit(location: string) {
+        if (this.connected) {
+            console.log("Attempting to send ping...")
+            this.stomp.publish({
+                destination: "/app/alert",
+                body: location + "~save~" + localStorage.getItem("username")
+            })
+        } else {
+            console.log("Not connected")
+        }
     }
-  }
 
   async start(location: string, destination: string) {
     await new Promise<void>((res) => {
@@ -98,7 +93,6 @@ class PingPageStore {
   }
 
   connect(onConnected: VoidFunction, location: string, destination: string): void {
-    this.destination = destination
     if (this.connectStatus instanceof LoadingPending || this.connectStatus instanceof LoadingDone) {
       console.warn("Cannot connect twice.")
       onConnected()
@@ -107,62 +101,107 @@ class PingPageStore {
     let store = this;
     let socket = new SockJS(this.path)
     store.stomp = Stomp.over(socket);
-
     store.stomp.connect({}, () => {
       console.log("Connected.")
       console.log("Subscribing...")
       store.connectStatus = new LoadingDone()
-      if (location === "alert") {
+      if (destination === "alert") {
         store.stomp.subscribe("/topic/" + location, (message: StompMessage) => {
           store.onReceiveEditAlert(message)
         })
-      } else {
-        store.stomp.subscribe("/topic/" + location, (message: StompMessage) => {
-          store.onNotification(message)
+      } else if (destination === "notification") {
+          store.stomp.subscribe("/topic/" + location, (message: StompMessage) => {
+              store.onNavbarAlert(message)
+          })
+      } else if (destination === "groups") {
+          store.stomp.subscribe("/topic/" + location, (message: StompMessage) => {
+              store.onGroupAlert(message)
+          })
+      } else if (destination === "posts") {
+          store.stomp.subscribe("/topic/" + location, (message: StompMessage) => {
+              store.onPost(message)
+          })
+      }
+
+      onConnected()
+    })
+  }
+
+    protected onReceiveEditAlert(frame: StompMessage) {
+        runInAction(() => {
+            this.pongArray.push(frame.body)
+            const message = JSON.parse(frame.body)
+            if (document.title !== "Calendar") {
+                if (message['username'] !== localStorage.getItem("username")) {
+                    if (message['action'] === "show") {
+                        if (document.getElementById("event-form-" + message['location'])) {
+                            document.getElementById("event-form-" + message['location']).innerText = message['name'] + " is currently editing"
+                        } else {
+                            document.getElementById("editing-form-" + message['location']).innerText = message['name'] + " is currently editing"
+                        }
+                    } else {
+                        if (message['action'] === "save") {
+                            window.location.reload();
+                        }
+                        if (document.getElementById("event-form-" + message['location'])) {
+                            document.getElementById("event-form-" + message['location']).innerText = "";
+                        } else {
+                            document.getElementById("editing-form-" + message['location']).innerText = "";
+                        }
+                    }
+                }
+            } else {
+                if (message['action'] !== "show") {
+                    window.location.reload();
+                }
+            }
         })
-      }
-    })
-  }
-
-  onReceiveEditAlert(frame: StompMessage) {
-    runInAction(() => {
-      this.pongArray.push(frame.body)
-      const message = JSON.parse(frame.body)
-      if (document.title !== "Calendar") {
-        if (message['username'] !== localStorage.getItem("username")) {
-          if (message['action'] === "show") {
-            if (document.getElementById("event-form-" + message['location'])) {
-              document.getElementById("event-form-" + message['location']).innerText = message['name'] + " is currently editing"
-            } else {
-              document.getElementById("editing-form-" + message['location']).innerText = message['name'] + " is currently editing"
-            }
+    }
+    protected onNavbarAlert(frame: StompMessage) {
+      runInAction(() => {
+          if (frame.body === "notification") {
+              window.dispatchEvent(new Event("notification"))
           } else {
-            if (message['action'] === "save") {
-              window.location.reload();
-            }
-            if (document.getElementById("event-form-" + message['location'])) {
-              document.getElementById("event-form-" + message['location']).innerText = "";
-            } else {
-              document.getElementById("editing-form-" + message['location']).innerText = "";
-            }
+              const userId = window.localStorage.getItem("userId")
+              const message = JSON.parse(frame.body)
+              let affected = false
+              console.log(frame)
+              console.log(message)
+              message.forEach((affectedId: number) => {
+                  if (affectedId === parseInt(userId)) {
+                    affected = true
+                  }
+              })
+              if (affected) {
+                  window.dispatchEvent(new Event("messages"))
+              }
           }
-        }
-      } else {
-        if (message['action'] !== "show") {
-          window.location.reload();
-        }
-      }
-    })
-  }
+      })
+    }
 
-  onNotification(frame: StompMessage) {
-    const message = JSON.parse(frame.body)
-    // TODO: Hook to frontend here. The message will be the contents of whatever is parsed in from
-    //  the `notify` function. Then, using whatever is decided for parsing, you can utilize the data
-    //  here. (This means toasts, adding a notification count to the notification icon,
-    //   updating states, etc.)
-    window.location.reload()
-  }
+    protected onGroupAlert(frame: StompMessage) {
+        runInAction(() => {
+            if (frame.body === "create" || frame.body === "update" || frame.body === "name_change") {
+                window.location.reload()
+            }
+        })
+    }
+
+    protected onPost(frame: StompMessage) {
+        runInAction(() => {
+            const userId = window.localStorage.getItem("userId")
+            let affected = false
+            const message = JSON.parse(frame.body)
+            message.forEach((affectedId: number) => {
+                if (affectedId === parseInt(userId)) {
+                    affected = true;
+                }
+            })
+            if (affected) {
+                window.location.reload()
+            }
+        })
+    }
 }
 
 export class Socket {
@@ -186,9 +225,10 @@ export class Socket {
     this.store.saveEdit(location);
   }
 
-  static isConnected(): boolean {
-    return this.store.connected;
-  }
+    static isConnected(): boolean {
+        return this.store.connected;
+    }
+
 }
 
 polyfills.polyfill()

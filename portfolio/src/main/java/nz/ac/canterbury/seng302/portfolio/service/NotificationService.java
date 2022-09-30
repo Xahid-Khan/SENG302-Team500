@@ -17,6 +17,9 @@ public class NotificationService {
   @Autowired NotificationMapper mapper;
   @Autowired private SimpMessagingTemplate template;
 
+  @Autowired
+  LiveUpdatesService liveUpdatesService;
+
   /**
    * Inserts a new notification into the database and returns the entry
    *
@@ -24,6 +27,7 @@ public class NotificationService {
    * @return
    */
   public NotificationContract create(BaseNotificationContract baseContract) {
+    liveUpdatesService.sendNotification();
     NotificationEntity entity = repository.save(mapper.toEntity(baseContract));
     NotificationContract contract = mapper.toContract(entity);
     // Send to Websocket

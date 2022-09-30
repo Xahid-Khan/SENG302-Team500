@@ -139,6 +139,8 @@ public class UserListController extends AuthenticatedController {
     return "user_list";
   }
 
+
+
   /**
    * Helper function to assist with modifying roles on the user list page.
    *

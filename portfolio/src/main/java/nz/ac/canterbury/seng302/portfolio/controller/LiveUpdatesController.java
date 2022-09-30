@@ -3,8 +3,10 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import java.util.HashMap;
 import java.util.Map;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.stereotype.Controller;
@@ -15,9 +17,6 @@ public class LiveUpdatesController {
 
   /**
    * STOMP endpoint that receives a message string and echos it back with metadata attached.
-   *
-   * <p>This can be used in conjunction with the socket_test page to verify that the WebSocket setup
-   * is working as expected.
    */
   @MessageMapping("/alert")
   @SendTo("/topic/edit-project")
@@ -35,21 +34,13 @@ public class LiveUpdatesController {
   /**
    * STOMP endpoints which handles notifications.
    *
-   * @param alert the alert
+   * @param principal authentication principal
    * @return a parsed message
    */
   @MessageMapping("/notification")
   @SendTo("/topic/notification")
-  public Map<String, String> notify(String alert) {
-    Map<String, String> message = new HashMap<>();
-    String[] notification = alert.split("~");
-    message.put("location", notification[0]);
-    message.put("notification-id", notification[1]);
-    message.put("user-id", notification[2]);
-    message.put("timeNotified", notification[3]);
-    message.put("notifiedFrom", notification[4]);
-    message.put("description", notification[5]);
-    message.put("seen", notification[6]);
-    return message;
+  public String notify(
+      @AuthenticationPrincipal PreAuthenticatedAuthenticationToken principal, String username) {
+    return username;
   }
 }

@@ -11,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -34,6 +35,12 @@ public class GroupRepositoryServiceTest {
     @Mock
     private GroupRepositoryMapper groupRepositoryMapper;
 
+    @Mock
+    private SimpMessagingTemplate template;
+
+    @Mock
+    private PostService postService;
+
     private GroupRepositoryContract repoContract1;
     private GroupRepositoryEntity repoEntity1;
     private GroupRepositoryContract emptyRepoContract1;
@@ -49,12 +56,12 @@ public class GroupRepositoryServiceTest {
     @BeforeEach
     void setup() {
         groupRepositoryRepository.deleteAll();
-        repoContract1 = new GroupRepositoryContract(1, 1, "ABCTOKEN");
-        repoEntity1 = new GroupRepositoryEntity(1, 1, "ABCTOKEN");
-        emptyRepoContract1 = new GroupRepositoryContract(2, -1, "No token");
+        repoContract1 = new GroupRepositoryContract(1, 1, "ABCTOKEN", "", "");
+        repoEntity1 = new GroupRepositoryEntity(1, 1, "ABCTOKEN", "");
+        emptyRepoContract1 = new GroupRepositoryContract(2, -1, "No token", "", "");
         emptyRepoEntity1 = new GroupRepositoryEntity(2);
         repoList = new ArrayList<>();
-        repoList.add(new GroupRepositoryEntity(repoContract1.groupId(), repoContract1.groupId(), repoContract1.token()));
+        repoList.add(new GroupRepositoryEntity(repoContract1.groupId(), repoContract1.groupId(), repoContract1.token(), repoContract1.alias()));
 
 
         repoList.forEach(repo -> {
@@ -136,7 +143,7 @@ public class GroupRepositoryServiceTest {
     @Test
     void updateARepoThatDoesNotExistExpectFail() {
         Mockito.when(groupRepositoryRepository.existsById(id)).thenReturn(false);
-        assertFalse(groupRepositoryService.update(Integer.parseInt(id), 11, "ABCTOKEN"));
+        assertTrue(groupRepositoryService.update(Integer.parseInt(id), 11, "ABCTOKEN", ""));
     }
 
     /**
@@ -150,7 +157,7 @@ public class GroupRepositoryServiceTest {
         Mockito.when(groupRepositoryRepository.findById(id)).thenReturn(Optional.of(emptyRepoEntity1));
         Mockito.when(groupRepositoryRepository.save(emptyRepoEntity1)).thenReturn(emptyRepoEntity1);
 
-        boolean result = groupRepositoryService.update(Integer.parseInt(id), 11, "ABCTOKEN");
+        boolean result = groupRepositoryService.update(Integer.parseInt(id), 11, "ABCTOKEN", "");
         assertTrue(result);
     }
 

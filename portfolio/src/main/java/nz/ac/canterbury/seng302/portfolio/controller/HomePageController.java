@@ -1,15 +1,16 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.portfolio.model.contract.SubscriptionContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.PostModel;
 import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
 import nz.ac.canterbury.seng302.portfolio.service.CommentService;
+import nz.ac.canterbury.seng302.portfolio.service.GroupsClientService;
 import nz.ac.canterbury.seng302.portfolio.service.PostService;
 import nz.ac.canterbury.seng302.portfolio.service.ReactionService;
 import nz.ac.canterbury.seng302.portfolio.service.SubscriptionService;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * Handles the post and delete requests on the /subscribe endpoint.
@@ -37,7 +39,7 @@ public class HomePageController extends AuthenticatedController {
   private SubscriptionService subscriptionService;
 
   @Autowired
-  private AuthStateService authStateService;
+  private GroupsClientService groupsClientService;
 
   @Autowired
   private PostService postService;
@@ -82,13 +84,20 @@ public class HomePageController extends AuthenticatedController {
   /**
    * Handles delete requests on the /subscribe endpoint to unsubscribe a user from a group.
    */
-  @DeleteMapping(value = "/subscribe", produces = "application/json")
+  @DeleteMapping(value = "/unsubscribe", produces = "application/json")
   public ResponseEntity<?> unsubscribe(@AuthenticationPrincipal PortfolioPrincipal principal,
       @RequestBody SubscriptionContract subscription) {
     try {
+      int userId = getUserId(principal);
+      //Stops user from unsubscribing from a group if they are in it
+      if (groupsClientService.isMemberOfTheGroup(userId, subscription.groupId())) {
+        return ResponseEntity.badRequest().build();
+      }
+
       subscriptionService.unsubscribe(subscription);
-      var result = subscriptionService.getAllByUserId(getUserId(principal));
+      var result = subscriptionService.getAllByUserId(userId);
       return ResponseEntity.ok().body(result);
+
     } catch (Exception e) {
       return ResponseEntity.internalServerError().build();
     }
@@ -106,11 +115,20 @@ public class HomePageController extends AuthenticatedController {
   }
 
   @GetMapping(value = "/posts", produces = "application/json")
-  public ResponseEntity<?> getAllPosts(@AuthenticationPrincipal PortfolioPrincipal principal) {
+  public ResponseEntity<?> getAllPosts(@AuthenticationPrincipal PortfolioPrincipal principal,
+      @RequestParam("offset")
+      Optional<Integer> offset) {
     try {
-      List<PostModel> posts = postService.getAllPosts();
-      Collections.reverse(posts);
-      Map<String, Object> data = combineAndPrepareForFrontEnd(posts);
+      Integer userId = getUserId(principal);
+
+      List<Integer> subscriptions = subscriptionService.getAllByUserId(userId);
+      List<PostModel> posts = postService.getAllPostForMultipleGroups(subscriptions);
+
+      var offsetValue = offset.orElse(0);
+      var postSubset = posts.subList(Math.min((offsetValue) * 20, posts.size()),
+          Math.min((offsetValue + 1) * 20, posts.size()));
+
+      Map<String, Object> data = combineAndPrepareForFrontEnd(postSubset, userId);
       return ResponseEntity.ok(data);
     } catch (Exception e) {
       return ResponseEntity.internalServerError().build();
@@ -118,16 +136,49 @@ public class HomePageController extends AuthenticatedController {
   }
 
   /**
+   * Get post by id.
+   *
+   * @param principal
+   * @param postId
+   * @return
+   */
+  @GetMapping(value = "/get_post/{postId}", produces = "application/json")
+  public ResponseEntity<?> getPostById(
+      @AuthenticationPrincipal PortfolioPrincipal principal, @PathVariable int postId) {
+    try {
+      PostModel post = postService.getPostById(postId);
+      Map<String, Object> filteredPosts = new HashMap<>();
+      filteredPosts.put("postId", post.getId());
+      filteredPosts.put("userId", post.getUserId());
+      filteredPosts.put("username", userAccountService.getUserById(post.getUserId()).getUsername());
+      filteredPosts.put("time", post.getCreated());
+      filteredPosts.put("content", post.getPostContent());
+      filteredPosts.put("reactions", reactionService.getUsernamesOfUsersWhoReactedToPost(
+          post.getId()));
+      filteredPosts.put("groupId", post.getGroupId());
+      filteredPosts.put("comments", commentService.getCommentsForThePostAsJson(post.getId()));
+      filteredPosts.put("groupName",
+          groupsClientService.getGroupById(post.getGroupId()).getShortName());
+      filteredPosts.put("isMember",
+          groupsClientService.isMemberOfTheGroup(getUserId(principal), post.getGroupId()));
+
+      return ResponseEntity.ok(filteredPosts);
+    } catch (Exception e) {
+      return ResponseEntity.internalServerError().build();
+    }
+  }
+
+
+  /**
    * This function creates a Map from posts to send it to the front end as JSON object.
    *
    * @param posts All the posts from a group as a List
    * @return A Hash Map where first element is string and second is an object.
    */
-  private Map<String, Object> combineAndPrepareForFrontEnd(List<PostModel> posts) {
+  private Map<String, Object> combineAndPrepareForFrontEnd(List<PostModel> posts, int userId) {
     Map<String, Object> postMap = new HashMap<>();
 
     List<Map<String, Object>> allPosts = new ArrayList<>();
-
     posts.forEach(post -> {
       Map<String, Object> filteredPosts = new HashMap<>();
       filteredPosts.put("postId", post.getId());
@@ -139,7 +190,10 @@ public class HomePageController extends AuthenticatedController {
           post.getId()));
       filteredPosts.put("groupId", post.getGroupId());
       filteredPosts.put("comments", commentService.getCommentsForThePostAsJson(post.getId()));
-
+      filteredPosts.put("groupName",
+          groupsClientService.getGroupById(post.getGroupId()).getShortName());
+      filteredPosts.put("isMember",
+          groupsClientService.isMemberOfTheGroup(userId, post.getGroupId()));
       allPosts.add(filteredPosts);
     });
     postMap.put("posts", allPosts);

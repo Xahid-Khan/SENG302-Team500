@@ -48,6 +48,9 @@ junit-porfolio:
   script:
     - cd portfolio
     - ./gradlew test
+  artifacts:
+    paths:
+      - portfolio/build/jacoco/test-report.xml
   except:
     - vm-testing
 
@@ -56,6 +59,9 @@ junit-identityprovider:
   script:
     - cd identityprovider
     - ./gradlew test
+  artifacts:
+    paths:
+      - identityprovider/build/jacoco/test-report.xml
   except:
     - vm-testing
 

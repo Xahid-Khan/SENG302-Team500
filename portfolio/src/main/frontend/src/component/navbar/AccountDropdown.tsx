@@ -1,10 +1,11 @@
 import React from "react";
 import {observer} from "mobx-react-lite";
-import {Avatar, Box, IconButton, Menu, MenuItem} from "@mui/material";
+import {Avatar, Box, IconButton, Menu, MenuItem, Typography} from "@mui/material";
 import {navigateTo} from "./NavBar";
 
 export const AccountDropdown: React.FC = observer(() => {
-  const globalImagePath = localStorage.getItem("globalImagePath");
+    const globalImagePath = localStorage.getItem("globalImagePath");
+    const username = localStorage.getItem("username");
   const userId = parseInt(window.localStorage.getItem("userId"))
 
   //the element that was last clicked on
@@ -21,17 +22,17 @@ export const AccountDropdown: React.FC = observer(() => {
 
   return (
       <React.Fragment>
-        <Box sx={{flexGrow: 0}}>
-          <IconButton
-              id='account-button'
-              onClick={handleClick}
-              size="medium"
-              sx={{ml: 2}}
-              aria-controls={open ? 'account-menu' : undefined}
-              aria-haspopup="true"
-              aria-expanded={open ? 'true' : undefined}>
-            <Avatar src={"//" + globalImagePath + userId}/>
-          </IconButton>
+        <Box sx={{flexGrow: 0, display: 'flex', alignItems: 'center'}}>
+            <Typography textAlign="left">{username}</Typography>
+              <IconButton
+                  id='account-button'
+                  onClick={handleClick}
+                  size="medium"
+                  aria-controls={open ? 'account-menu' : undefined}
+                  aria-haspopup="true"
+                  aria-expanded={open ? 'true' : undefined}>
+                <Avatar src={`//${globalImagePath}${userId}`}/>
+              </IconButton>
         </Box>
         <Menu
             anchorEl={anchorEl}

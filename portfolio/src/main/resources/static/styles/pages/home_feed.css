@@ -1,6 +1,6 @@
 .groups-feed {
     padding: 20px;
-    margin: 10px 30px;
+    margin: 6% 40px;
 }
 
 .home-feed-post {
@@ -22,12 +22,9 @@
     cursor: pointer;
 }
 
-/*.group-feed-title {*/
-/*    padding-left: 50px;*/
-/*}*/
-
 .post-body {
     padding: 15px 0 10px 0;
+    white-space: pre-wrap;
 }
 
 .post-info {
@@ -37,18 +34,3 @@
 .post-header {
     display: flex;
 }
-
-/*.create-post {*/
-/*    justify-content: right;*/
-/*    display: flex;*/
-/*    padding-right: 50px;*/
-/*}*/
-
-/*.group-feed-title {*/
-/*    font-size: 30px;*/
-/*}*/
-
-/*.group-feed-name {*/
-/*    font-size: 30px;*/
-/*    font-weight: bold;*/
-/*}*/

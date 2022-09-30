@@ -26,6 +26,8 @@
   </script>
   <script type="text/javascript" th:src="@{../frontend/navbar.js}" defer></script>
   <script type="text/javascript" th:src="@{../frontend/monthly_planner.js}" defer></script>
+  <script type="text/javascript" th:src="@{frontend/navbar_entry.js}"></script>
+  <script type="text/javascript" th:src="@{scripts/navbar.js}"></script>
 </head>
 <body>
 <div id="navbar-react-root"></div>
@@ -34,16 +36,18 @@
 
 <style>
   .fc .fc-daygrid-event {
-    z-index: unset;
+    z-index: revert;
   }
 
   .fc .fc-daygrid-day-number {
-    z-index: unset;
+    z-index: revert;
   }
 
-  .fc-event .fc-event-main {
-    z-index: unset;
+  .fc-event .fc-event-main:hover {
+    transition-delay: 500ms;
+    z-index: revert;
   }
+
 </style>
 
 </html>

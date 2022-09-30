@@ -47,9 +47,7 @@ export function EditGroupMembers({viewGroupId}: any) {
     const [otherGroupViewingUpdate, setOtherGroupViewingUpdate] = React.useState(false)
 
     useEffect(() => {
-        if (myGroup === undefined || myGroup.id === -1) {
-            setMyGroup(allGroups.filter((item) => item.id === viewGroupId)[0])
-        }
+        setMyGroup(allGroups.filter((item) => item.id === viewGroupId)[0])
     }, [viewGroupId, myGroupUpdate])
 
     useEffect(() => {
@@ -133,10 +131,17 @@ export function EditGroupMembers({viewGroupId}: any) {
         if (event.shiftKey) {
             handleOtherShiftPress(user);
         } else {
-            setShiftClickOther([])
+            if (!event.ctrlKey && !event.metaKey) {
+                setShiftClickOther([])
+            }
             if (otherUsersSelected.filter((id) => id === user.id).length > 0) {
-                setOtherUsersSelected(otherUsersSelected.filter((id) => id != user.id))
-                document.getElementById(`other-users-${user.id}`).style.backgroundColor = "transparent"
+                if (event.ctrlKey || event.metaKey) {
+                    setOtherUsersSelected(otherUsersSelected.filter((id) => id != user.id))
+                    document.getElementById(`other-users-${user.id}`).style.backgroundColor = "transparent"
+                } else {
+                    otherUsersSelected.filter((id) => id != user.id).forEach((otherUser) => document.getElementById(`other-users-${otherUser}`).style.backgroundColor = "transparent")
+                    setOtherUsersSelected(otherUsersSelected.filter((id) => id == user.id))
+                }
             } else {
                 if (event.ctrlKey || event.metaKey) {
                     setOtherUsersSelected([...otherUsersSelected, user.id])
@@ -205,10 +210,17 @@ export function EditGroupMembers({viewGroupId}: any) {
         if (event.shiftKey) {
             handleCurrentGroupShiftPress(user);
         } else {
-            setShiftClickCurrent([])
+            if (!event.ctrlKey && !event.metaKey) {
+                setShiftClickCurrent([])
+            }
             if (currentGroupUsersSelected.filter((id) => id === user.id).length > 0) {
-                setCurrentGroupUsersSelected(currentGroupUsersSelected.filter((id) => id != user.id))
-                document.getElementById(`current-group-users-${user.id}`).style.backgroundColor = "transparent"
+                if (event.ctrlKey || event.metaKey) {
+                    setCurrentGroupUsersSelected(currentGroupUsersSelected.filter((id) => id != user.id))
+                    document.getElementById(`current-group-users-${user.id}`).style.backgroundColor = "transparent"
+                } else {
+                    currentGroupUsersSelected.filter((id) => id != user.id).forEach((otherUser) => document.getElementById(`current-group-users-${otherUser}`).style.backgroundColor = "transparent")
+                    setCurrentGroupUsersSelected(currentGroupUsersSelected.filter((id) => id == user.id))
+                }
             } else {
                 if (event.ctrlKey || event.metaKey) {
                     setCurrentGroupUsersSelected([...currentGroupUsersSelected, user.id])
@@ -234,7 +246,7 @@ export function EditGroupMembers({viewGroupId}: any) {
                 nonGroup = group
             }
             group['users'].forEach((user: any) => {
-                if (otherUsersSelected.includes(user.id)) {
+                if (otherUsersSelected.includes(user.id) && !usersToAddIds.includes(user.id)) {
                     usersToAdd.push(user)
                     usersToAddIds.push(user.id)
                 }
@@ -497,8 +509,7 @@ export function EditGroupMembers({viewGroupId}: any) {
     }
 
     const handleCancel = async () => {
-        document.getElementById("modal-edit-group-members-open").style.display = "none"
-        window.location.reload()
+        document.getElementById("modal-edit-group-members-open").style.display = "none";
     }
 
     if (document.getElementById("group-edit-members-confirm")) {
@@ -586,7 +597,6 @@ export function EditGroupMembers({viewGroupId}: any) {
         })
         currentGroupUsersSelected.forEach((id) => {
             if (id === userId) {
-                console.log("yea")
                 found = true
             }
         })
@@ -601,9 +611,9 @@ export function EditGroupMembers({viewGroupId}: any) {
                         <h2>Current Group</h2>
                         <div className={'raised-card group'} id={`current-group-members-${myGroup['id']}`}>
                             <div className={"group-header"}>
-                                <h2 className={'group-name-long'}>{myGroup['longName']}</h2>
+                                <h2 className={'group-name-short'}>{myGroup['shortName']}</h2>
                             </div>
-                            <h3 className={'group-name-short'}>{myGroup['shortName']}</h3>
+                            <h3 className={'group-name-long'}>{myGroup['longName']}</h3>
                             <div className={"user-list-table"}>
                                 <div className={"table groups-table"} id={"current-group-users-list"}>
                                     <div className={"groups-header"}>

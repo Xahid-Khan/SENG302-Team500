@@ -24,7 +24,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <div id="navbar-react-root"></div>
-<body class="fullscreen" th:classappend="${!isTeacher ? 'studentMode' : ''}">
+<body class="fullscreen" th:classappend="${isCourseAdmin ? 'courseAdminMode' : (isTeacher ? '' : 'studentMode')}">
 <div id="update-insert">
 
 </div>
@@ -59,6 +59,8 @@
 
 <script type="text/javascript" th:src="@{frontend/project_details.js}"></script>
 <script type="text/javascript" th:src="@{scripts/project_details.js}"></script>
+<script type="text/javascript" th:src="@{frontend/navbar_entry.js}"></script>
+<script type="text/javascript" th:src="@{scripts/navbar.js}"></script>
 <script type="text/javascript" th:src="@{scripts/Models/project_view.js}"></script>
 <script type="text/javascript" th:src="@{scripts/Services/project.js}"></script>
 <script type="text/javascript" th:src="@{scripts/Models/sprint_view.js}"></script>

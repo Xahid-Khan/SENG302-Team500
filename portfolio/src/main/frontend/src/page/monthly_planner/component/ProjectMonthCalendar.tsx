@@ -21,9 +21,7 @@ import {Socket} from "../../../entry/live_updating";
 export const ProjectMonthCalendar: React.FC = observer(() => {
   const project = useProjectStore()
   const toaster = useToasterStore()
-  if (window.localStorage.getItem("canEdit") === "true" && !Socket.isConnected()) {
-    Socket.start("edit-project", "alert")
-  }
+  Socket.start("edit-project", "alert");
 
   /**
    * Callback that is triggered when a calendar event is updated by the user. Saves the change to the store, managing
@@ -41,7 +39,7 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
     if (sprint !== undefined) {
       sprint.setDates(evt.event.start, evt.event.end)
       .then(
-          () => toaster.dismiss(toastId),
+          () => setTimeout(() => toaster.dismiss(toastId), 600),
           (err) => toaster.replace(toastId, () => (
               <ToastBase themes={[defaultToastTheme]}>
                 <LoadingErrorPresenter loadingStatus={err} onRetry={() => {
@@ -103,7 +101,7 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
   let sprintDates = new Set();
 
   /**
-   * This function checks if ID is provided or not, If ID is not provided then it creates an list of events that are not
+   * This function checks if ID is provided or not, If ID is not provided then it creates a list of events that are not
    * editable, otherwise events are editable.
    * @param id userId of teacher/admins
    */
@@ -218,16 +216,15 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
   function renderEventIcons(eventInfo: any) {
     if (eventInfo.event.title.includes("Sprint")) {
       return (
-          <p style={{zIndex: 0}}>{eventInfo.event.title}</p>
+          <p>{eventInfo.event.title}</p>
       )
     } else {
       return (
-          <div style={{display: "grid", zIndex: 0}}>
+          <div className={"toolTipData"} style={{display: "grid", margin: sprintDates.has(eventInfo.event.id) ? "3px 0 3px 0" : "60px 0 3px 0",}}>
             {
               eventDictionary.has(eventInfo.event.id) ?
                   <>
                     <div style={{
-                      margin: sprintDates.has(eventInfo.event.id) ? "3px 0 3px 0" : "60px 0 3px 0",
                       width: "fit-content"
                     }} data-tip data-for={"events" + eventInfo.event.id.toString()}>
                       <span className="material-icons" style={{float: "left"}}>event</span>
@@ -240,6 +237,7 @@ export const ProjectMonthCalendar: React.FC = observer(() => {
                     <ReactTooltip id={"events" + eventInfo.event.id.toString()} place="right"
                                   effect="float" html={true} multiline={true}
                                   getContent={() => getEventHoverData(eventInfo.event.id, "events")}
+                                  className={"ReactTooltip"}
                     >
                     </ReactTooltip>
                   </>

@@ -84,8 +84,12 @@ public class CommentService {
       commentRepository.save(comment);
       Optional<PostModel> post = postModelRepository.findById(newComment.postId());
       UserResponse user = userAccountService.getUserById(newComment.userId());
-      if (post.isPresent()) {
-        notificationService.create(new BaseNotificationContract(post.get().getUserId(), "Your Posts", user.getUsername() + " commented on your post!"));
+      if (post.isPresent()){
+      int posterId = post.get().getUserId();
+      int commenterId = newComment.userId();
+        if( posterId != commenterId) {
+          notificationService.create(new BaseNotificationContract(posterId, "Your Posts", user.getUsername() + " commented on your post!"));
+        }
       }
       return comment;
     } catch (Exception e) {
@@ -126,7 +130,6 @@ public class CommentService {
    */
   public boolean deleteCommentById(int commentId) {
     try {
-      System.err.println(commentId);
       return commentRepository.deleteById(commentId);
     } catch (Exception e) {
       e.printStackTrace();
