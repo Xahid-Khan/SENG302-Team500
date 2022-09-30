@@ -95,7 +95,7 @@ class ProjectView {
 
         console.log("Binding event");
 
-        this.events.set(eventData.eventId, new Event(eventElement, eventData, this.project, this.eventDeleteCallback, this.eventUpdateCallback, this.eventEditCallback));
+        this.events.set(eventData.eventId, new EventObject(eventElement, eventData, this.project, this.eventDeleteCallback, this.eventUpdateCallback, this.eventEditCallback));
 
         console.log("Event bound");
     }
