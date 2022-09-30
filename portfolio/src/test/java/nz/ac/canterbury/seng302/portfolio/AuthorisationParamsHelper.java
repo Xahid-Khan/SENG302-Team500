@@ -1,11 +1,8 @@
 package nz.ac.canterbury.seng302.portfolio;
 
-import static org.mockito.ArgumentMatchers.any;
-
 import java.util.List;
 import java.util.stream.Collectors;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
-import nz.ac.canterbury.seng302.portfolio.controller.AuthenticatedController;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
@@ -60,16 +57,6 @@ public class AuthorisationParamsHelper {
    * @param roles a list of UserRoles to add to the claim
    */
   public static void setParams(String name, List<UserRole> roles) {
-    //    AuthStateService authStateService = Mockito.mock(AuthStateService.class);
-    //    AuthenticatedController authenticatedController =
-    //        Mockito.mock(AuthenticatedController.class, Mockito.CALLS_REAL_METHODS);
-    //    Mockito.when(authenticatedController.getUserId(any())).thenReturn(-1);
-    //    Mockito.when(authenticatedController.getUser(any()))
-    //        .thenReturn(UserResponse.newBuilder().addAllRoles(roles).build());
-    //    Mockito.when(authenticatedController.isTeacher(any()))
-    //        .thenReturn(roles.contains(UserRole.TEACHER));
-    //    Mockito.when(authenticatedController.isCourseAdmin(any()))
-    //        .thenReturn(roles.contains(UserRole.COURSE_ADMINISTRATOR));
     buildClaim(name, roles.stream().map(Object::toString).collect(Collectors.joining(", ")));
   }
 
@@ -80,7 +67,6 @@ public class AuthorisationParamsHelper {
    * @param role the role for the claim to have
    */
   public static void setParams(String name, UserRole role) {
-
     buildClaim(name, role.toString());
   }
 }
