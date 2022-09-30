@@ -81,6 +81,7 @@ public class PostService {
     Pageable request = PageRequest.of(page, limit, Sort.by("created").descending());
     return postRepository.getPaginatedPostsByGroupId(groupId, request);
   }
+
   /**
    * Handles pagination using PageRequest.of.
    *
@@ -119,25 +120,28 @@ public class PostService {
       PostModel postModel = new PostModel(newPost.groupId(), userId, newPost.postContent());
       postRepository.save(postModel);
 
-        //Gets details for notification
-        GroupDetailsResponse groupDetails = groupsClientService.getGroupById(newPost.groupId());
+      //Gets details for notification
+      GroupDetailsResponse groupDetails = groupsClientService.getGroupById(newPost.groupId());
 
-        List<Integer> userIds = subscriptionService.getAllByGroupId(newPost.groupId());
-        String posterUsername= userAccountService.getUserById(userId).getUsername();
-        String groupName = groupDetails.getShortName();
+      List<Integer> userIds = subscriptionService.getAllByGroupId(newPost.groupId());
+      String posterUsername = userAccountService.getUserById(userId).getUsername();
+      String groupName = groupDetails.getShortName();
 
-        template.convertAndSend("/topic/posts", userIds);
+      template.convertAndSend("/topic/posts", userIds);
 
-        // Send notification to all members of the group
-        for (Integer otherUserId : userIds) {
-            if (otherUserId != userId) {
-                notificationService.create(new BaseNotificationContract(otherUserId, "Your Subscriptions", posterUsername + " created a post in "+groupName+"!"));
-            }
+      // Send notification to all members of the group
+      for (Integer otherUserId : userIds) {
+        if (otherUserId != userId) {
+          notificationService.create(new BaseNotificationContract(otherUserId, "Your Subscriptions",
+              posterUsername + " created a post in " + groupName + "!"));
         }
-        return true;
+      }
+      return true;
     } catch (Exception e) {
-        e.printStackTrace();
+      e.printStackTrace();
     }
+    return true;
+  }
 
   /**
    * This function will delete the post by using the postId.
