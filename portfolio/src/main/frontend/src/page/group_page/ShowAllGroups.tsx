@@ -179,6 +179,12 @@ export function ShowAllGroups({setViewGroupId}: any) {
         )
     }
 
+    const isMember = (group: any) => {
+    console.log(group)
+    console.log(group.users.map((user: any) => user.id))
+      return group.users.map((user: any) => user.id).includes(parseInt(userId))
+    }
+
 
   return (
       <div>
@@ -199,10 +205,10 @@ export function ShowAllGroups({setViewGroupId}: any) {
                     }}> Manage Group Members</button>
                     : ""}
                 <div>
-                  {subscriptions.includes(group.id) ? <button className={"button subscribe-button"}
+                  {!isMember(group) ? (subscriptions.includes(group.id) ? <button className={"button subscribe-button"}
                                                               onClick={() => unsubscribeUserToGroup(group.id)}>Unsubscribe</button> :
                       <button className={"button subscribe-button"}
-                              onClick={() => subscribeUserToGroup(group.id)}>Subscribe</button>}
+                              onClick={() => subscribeUserToGroup(group.id)}>Subscribe</button>): ""}
                 </div>
                 <div>
                   <button className={"button show-group-feed-button"}
