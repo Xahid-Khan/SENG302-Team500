@@ -35,7 +35,7 @@ export const MessageListItem: React.FC<IMessageListItemProps> = observer((props:
     const alignment = sentByMe ? "flex-end" : "flex-start";
     const bubbleStyle = sentByMe ? myBubbleStyle : theirBubbleStyle;
 
-    const deleteMessage = (e) => {
+    const deleteMessage = (e: any) => {
         if(sentByMe){
             props.messageButtonCallback(e, props.contract.messageId)
         }
