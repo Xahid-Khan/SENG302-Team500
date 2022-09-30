@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.Arrays;
+import java.util.List;
 import nz.ac.canterbury.seng302.portfolio.AuthorisationParamsHelper;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
@@ -27,11 +28,9 @@ import org.springframework.test.web.servlet.MockMvc;
 @AutoConfigureWebTestClient
 public class RolesTest {
 
+    private final int projectId = 100;
     @Autowired
     private MockMvc mockMvc;
-
-    private final int projectId = 100;
-
     @MockBean
     private UserAccountService userAccountService;
 
@@ -41,6 +40,7 @@ public class RolesTest {
             UserResponse.newBuilder()
                 .setId(-100)
                 .setUsername("testing")
+                .addRoles(UserRole.STUDENT)
                 .build()
         );
     }
@@ -60,10 +60,24 @@ public class RolesTest {
                                 .andReturn();
 
         AuthorisationParamsHelper.setParams("role", UserRole.TEACHER);
+        Mockito.when(userAccountService.getUserById(any(int.class))).thenReturn(
+            UserResponse.newBuilder()
+                .setId(-100)
+                .setUsername("testing")
+                .addRoles(UserRole.TEACHER)
+                .build()
+        );
         this.mockMvc.perform(delete(apiPath))
                 .andExpect(status().isBadRequest());
 
         AuthorisationParamsHelper.setParams("role", UserRole.COURSE_ADMINISTRATOR);
+        Mockito.when(userAccountService.getUserById(any(int.class))).thenReturn(
+          UserResponse.newBuilder()
+              .setId(-100)
+              .setUsername("testing")
+              .addRoles(UserRole.COURSE_ADMINISTRATOR)
+              .build()
+        );
         this.mockMvc.perform(delete(apiPath))
                 .andExpect(status().isBadRequest());
 
@@ -71,12 +85,26 @@ public class RolesTest {
             "role",
             Arrays.asList(UserRole.TEACHER, UserRole.COURSE_ADMINISTRATOR)
         );
+        Mockito.when(userAccountService.getUserById(any(int.class))).thenReturn(
+          UserResponse.newBuilder()
+              .setId(-100)
+              .setUsername("testing")
+              .addAllRoles(List.of(UserRole.TEACHER, UserRole.COURSE_ADMINISTRATOR))
+              .build()
+        );
         this.mockMvc.perform(delete("/api/v1/projects/some_project"))
                 .andExpect(status().isBadRequest());
 
         AuthorisationParamsHelper.setParams(
             "role",
             Arrays.asList(UserRole.STUDENT, UserRole.TEACHER, UserRole.COURSE_ADMINISTRATOR)
+        );
+        Mockito.when(userAccountService.getUserById(any(int.class))).thenReturn(
+            UserResponse.newBuilder()
+                .setId(-100)
+                .setUsername("testing")
+                .addAllRoles(List.of(UserRole.STUDENT, UserRole.TEACHER, UserRole.COURSE_ADMINISTRATOR))
+                .build()
         );
         this.mockMvc.perform(delete("/api/v1/projects/123456"))
                 .andExpect(status().isBadRequest());
@@ -98,10 +126,24 @@ public class RolesTest {
                 .andReturn();
 
         AuthorisationParamsHelper.setParams("role", UserRole.TEACHER);
+        Mockito.when(userAccountService.getUserById(any(int.class))).thenReturn(
+            UserResponse.newBuilder()
+                .setId(-100)
+                .setUsername("testing")
+                .addRoles(UserRole.TEACHER)
+                .build()
+        );
         this.mockMvc.perform(get(apiPath))
                 .andExpect(status().isOk());
 
         AuthorisationParamsHelper.setParams("role", UserRole.COURSE_ADMINISTRATOR);
+        Mockito.when(userAccountService.getUserById(any(int.class))).thenReturn(
+            UserResponse.newBuilder()
+                .setId(-100)
+                .setUsername("testing")
+                .addRoles(UserRole.COURSE_ADMINISTRATOR)
+                .build()
+        );
         this.mockMvc.perform(get(apiPath))
                 .andExpect(status().isOk());
 
@@ -109,12 +151,26 @@ public class RolesTest {
             "role",
             Arrays.asList(UserRole.TEACHER, UserRole.COURSE_ADMINISTRATOR)
         );
+        Mockito.when(userAccountService.getUserById(any(int.class))).thenReturn(
+            UserResponse.newBuilder()
+                .setId(-100)
+                .setUsername("testing")
+                .addAllRoles(List.of(UserRole.TEACHER, UserRole.COURSE_ADMINISTRATOR))
+                .build()
+        );
         this.mockMvc.perform(get("/api/v1/projects/some_project"))
                 .andExpect(status().isNotFound());
 
         AuthorisationParamsHelper.setParams(
             "role",
             Arrays.asList(UserRole.STUDENT, UserRole.TEACHER, UserRole.COURSE_ADMINISTRATOR)
+        );
+        Mockito.when(userAccountService.getUserById(any(int.class))).thenReturn(
+            UserResponse.newBuilder()
+                .setId(-100)
+                .setUsername("testing")
+                .addAllRoles(List.of(UserRole.STUDENT, UserRole.TEACHER, UserRole.COURSE_ADMINISTRATOR))
+                .build()
         );
         this.mockMvc.perform(get("/api/v1/projects/123456"))
                 .andExpect(status().isNotFound());
@@ -145,12 +201,26 @@ public class RolesTest {
                 .andReturn();
 
         AuthorisationParamsHelper.setParams("role", UserRole.TEACHER);
+        Mockito.when(userAccountService.getUserById(any(int.class))).thenReturn(
+            UserResponse.newBuilder()
+                .setId(-100)
+                .setUsername("testing")
+                .addRoles(UserRole.TEACHER)
+                .build()
+        );
         this.mockMvc.perform(put(apiPath)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body))
                 .andExpect(status().isNotFound());
 
         AuthorisationParamsHelper.setParams("role", UserRole.COURSE_ADMINISTRATOR);
+        Mockito.when(userAccountService.getUserById(any(int.class))).thenReturn(
+            UserResponse.newBuilder()
+                .setId(-100)
+                .setUsername("testing")
+                .addRoles(UserRole.COURSE_ADMINISTRATOR)
+                .build()
+        );
         this.mockMvc.perform(put(apiPath)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body))
@@ -160,12 +230,26 @@ public class RolesTest {
             "role",
             Arrays.asList(UserRole.TEACHER, UserRole.COURSE_ADMINISTRATOR)
         );
+        Mockito.when(userAccountService.getUserById(any(int.class))).thenReturn(
+            UserResponse.newBuilder()
+                .setId(-100)
+                .setUsername("testing")
+                .addAllRoles(List.of(UserRole.TEACHER, UserRole.COURSE_ADMINISTRATOR))
+                .build()
+        );
         this.mockMvc.perform(put("/api/v1/projects/some_project"))
                 .andExpect(status().isBadRequest());
 
         AuthorisationParamsHelper.setParams(
             "role",
             Arrays.asList(UserRole.STUDENT, UserRole.TEACHER, UserRole.COURSE_ADMINISTRATOR)
+        );
+        Mockito.when(userAccountService.getUserById(any(int.class))).thenReturn(
+            UserResponse.newBuilder()
+                .setId(-100)
+                .setUsername("testing")
+                .addAllRoles(List.of(UserRole.STUDENT, UserRole.TEACHER, UserRole.COURSE_ADMINISTRATOR))
+                .build()
         );
         this.mockMvc.perform(put("/api/v1/projects/123456"))
                 .andExpect(status().isBadRequest());

@@ -103,6 +103,7 @@ public abstract class AuthenticatedController {
    */
   private UserRole getHighestRole(PortfolioPrincipal principal) {
     UserRole currentHighestRole = UserRole.STUDENT;
+    var x = getUser(principal);
     List<UserRole> roles = getUser(principal).getRolesList();
     for (UserRole role : roles) {
       if (role.compareTo(currentHighestRole) > 0) {

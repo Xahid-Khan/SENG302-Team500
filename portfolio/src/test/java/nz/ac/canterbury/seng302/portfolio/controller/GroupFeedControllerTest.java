@@ -1,16 +1,26 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.ArrayList;
+import java.util.List;
 import nz.ac.canterbury.seng302.portfolio.AuthorisationParamsHelper;
 import nz.ac.canterbury.seng302.portfolio.authentication.PortfolioPrincipal;
 import nz.ac.canterbury.seng302.portfolio.model.contract.PostContract;
 import nz.ac.canterbury.seng302.portfolio.model.entity.CommentModel;
 import nz.ac.canterbury.seng302.portfolio.model.entity.PostModel;
-import nz.ac.canterbury.seng302.portfolio.service.*;
+import nz.ac.canterbury.seng302.portfolio.service.AuthStateService;
+import nz.ac.canterbury.seng302.portfolio.service.CommentService;
+import nz.ac.canterbury.seng302.portfolio.service.GroupsClientService;
+import nz.ac.canterbury.seng302.portfolio.service.PostService;
+import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
 import nz.ac.canterbury.seng302.shared.identityprovider.GroupDetailsResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,39 +32,26 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-import static org.mockito.ArgumentMatchers.any;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
 @AutoConfigureWebTestClient
 class GroupFeedControllerTest {
+    private final int validUserId = 3;
     @Autowired
     private MockMvc mockMvc;
-
     @Autowired
     private GroupFeedController controller;
-
     @MockBean
     private PostService postService;
-
     @MockBean
     private CommentService commentService;
-
     @MockBean
     private UserAccountService userAccountService;
-
     @MockBean
     private GroupsClientService groupsClientService;
-
     @MockBean
     private AuthStateService authStateService;
-
-    private final int validUserId = 3;
     private PostModel post1;
     private PostModel post2;
     private PostModel post3;
@@ -79,6 +76,7 @@ class GroupFeedControllerTest {
                 UserResponse.newBuilder()
                         .setId(validUserId)
                         .setUsername("testing")
+                        .addRoles(UserRole.STUDENT)
                         .build()
         );
         Mockito.when(authStateService.getId(any(PortfolioPrincipal.class))).thenReturn(3);
@@ -208,6 +206,13 @@ class GroupFeedControllerTest {
     @Test
     void deleteAPostWhereUserIsATeacherExpectPass () throws Exception {
         AuthorisationParamsHelper.setParams("role", UserRole.TEACHER);
+      Mockito.when(userAccountService.getUserById(any(int.class))).thenReturn(
+          UserResponse.newBuilder()
+              .setId(validUserId)
+              .setUsername("testing")
+              .addRoles(UserRole.TEACHER)
+              .build()
+      );
         Mockito.when(groupsClientService.isMemberOfTheGroup(any(int.class), any(int.class))).thenReturn(false);
         Mockito.when(postService.getPostById(any(int.class))).thenReturn(post3);
         mockMvc.perform(delete("/group_feed/delete_feed/3")
@@ -222,6 +227,13 @@ class GroupFeedControllerTest {
     @Test
     void deleteAPostWhereUserIsAAdminExpectPass () throws Exception {
         AuthorisationParamsHelper.setParams("role", UserRole.COURSE_ADMINISTRATOR);
+      Mockito.when(userAccountService.getUserById(any(int.class))).thenReturn(
+          UserResponse.newBuilder()
+              .setId(validUserId)
+              .setUsername("testing")
+              .addRoles(UserRole.COURSE_ADMINISTRATOR)
+              .build()
+      );
         Mockito.when(groupsClientService.isMemberOfTheGroup(any(int.class), any(int.class))).thenReturn(false);
         Mockito.when(postService.getPostById(any(int.class))).thenReturn(post3);
         mockMvc.perform(delete("/group_feed/delete_feed/3")
