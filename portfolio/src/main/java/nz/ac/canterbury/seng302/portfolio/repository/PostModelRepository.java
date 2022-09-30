@@ -17,7 +17,7 @@ public interface PostModelRepository extends CrudRepository<PostModel, Integer> 
 
   List<PostModel> findPostModelByUserId(int userId);
 
-  @Query(value = "SELECT * FROM POSTMODEL P WHERE P.group_id IN (?1) ORDER BY P.created DESC",
+  @Query(value = "SELECT * FROM postmodel P WHERE P.group_id IN (?1) ORDER BY P.created DESC",
       nativeQuery = true)
   List<PostModel> findPostModelByGroupIdOrderByCreatedDesc(Collection<Integer> groupIds);
 
