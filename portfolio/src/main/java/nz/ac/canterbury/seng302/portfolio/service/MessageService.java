@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import nz.ac.canterbury.seng302.portfolio.mapping.MessageMapper;
@@ -35,12 +36,13 @@ public class MessageService {
   public MessageContract createMessage(
       String conversationId, BaseMessageContract baseMessageContract) {
     ConversationEntity conversation = conversationRepository.findById(conversationId).orElseThrow();
-    template.convertAndSend("/topic/notification", conversation.getUserIds());
     MessageEntity message = messageMapper.toEntity(baseMessageContract);
     conversation.addMessage(message);
     messageRepository.save(message);
     conversation.setMostRecentMessageTimestamp();
+    conversation.setUserHasReadMessages(new ArrayList<>(message.getSentBy()));
     conversationRepository.save(conversation);
+    template.convertAndSend("/topic/notification", conversation.getUserIds());
 
     return messageMapper.toContract(message);
   }

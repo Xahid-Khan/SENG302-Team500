@@ -39,12 +39,15 @@ public class ConversationMapper
   public ConversationContract toContract(ConversationEntity entity) {
     List<UserContract> userContracts = new ArrayList<>();
     for (Integer userId : entity.getUserIds()) {
+      System.out.println(userId);
       userContracts.add(userMapper.toContract(userAccountService.getUserById(userId)));
     }
     return new ConversationContract(
         entity.getId(),
         userContracts,
         entity.getCreationDate(),
-        messageMapper.toContract(entity.getMostRecentMessage()));
+        messageMapper.toContract(entity.getMostRecentMessage()),
+        entity.getUserHasReadMessages()
+    );
   }
 }

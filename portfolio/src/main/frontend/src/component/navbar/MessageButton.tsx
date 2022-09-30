@@ -12,6 +12,7 @@ import {getAPIAbsolutePath} from "../../util/RelativePathUtil";
  */
 export const MessageButton: React.FC = observer(() => {
 
+    const userId = localStorage.getItem("userId");
     const globalUrlPathPrefix = localStorage.getItem("globalUrlPathPrefix");
 
     const [chats, setChats] = React.useState([]);
@@ -26,7 +27,6 @@ export const MessageButton: React.FC = observer(() => {
 
     const fetchAndSetChats = () => {
         fetchChats().then((result) => {
-            console.log("here, ", result)
             setChats(result)
         })
     }
@@ -36,7 +36,6 @@ export const MessageButton: React.FC = observer(() => {
     }, [])
 
 
-    const [numUnseen, setNumUnseen] = React.useState(0)
     const [conversation, setConversation] = React.useState(undefined);
 
     // Adapted from https://mui.com/material-ui/react-menu/
@@ -44,15 +43,14 @@ export const MessageButton: React.FC = observer(() => {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
-        console.log(event.currentTarget.id)
     };
     const handleClose = () => {
         setAnchorEl(null);
     };
 
-    const handleChatClick = (event: React.MouseEvent<HTMLElement>, contract: any) => {
+    const handleChatClick = async(event: React.MouseEvent<HTMLElement>, contract: any) => {
         handleClick(event)
-        console.log(contract)
+
         setConversation(contract)
     };
 
@@ -62,12 +60,21 @@ export const MessageButton: React.FC = observer(() => {
         fetchAndSetChats();
     }
 
+    const getNumUnreadChats = () => {
+        let i = 0;
+        chats.forEach((chat: any) => { if(!chat.userHasReadMessages.includes(parseInt(userId))){i++}});
+        return i;
+    }
+
     //uses the last clicked element to determine which menu to open
     const openChats = anchorEl?.id === 'chats-list-button';
     const openAdd = anchorEl?.id === 'add-button';
     const openChat = anchorEl?.id.startsWith('chat-button') || anchorEl?.id === 'create-group-button';
 
-    //TODO fetch num unseen messages
+
+    useEffect(() => {
+        fetchAndSetChats();
+    }, [openChat])
 
 
     useEffect(() => {
@@ -91,7 +98,7 @@ export const MessageButton: React.FC = observer(() => {
                     aria-haspopup="true"
                     aria-expanded={openChats ? 'true' : undefined}
                 >
-                    <Badge badgeContent={numUnseen} color="primary">
+                    <Badge badgeContent={getNumUnreadChats()} color="primary">
                         <MailIcon sx={{width: 32, height: 32}}></MailIcon>
                     </Badge>
                 </IconButton>
