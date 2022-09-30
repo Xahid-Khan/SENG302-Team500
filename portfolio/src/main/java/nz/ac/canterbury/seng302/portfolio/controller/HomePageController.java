@@ -1,6 +1,5 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -116,15 +115,18 @@ public class HomePageController extends AuthenticatedController {
   }
 
   @GetMapping(value = "/posts", produces = "application/json")
-  public ResponseEntity<?> getAllPosts(@AuthenticationPrincipal PortfolioPrincipal principal, @RequestParam("offset")
+  public ResponseEntity<?> getAllPosts(@AuthenticationPrincipal PortfolioPrincipal principal,
+      @RequestParam("offset")
       Optional<Integer> offset) {
     try {
       Integer userId = getUserId(principal);
+
       List<Integer> subscriptions = subscriptionService.getAllByUserId(userId);
       List<PostModel> posts = postService.getAllPostForMultipleGroups(subscriptions);
 
       var offsetValue = offset.orElse(0);
-      var postSubset = posts.subList(Math.min((offsetValue) * 20, posts.size()), Math.min((offsetValue + 1) * 20, posts.size()));
+      var postSubset = posts.subList(Math.min((offsetValue) * 20, posts.size()),
+          Math.min((offsetValue + 1) * 20, posts.size()));
 
       Map<String, Object> data = combineAndPrepareForFrontEnd(postSubset, userId);
       return ResponseEntity.ok(data);
@@ -133,16 +135,16 @@ public class HomePageController extends AuthenticatedController {
     }
   }
 
-
   /**
    * Get post by id.
+   *
    * @param principal
    * @param postId
    * @return
    */
   @GetMapping(value = "/get_post/{postId}", produces = "application/json")
   public ResponseEntity<?> getPostById(
-          @AuthenticationPrincipal PortfolioPrincipal principal, @PathVariable int postId) {
+      @AuthenticationPrincipal PortfolioPrincipal principal, @PathVariable int postId) {
     try {
       PostModel post = postService.getPostById(postId);
       Map<String, Object> filteredPosts = new HashMap<>();
@@ -152,13 +154,13 @@ public class HomePageController extends AuthenticatedController {
       filteredPosts.put("time", post.getCreated());
       filteredPosts.put("content", post.getPostContent());
       filteredPosts.put("reactions", reactionService.getUsernamesOfUsersWhoReactedToPost(
-              post.getId()));
+          post.getId()));
       filteredPosts.put("groupId", post.getGroupId());
       filteredPosts.put("comments", commentService.getCommentsForThePostAsJson(post.getId()));
       filteredPosts.put("groupName",
-              groupsClientService.getGroupById(post.getGroupId()).getShortName());
+          groupsClientService.getGroupById(post.getGroupId()).getShortName());
       filteredPosts.put("isMember",
-              groupsClientService.isMemberOfTheGroup(getUserId(principal), post.getGroupId()));
+          groupsClientService.isMemberOfTheGroup(getUserId(principal), post.getGroupId()));
 
       return ResponseEntity.ok(filteredPosts);
     } catch (Exception e) {

@@ -3,14 +3,19 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import com.google.protobuf.Timestamp;
 import nz.ac.canterbury.seng302.portfolio.DTO.User;
 import nz.ac.canterbury.seng302.portfolio.service.AuthenticateClientService;
+import nz.ac.canterbury.seng302.portfolio.service.GroupsClientService;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
+import nz.ac.canterbury.seng302.portfolio.service.SubscriptionService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticateResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.GroupDetailsResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -46,8 +51,23 @@ class RegistrationControllerTest {
 
   @MockBean private AuthenticateClientService authService;
 
+  @MockBean
+  private GroupsClientService groupsClientService;
+
+  @MockBean
+  private SubscriptionService subscriptionService;
+
   @BeforeEach
   public void beforeEach() {
+    GroupDetailsResponse group = GroupDetailsResponse.newBuilder()
+        .setGroupId(1)
+        .setShortName("test")
+        .setLongName("Long Test")
+        .addMembers(UserResponse.newBuilder()
+            .setId(-1)
+            .build())
+        .build();
+    Mockito.when(groupsClientService.getGroupById(any())).thenReturn(group);
     when(authService.authenticate(any(), any()))
         .thenReturn(
             AuthenticateResponse.newBuilder()
