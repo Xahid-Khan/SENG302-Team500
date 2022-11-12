@@ -60,10 +60,18 @@ public class AuthenticateServerService extends AuthenticationServiceImplBase {
             .setSuccess(true)
             .setToken(token);
       } else {
-        reply
-            .setMessage("Log in attempt failed: username or password incorrect")
-            .setSuccess(false)
-            .setToken("");
+        if (user == null) {
+          reply
+                  .setMessage("Username does not exist")
+                  .setSuccess(false)
+                  .setToken("");
+        }
+        else{
+          reply
+                  .setMessage("Log in attempt failed: username or password incorrect")
+                  .setSuccess(false)
+                  .setToken("");
+        }
       }
       responseObserver.onNext(reply.build());
       responseObserver.onCompleted();
